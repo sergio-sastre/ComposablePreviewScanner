@@ -415,7 +415,9 @@ The best solution would be to create a KSP able to read Compose-Desktop Preview 
 However, it is also possible to workaround this limitation with AndroidComposablePreviewScanner as follows.
 
 1. Add AndroidComposablePreviewScanner :jvm dependency and Roborazzi, since it is the only Library that supports Compose-Desktop
-   TODO -> jitpack
+   ```kotlin
+   implementation("sergio.sastre.composable.preview.scanner:jvm:<version>")
+   ```
 
 2. Configure Roborazzi as described [in the corresponding "Multiplatform support" section](https://github.com/takahirom/roborazzi?tab=readme-ov-file#multiplatform-support)
 
