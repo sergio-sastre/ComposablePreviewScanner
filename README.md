@@ -1,3 +1,7 @@
+<p align="center">
+<img width="400" src="https://github.com/sergio-sastre/ComposablePreviewScanner/assets/6097181/63d9676d-22c4-4bd1-8680-3fcf1a72e001">
+</p>
+
 A library to help auto-generate screenshot tests from Composable Previews with any screenshot testing library:
 JVM-based (i.e. Paparazzi, Roborazzi) as well as Instrumentation-based (i.e. Shot, Dropshots, Android-Testify, etc.)
 
@@ -36,7 +40,7 @@ allprojects {
 }
 ```
 
-```kotlin```
+```kotlin
 dependencies {
    // jvm tests
    testImplementation("sergio.sastre.composable.preview.scanner:android:<version>")
