@@ -1,4 +1,5 @@
-# <p align="center">Android Composable Preview Scanner</p>
+[![](https://jitpack.io/v/sergio-sastre/ComposablePreviewScanner.svg)](https://jitpack.io/#sergio-sastre/ComposablePreviewScanner)
+# <p align="center">Composable Preview Scanner</p>
 
 
 <p align="center">
@@ -9,7 +10,7 @@ A library to help auto-generate screenshot tests from Composable Previews with a
 JVM-based (i.e. Paparazzi, Roborazzi) as well as Instrumentation-based (i.e. Shot, Dropshots, Android-Testify, etc.)
 
 # Comparison with other solutions
-|                                           | Android Composable Preview Scanner | Showkase      | Compose Preview Screenshot Testing |
+|                                           | Composable Preview Scanner | Showkase      | Compose Preview Screenshot Testing |
 |-------------------------------------------|------------------------------------|---------------|------------------------------------|
 | Independent of AGP version                | ✅                                  | ✅             | ❌                                  |
 | Library-agnostic solution                 | ✅                                  | ✅             | ❌<sup>1</sup>                      |
@@ -18,14 +19,14 @@ JVM-based (i.e. Paparazzi, Roborazzi) as well as Instrumentation-based (i.e. Sho
 | Specific Config (e.g. for Libs) available | ✅<sup>4</sup>                      | ❌             | ❌                                  |
 | Compose-Desktop support                   | *✅<sup>5</sup>                     | ❌<sup>6</sup> | ❌                                  |
 
-<sup>1</sup> Compose Preview Screenshot Testing is a standalone solution based on LayoutLib, whereas AndroidComposablePreviewScanner and Showkase provide Composables' infos so you can run screenshot tests with your favourite screenshot testing library.</br></br>
-<sup>2</sup> Compose Preview Screenshot Testing requires to put the previews in a brand-new "screenshotTest" source. AndroidComposablePreviewScanner and Showkase only work with previews in the "main" source, so if you want to have the previews used for screenshot tests separate, I recommend to create an extra module for them and their screenshot tests that is not included in your :app.</br></br>
+<sup>1</sup> Compose Preview Screenshot Testing is a standalone solution based on LayoutLib, whereas ComposablePreviewScanner and Showkase provide Composables' infos so you can run screenshot tests with your favourite screenshot testing library.</br></br>
+<sup>2</sup> Compose Preview Screenshot Testing requires to put the previews in a brand-new "screenshotTest" source. ComposablePreviewScanner and Showkase only work with previews in the "main" source, so if you want to have the previews used for screenshot tests separate, I recommend to create an extra module for them and their screenshot tests that is not included in your :app.</br></br>
 <sup>3</sup> Showkase components only hold information about the Composable, but not about the Preview Info (i.e. ApiLevel, Locale, UiMode, FontScale...).</br></br>
-<sup>4</sup> AndroidComposablePreviewScanner supports adding extra lib-config (e.g. Paparazzi's Rendering Mode or Roborazzi's compare options) in the form of annotations that are additionally added to the preview. You can check how in the examples below in [Jvm Screenshot Tests](#jvm-screenshot-tests) and [Instrumentation Screenshot Tests](#instrumentation-screenshot-tests) respectively.</br></br>
-<sup>5</sup> AndroidComposablePreviewScanner can also be used in JVM-targets like Compose-Desktop. However, the Previews need to be extra-annotated to be visible to ClassGraph. Check the corresponding [Compose-Desktop Support](#compose-desktop-support) section.</br></br>
+<sup>4</sup> ComposablePreviewScanner supports adding extra lib-config (e.g. Paparazzi's Rendering Mode or Roborazzi's compare options) in the form of annotations that are additionally added to the preview. You can check how in the examples below in [Jvm Screenshot Tests](#jvm-screenshot-tests) and [Instrumentation Screenshot Tests](#instrumentation-screenshot-tests) respectively.</br></br>
+<sup>5</sup> ComposablePreviewScanner can also be used in JVM-targets like Compose-Desktop. However, the Previews need to be extra-annotated to be visible to ClassGraph. Check the corresponding [Compose-Desktop Support](#compose-desktop-support) section.</br></br>
 <sup>6</sup> [Showkase: Compose Multiplatform Support](https://github.com/airbnb/Showkase/issues/364)
 
-AndroidComposablePreviewScanner also works with:
+ComposablePreviewScanner also works with:
 - `@PreviewParameters`
 - Multi-Previews, including  `@PreviewScreenSizes`, `@PreviewFontScales`, `@PreviewLightDark`, and `@PreviewDynamicColors`.
 
@@ -46,10 +47,10 @@ allprojects {
 ```kotlin
 dependencies {
    // jvm tests
-   testImplementation("sergio.sastre.composable.preview.scanner:android:<version>")
+   testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:android:<version>")
 
    // instrumentation tests
-   androidTestImplementation("sergio.sastre.composable.preview.scanner:android:<version>")
+   debugImplementation("com.github.sergio-sastre.ComposablePreviewScanner:android:<version>")
 }
 ```
 
@@ -343,7 +344,7 @@ Let's say we want to enable some custom Dropshots Config for some Previews, for 
 > So for this case, you'd have to convert locale "b+zh+Hans+CN" to "zh-Hans-CN" in order to use it with AndroidUiTestingUtils
 
 ## Advanced Usage
-AndroidComposablePreviewScanner also provides a class to customize the name of the generated screenshots based on its Preview Info.
+ComposablePreviewScanner also provides a class to customize the name of the generated screenshots based on its Preview Info.
 By default, it does not include the Preview Info in the screenshot file name if it is the same as its default value, but it can be configured to behave differently.
 That means, for @Preview(showBackground = false), showBackground would not be included in the screenshot file name since it is the default.
 
@@ -415,11 +416,11 @@ annotation class Preview
 As we've seen in the previous section [How it works](#how-it-works), Compose-Desktop previews are not visible to ClassGraph.
 The best solution would be to create a KSP able to read Compose-Desktop Preview annotations.
 
-However, it is also possible to workaround this limitation with AndroidComposablePreviewScanner as follows.
+However, it is also possible to workaround this limitation with ComposablePreviewScanner as follows.
 
-1. Add AndroidComposablePreviewScanner :jvm dependency and Roborazzi, since it is the only Library that supports Compose-Desktop
+1. Add ComposablePreviewScanner :jvm dependency and Roborazzi, since it is the only Library that supports Compose-Desktop
    ```kotlin
-   implementation("sergio.sastre.composable.preview.scanner:jvm:<version>")
+   testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")
    ```
 
 2. Configure Roborazzi as described [in the corresponding "Multiplatform support" section](https://github.com/takahirom/roborazzi?tab=readme-ov-file#multiplatform-support)
