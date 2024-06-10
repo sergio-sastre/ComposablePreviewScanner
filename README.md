@@ -51,8 +51,18 @@ dependencies {
 
    // instrumentation tests
    debugImplementation("com.github.sergio-sastre.ComposablePreviewScanner:android:<version>")
+
+   // compose-desktop
+   testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")
 }
 ```
+
+Direct links
+1. [Jvm Screenshot Tests](#jvm-screenshot-tests)</br>
+   1.1  [Paparazzi](#paparazzi)</br>
+   1.2  [Roborazzi](#roborazzi)</br>
+2. [Instrumentation Screenshot Tests](#instrumentation-screenshot-tests)
+3. [Compose Desktop Support](#compose-desktop-support)
 
 # How to use
 The API is pretty simple:
@@ -475,3 +485,8 @@ class DesktopPreviewScreenshotTests {
 ```
 
 6. Run these Roborazzi tests by executing the corresponding command e.g. ./gradlew yourModule:recordRoborazziJvm (if using the Kotlin Jvm Plugin)
+
+
+</br></br>
+<a href="https://www.flaticon.com/free-icons/magnify" title="magnify icons">Composable Preview Scanner logo modified from one by Freepik - Flaticon</a>
+
