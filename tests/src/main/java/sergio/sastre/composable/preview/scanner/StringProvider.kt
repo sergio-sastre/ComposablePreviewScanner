@@ -1,4 +1,4 @@
-package composable.preview.scanner
+package sergio.sastre.composable.preview.scanner
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 

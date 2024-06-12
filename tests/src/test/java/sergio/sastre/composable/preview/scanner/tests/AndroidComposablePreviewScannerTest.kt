@@ -1,7 +1,7 @@
 package sergio.sastre.composable.preview.scanner.tests
 
 import android.content.res.Configuration
-import composable.preview.scanner.StringProvider
+import sergio.sastre.composable.preview.scanner.StringProvider
 import sergio.sastre.composable.preview.scanner.customextraannotation.Device
 import sergio.sastre.composable.preview.scanner.customextraannotation.ScreenshotTestConfig
 import sergio.sastre.composable.preview.scanner.excluded.ExcludeScreenshot
