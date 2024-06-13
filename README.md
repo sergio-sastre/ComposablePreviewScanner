@@ -117,7 +117,7 @@ fun MyComposable(){
 ```kotlin
 object ComposablePreviewProvider : TestParameter.TestParameterValuesProvider {
     override fun provideValues(): List<ComposablePreview<AndroidPreviewInfo>> =
-        AndroidComposablePreviewsScanner()
+        AndroidComposablePreviewScanner()
             .scanPackageTrees("my.package", "my.package2")
             .includeAnnotationInfoForAllOf(PaparazziConfig::class.java)
             ... // any other filtering option
@@ -218,7 +218,7 @@ class PreviewParameterizedTests(
         @JvmStatic
         @ParameterizedRobolectricTestRunner.Parameters
         fun values(): List<ComposablePreview<AndroidPreviewInfo>> =
-            AndroidComposablePreviewsScanner()
+            AndroidComposablePreviewScanner()
                 .scanPackageTrees("your.package", "your.package2")
                 .filterPreviews { previewParams -> previewParams.apiLevel == 30 }
                 .includeAnnotationInfoForAllOf(RoborazziConfig::class.java)
