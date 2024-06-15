@@ -171,6 +171,19 @@ class AndroidComposablePreviewScreenshotIdTest {
     }
 
     @Test
+    fun `GIVEN preview with only uiMode = UI_MODE_NIGHT_YES or UI_MODE_TYPE_NORMAL, THEN show only NIGHT`() {
+        val preview = previewBuilder(
+            previewInfo = AndroidPreviewInfo(
+                uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL
+            )
+        )
+
+        assert(
+            AndroidPreviewScreenshotIdBuilder(preview).build() == "NIGHT"
+        )
+    }
+
+    @Test
     fun `GIVEN preview with only uiMode = UI_MODE_NIGHT_YES, THEN show only NIGHT`() {
         val preview = previewBuilder(
             previewInfo = AndroidPreviewInfo(
@@ -310,7 +323,8 @@ class AndroidComposablePreviewScreenshotIdTest {
         CUSTOM_DESKTOP("spec:id=reference_desktop,shape=Normal,width=1920,height=1080,unit=dp,dpi=161", "DESKTOP_SHAPE_NORMAL_WIDTH_1920_HEIGHT_1080_UNIT_DP_DPI_161"),
         CUSTOM_TABLET("spec:id=reference_tablet,shape=Normal,width=1280,height=800,unit=dp,dpi=241", "TABLET_SHAPE_NORMAL_WIDTH_1280_HEIGHT_800_UNIT_DP_DPI_241"),
         CUSTOM_FOLDABLE("spec:id=reference_foldable,shape=Normal,width=1280,height=800,unit=dp,dpi=241", "FOLDABLE_SHAPE_NORMAL_WIDTH_1280_HEIGHT_800_UNIT_DP_DPI_241"),
-        CUSTOM_PHONE("spec:id=reference_phone,shape=Normal,width=1280,height=800,unit=dp,dpi=241", "PHONE_SHAPE_NORMAL_WIDTH_1280_HEIGHT_800_UNIT_DP_DPI_241")
+        CUSTOM_PHONE("spec:id=reference_phone,shape=Normal,width=1280,height=800,unit=dp,dpi=241", "PHONE_SHAPE_NORMAL_WIDTH_1280_HEIGHT_800_UNIT_DP_DPI_241"),
+        CUSTOM_WITH_DOUBLE_SPACES("spec:width = 411dp, height = 891dp, orientation = landscape, dpi = 420", "WIDTH_411DP_HEIGHT_891DP_ORIENTATION_LANDSCAPE_DPI_420")
     }
     @Test
     fun `GIVEN preview with custom device, THEN only show its name as expectedId`(
