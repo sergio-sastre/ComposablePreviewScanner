@@ -131,9 +131,10 @@ object PaparazziPreviewRule {
     fun createFor(preview: ComposablePreview<AndroidPreviewInfo>): Paparazzi =
         Paparazzi(
             deviceConfig = PIXEL_4A.copy(
-                nightMode = when(preview.previewInfo.uiMode) { 
-                   Configuration.UI_MODE_NIGHT_YES -> NightMode.NIGHT
-                   else -> NightMode.NOTNIGHT
+                nightMode =
+                   when(preview.previewInfo.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
+                      true -> NightMode.NIGHT
+                      false -> NightMode.NOTNIGHT
                 }
                 ... // other configurations
             ),
@@ -196,11 +197,12 @@ object RoborazziOptionsMapper {
 
 object RobolectricPreviewInfosApplier {
     fun applyFor(preview: ComposablePreview<AndroidPreviewInfo>) {
-        val uiMode = nightMode = when(preview.previewInfo.uiMode) {
-           Configuration.UI_MODE_NIGHT_YES -> "+night"
-           else -> "+notnight"
-        }
-        RuntimeEnvironment.setQualifiers(testItem.deviceQualifier)
+        val uiMode = nightMode =
+           when(preview.previewInfo.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
+              true -> "+night"
+              else -> "+notnight"
+           }
+        RuntimeEnvironment.setQualifiers(uiMode)
        ... // other configurations
     }
 }
