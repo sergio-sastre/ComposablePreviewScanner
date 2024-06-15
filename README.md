@@ -200,7 +200,7 @@ object RobolectricPreviewInfosApplier {
         val uiMode = nightMode =
            when(preview.previewInfo.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
               true -> "+night"
-              else -> "+notnight"
+              false -> "+notnight"
            }
         RuntimeEnvironment.setQualifiers(uiMode)
        ... // other configurations
