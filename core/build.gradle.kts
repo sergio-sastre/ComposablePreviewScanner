@@ -63,7 +63,7 @@ publishing {
             }
             groupId = "sergio.sastre.composable.preview.scanner"
             artifactId = "core"
-            version = "0.1.1"
+            version = "0.1.2"
         }
     }
 }
