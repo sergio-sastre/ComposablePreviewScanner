@@ -31,6 +31,9 @@ class AndroidPreviewScreenshotIdBuilder(
         "wallpaper" to androidPreviewInfo.wallpaperName
     )
 
+    private var ignoreClassName: Boolean = false
+    private var ignoreMethodName: Boolean = false
+
     fun overrideDefaultIdFor(
         previewInfoName: String,
         applyInfoValue: (AndroidPreviewInfo) -> String?
@@ -44,14 +47,30 @@ class AndroidPreviewScreenshotIdBuilder(
         defaultPreviewInfoId[previewInfoName] = null
     }
 
+    fun ignoreClassName() = apply {
+        ignoreClassName = true
+    }
+
+    fun ignoreMethodName() = apply {
+        ignoreMethodName = true
+    }
+
     fun build(): String =
         buildList {
             val previewInfoId =
                 defaultPreviewInfoId.values.filterNot { it.isNullOrBlank() }.joinToString("_")
+            val declaringClass = when(ignoreClassName){
+                true -> null
+                false -> composablePreview.declaringClass
+            }
+            val methodName = when(ignoreMethodName){
+                true -> null
+                false -> composablePreview.methodName
+            }
             add(
-                listOf(
-                    composablePreview.declaringClass,
-                    composablePreview.methodName,
+                listOfNotNull(
+                    declaringClass,
+                    methodName,
                     previewInfoId
                 )
                     .filter { it.isNotBlank() }.joinToString(".")
