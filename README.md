@@ -96,6 +96,8 @@ There are 2 more options to scan previews:
 ## JVM Screenshot Tests
 
 ### Paparazzi
+You can find [executable examples here](https://github.com/sergio-sastre/Android-screenshot-testing-playground/tree/master/lazycolumnscreen-previews/paparazzi/src)
+
 Let's say we want to enable some custom Paparazzi Config for some Previews, for instance a maxPercentDifferent value
 
 1. Define your own annotation for the Lib config.
@@ -166,6 +168,7 @@ class PreviewTestParameterTests(
 6. Run these Paparazzi tests together with the existing ones by executing the corresponding command e.g. ./gradlew yourModule:recordPaparazziDebug
 
 ### Roborazzi
+You can find [executable examples here](https://github.com/sergio-sastre/Android-screenshot-testing-playground/tree/master/lazycolumnscreen-previews/roborazzi/src)
 
 Let's say we want to enable some custom Roborazzi Config for some Previews, for instance a maxPercentDifferent value
 
