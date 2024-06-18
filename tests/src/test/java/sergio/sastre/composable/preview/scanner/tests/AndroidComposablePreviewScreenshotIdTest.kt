@@ -377,6 +377,34 @@ class AndroidComposablePreviewScreenshotIdTest {
         )
     }
 
+    @Test
+    fun `GIVEN className ignored, THEN declaringClass is not included`() {
+        val preview = previewBuilder(
+            declaringClass = "MyClass",
+        )
+
+        assert(
+            !AndroidPreviewScreenshotIdBuilder(preview)
+                .ignoreClassName()
+                .build()
+                .contains("MyClass")
+        )
+    }
+
+    @Test
+    fun `GIVEN methodName ignored, THEN methodName is not included`() {
+        val preview = previewBuilder(
+            methodName = "PreviewName",
+        )
+
+        assert(
+            !AndroidPreviewScreenshotIdBuilder(preview)
+                .ignoreMethodName()
+                .build()
+                .contains("PreviewName")
+        )
+    }
+
     enum class PreviewKeyAndInfo(
         val key: String,
         val previewInfo: AndroidPreviewInfo

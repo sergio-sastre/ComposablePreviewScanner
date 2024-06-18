@@ -363,6 +363,12 @@ That means, for @Preview(showBackground = false), showBackground would not be in
 ```kotlin
 fun createScreenshotIdFor(preview: ComposablePreview<AndroidPreviewInfo>) = 
     AndroidPreviewScreenshotIdBuilder(preview)
+        // Paparazzi screenshot names already include className and methodName
+        // so ignore them to avoid them duplicated what might throw a FileNotFoundException
+        // due to the longName
+       .ignoreClassName()
+       .ignoreMethodName()
+            
        .ignoreForId("heightDp")
        .ignoreForId("widthDp")
        .overrideDefaultIdFor(

@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("com.mikepenz.aboutlibraries.plugin") version "11.2.0"
 }
 
 android {
