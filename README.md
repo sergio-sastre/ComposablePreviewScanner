@@ -288,7 +288,7 @@ Let's say we want to enable some custom Dropshots Config for some Previews, for 
       ...
    }
    ```
-   - Map the PreviewInfo and RoborazziConfig values. For instance, you can use a custom class for that. To map the Preview Info values, I recommend to use the ActivityScenarioForComposableRule of [AndroidUiTestingUtils](https://github.com/sergio-sastre/AndroidUiTestingUtils)
+   - Map the PreviewInfo and DropshotsConfig values. For instance, you can use a custom class for that. To map the Preview Info values, I recommend to use the ActivityScenarioForComposableRule of [AndroidUiTestingUtils](https://github.com/sergio-sastre/AndroidUiTestingUtils)
    ```kotlin
    object DropshotsPreviewRule {
       fun createFor(preview: ComposablePreview<AndroidPreviewInfo>): Dropshots =
