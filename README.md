@@ -1,4 +1,8 @@
-[![](https://jitpack.io/v/sergio-sastre/ComposablePreviewScanner.svg)](https://jitpack.io/#sergio-sastre/ComposablePreviewScanner)
+[![](https://jitpack.io/v/sergio-sastre/ComposablePreviewScanner.svg)](https://jitpack.io/#sergio-sastre/ComposablePreviewScanner)</br>
+<a href="https://androidweekly.net/issues/issue-628">
+<img src="https://androidweekly.net/issues/issue-628/badge">
+</a>
+
 # <p align="center">Composable Preview Scanner</p>
 
 
