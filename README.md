@@ -224,14 +224,18 @@ class PreviewParameterizedTests(
 ) {
 
     companion object {
-        @JvmStatic
-        @ParameterizedRobolectricTestRunner.Parameters
-        fun values(): List<ComposablePreview<AndroidPreviewInfo>> =
+        // Optimization: This avoids scanning for every test
+        private val cachedPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
             AndroidComposablePreviewScanner()
                 .scanPackageTrees("your.package", "your.package2")
                 .filterPreviews { previewParams -> previewParams.apiLevel == 30 }
                 .includeAnnotationInfoForAllOf(RoborazziConfig::class.java)
                 .getPreviews()
+        }
+
+        @JvmStatic
+        @ParameterizedRobolectricTestRunner.Parameters
+        fun values(): List<ComposablePreview<AndroidPreviewInfo>> = cachedPreviews
     }
 
     @GraphicsMode(GraphicsMode.Mode.NATIVE)
