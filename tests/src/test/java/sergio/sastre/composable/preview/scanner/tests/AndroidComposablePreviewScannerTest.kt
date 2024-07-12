@@ -173,7 +173,18 @@ class AndroidComposablePreviewScannerTest {
     }
 
     @Test
-    fun `GIVEN private previews THEN those previews are excluded`() {
+    fun `GIVEN private previews WHEN including them, THEN those previews are included`() {
+        val privatePreviews =
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.privatepreviews")
+                .includePrivatePreviews()
+                .getPreviews()
+
+        assert(privatePreviews.isNotEmpty())
+    }
+
+    @Test
+    fun `GIVEN private previews WHEN not implicitely including them THEN those previews are excluded`() {
         val privatePreviews =
             AndroidComposablePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.privatepreviews")
