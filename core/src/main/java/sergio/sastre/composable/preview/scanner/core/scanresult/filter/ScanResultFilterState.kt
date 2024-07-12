@@ -4,4 +4,5 @@ data class ScanResultFilterState<T>(
     val excludedAnnotations: List<Class<out Annotation>> = emptyList(),
     val namesOfIncludeAnnotationsInfo: Set<String> = emptySet(),
     val meetsPreviewCriteria: (T) -> Boolean = { true },
+    val includesPrivatePreviews: Boolean = false,
 )

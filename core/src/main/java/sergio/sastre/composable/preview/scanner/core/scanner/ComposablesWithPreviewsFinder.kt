@@ -27,41 +27,57 @@ class ComposablesWithPreviewsFinder<T>(
     ): List<ComposablePreview<T>> =
         classInfo.declaredMethodInfo.asSequence().flatMap { methodInfo ->
             // evaluate if method has preview
-            when (methodInfo.getAnnotationInfo(annotationToScanClassName)) {
-                null -> emptySequence()
-                else -> {
-                    when (methodInfo.hasExcludedAnnotation(scanResultFilterState)) {
-                        false -> methodInfo.toSequenceOfMethods().flatMap { method ->
+            methodInfo.getAnnotationInfo(annotationToScanClassName)?.let {
+                when (methodInfo.hasExcludedAnnotation(scanResultFilterState) || scanResultFilterState.excludesMethod(
+                    methodInfo
+                )) {
+                    false ->
+                        methodInfo.toSequenceOfMethods().flatMap { method ->
                             method.repeatMethodPerPreviewAnnotation(
                                 methodInfo,
                                 scanResultFilterState
                             )
                         }
-                        true -> emptySequence()
-                    }
+
+                    true -> emptySequence()
                 }
-            }
+            } ?: emptySequence()
         }
             .toSet()
             .flatMap { mapper ->
                 mapper.mapToComposablePreviews()
             }
 
+    private fun ScanResultFilterState<T>.excludesMethod(methodInfo: MethodInfo): Boolean =
+        !includesPrivatePreviews && methodInfo.isPrivate
+
     private fun MethodInfo.hasExcludedAnnotation(scanResultFilterState: ScanResultFilterState<T>) =
         when (scanResultFilterState.excludedAnnotations.isNotEmpty()) {
             true -> scanResultFilterState.excludedAnnotations.any {
                 this.getAnnotationInfo(it) != null
             }
+
             false -> false
         }
 
     private fun MethodInfo.toSequenceOfMethods(): Sequence<Method> =
-        Class.forName(className)
-            .methods
-            .asSequence()
-            .filter {
-                it.name.substringAfterLast(".") == name
-            }
+        when (isPrivate) {
+            true -> Class.forName(className)
+                .declaredMethods
+                .asSequence()
+                .filter {
+                    it.name.substringAfterLast(".") == name
+                }.also { methods ->
+                    methods.forEach { it.isAccessible = true }
+                }
+
+            false -> Class.forName(className)
+                .methods
+                .asSequence()
+                .filter {
+                    it.name.substringAfterLast(".") == name
+                }
+        }
 
     private fun Method.repeatMethodPerPreviewAnnotation(
         methodInfo: MethodInfo,
@@ -73,7 +89,8 @@ class ComposablesWithPreviewsFinder<T>(
             methodInfo.getAnnotationInfoRepeatable(annotationToScanClassName)
 
         annotationInfos.forEach { annotationInfo ->
-            val previewInfo = previewInfoMapper.mapToComposablePreviewInfo(annotationInfo.parameterValues)
+            val previewInfo =
+                previewInfoMapper.mapToComposablePreviewInfo(annotationInfo.parameterValues)
 
             if (scanResultFilterState.meetsPreviewCriteria(previewInfo)) {
                 val annotationsInfo = methodInfo.annotationInfo.filter { annotation ->
