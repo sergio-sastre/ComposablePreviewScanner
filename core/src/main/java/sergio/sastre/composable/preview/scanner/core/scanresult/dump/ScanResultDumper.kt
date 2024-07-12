@@ -12,6 +12,7 @@ import java.util.Locale
  */
 class ScanResultDumper {
     private var updatedClassGraph = ClassGraph()
+        .ignoreMethodVisibility()
         .enableClassInfo()
         .enableMethodInfo()
         .enableAnnotationInfo()

@@ -15,6 +15,7 @@ abstract class ComposablePreviewScanner<T>(
 ) {
 
     private var updatedClassGraph = ClassGraph()
+        .ignoreMethodVisibility()
         .enableClassInfo()
         .enableMethodInfo()
         .enableAnnotationInfo()

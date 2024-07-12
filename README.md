@@ -33,9 +33,9 @@ JVM-based (i.e. Paparazzi, Roborazzi) as well as Instrumentation-based (i.e. Sho
 ComposablePreviewScanner also works with:
 - `@PreviewParameters`
 - Multi-Previews, including  `@PreviewScreenSizes`, `@PreviewFontScales`, `@PreviewLightDark`, and `@PreviewDynamicColors`.
+- private `@Previews` (from version 0.1.3 on)
 
 but does not work with
-- private `@Previews`. They must be either public or internal.
 - `@Previews` that are not located in the "main" source
 - `@Previews` inside classes, as reported in [this issue](https://github.com/sergio-sastre/ComposablePreviewScanner/issues/4)
 
@@ -83,6 +83,7 @@ AndroidComposablePreviewScanner()
         ScreenshotConfig::class.java,
         ScreenshotConfig2::class.java
     )
+    .includePrivatePreviews() // Otherwise they are ignored
     .filterPreviews { 
         // filter by any previewInfo: name, group, apiLevel, locale, uiMode, fontScale...
         previewInfo ->  previewInfo.apiLevel == 30 
