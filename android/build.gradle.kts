@@ -67,7 +67,7 @@ publishing {
             }
             groupId = "sergio.sastre.composable.preview.scanner"
             artifactId = "android"
-            version = "0.1.2"
+            version = "0.1.3"
         }
     }
 }
