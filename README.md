@@ -443,10 +443,10 @@ annotation class Preview
 ```
 
 ## Compose-Desktop Support
-As we've seen in the previous section [How it works](#how-it-works), Compose-Desktop previews are not visible to ClassGraph.
-The best solution would be to create a KSP able to read Compose-Desktop Preview annotations.
+As we've seen in the previous section [How it works](#how-it-works), Compose-Desktop previews are not visible to ClassGraph since they use `AnnotationRetention.SOURCE`.
+There is [already an open issue](https://youtrack.jetbrains.com/issue/CMP-5675) to change it to `AnnotationRetention.BINARY`, which would allow ClassGraph to find them.
 
-However, it is also possible to workaround this limitation with ComposablePreviewScanner as follows.
+In the meanwhile, it is also possible to workaround this limitation with ComposablePreviewScanner as follows.
 
 1. You'll have to copy `:core` and `:jvm` code from ComposablePreviewScanner into your module due to [this issue](https://github.com/sergio-sastre/ComposablePreviewScanner/issues/3) and use Roborazzi, since it is the only Screenshot Testing Library that supports Compose-Desktop
 
