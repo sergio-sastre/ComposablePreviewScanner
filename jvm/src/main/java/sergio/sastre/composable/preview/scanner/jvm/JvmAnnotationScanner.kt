@@ -9,7 +9,7 @@ import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposableP
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator
 import sergio.sastre.composable.preview.scanner.core.scanner.ComposablesWithPreviewsFinder
 import sergio.sastre.composable.preview.scanner.core.scanner.ComposablePreviewScanner
-import sergio.sastre.composable.preview.scanner.jvm.JvmAnnotationScanner.DesktopPreviewInfo
+import sergio.sastre.composable.preview.scanner.jvm.JvmAnnotationScanner.PreviewWithoutInfo
 import java.lang.reflect.Method
 
 /**
@@ -22,36 +22,36 @@ import java.lang.reflect.Method
  */
 class JvmAnnotationScanner(
     annotationToScanClassName: String
-) : ComposablePreviewScanner<DesktopPreviewInfo>(
+) : ComposablePreviewScanner<PreviewWithoutInfo>(
     ComposablesWithPreviewsFinder(
         annotationToScanClassName = annotationToScanClassName,
-        previewInfoMapper = DesktopComposablePreviewInfoMapper(),
-        previewMapperCreator = DesktopPreviewMapperCreator()
+        previewInfoMapper = JvmComposablePreviewInfoMapper(),
+        previewMapperCreator = JvmPreviewMapperCreator()
     )
 ) {
-    data object DesktopPreviewInfo
+    data object PreviewWithoutInfo
 
-    private class DesktopComposablePreviewInfoMapper :
-        ComposablePreviewInfoMapper<DesktopPreviewInfo> {
+    private class JvmComposablePreviewInfoMapper :
+        ComposablePreviewInfoMapper<PreviewWithoutInfo> {
         override fun mapToComposablePreviewInfo(
             parameters: AnnotationParameterValueList
-        ): DesktopPreviewInfo = DesktopPreviewInfo
+        ): PreviewWithoutInfo = PreviewWithoutInfo
     }
 
-    private class DesktopPreviewMapperCreator : ComposablePreviewMapperCreator<DesktopPreviewInfo> {
+    private class JvmPreviewMapperCreator : ComposablePreviewMapperCreator<PreviewWithoutInfo> {
         override fun createComposablePreviewMapper(
             previewMethod: Method,
-            previewInfo: DesktopPreviewInfo,
+            previewInfo: PreviewWithoutInfo,
             annotationsInfo: AnnotationInfoList?
-        ): ComposablePreviewMapper<DesktopPreviewInfo> =
+        ): ComposablePreviewMapper<PreviewWithoutInfo> =
             object :
-                ComposablePreviewMapper<DesktopPreviewInfo>(
+                ComposablePreviewMapper<PreviewWithoutInfo>(
                     previewMethod = previewMethod,
                     previewInfo = previewInfo,
                     annotationsInfo = annotationsInfo
                 ) {
-                override fun mapToComposablePreviews(): Sequence<ComposablePreview<DesktopPreviewInfo>> =
-                    sequenceOf(ProvideComposablePreview<DesktopPreviewInfo>()(this))
+                override fun mapToComposablePreviews(): Sequence<ComposablePreview<PreviewWithoutInfo>> =
+                    sequenceOf(ProvideComposablePreview<PreviewWithoutInfo>()(this))
             }
     }
 }

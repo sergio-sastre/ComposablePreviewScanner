@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.tests
+package sergio.sastre.composable.preview.scanner.tests.logic
 
 import org.junit.Assume
 import org.junit.Test
