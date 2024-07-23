@@ -10,7 +10,7 @@ class SaveScanResultInAssets {
         val scanResultFileName = "scan_result.json"
 
         ScanResultDumper()
-            .scanPackageTrees("composable.preview.scanner")
+            .scanPackageTrees("sergio.sastre.composable.preview.scanner")
             .dumpScanResultToFileInAssets(scanResultFileName)
 
         assert(

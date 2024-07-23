@@ -1,6 +1,6 @@
 [versions]
-agp = "8.4.0-beta01"
-classgraph = "4.8.173"
+agp = "8.4.2"
+classgraph = "4.8.174"
 coreKtx = "1.12.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
@@ -8,17 +8,22 @@ androidJunitVersion = "1.5.2"
 appcompat = "1.6.1"
 material = "1.11.0"
 composeBom = "2024.04.01"
-composeRuntime = "1.4.8"
+composeRuntime = "1.6.6"
+jetbrainsCompose = "1.6.11"
 kotlin = "1.9.23"
 kotlinReflect = "1.9.23"
 jetbrainsKotlinJvm = "1.9.23"
-
+robolectric = "4.13"
+roborazzi = "1.22.0"
+roborazziCompose = "1.22.0"
+testParameterInjector = "1.16"
 
 [libraries]
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "composeRuntime" }
+jetbrains-compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeRuntime" }
 classgraph = { module = "io.github.classgraph:classgraph", version.ref = "classgraph" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -26,9 +31,15 @@ androidx-test-runner = { group = "androidx.test", name = "runner", version.ref =
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinReflect" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
+roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazziCompose" }
+test-parameter-injector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
+jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "jetbrainsCompose" }
+roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }

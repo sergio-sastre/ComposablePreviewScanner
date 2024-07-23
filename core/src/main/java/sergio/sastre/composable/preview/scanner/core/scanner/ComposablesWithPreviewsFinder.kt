@@ -28,9 +28,9 @@ class ComposablesWithPreviewsFinder<T>(
         classInfo.declaredMethodInfo.asSequence().flatMap { methodInfo ->
             // evaluate if method has preview
             methodInfo.getAnnotationInfo(annotationToScanClassName)?.let {
-                when (methodInfo.hasExcludedAnnotation(scanResultFilterState) || scanResultFilterState.excludesMethod(
-                    methodInfo
-                )) {
+                when (
+                    methodInfo.hasExcludedAnnotation(scanResultFilterState) || scanResultFilterState.excludesMethod(methodInfo)
+                ) {
                     false ->
                         methodInfo.toSequenceOfMethods().flatMap { method ->
                             method.repeatMethodPerPreviewAnnotation(

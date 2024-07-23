@@ -8,7 +8,7 @@ import kotlin.reflect.full.primaryConstructor
 
 /**
  * A Unique ComposablePreview. @Composable methods annotated with multi-previews @Preview result into
- * one ComposablePreviews per @Preview, each of them identified by a previewIndex
+ * one ComposablePreview per @Preview, each of them identified by a previewIndex
  */
 interface ComposablePreview<T> {
     val previewInfo: T

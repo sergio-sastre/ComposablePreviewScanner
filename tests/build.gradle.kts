@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.roborazzi)
 }
 
 android {
@@ -27,6 +28,15 @@ android {
         }
     }
 
+    buildFeatures {
+        // Enables Jetpack Compose for this module
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.13"
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -36,7 +46,8 @@ android {
         jvmTarget = "17"
     }
 
-    testOptions.unitTests{
+    testOptions.unitTests {
+        isIncludeAndroidResources = true
         all {
             it.jvmArgs("-Xmx2g")
         }
@@ -56,10 +67,13 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation (libs.classgraph)
+    implementation(libs.classgraph)
 
     testImplementation(libs.junit)
-    testImplementation("com.google.testparameterinjector:test-parameter-injector:1.6")
+    testImplementation(libs.test.parameter.injector)
+    testImplementation(libs.roborazzi.compose)
+    testImplementation(libs.roborazzi)
+    testImplementation(libs.robolectric)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.test.runner)
