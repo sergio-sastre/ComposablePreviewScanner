@@ -47,9 +47,7 @@ android {
 }
 
 dependencies {
-    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.runtime)
-    implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.kotlin.reflect)
     implementation (libs.classgraph)
 }
