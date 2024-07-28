@@ -1,11 +1,10 @@
 package sergio.sastre.composable.preview.scanner.jvm
 
 import sergio.sastre.composable.preview.scanner.core.scanner.ComposablePreviewScanner
-import sergio.sastre.composable.preview.scanner.jvm.previewsfinder.JvmComposablesWithPreviewsFinder
-import sergio.sastre.composable.preview.scanner.jvm.previewsfinder.JvmComposablesWithPreviewsFinder.PreviewWithoutInfo
+import sergio.sastre.composable.preview.scanner.jvm.JvmAnnotationFinder.JvmAnnotationInfo
 
 /**
- * Scans the target package trees for the annotationToScanClassname and can returns their Composable,
+ * Scans the target package trees for the annotationToScanClassname and returns their Composable,
  * which can be invoked.
  *
  * This is meant to be used for such cases in which the @Preview has AnnotationRetention.SOURCE,
@@ -14,6 +13,6 @@ import sergio.sastre.composable.preview.scanner.jvm.previewsfinder.JvmComposable
  */
 class JvmAnnotationScanner(
     annotationToScanClassName: String
-) : ComposablePreviewScanner<PreviewWithoutInfo>(
-    JvmComposablesWithPreviewsFinder(annotationToScanClassName).invoke()
+) : ComposablePreviewScanner<JvmAnnotationInfo>(
+    JvmAnnotationFinder(annotationToScanClassName).invoke()
 )

@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.jvm.previewsfinder
+package sergio.sastre.composable.preview.scanner.jvm.common
 
 import io.github.classgraph.AnnotationInfoList
 import io.github.classgraph.AnnotationParameterValueList
@@ -10,39 +10,39 @@ import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposableP
 import sergio.sastre.composable.preview.scanner.core.scanner.ComposablesWithPreviewsFinder
 import java.lang.reflect.Method
 
-class JvmComposablesWithPreviewsFinder(
+class CommonComposablePreviewFinder(
     private val annotationToScanClassName: String
 ) {
 
     operator fun invoke() = ComposablesWithPreviewsFinder(
         annotationToScanClassName = annotationToScanClassName,
         previewInfoMapper = JvmComposablePreviewInfoMapper(),
-        previewMapperCreator = JvmPreviewMapperCreator()
+        previewMapperCreator = CommonPreviewMapperCreator()
     )
 
-    data object PreviewWithoutInfo
+    data object CommonPreviewInfo
 
     private class JvmComposablePreviewInfoMapper :
-        ComposablePreviewInfoMapper<PreviewWithoutInfo> {
+        ComposablePreviewInfoMapper<CommonPreviewInfo> {
         override fun mapToComposablePreviewInfo(
             parameters: AnnotationParameterValueList
-        ): PreviewWithoutInfo = PreviewWithoutInfo
+        ): CommonPreviewInfo = CommonPreviewInfo
     }
 
-    private class JvmPreviewMapperCreator : ComposablePreviewMapperCreator<PreviewWithoutInfo> {
+    private class CommonPreviewMapperCreator : ComposablePreviewMapperCreator<CommonPreviewInfo> {
         override fun createComposablePreviewMapper(
             previewMethod: Method,
-            previewInfo: PreviewWithoutInfo,
+            previewInfo: CommonPreviewInfo,
             annotationsInfo: AnnotationInfoList?
-        ): ComposablePreviewMapper<PreviewWithoutInfo> =
+        ): ComposablePreviewMapper<CommonPreviewInfo> =
             object :
-                ComposablePreviewMapper<PreviewWithoutInfo>(
+                ComposablePreviewMapper<CommonPreviewInfo>(
                     previewMethod = previewMethod,
                     previewInfo = previewInfo,
                     annotationsInfo = annotationsInfo
                 ) {
-                override fun mapToComposablePreviews(): Sequence<ComposablePreview<PreviewWithoutInfo>> =
-                    sequenceOf(ProvideComposablePreview<PreviewWithoutInfo>()(this))
+                override fun mapToComposablePreviews(): Sequence<ComposablePreview<CommonPreviewInfo>> =
+                    sequenceOf(ProvideComposablePreview<CommonPreviewInfo>()(this))
             }
     }
 }
