@@ -334,13 +334,16 @@ Let's say we want to enable some custom Dropshots Config for some Previews, for 
    ) {
 
       companion object {
-         @JvmStatic
-         @ParameterizedTestRunner.Parameters
-         fun values(): List<AndroidComposablePreview<PreviewInfo>> =
-               AndroidComposablePreviewScanner()
+        private val cachedPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
+            AndroidComposablePreviewScanner()
                   .scanFile(getInstrumentation().context.assets.open("scan_result.json"))
                   .includeAnnotationInfoForAllOf(DropshotsConfig::class.java)
                   .getPreviews()
+        }
+   
+         @JvmStatic
+         @ParameterizedTestRunner.Parameters
+         fun values(): List<AndroidComposablePreview<PreviewInfo>> = cachedPreviews   
       }
    
       @get:Rule
