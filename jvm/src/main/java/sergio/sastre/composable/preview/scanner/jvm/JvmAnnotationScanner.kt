@@ -7,13 +7,12 @@ import sergio.sastre.composable.preview.scanner.core.preview.ProvideComposablePr
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewInfoMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator
-import sergio.sastre.composable.preview.scanner.core.scanner.ComposablesWithPreviewsFinder
 import sergio.sastre.composable.preview.scanner.core.scanner.ComposablePreviewScanner
-import sergio.sastre.composable.preview.scanner.jvm.JvmAnnotationScanner.DesktopPreviewInfo
+import sergio.sastre.composable.preview.scanner.core.scanner.ComposablesWithPreviewsFinder
 import java.lang.reflect.Method
 
 /**
- * Scans the target package trees for the annotationToScanClassname and can returns their Composable,
+ * Scans the target package trees for the annotationToScanClassname and returns their Composable,
  * which can be invoked.
  *
  * This is meant to be used for such cases in which the @Preview has AnnotationRetention.SOURCE,
@@ -22,36 +21,41 @@ import java.lang.reflect.Method
  */
 class JvmAnnotationScanner(
     annotationToScanClassName: String
-) : ComposablePreviewScanner<DesktopPreviewInfo>(
-    ComposablesWithPreviewsFinder(
-        annotationToScanClassName = annotationToScanClassName,
-        previewInfoMapper = DesktopComposablePreviewInfoMapper(),
-        previewMapperCreator = DesktopPreviewMapperCreator()
-    )
+) : ComposablePreviewScanner<JvmAnnotationInfo>(
+    JvmAnnotationFinder(annotationToScanClassName)
 ) {
-    data object DesktopPreviewInfo
+    private object JvmAnnotationFinder {
+        operator fun invoke(
+            annotationToScanClassName: String
+        ): ComposablesWithPreviewsFinder<JvmAnnotationInfo> =
+            ComposablesWithPreviewsFinder(
+                annotationToScanClassName = annotationToScanClassName,
+                previewInfoMapper = JvmComposablePreviewInfoMapper(),
+                previewMapperCreator = JvmPreviewMapperCreator()
+            )
 
-    private class DesktopComposablePreviewInfoMapper :
-        ComposablePreviewInfoMapper<DesktopPreviewInfo> {
-        override fun mapToComposablePreviewInfo(
-            parameters: AnnotationParameterValueList
-        ): DesktopPreviewInfo = DesktopPreviewInfo
-    }
+        private class JvmComposablePreviewInfoMapper :
+            ComposablePreviewInfoMapper<JvmAnnotationInfo> {
+            override fun mapToComposablePreviewInfo(
+                parameters: AnnotationParameterValueList
+            ): JvmAnnotationInfo = JvmAnnotationInfo
+        }
 
-    private class DesktopPreviewMapperCreator : ComposablePreviewMapperCreator<DesktopPreviewInfo> {
-        override fun createComposablePreviewMapper(
-            previewMethod: Method,
-            previewInfo: DesktopPreviewInfo,
-            annotationsInfo: AnnotationInfoList?
-        ): ComposablePreviewMapper<DesktopPreviewInfo> =
-            object :
-                ComposablePreviewMapper<DesktopPreviewInfo>(
-                    previewMethod = previewMethod,
-                    previewInfo = previewInfo,
-                    annotationsInfo = annotationsInfo
-                ) {
-                override fun mapToComposablePreviews(): Sequence<ComposablePreview<DesktopPreviewInfo>> =
-                    sequenceOf(ProvideComposablePreview<DesktopPreviewInfo>()(this))
-            }
+        private class JvmPreviewMapperCreator : ComposablePreviewMapperCreator<JvmAnnotationInfo> {
+            override fun createComposablePreviewMapper(
+                previewMethod: Method,
+                previewInfo: JvmAnnotationInfo,
+                annotationsInfo: AnnotationInfoList?
+            ): ComposablePreviewMapper<JvmAnnotationInfo> =
+                object :
+                    ComposablePreviewMapper<JvmAnnotationInfo>(
+                        previewMethod = previewMethod,
+                        previewInfo = previewInfo,
+                        annotationsInfo = annotationsInfo
+                    ) {
+                    override fun mapToComposablePreviews(): Sequence<ComposablePreview<JvmAnnotationInfo>> =
+                        sequenceOf(ProvideComposablePreview<JvmAnnotationInfo>().invoke(this))
+                }
+        }
     }
 }

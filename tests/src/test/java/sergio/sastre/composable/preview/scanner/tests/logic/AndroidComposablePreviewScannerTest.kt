@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.tests
+package sergio.sastre.composable.preview.scanner.tests.logic
 
 import android.content.res.Configuration
 import sergio.sastre.composable.preview.scanner.StringProvider
