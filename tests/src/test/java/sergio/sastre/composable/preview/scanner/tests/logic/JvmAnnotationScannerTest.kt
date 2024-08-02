@@ -7,9 +7,10 @@ class JvmAnnotationScannerTest {
 
     @Test
     fun `GIVEN Composable with @VisibleForScreenshotTesting, WHEN Scanning a package tree with such composables, THEN it returns previews`() {
-        val desktopPreviews = JvmAnnotationScanner("sergio.sastre.composable.preview.scanner.VisibleForScreenshotTesting")
-            .scanPackageTrees("sergio.sastre.composable.preview.scanner.jvm")
-            .getPreviews()
+        val desktopPreviews =
+            JvmAnnotationScanner("sergio.sastre.composable.preview.scanner.VisibleForScreenshotTesting")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.jvm")
+                .getPreviews()
 
         assert(desktopPreviews.isNotEmpty())
     }
