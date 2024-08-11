@@ -62,14 +62,13 @@ dependencies {
    testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")
 }
 ```
-For compose-desktop support, check [this issue](https://github.com/sergio-sastre/ComposablePreviewScanner/issues/3) and its workaround. </br></br>
 
 Direct links
 1. [Jvm Screenshot Tests](#jvm-screenshot-tests)</br>
    1.1  [Paparazzi](#paparazzi)</br>
    1.2  [Roborazzi](#roborazzi)</br>
 2. [Instrumentation Screenshot Tests](#instrumentation-screenshot-tests)
-3. [Compose Desktop Support](#compose-desktop-support)
+3. [Compose Multiplatform Support](#compose-multiplatform-support)
 
 # How to use
 The API is pretty simple:
