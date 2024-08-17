@@ -76,7 +76,10 @@ The API is pretty simple:
 
 ```kotlin
 AndroidComposablePreviewScanner() // or CommonComposablePreviewScanner(), see Compose Multiplatform section
-    .scanPackageTrees("your.package", "your.package2")
+    .scanPackageTrees(
+        include = listOf("your.package", "your.package2"),
+        exclude = listOf("your.package.subpackage1", "your.package2.subpackage1")
+    )
     // options to filter scanned previews
     .excludeIfAnnotatedWithAnyOf(
         ExcludeForScreenshot::class.java, 
