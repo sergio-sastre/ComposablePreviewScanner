@@ -25,6 +25,16 @@ internal class ComposablePreviewInvocationHandler(
                 true -> arrayOf(parameter, *safeArgs)
                 false -> safeArgs
             }
-        return composableMethod.invoke(null, *safeArgsWithParam)
+
+        return try {
+            composableMethod.invoke(null, *safeArgsWithParam)
+        } catch (exception: NullPointerException) {
+            // This is for @Composables inside a Class
+            // WARNING: This just handles one nesting level
+            composableMethod.invoke(
+                composableMethod.declaringClass.getDeclaredConstructor().newInstance(),
+                *safeArgsWithParam
+            )
+        }
     }
 }

@@ -25,12 +25,7 @@ class ComposablePreviewInvokeTests(
     companion object {
         private val cachedPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
             AndroidComposablePreviewScanner()
-                .scanPackageTrees(
-                    // TODO previewsinsideclass tests are not supported yet
-                    "sergio.sastre.composable.preview.scanner.additionalannotation",
-                    "sergio.sastre.composable.preview.scanner.api30plus"
-                    //"sergio.sastre.composable.preview.scanner.previewsinsideclass"
-                )
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .includePrivatePreviews()
                 .getPreviews()
         }

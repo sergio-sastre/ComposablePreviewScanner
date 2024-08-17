@@ -107,6 +107,29 @@ class AndroidComposablePreviewScannerTest {
         assert(includedPreviews.containsAll(nestedPreviews))
     }
 
+    @Test
+    fun `GIVEN 'included nested' package WHEN 'nested' excluded THEN don't return previews in 'nested'`() {
+        val includedPreviewsWithoutNested =
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees(
+                    include = listOf("sergio.sastre.composable.preview.scanner.included"),
+                    exclude = listOf("sergio.sastre.composable.preview.scanner.included.nested"),
+                )
+                .getPreviews()
+                .map { it.toString() }
+
+        val nestedPreviews =
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.included.nested")
+                .getPreviews()
+                .map { it.toString() }
+
+        assumeTrue(nestedPreviews.isNotEmpty())
+        assumeTrue(includedPreviewsWithoutNested.isNotEmpty())
+
+        assert(includedPreviewsWithoutNested.none { nestedPreviews.contains(it) })
+    }
+
     @OptIn(RequiresLargeHeap::class)
     @Test
     fun `GIVEN some previews contain api lower than 30 WHEN filtering previews with api 30+ THEN all resulting previews contain api 30+`() {
@@ -184,7 +207,7 @@ class AndroidComposablePreviewScannerTest {
     }
 
     @Test
-    fun `GIVEN private previews WHEN not implicitely including them THEN those previews are excluded`() {
+    fun `GIVEN private previews WHEN not implicitly including them THEN those previews are excluded`() {
         val privatePreviews =
             AndroidComposablePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.privatepreviews")
@@ -314,5 +337,14 @@ class AndroidComposablePreviewScannerTest {
     fun `GIVEN scan package trees without arguments, THEN throw IllegalArgumentException`(){
         AndroidComposablePreviewScanner()
             .scanPackageTrees()
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `GIVEN scan package trees without include arguments, THEN throw IllegalArgumentException`(){
+        AndroidComposablePreviewScanner()
+            .scanPackageTrees(
+                include = emptyList(),
+                exclude = listOf("whatever")
+            )
     }
 }
