@@ -33,12 +33,13 @@ JVM-based (i.e. Paparazzi, Roborazzi) as well as Instrumentation-based (i.e. Sho
 ComposablePreviewScanner also works with:
 - `@PreviewParameters`
 - Multi-Previews, including  `@PreviewScreenSizes`, `@PreviewFontScales`, `@PreviewLightDark`, and `@PreviewDynamicColors`.
-- private `@Previews` (from version 0.1.3 on)
+- private `@Previews` (from version 0.1.3+)
+- `@Previews` inside public classes<sup>1</sup> (from version 0.3.0+), not nested classes though
 
 but does not work with
 - `@Previews` that are not located in the "main" source
-- `@Previews` inside classes, as reported in [this issue](https://github.com/sergio-sastre/ComposablePreviewScanner/issues/4)
 
+<sup>1</sup> Compose Preview Screenshot Testing tool requires to put your `@Previews` inside a class. By supporting this, you can keep `@Previews` in a separate class, and keep that class in the "main" source to auto-generate screenshot tests from them with ComposablePreviewScanner and Roborazzi, Paparazzi or any instrumentation-based screenshot testing library, or move that class to "screenshotTest" source to auto-generate screenshot tests from them with Compose Preview Screenshot Testing.
 
 # How to set up
 Add jitpack to your root build.gradle file:
