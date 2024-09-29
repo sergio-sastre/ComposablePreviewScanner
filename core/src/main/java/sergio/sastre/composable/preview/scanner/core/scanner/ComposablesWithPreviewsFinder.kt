@@ -21,6 +21,8 @@ class ComposablesWithPreviewsFinder<T>(
     private val previewInfoMapper: ComposablePreviewInfoMapper<T>,
     private val previewMapperCreator: ComposablePreviewMapperCreator<T>,
 ) {
+    private val classLoader = this::class.java.classLoader
+
     fun findFor(
         classInfo: ClassInfo,
         scanResultFilterState: ScanResultFilterState<T>,
@@ -62,7 +64,7 @@ class ComposablesWithPreviewsFinder<T>(
 
     private fun MethodInfo.toSequenceOfMethods(): Sequence<Method> =
         when (isPrivate) {
-            true -> Class.forName(className)
+            true -> Class.forName(className, false, classLoader)
                 .declaredMethods
                 .asSequence()
                 .filter {
@@ -71,7 +73,7 @@ class ComposablesWithPreviewsFinder<T>(
                     methods.forEach { it.isAccessible = true }
                 }
 
-            false -> Class.forName(className)
+            false -> Class.forName(className, false, classLoader)
                 .methods
                 .asSequence()
                 .filter {
