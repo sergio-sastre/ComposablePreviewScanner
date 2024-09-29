@@ -8,4 +8,6 @@ plugins {
     alias(libs.plugins.roborazzi) apply false
     alias(libs.plugins.paparazzi) apply false
     alias(libs.plugins.testify) apply false
+    id("com.vanniktech.maven.publish") version "0.35.0" apply false
+    id("com.gradleup.nmcp") version "1.3.0" apply false
 }
