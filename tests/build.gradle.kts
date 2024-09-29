@@ -1,7 +1,14 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.roborazzi)
+}
+
+// Apply conditionally via CLI to avoid plugin clashes
+if (project.hasProperty("library")) {
+    when (project.property("library")) {
+        "roborazzi" -> apply(plugin = "io.github.takahirom.roborazzi")
+        "paparazzi" -> apply(plugin = "app.cash.paparazzi")
+    }
 }
 
 android {
@@ -34,7 +41,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.13"
+        kotlinCompilerExtensionVersion = "1.5.14"
     }
 
     compileOptions {
@@ -74,6 +81,7 @@ dependencies {
     testImplementation(libs.roborazzi.compose)
     testImplementation(libs.roborazzi)
     testImplementation(libs.robolectric)
+    testImplementation(libs.paparazzi)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.test.runner)

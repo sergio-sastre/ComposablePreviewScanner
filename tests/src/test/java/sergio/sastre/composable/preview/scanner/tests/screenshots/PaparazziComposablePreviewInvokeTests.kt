@@ -1,24 +1,22 @@
 package sergio.sastre.composable.preview.scanner.tests.screenshots
 
-import com.github.takahirom.roborazzi.captureRoboImage
+import app.cash.paparazzi.Paparazzi
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.ParameterizedRobolectricTestRunner
-import org.robolectric.annotation.Config
-import org.robolectric.annotation.GraphicsMode
+import org.junit.runners.Parameterized
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
-import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 
 /**
  * These tests ensure that the invoke() function of a ComposablePreview works as expected
  * for all the @Composable's in the main source.
  *
- * ./gradlew :tests:recordRoborazziDebug --test '*PreviewInvokeTests'
+ * ./gradlew :tests:recordPaparazziDebug --tests 'PaparazziComposablePreviewInvokeTests' -Plibrary=paparazzi
  */
-@RunWith(ParameterizedRobolectricTestRunner::class)
-class ComposablePreviewInvokeTests(
+@RunWith(Parameterized::class)
+class PaparazziComposablePreviewInvokeTests(
     private val preview: ComposablePreview<AndroidPreviewInfo>,
 ) {
 
@@ -31,17 +29,16 @@ class ComposablePreviewInvokeTests(
         }
 
         @JvmStatic
-        @ParameterizedRobolectricTestRunner.Parameters
+        @Parameterized.Parameters
         fun values(): List<ComposablePreview<AndroidPreviewInfo>> = cachedPreviews
     }
 
-    @GraphicsMode(GraphicsMode.Mode.NATIVE)
-    @Config(sdk = [30])
+    @get:Rule
+    val paparazzi = Paparazzi()
+
     @Test
     fun snapshot() {
-        captureRoboImage(
-            filePath = "${AndroidPreviewScreenshotIdBuilder(preview).build()}.png",
-        ) {
+        paparazzi.snapshot {
             preview()
         }
     }

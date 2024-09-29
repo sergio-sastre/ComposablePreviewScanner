@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.9.23"
+    kotlin("jvm") version "1.9.24"
     id("org.jetbrains.compose") // required to resolve compose runtime
     id("maven-publish")
 }
@@ -24,7 +24,7 @@ publishing {
             }
             groupId = "sergio.sastre.composable.preview.scanner"
             artifactId = "core"
-            version = "0.3.0"
+            version = "0.3.1"
         }
     }
 }
