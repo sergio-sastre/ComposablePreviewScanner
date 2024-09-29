@@ -7,4 +7,6 @@ plugins {
     alias(libs.plugins.jetbrains.compose) version "1.6.11" apply false
     alias(libs.plugins.roborazzi) version "1.22.0" apply false
     alias(libs.plugins.paparazzi) version "1.3.4" apply false
+    id("com.vanniktech.maven.publish") version "0.29.0" apply false
+    id("com.gradleup.nmcp") version "0.0.8" apply false
 }
