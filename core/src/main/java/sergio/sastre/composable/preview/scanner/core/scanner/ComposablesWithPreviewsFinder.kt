@@ -21,25 +21,34 @@ class ComposablesWithPreviewsFinder<T>(
     private val previewInfoMapper: ComposablePreviewInfoMapper<T>,
     private val previewMapperCreator: ComposablePreviewMapperCreator<T>,
 ) {
+    private val classLoader = this::class.java.classLoader
+
     fun findFor(
         classInfo: ClassInfo,
         scanResultFilterState: ScanResultFilterState<T>,
-    ): List<ComposablePreview<T>> =
-        classInfo.declaredMethodInfo.asSequence().flatMap { methodInfo ->
-            // evaluate if method has preview
+    ): List<ComposablePreview<T>> {
+        val clazz = Class.forName(classInfo.name, false, classLoader)
+
+        return classInfo.declaredMethodInfo.asSequence().flatMap { methodInfo ->
             methodInfo.getAnnotationInfo(annotationToScanClassName)?.let {
-                when (
-                    methodInfo.hasExcludedAnnotation(scanResultFilterState) || scanResultFilterState.excludesMethod(methodInfo)
-                ) {
-                    false ->
-                        methodInfo.toSequenceOfMethods().flatMap { method ->
+                if (methodInfo.hasExcludedAnnotation(scanResultFilterState) || scanResultFilterState.excludesMethod(methodInfo)) {
+                    emptySequence()
+                } else {
+                    val methods = if (methodInfo.isPrivate) clazz.declaredMethods else clazz.methods
+
+                    methods.asSequence()
+                        .filter { it.name == methodInfo.name }
+                        .onEach {
+                            if (methodInfo.isPrivate) {
+                                it.isAccessible = true
+                            }
+                        }
+                        .flatMap { method ->
                             method.repeatMethodPerPreviewAnnotation(
                                 methodInfo,
                                 scanResultFilterState
                             )
                         }
-
-                    true -> emptySequence()
                 }
             } ?: emptySequence()
         }
@@ -47,6 +56,7 @@ class ComposablesWithPreviewsFinder<T>(
             .flatMap { mapper ->
                 mapper.mapToComposablePreviews()
             }
+    }
 
     private fun ScanResultFilterState<T>.excludesMethod(methodInfo: MethodInfo): Boolean =
         !includesPrivatePreviews && methodInfo.isPrivate
@@ -58,25 +68,6 @@ class ComposablesWithPreviewsFinder<T>(
             }
 
             false -> false
-        }
-
-    private fun MethodInfo.toSequenceOfMethods(): Sequence<Method> =
-        when (isPrivate) {
-            true -> Class.forName(className)
-                .declaredMethods
-                .asSequence()
-                .filter {
-                    it.name.substringAfterLast(".") == name
-                }.also { methods ->
-                    methods.forEach { it.isAccessible = true }
-                }
-
-            false -> Class.forName(className)
-                .methods
-                .asSequence()
-                .filter {
-                    it.name.substringAfterLast(".") == name
-                }
         }
 
     private fun Method.repeatMethodPerPreviewAnnotation(
