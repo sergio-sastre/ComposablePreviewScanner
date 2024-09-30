@@ -27,35 +27,38 @@ class ComposablesWithPreviewsFinder<T>(
         classInfo: ClassInfo,
         scanResultFilterState: ScanResultFilterState<T>,
     ): List<ComposablePreview<T>> {
-        val clazz = Class.forName(classInfo.name, false, classLoader)
-
-        return classInfo.declaredMethodInfo.asSequence().flatMap { methodInfo ->
-            methodInfo.getAnnotationInfo(annotationToScanClassName)?.let {
-                if (methodInfo.hasExcludedAnnotation(scanResultFilterState) || scanResultFilterState.excludesMethod(methodInfo)) {
-                    emptySequence()
-                } else {
-                    val methods = if (methodInfo.isPrivate) clazz.declaredMethods else clazz.methods
-
-                    methods.asSequence()
-                        .filter { it.name == methodInfo.name }
-                        .onEach {
-                            if (methodInfo.isPrivate) {
-                                it.isAccessible = true
+        return if (classInfo.hasDeclaredMethodAnnotation(annotationToScanClassName)) {
+            val clazz = Class.forName(classInfo.name, false, classLoader)
+            classInfo.declaredMethodInfo.asSequence().flatMap { methodInfo ->
+                methodInfo.getAnnotationInfo(annotationToScanClassName)?.let {
+                    if (methodInfo.hasExcludedAnnotation(scanResultFilterState) || scanResultFilterState.excludesMethod(methodInfo)) {
+                        emptySequence()
+                    } else {
+                        val methods = if (methodInfo.isPrivate) clazz.declaredMethods else clazz.methods
+                        methods.asSequence()
+                            .filter { it.name == methodInfo.name }
+                            .onEach {
+                                if (methodInfo.isPrivate) {
+                                    it.isAccessible = true
+                                }
                             }
-                        }
-                        .flatMap { method ->
-                            method.repeatMethodPerPreviewAnnotation(
-                                methodInfo,
-                                scanResultFilterState
-                            )
-                        }
-                }
-            } ?: emptySequence()
-        }
-            .toSet()
-            .flatMap { mapper ->
-                mapper.mapToComposablePreviews()
+                            .flatMap { method ->
+                                method.repeatMethodPerPreviewAnnotation(
+                                    methodInfo,
+                                    scanResultFilterState
+                                )
+                            }
+                    }
+                } ?: emptySequence()
             }
+                .toSet()
+                .flatMap { mapper ->
+                    mapper.mapToComposablePreviews()
+                }
+        } else {
+            emptyList()
+        }
+
     }
 
     private fun ScanResultFilterState<T>.excludesMethod(methodInfo: MethodInfo): Boolean =
