@@ -1,4 +1,6 @@
-[![](https://jitpack.io/v/sergio-sastre/ComposablePreviewScanner.svg)](https://jitpack.io/#sergio-sastre/ComposablePreviewScanner)</br>
+[![](https://jitpack.io/v/sergio-sastre/ComposablePreviewScanner.svg)](https://jitpack.io/#sergio-sastre/ComposablePreviewScanner)
+[![](https://img.shields.io/maven-central/v/io.github.sergio-sastre.ComposablePreviewScanner/android)](https://central.sonatype.com/artifact/io.github.sergio-sastre.ComposablePreviewScanner/android)</br>
+
 <a href="https://androidweekly.net/issues/issue-628">
 <img src="https://androidweekly.net/issues/issue-628/badge">
 </a>
@@ -43,6 +45,25 @@ but does not work with
 <sup>1</sup> Compose Preview Screenshot Testing tool requires to put your `@Previews` inside a class. By supporting this, you can keep `@Previews` in a separate class, and keep that class in the "main" source to auto-generate screenshot tests from them with ComposablePreviewScanner and Roborazzi, Paparazzi or any instrumentation-based screenshot testing library, or move that class to "screenshotTest" source to auto-generate screenshot tests from them with Compose Preview Screenshot Testing.
 
 # How to set up
+> [!WARNING]  
+> Beware the prefixes:</br>
+> *Maven Central* -> **io.github**</br>
+> *Jitpack* -> **com.github**</br>
+## Maven central (since 0.3.2)
+```kotlin
+dependencies {
+   // jvm tests (e.g. with Roborazzi & Paparazzi)
+   testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:android:0.3.2")
+
+   // instrumentation tests (e.g. with Shot, Dropshots & Android-Testify)
+   debugImplementation("io.github.sergio-sastre.ComposablePreviewScanner:android:0.3.2")
+   
+   // compose multiplatform (jvm-targets)
+   testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:jvm:0.3.2")
+}
+```
+
+## Jitpack
 Add jitpack to your root build.gradle file:
 ```kotlin
 allprojects {
