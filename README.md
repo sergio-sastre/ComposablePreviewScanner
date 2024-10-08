@@ -122,12 +122,12 @@ AndroidComposablePreviewScanner() // or CommonComposablePreviewScanner(), see Co
 
 There are 2 more options to scan previews:
 1. All Packages: `scanAllPackages()`. This might require a huge amount of memory since it would scan not only in a set of packages, but in all packages used in your app/module (i.e. also in its transitive dependencies). This is in 99% of the cases unnecessary, and scanning the main package trees of your module should be sufficient. 
-2. From a file containing the ScanResult for faster times: </br>
+2. From a file containing the ScanResult. This speeds up your screenshot tests, since avoids the time-consuming process of scanning each time by reusing the previously scanned data: </br>
    2.1. `scanFile(jsonFile: File)`. Use this for JVM-based screenshot testing libraries (i.e. Roborazzi & Paparazzi).</br>
-   2.2. `scanFile(inputStream: InputStream)`. This is useful for Instrumentation-based screenshot testing libraries.
-To dump the ScanResult into a File, the easiest is to create a unit test for that. Likely to be provided via gralde task in the future:
+   2.2. `scanFile(inputStream: InputStream)`. This is useful for Instrumentation-based screenshot testing libraries.</br></br>
+To dump the ScanResult into a File, the easiest is to create a unit test for that. Likely to be provided via gradle task in the future:
 ```kotlin
-class SaveScanResultInAssets {
+class SaveScanResultInFiles {
     @Test
     fun `task -- save scan result in file`() {
         val scanResultFileName = "scan_result.json"
@@ -145,7 +145,7 @@ class SaveScanResultInAssets {
 }
 ```
 > [!WARNING]  
-> You'll have to ensure that the file is generated before running the screenshot tests and it is up to date. 
+> You'll have to ensure that the file is already generated before running the screenshot tests. You'll also need to keep it up to date. 
 
 ## JVM Screenshot Tests
 
