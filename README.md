@@ -86,14 +86,17 @@ dependencies {
 }
 ```
 
-Direct links
+
+
+# How to use
+## Direct links
 1. [Jvm Screenshot Tests](#jvm-screenshot-tests)</br>
    1.1  [Paparazzi](#paparazzi)</br>
    1.2  [Roborazzi](#roborazzi)</br>
 2. [Instrumentation Screenshot Tests](#instrumentation-screenshot-tests)
 3. [Compose Multiplatform Support](#compose-multiplatform-support)
 
-# How to use
+## API   
 The API is pretty simple:
 
 ```kotlin
