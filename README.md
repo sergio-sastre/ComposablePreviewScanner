@@ -3,7 +3,7 @@
 
 <a href="https://androidweekly.net/issues/issue-628">
 <img src="https://androidweekly.net/issues/issue-628/badge">
-</a>
+</a></br>
 <a href="https://jetc.dev/issues/221.html"><img src="https://img.shields.io/badge/As_Seen_In-jetc.dev_Newsletter_Issue_%23221-blue?logo=Jetpack+Compose&amp;logoColor=white" alt="As Seen In - jetc.dev Newsletter Issue #221"></a>
 
 # <p align="center">Composable Preview Scanner</p>
@@ -613,6 +613,11 @@ class DesktopPreviewScreenshotTests {
 ```
 
 6. Run these Roborazzi tests by executing the corresponding command e.g. ./gradlew yourModule:recordRoborazziJvm (if using the Kotlin Jvm Plugin)
+
+# Tech talks
+These tech-talks have also talked about the benefits of using ComposablePreviewScanner:
+- DroidKaigi 2024 [in JA 🇯🇵 with EN 🇬🇧 slides]:</br>
+[Understand the mechanism! Let's do screenshots testing of Compose Previews with various variations](https://www.youtube.com/watch?app=desktop&v=c4AxUXTQgw4) by [Sumio Toyama](https://x.com/sumio_tym)
 
 
 </br></br>
