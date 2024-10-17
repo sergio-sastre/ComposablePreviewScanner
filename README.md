@@ -615,7 +615,7 @@ class DesktopPreviewScreenshotTests {
 6. Run these Roborazzi tests by executing the corresponding command e.g. ./gradlew yourModule:recordRoborazziJvm (if using the Kotlin Jvm Plugin)
 
 # Tech talks
-These tech-talks have also talked about the benefits of using ComposablePreviewScanner:
+In these tech-talks have also been mentioned the benefits of using ComposablePreviewScanner:
 - DroidKaigi 2024 [in JA 🇯🇵 with EN 🇬🇧 slides]:</br>
 [Understand the mechanism! Let's do screenshots testing of Compose Previews with various variations](https://www.youtube.com/watch?app=desktop&v=c4AxUXTQgw4) by [Sumio Toyama](https://x.com/sumio_tym)
 
