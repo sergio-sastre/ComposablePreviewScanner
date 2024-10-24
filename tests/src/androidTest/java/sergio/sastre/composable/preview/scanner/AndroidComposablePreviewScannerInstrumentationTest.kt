@@ -1,6 +1,7 @@
 package sergio.sastre.composable.preview.scanner
 
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import junit.framework.TestCase.assertEquals
 import org.junit.Test
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
 
@@ -15,6 +16,6 @@ class AndroidComposablePreviewScannerInstrumentationTest {
                 .scanFile(getInstrumentation().context.assets.open("scan_result.json"))
                 .getPreviews()
 
-        assert(previewsFromFile.isNotEmpty())
+        assertEquals(previewsFromFile.size, 33)
     }
 }

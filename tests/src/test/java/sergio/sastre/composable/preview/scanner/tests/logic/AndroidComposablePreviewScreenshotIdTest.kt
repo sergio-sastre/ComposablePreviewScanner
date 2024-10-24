@@ -327,7 +327,7 @@ class AndroidComposablePreviewScreenshotIdTest {
         CUSTOM_WITH_DOUBLE_SPACES("spec:width = 411dp, height = 891dp, orientation = landscape, dpi = 420", "WIDTH_411DP_HEIGHT_891DP_ORIENTATION_LANDSCAPE_DPI_420")
     }
     @Test
-    fun `GIVEN preview with custom device, THEN only show its name as expectedId`(
+    fun `GIVEN preview with custom device, THEN only show its properties as expectedId separated by underscores`(
         @TestParameter device: CustomDeviceTestParam,
     ) {
         val preview = previewBuilder(
