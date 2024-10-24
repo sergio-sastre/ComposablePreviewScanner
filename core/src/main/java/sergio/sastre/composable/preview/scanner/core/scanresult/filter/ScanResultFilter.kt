@@ -62,8 +62,16 @@ class ScanResultFilter<T> internal constructor(
 
     fun getPreviews(): List<ComposablePreview<T>> =
         scanResult.use { scanResult ->
-            scanResult.allClasses.flatMap { classInfo ->
-                composablesWithPreviewsFinder.findFor(classInfo, scanResultFilterState)
-            }
+            scanResult.allClasses
+                .asSequence()
+                .flatMap { classInfo ->
+                    when (composablesWithPreviewsFinder.hasPreviewsIn(classInfo)) {
+                        false -> emptyList()
+                        true -> composablesWithPreviewsFinder.findPreviewsFor(
+                            classInfo,
+                            scanResultFilterState
+                        )
+                    }
+                }.toList()
         }
 }
