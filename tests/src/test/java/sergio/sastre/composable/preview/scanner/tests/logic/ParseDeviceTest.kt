@@ -216,7 +216,7 @@ class ParseDeviceTest {
         ParentAndOrientationReversed("spec:orientation=landscape,parent=Nexus One", LANDSCAPE, Navigation.GESTURE),
         ParentAndOrientation("spec:parent=Nexus One,orientation=landscape", LANDSCAPE, Navigation.GESTURE),
         ParentAndNavigation("spec:parent=Nexus One,navigation=buttons", PORTRAIT, Navigation.BUTTONS),
-        ParentAndOrientationAndNavigation("spec:parent=Nexus One,orientation=landscape,navigation=buttons", LANDSCAPE, Navigation.BUTTONS),
+        ParentAndOrientationAndNavigation("spec:parent=Nexus One,orientation = landscape,navigation=buttons", LANDSCAPE, Navigation.BUTTONS),
     }
     @Test
     fun `GIVEN spec parent, has expected device with given orientation and navigation`(

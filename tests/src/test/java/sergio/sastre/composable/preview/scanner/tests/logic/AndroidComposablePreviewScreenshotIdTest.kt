@@ -6,10 +6,21 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Wallpapers
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
+import com.google.testing.junit.testparameterinjector.TestParameterValuesProvider
 import io.github.classgraph.AnnotationInfoList
+import junit.framework.Assert.assertEquals
+import junit.framework.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
+import sergio.sastre.composable.preview.scanner.android.device.domain.Identifier
+import sergio.sastre.composable.preview.scanner.android.device.types.Automotive
+import sergio.sastre.composable.preview.scanner.android.device.types.Desktop
+import sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices
+import sergio.sastre.composable.preview.scanner.android.device.types.Phone
+import sergio.sastre.composable.preview.scanner.android.device.types.Tablet
+import sergio.sastre.composable.preview.scanner.android.device.types.Television
+import sergio.sastre.composable.preview.scanner.android.device.types.Wear
 import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 
@@ -252,66 +263,42 @@ class AndroidComposablePreviewScreenshotIdTest {
                 device = Devices.DEFAULT
             )
         )
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == ""
+        assertEquals(
+            AndroidPreviewScreenshotIdBuilder(preview).build(), ""
         )
     }
 
-    enum class DeviceTestParam(
-        val deviceId: String,
-        val expectedId: String
-    ) {
-        NEXUS_7(Devices.NEXUS_7, "NEXUS_7"),
-        NEXUS_7_2013(Devices.NEXUS_7_2013,"NEXUS_7_2013"),
-        NEXUS_5(Devices.NEXUS_5, "NEXUS_5"),
-        NEXUS_6(Devices.NEXUS_6, "NEXUS_6"),
-        NEXUS_9(Devices.NEXUS_9, "NEXUS_9"),
-        NEXUS_10(Devices.NEXUS_10, "NEXUS_10"),
-        NEXUS_5X(Devices.NEXUS_5X, "NEXUS_5"),
-        NEXUS_6P(Devices.NEXUS_6P, "NEXUS_6P"),
-        PIXEL_C(Devices.PIXEL_C, "PIXEL_C"),
-        PIXEL(Devices.PIXEL, "PIXEL"),
-        PIXEL_XL(Devices.PIXEL_XL, "PIXEL_XL"),
-        PIXEL_2(Devices.PIXEL_2, "PIXEL_2"),
-        PIXEL_2_XL(Devices.PIXEL_2_XL, "PIXEL_2_XL"),
-        PIXEL_3(Devices.PIXEL_3, "PIXEL_3"),
-        PIXEL_3_XL(Devices.PIXEL_3_XL, "PIXEL_3"),
-        PIXEL_3A(Devices.PIXEL_3A, "PIXEL_3A"),
-        PIXEL_3A_XL(Devices.PIXEL_3A_XL, "PIXEL_3A_XL"),
-        PIXEL_4(Devices.PIXEL_4, "PIXEL_4"),
-        PIXEL_4_XL(Devices.PIXEL_4_XL, "PIXEL_4_XL"),
-        PIXEL_4A(Devices.PIXEL_4A, "PIXEL_4A"),
-        PIXEL_5(Devices.PIXEL_5, "PIXEL_5A"),
-        PIXEL_6(Devices.PIXEL_6, "PIXEL_6A"),
-        PIXEL_6_PRO(Devices.PIXEL_6_PRO, "PIXEL_6_PRO"),
-        PIXEL_6A(Devices.PIXEL_6A, "PIXEL_6A"),
-        PIXEL_7(Devices.PIXEL_7, "PIXEL_7"),
-        PIXEL_7_PRO(Devices.PIXEL_7_PRO, "PIXEL_7_PRO"),
-        PIXEL_7A(Devices.PIXEL_7A, "PIXEL_7A"),
-        PIXEL_FOLD(Devices.PIXEL_FOLD, "PIXEL_FOLD"),
-        AUTOMOTIVE_1024p(Devices.AUTOMOTIVE_1024p,"AUTOMOTIVE_1024p"),
-        WEAR_OS_LARGE_ROUND(Devices.WEAR_OS_LARGE_ROUND, "WEAR_OS_LARGE_ROUND"),
-        WEAR_OS_SMALL_ROUND(Devices.WEAR_OS_SMALL_ROUND, "WEAR_OS_SMALL_ROUND"),
-        WEAR_OS_SQUARE(Devices.WEAR_OS_SQUARE, "WEAR_OS_SQUARE"),
-        WEAR_OS_RECT(Devices.WEAR_OS_RECT, "WEAR_OS_RECT"),
-        PHONE(Devices.PHONE, "PHONE"),
-        FOLDABLE(Devices.FOLDABLE, "FOLDABLE"),
-        TABLET(Devices.TABLET, "TABLET"),
-        DESKTOP(Devices.DESKTOP, "DESKTOP"),
-        TV_720p(Devices.TV_720p, "TV_720p"),
-        TV_1080p(Devices.TV_1080p, "TV_1080p"),
-    }
     @Test
-    fun `GIVEN preview with predefined device, THEN only show its name as expectedId`(
-        @TestParameter device: DeviceTestParam,
+    fun `GIVEN preview with predefined device id, THEN only show its name as expectedId`(
+        @TestParameter(valuesProvider = IdentifierWithIdValueProvider::class) identifier: Identifier
     ) {
+        val validPattern = "^[A-Z0-9_]+$".toRegex()
         val preview = previewBuilder(
             previewInfo = AndroidPreviewInfo(
-                device = device.deviceId
+                device = "id:" + identifier.id
             )
         )
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == device.expectedId
+        val screenshotId = AndroidPreviewScreenshotIdBuilder(preview).build()
+        assertTrue(
+            "screenshot id must only contain uppercase alphanumeric symbols or underscore '_'",
+            validPattern.matches(screenshotId)
+        )
+    }
+
+    @Test
+    fun `GIVEN preview with predefined device name, THEN only show its name as expectedId`(
+        @TestParameter(valuesProvider = IdentifierWithNameValueProvider::class) identifier: Identifier
+    ) {
+        val validPattern = "^[A-Z0-9_]+$".toRegex()
+        val preview = previewBuilder(
+            previewInfo = AndroidPreviewInfo(
+                device = "name:" + identifier.name
+            )
+        )
+        val screenshotId = AndroidPreviewScreenshotIdBuilder(preview).build()
+        assertTrue(
+            "screenshot id must only contains uppercase alphanumeric symbols or underscore '_'",
+            validPattern.matches(screenshotId)
         )
     }
 
@@ -319,12 +306,42 @@ class AndroidComposablePreviewScreenshotIdTest {
         val deviceId: String,
         val expectedId: String
     ) {
-        CUSTOM_TV("spec:shape=Normal,width=1280,height=720,unit=dp,dpi=421", "SHAPE_NORMAL_WIDTH_1280_HEIGHT_720_UNIT_DP_DPI_421"),
-        CUSTOM_DESKTOP("spec:id=reference_desktop,shape=Normal,width=1920,height=1080,unit=dp,dpi=161", "DESKTOP_SHAPE_NORMAL_WIDTH_1920_HEIGHT_1080_UNIT_DP_DPI_161"),
-        CUSTOM_TABLET("spec:id=reference_tablet,shape=Normal,width=1280,height=800,unit=dp,dpi=241", "TABLET_SHAPE_NORMAL_WIDTH_1280_HEIGHT_800_UNIT_DP_DPI_241"),
-        CUSTOM_FOLDABLE("spec:id=reference_foldable,shape=Normal,width=1280,height=800,unit=dp,dpi=241", "FOLDABLE_SHAPE_NORMAL_WIDTH_1280_HEIGHT_800_UNIT_DP_DPI_241"),
-        CUSTOM_PHONE("spec:id=reference_phone,shape=Normal,width=1280,height=800,unit=dp,dpi=241", "PHONE_SHAPE_NORMAL_WIDTH_1280_HEIGHT_800_UNIT_DP_DPI_241"),
-        CUSTOM_WITH_DOUBLE_SPACES("spec:width = 411dp, height = 891dp, orientation = landscape, dpi = 420", "WIDTH_411DP_HEIGHT_891DP_ORIENTATION_LANDSCAPE_DPI_420")
+        CUSTOM_TV(
+            "spec:shape=Normal,width=1280,height=720,unit=dp,dpi=421",
+            "SHAPE_NORMAL_WIDTH_1280_HEIGHT_720_UNIT_DP_DPI_421"
+        ),
+        CUSTOM_DESKTOP(
+            "spec:id=reference_desktop,shape=Normal,width=1920,height=1080,unit=dp,dpi=161",
+            "DESKTOP_SHAPE_NORMAL_WIDTH_1920_HEIGHT_1080_UNIT_DP_DPI_161"
+        ),
+        CUSTOM_TABLET(
+            "spec:id=reference_tablet,shape=Normal,width=1280,height=800,unit=dp,dpi=241",
+            "TABLET_SHAPE_NORMAL_WIDTH_1280_HEIGHT_800_UNIT_DP_DPI_241"
+        ),
+        CUSTOM_FOLDABLE(
+            "spec:id=reference_foldable,shape=Normal,width=1280,height=800,unit=dp,dpi=241",
+            "FOLDABLE_SHAPE_NORMAL_WIDTH_1280_HEIGHT_800_UNIT_DP_DPI_241"
+        ),
+        CUSTOM_PHONE(
+            "spec:id=reference_phone,shape=Normal,width=1280,height=800,unit=dp,dpi=241",
+            "PHONE_SHAPE_NORMAL_WIDTH_1280_HEIGHT_800_UNIT_DP_DPI_241"
+        ),
+        CUSTOM_PARENT(
+            "spec:parent=Nexus 7, orientation=landscape",
+            "NEXUS_7_ORIENTATION_LANDSCAPE"
+        ),
+        CUSTOM_PARENT_REVERSED(
+            "spec: orientation=landscape, cutout= none,parent=Nexus 7",
+            "NEXUS_7_ORIENTATION_LANDSCAPE_CUTOUT_NONE"
+        ),
+        CUSTOM_WITH_DOUBLE_SPACES(
+            "spec:width = 411dp, height = 891dp, orientation = landscape, dpi = 420",
+            "WIDTH_411DP_HEIGHT_891DP_ORIENTATION_LANDSCAPE_DPI_420"
+        ),
+        CUSTOM_WITH_TABS(
+            "spec:width=411dp,  height  =891dp",
+            "WIDTH_411DP_HEIGHT_891DP"
+        )
     }
     @Test
     fun `GIVEN preview with custom device, THEN only show its properties as expectedId separated by underscores`(
@@ -335,20 +352,21 @@ class AndroidComposablePreviewScreenshotIdTest {
                 device = device.deviceId
             )
         )
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == device.expectedId
+        assertEquals(
+            AndroidPreviewScreenshotIdBuilder(preview).build(), device.expectedId
         )
     }
 
     enum class WallpaperColorDominated(
         val value: Int,
         val screenshotId: String
-    ){
+    ) {
         RED(Wallpapers.RED_DOMINATED_EXAMPLE, "WALLPAPER_RED_DOMINATED"),
         YELLOW(Wallpapers.YELLOW_DOMINATED_EXAMPLE, "WALLPAPER_YELLOW_DOMINATED"),
         GREEN(Wallpapers.GREEN_DOMINATED_EXAMPLE, "WALLPAPER_GREEN_DOMINATED"),
         BLUE(Wallpapers.BLUE_DOMINATED_EXAMPLE, "WALLPAPER_BLUE_DOMINATED"),
     }
+
     @Test
     fun `GIVEN preview with only wallpaper color dominated, THEN only show its name as screenshotId`(
         @TestParameter wallpaperColorDominated: WallpaperColorDominated
@@ -359,8 +377,8 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == wallpaperColorDominated.screenshotId
+        assertEquals(
+            AndroidPreviewScreenshotIdBuilder(preview).build(), wallpaperColorDominated.screenshotId
         )
     }
 
@@ -372,8 +390,8 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == ""
+        assertEquals(
+            AndroidPreviewScreenshotIdBuilder(preview).build(), ""
         )
     }
 
@@ -423,6 +441,7 @@ class AndroidComposablePreviewScreenshotIdTest {
         DEVICE("device", AndroidPreviewInfo(device = Devices.PHONE)),
         WALLPAPER("wallpaper", AndroidPreviewInfo(wallpaper = Wallpapers.GREEN_DOMINATED_EXAMPLE))
     }
+
     @Test
     fun `GIVEN preview info key ignored, THEN show nothing`(
         @TestParameter previewKeyAndInfo: PreviewKeyAndInfo
@@ -470,6 +489,32 @@ class AndroidComposablePreviewScreenshotIdTest {
 
         @Composable
         override fun invoke() {
+        }
+    }
+
+    private class IdentifierValueProvider : TestParameterValuesProvider() {
+        public override fun provideValues(context: Context?): List<Identifier> {
+            return listOf(
+                Phone.entries,
+                Tablet.entries,
+                Desktop.entries,
+                Automotive.entries,
+                Television.entries,
+                Wear.entries,
+                GenericDevices.entries
+            ).flatMap { entry -> entry.mapNotNull { it.device.id } }
+        }
+    }
+
+    private class IdentifierWithIdValueProvider : TestParameterValuesProvider() {
+        public override fun provideValues(context: Context?): List<Identifier> {
+            return IdentifierValueProvider().provideValues(context).filter { it.id != null }
+        }
+    }
+
+    private class IdentifierWithNameValueProvider : TestParameterValuesProvider() {
+        public override fun provideValues(context: Context?): List<Identifier> {
+            return IdentifierValueProvider().provideValues(context).filter { it.name != null }
         }
     }
 }

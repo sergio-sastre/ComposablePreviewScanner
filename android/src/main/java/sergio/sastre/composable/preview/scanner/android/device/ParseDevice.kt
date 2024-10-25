@@ -7,7 +7,8 @@ import sergio.sastre.composable.preview.scanner.android.device.domain.Dimensions
 import sergio.sastre.composable.preview.scanner.android.device.domain.Navigation.GESTURE
 import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation.LANDSCAPE
 import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation.PORTRAIT
-import sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceByIdentifier
+import sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceByIdentifier.Companion.findByDeviceId
+import sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceByIdentifier.Companion.findByDeviceName
 import sergio.sastre.composable.preview.scanner.android.device.domain.Navigation
 import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation
 import sergio.sastre.composable.preview.scanner.android.device.domain.Shape
@@ -31,40 +32,40 @@ object ParseDevice {
         }
 
         if (device.startsWith("id:")) {
-            return GetPredefinedDeviceById.from(device)
+            return GetDeviceById.from(device)
         }
 
         if (device.startsWith("name:")) {
-            return GetPredefinedDeviceByName.from(device)
+            return GetDeviceByName.from(device)
         }
 
         return null
     }
 }
 
-private object GetPredefinedDeviceById {
+private object GetDeviceById {
     fun from(device: String): Device? {
         val id = device.removePrefix("id:")
-        return GetDeviceByIdentifier.findByDeviceId<Phone>(id)?.device
-            ?: GetDeviceByIdentifier.findByDeviceId<Tablet>(id)?.device
-            ?: GetDeviceByIdentifier.findByDeviceId<Wear>(id)?.device
-            ?: GetDeviceByIdentifier.findByDeviceId<Desktop>(id)?.device
-            ?: GetDeviceByIdentifier.findByDeviceId<Automotive>(id)?.device
-            ?: GetDeviceByIdentifier.findByDeviceId<Television>(id)?.device
-            ?: GetDeviceByIdentifier.findByDeviceId<GenericDevices>(id)?.device
+        return findByDeviceId<Phone>(id)?.device
+            ?: findByDeviceId<Tablet>(id)?.device
+            ?: findByDeviceId<Wear>(id)?.device
+            ?: findByDeviceId<Desktop>(id)?.device
+            ?: findByDeviceId<Automotive>(id)?.device
+            ?: findByDeviceId<Television>(id)?.device
+            ?: findByDeviceId<GenericDevices>(id)?.device
     }
 }
 
-private object GetPredefinedDeviceByName {
+private object GetDeviceByName {
     fun from(device: String): Device? {
         val name = device.removePrefix("name:")
-        return GetDeviceByIdentifier.findByDeviceName<Phone>(name)?.device
-            ?: GetDeviceByIdentifier.findByDeviceName<Tablet>(name)?.device
-            ?: GetDeviceByIdentifier.findByDeviceName<Wear>(name)?.device
-            ?: GetDeviceByIdentifier.findByDeviceName<Desktop>(name)?.device
-            ?: GetDeviceByIdentifier.findByDeviceName<Automotive>(name)?.device
-            ?: GetDeviceByIdentifier.findByDeviceName<Television>(name)?.device
-            ?: GetDeviceByIdentifier.findByDeviceName<GenericDevices>(name)?.device
+        return findByDeviceName<Phone>(name)?.device
+            ?: findByDeviceName<Tablet>(name)?.device
+            ?: findByDeviceName<Wear>(name)?.device
+            ?: findByDeviceName<Desktop>(name)?.device
+            ?: findByDeviceName<Automotive>(name)?.device
+            ?: findByDeviceName<Television>(name)?.device
+            ?: findByDeviceName<GenericDevices>(name)?.device
     }
 }
 
@@ -72,8 +73,7 @@ private object GetCustomDevice {
     fun from(device: String): Device {
         val spec = device.removePrefix("spec:")
             .splitToSequence(",")
-            .map { it.trim() }
-            .map { it.split("=", limit = 2) }
+            .map { it.split("=", limit = 2).map { value -> value.trim() } }
             .associateBy({ it[0] }, { it[1] })
 
         val parent = spec["parent"]
@@ -137,7 +137,7 @@ private object GetCustomDevice {
         orientation: String?,
         navigation: String?,
     ): Device {
-        val parentDevice = requireNotNull(GetPredefinedDeviceById.from(parent))
+        val parentDevice = requireNotNull(GetDeviceById.from(parent))
         val orientationValue = orientation?.let {
             Orientation.entries.find { it.value == orientation }
         } ?: parentDevice.orientation
