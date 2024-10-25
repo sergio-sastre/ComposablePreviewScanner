@@ -7,8 +7,10 @@ import sergio.sastre.composable.preview.scanner.android.device.domain.Device
 object GetDeviceScreenshotId {
 
     fun getDeviceScreenshotId(device: String): String? =
-        when (device) {
-            Devices.DEFAULT -> null
+        when {
+            device == Devices.DEFAULT -> null
+            device.contains("parent") -> device.screenshotIdFromParent()
+            // id:device_id or name:deviceName
             else -> {
                 val parsedDevice = ParseDevice.from(device)
                 device.screenshotIdFromId(parsedDevice) ?:
@@ -42,6 +44,15 @@ object GetDeviceScreenshotId {
     private fun String.screenshotIdFromName(device: Device?): String? =
         device?.id?.name?.replaceSpecialChars()?.plus("_${this.removeDeviceKeyValues()}")
 
+    private fun String.screenshotIdFromParent(): String {
+        val parentDevice = ParseDevice.from(this)?.id?.id
+            ?: throw IllegalStateException("Device id is null for the given 'parent'")
+        val pattern = Regex("""\s*parent\s*=\s*[^,]*""")
+        val parentDeviceReplaced = this.replace(pattern, "PARENT_$parentDevice").trim()
+        // might contain some spaces e.g. for "Nexus 7"
+        return parentDeviceReplaced.screenshotIdFromSpec().replace(" ", "_")
+    }
+
     private fun String.screenshotIdFromSpec(): String =
         this.removePrefix("spec:")
             .splitToSequence(",")
@@ -55,7 +66,6 @@ object GetDeviceScreenshotId {
                     .replace("=", "_")
                     .trim()
             }
-            .filter { it.isNotEmpty() }
             .joinToString("_")
             .uppercase()
 }

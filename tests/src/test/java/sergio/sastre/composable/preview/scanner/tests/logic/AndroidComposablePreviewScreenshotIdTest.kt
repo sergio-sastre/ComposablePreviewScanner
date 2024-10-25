@@ -328,11 +328,11 @@ class AndroidComposablePreviewScreenshotIdTest {
         ),
         CUSTOM_PARENT(
             "spec:parent=Nexus 7, orientation=landscape",
-            "NEXUS_7_ORIENTATION_LANDSCAPE"
+            "PARENT_NEXUS_7_ORIENTATION_LANDSCAPE"
         ),
         CUSTOM_PARENT_REVERSED(
             "spec: orientation=landscape, cutout= none,parent=Nexus 7",
-            "NEXUS_7_ORIENTATION_LANDSCAPE_CUTOUT_NONE"
+            "ORIENTATION_LANDSCAPE_CUTOUT_NONE_PARENT_NEXUS_7"
         ),
         CUSTOM_WITH_DOUBLE_SPACES(
             "spec:width = 411dp, height = 891dp, orientation = landscape, dpi = 420",
