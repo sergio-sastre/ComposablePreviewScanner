@@ -1,7 +1,7 @@
 package sergio.sastre.composable.preview.scanner.android.screenshotid
 
 import androidx.compose.ui.tooling.preview.Devices
-import sergio.sastre.composable.preview.scanner.android.device.ParseDevice
+import sergio.sastre.composable.preview.scanner.android.device.DevicePreviewInfoParser
 import sergio.sastre.composable.preview.scanner.android.device.domain.Device
 
 object GetDeviceScreenshotId {
@@ -12,10 +12,10 @@ object GetDeviceScreenshotId {
             device.contains("parent") -> device.screenshotIdFromParent()
             // id:device_id or name:deviceName
             else -> {
-                val parsedDevice = ParseDevice.from(device)
-                device.screenshotIdFromId(parsedDevice) ?:
-                device.screenshotIdFromName(parsedDevice) ?:
-                device.screenshotIdFromSpec()
+                val parsedDevice = DevicePreviewInfoParser.parse(device)
+                device.screenshotIdFromId(parsedDevice)?.trim('_') ?:
+                device.screenshotIdFromName(parsedDevice)?.trim('_') ?:
+                device.screenshotIdFromSpec().trim('_')
             }
         }
 
@@ -39,13 +39,13 @@ object GetDeviceScreenshotId {
     }
 
     private fun String.screenshotIdFromId(device: Device?): String? =
-        device?.id?.id?.replaceSpecialChars()?.plus("_${this.removeDeviceKeyValues()}")
+        device?.identifier?.id?.replaceSpecialChars()?.plus("_${this.removeDeviceKeyValues()}")
 
     private fun String.screenshotIdFromName(device: Device?): String? =
-        device?.id?.name?.replaceSpecialChars()?.plus("_${this.removeDeviceKeyValues()}")
+        device?.identifier?.name?.replaceSpecialChars()?.plus("_${this.removeDeviceKeyValues()}")
 
     private fun String.screenshotIdFromParent(): String {
-        val parentDevice = ParseDevice.from(this)?.id?.id
+        val parentDevice = DevicePreviewInfoParser.parse(this)?.identifier?.id
             ?: throw IllegalStateException("Device id is null for the given 'parent'")
         val pattern = Regex("""\s*parent\s*=\s*[^,]*""")
         val parentDeviceReplaced = this.replace(pattern, "PARENT_$parentDevice").trim()

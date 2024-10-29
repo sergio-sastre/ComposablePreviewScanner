@@ -5,11 +5,11 @@ interface GetDeviceByIdentifier<T : Enum<T>> {
 
     companion object {
         inline fun <reified T> findByDeviceId(deviceId: String): T? where T : Enum<T>, T : GetDeviceByIdentifier<T> {
-            return enumValues<T>().find { it.device.id?.id == deviceId }
+            return enumValues<T>().find { it.device.identifier?.id == deviceId }
         }
 
         inline fun <reified T> findByDeviceName(deviceName: String): T? where T : Enum<T>, T : GetDeviceByIdentifier<T> {
-            return enumValues<T>().find { it.device.id?.name == deviceName }
+            return enumValues<T>().find { it.device.identifier?.name == deviceName }
         }
     }
 }

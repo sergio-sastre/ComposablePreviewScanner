@@ -6,7 +6,8 @@ import sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceB
 import sergio.sastre.composable.preview.scanner.android.device.domain.Identifier
 import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation.LANDSCAPE
 import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation.PORTRAIT
-import sergio.sastre.composable.preview.scanner.android.device.domain.Shape.NORMAL
+import sergio.sastre.composable.preview.scanner.android.device.domain.ScreenSize.NORMAL
+import sergio.sastre.composable.preview.scanner.android.device.domain.Shape.NOTROUND
 import sergio.sastre.composable.preview.scanner.android.device.domain.Type.CAR
 import sergio.sastre.composable.preview.scanner.android.device.domain.Unit.PX
 
@@ -16,7 +17,7 @@ enum class Automotive(
 
     AUTOMOTIVE_1024DP_LANDSCAPE(
         Device(
-            id = Identifier.AUTOMOTIVE_1024DP_LANDSCAPE,
+            identifier = Identifier.AUTOMOTIVE_1024DP_LANDSCAPE,
             dimensions = Dimensions(
                 width = 1024f,
                 height = 768f,
@@ -24,7 +25,8 @@ enum class Automotive(
             ),
             densityDpi = 160,
             orientation = LANDSCAPE,
-            shape = NORMAL,
+            screenSize = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = CAR
         )
@@ -32,7 +34,7 @@ enum class Automotive(
 
     AUTOMOTIVE_1080DP_LANDSCAPE(
         Device(
-            id = Identifier.AUTOMOTIVE_1080DP_LANDSCAPE,
+            identifier = Identifier.AUTOMOTIVE_1080DP_LANDSCAPE,
             dimensions = Dimensions(
                 width = 1080f,
                 height = 600f,
@@ -40,7 +42,8 @@ enum class Automotive(
             ),
             densityDpi = 120,
             orientation = LANDSCAPE,
-            shape = NORMAL,
+            screenSize = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = CAR
         )
@@ -48,7 +51,7 @@ enum class Automotive(
 
     AUTOMOTIVE_1408DP_LANDSCAPE(
         Device(
-            id = Identifier.AUTOMOTIVE_1408DP_LANDSCAPE,
+            identifier = Identifier.AUTOMOTIVE_1408DP_LANDSCAPE,
             dimensions = Dimensions(
                 width = 1408f,
                 height = 792f,
@@ -56,7 +59,8 @@ enum class Automotive(
             ),
             densityDpi = 160,
             orientation = LANDSCAPE,
-            shape = NORMAL,
+            screenSize = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = CAR
         )
@@ -64,7 +68,7 @@ enum class Automotive(
 
     AUTOMOTIVE_1408DP_LANDSCAPE_WITH_GOOGLE_PLAY(
         Device(
-            id = Identifier.AUTOMOTIVE_1408DP_LANDSCAPE_WITH_GOOGLE_PLAY,
+            identifier = Identifier.AUTOMOTIVE_1408DP_LANDSCAPE_WITH_GOOGLE_PLAY,
             dimensions = Dimensions(
                 width = 1408f,
                 height = 792f,
@@ -72,7 +76,8 @@ enum class Automotive(
             ),
             densityDpi = 160,
             orientation = LANDSCAPE,
-            shape = NORMAL,
+            screenSize = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = CAR
         )
@@ -80,7 +85,7 @@ enum class Automotive(
 
     AUTOMOTIVE_DISTANT_DISPLAY(
         Device(
-            id = Identifier.AUTOMOTIVE_DISTANT_DISPLAY,
+            identifier = Identifier.AUTOMOTIVE_DISTANT_DISPLAY,
             dimensions = Dimensions(
                 width = 1080f,
                 height = 600f,
@@ -88,7 +93,8 @@ enum class Automotive(
             ),
             densityDpi = 120,
             orientation = LANDSCAPE,
-            shape = NORMAL,
+            screenSize = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = CAR
         )
@@ -96,7 +102,7 @@ enum class Automotive(
 
     AUTOMOTIVE_DISTANT_DISPLAY_WITH_GOOGLE_PLAY(
         Device(
-            id = Identifier.AUTOMOTIVE_DISTANT_DISPLAY_WITH_GOOGLE_PLAY,
+            identifier = Identifier.AUTOMOTIVE_DISTANT_DISPLAY_WITH_GOOGLE_PLAY,
             dimensions = Dimensions(
                 width = 1080f,
                 height = 600f,
@@ -104,7 +110,8 @@ enum class Automotive(
             ),
             densityDpi = 120,
             orientation = LANDSCAPE,
-            shape = NORMAL,
+            screenSize = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = CAR
         )
@@ -112,7 +119,7 @@ enum class Automotive(
 
     AUTOMOTIVE_PORTRAIT(
         Device(
-            id = Identifier.AUTOMOTIVE_PORTRAIT,
+            identifier = Identifier.AUTOMOTIVE_PORTRAIT,
             dimensions = Dimensions(
                 width = 800f,
                 height = 1280f,
@@ -120,7 +127,8 @@ enum class Automotive(
             ),
             densityDpi = 120,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            screenSize = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = CAR
         )
@@ -128,7 +136,7 @@ enum class Automotive(
 
     AUTOMOTIVE_LARGE_PORTRAIT(
         Device(
-            id = Identifier.AUTOMOTIVE_LARGE_PORTRAIT,
+            identifier = Identifier.AUTOMOTIVE_LARGE_PORTRAIT,
             dimensions = Dimensions(
                 width = 1280f,
                 height = 1606f,
@@ -136,7 +144,8 @@ enum class Automotive(
             ),
             densityDpi = 160,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            screenSize = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = CAR
         )
@@ -144,7 +153,7 @@ enum class Automotive(
 
     AUTOMOTIVE_ULTRAWIDE(
         Device(
-            id = Identifier.AUTOMOTIVE_ULTRAWIDE,
+            identifier = Identifier.AUTOMOTIVE_ULTRAWIDE,
             dimensions = Dimensions(
                 width = 3904f,
                 height = 1320f,
@@ -152,7 +161,8 @@ enum class Automotive(
             ),
             densityDpi = 240,
             orientation = LANDSCAPE,
-            shape = NORMAL,
+            screenSize = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = CAR
         )

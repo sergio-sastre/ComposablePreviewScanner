@@ -5,7 +5,7 @@ import sergio.sastre.composable.preview.scanner.android.device.domain.Dimensions
 import sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceByIdentifier
 import sergio.sastre.composable.preview.scanner.android.device.domain.Identifier
 import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation.LANDSCAPE
-import sergio.sastre.composable.preview.scanner.android.device.domain.Shape.NORMAL
+import sergio.sastre.composable.preview.scanner.android.device.domain.Shape.NOTROUND
 import sergio.sastre.composable.preview.scanner.android.device.domain.Type.TV
 import sergio.sastre.composable.preview.scanner.android.device.domain.Unit.PX
 
@@ -15,7 +15,7 @@ enum class Television(
 
     TV_4K(
         Device(
-            id = Identifier.TV_4K,
+            identifier = Identifier.TV_4K,
             dimensions = Dimensions(
                 width = 3840f,
                 height = 2160f,
@@ -23,7 +23,7 @@ enum class Television(
             ),
             densityDpi = 640,
             orientation = LANDSCAPE,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = TV
         )
@@ -31,7 +31,7 @@ enum class Television(
 
     TV_720p(
         Device(
-            id = Identifier.TV_720p,
+            identifier = Identifier.TV_720p,
             dimensions = Dimensions(
                 width = 1280f,
                 height = 720f,
@@ -39,7 +39,7 @@ enum class Television(
             ),
             densityDpi = 220,
             orientation = LANDSCAPE,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = TV
         )
@@ -47,7 +47,7 @@ enum class Television(
 
     TV_1080p(
         Device(
-            id = Identifier.TV_1080p,
+            identifier = Identifier.TV_1080p,
             dimensions = Dimensions(
                 width = 1920f,
                 height = 1080f,
@@ -55,7 +55,7 @@ enum class Television(
             ),
             densityDpi = 320,
             orientation = LANDSCAPE,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = TV
         )

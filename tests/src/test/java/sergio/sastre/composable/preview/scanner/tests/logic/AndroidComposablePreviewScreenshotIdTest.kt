@@ -24,7 +24,6 @@ import sergio.sastre.composable.preview.scanner.android.device.types.Wear
 import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 
-
 @RunWith(TestParameterInjector::class)
 class AndroidComposablePreviewScreenshotIdTest {
 
@@ -283,6 +282,14 @@ class AndroidComposablePreviewScreenshotIdTest {
             "screenshot id must only contain uppercase alphanumeric symbols or underscore '_'",
             validPattern.matches(screenshotId)
         )
+        assertTrue(
+            "screenshot id must not contain underscore '_' as first character",
+            screenshotId.first().toString() != "_"
+        )
+        assertTrue(
+            "screenshot id must not contain underscore '_' as last character",
+            screenshotId.last().toString() != "_"
+        )
     }
 
     @Test
@@ -299,6 +306,14 @@ class AndroidComposablePreviewScreenshotIdTest {
         assertTrue(
             "screenshot id must only contains uppercase alphanumeric symbols or underscore '_'",
             validPattern.matches(screenshotId)
+        )
+        assertTrue(
+            "screenshot id must not contain underscore '_' as first character",
+            screenshotId.first().toString() != "_"
+        )
+        assertTrue(
+            "screenshot id must not contain underscore '_' as last character",
+            screenshotId.last().toString() != "_"
         )
     }
 
@@ -502,7 +517,7 @@ class AndroidComposablePreviewScreenshotIdTest {
                 Television.entries,
                 Wear.entries,
                 GenericDevices.entries
-            ).flatMap { entry -> entry.mapNotNull { it.device.id } }
+            ).flatMap { entry -> entry.mapNotNull { it.device.identifier } }
         }
     }
 

@@ -23,8 +23,8 @@ import sergio.sastre.composable.preview.scanner.android.device.types.Tablet
 import sergio.sastre.composable.preview.scanner.android.device.types.Television
 import sergio.sastre.composable.preview.scanner.android.device.types.Wear
 
-object ParseDevice {
-    fun from(device: String): Device? {
+object DevicePreviewInfoParser {
+    fun parse(device: String): Device? {
         if (device == "") return DEFAULT
 
         if (device.startsWith("spec:")) {
@@ -98,10 +98,10 @@ private object GetCustomDevice {
         val dimensions = dimensions(spec)
 
         val roundShape = (spec["isRound"]?.toBoolean() ?: spec["shape"]?.equals("Round"))
-        val shapeValue = when (roundShape) {
+        val roundShapeValue = when (roundShape) {
             true -> Shape.ROUND
-            false -> Shape.NORMAL
-            null -> Shape.NORMAL
+            false -> Shape.NOTROUND
+            null -> Shape.NOTROUND
         }
 
         val dpiValue = spec["dpi"]?.toIntOrNull() ?: 420
@@ -122,7 +122,7 @@ private object GetCustomDevice {
 
         return Device(
             dimensions = dimensions,
-            shape = shapeValue,
+            shape = roundShapeValue,
             densityDpi = dpiValue,
             type = typeValue,
             orientation = orientationValue,

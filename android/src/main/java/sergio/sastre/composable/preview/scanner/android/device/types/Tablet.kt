@@ -6,7 +6,7 @@ import sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceB
 import sergio.sastre.composable.preview.scanner.android.device.domain.Identifier
 import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation.LANDSCAPE
 import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation.PORTRAIT
-import sergio.sastre.composable.preview.scanner.android.device.domain.Shape.NORMAL
+import sergio.sastre.composable.preview.scanner.android.device.domain.Shape.NOTROUND
 import sergio.sastre.composable.preview.scanner.android.device.domain.Type.TABLET
 import sergio.sastre.composable.preview.scanner.android.device.domain.Unit.PX
 
@@ -23,7 +23,7 @@ enum class Tablet(
             ),
             densityDpi = 320,
             orientation = LANDSCAPE,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = TABLET
         )
@@ -31,7 +31,7 @@ enum class Tablet(
 
     PIXEL_C(
         Device(
-            id = Identifier.PIXEL_C,
+            identifier = Identifier.PIXEL_C,
             dimensions = Dimensions(
                 width = 2560f,
                 height = 1800f,
@@ -39,7 +39,7 @@ enum class Tablet(
             ),
             densityDpi = 320,
             orientation = LANDSCAPE,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = TABLET
         )
@@ -47,7 +47,7 @@ enum class Tablet(
 
     PIXEL_9_PRO_FOLD(
         Device(
-            id = Identifier.PIXEL_9_PRO_FOLD,
+            identifier = Identifier.PIXEL_9_PRO_FOLD,
             dimensions = Dimensions(
                 width = 2076f,
                 height = 2152f,
@@ -55,7 +55,7 @@ enum class Tablet(
             ),
             densityDpi = 420,
             orientation = LANDSCAPE,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = TABLET
         )
@@ -63,7 +63,7 @@ enum class Tablet(
 
     NEXUS_7(
         Device(
-            id = Identifier.NEXUS_7,
+            identifier = Identifier.NEXUS_7,
             dimensions = Dimensions(
                 width = 800f,
                 height = 1280f,
@@ -71,7 +71,7 @@ enum class Tablet(
             ),
             densityDpi = 213,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = TABLET
         )
@@ -79,7 +79,7 @@ enum class Tablet(
 
     NEXUS_7_2012(
         Device(
-            id = Identifier.NEXUS_7_2012,
+            identifier = Identifier.NEXUS_7_2012,
             dimensions = Dimensions(
                 width = 800f,
                 height = 1280f,
@@ -87,7 +87,7 @@ enum class Tablet(
             ),
             densityDpi = 220,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = TABLET
         )
@@ -95,7 +95,7 @@ enum class Tablet(
 
     NEXUS_7_2013(
         Device(
-            id = Identifier.NEXUS_7_2013,
+            identifier = Identifier.NEXUS_7_2013,
             dimensions = Dimensions(
                 width = 1200f,
                 height = 1920f,
@@ -103,7 +103,7 @@ enum class Tablet(
             ),
             densityDpi = 320,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = TABLET
         )
@@ -111,7 +111,7 @@ enum class Tablet(
 
     NEXUS_9(
         Device(
-            id = Identifier.NEXUS_9,
+            identifier = Identifier.NEXUS_9,
             dimensions = Dimensions(
                 width = 2048f,
                 height = 1536f,
@@ -119,7 +119,7 @@ enum class Tablet(
             ),
             densityDpi = 320,
             orientation = LANDSCAPE,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = TABLET
         )
@@ -127,7 +127,7 @@ enum class Tablet(
 
     NEXUS_10(
         Device(
-            id = Identifier.NEXUS_10,
+            identifier = Identifier.NEXUS_10,
             dimensions = Dimensions(
                 width = 2560f,
                 height = 1600f,
@@ -135,7 +135,7 @@ enum class Tablet(
             ),
             densityDpi = 320,
             orientation = LANDSCAPE,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = TABLET
         )

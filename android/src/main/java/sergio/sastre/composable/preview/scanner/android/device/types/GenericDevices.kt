@@ -6,7 +6,9 @@ import sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceB
 import sergio.sastre.composable.preview.scanner.android.device.domain.Identifier
 import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation.LANDSCAPE
 import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation.PORTRAIT
-import sergio.sastre.composable.preview.scanner.android.device.domain.Shape.NORMAL
+import sergio.sastre.composable.preview.scanner.android.device.domain.ScreenRatio
+import sergio.sastre.composable.preview.scanner.android.device.domain.ScreenRatio.LONG
+import sergio.sastre.composable.preview.scanner.android.device.domain.Shape.NOTROUND
 import sergio.sastre.composable.preview.scanner.android.device.domain.Type.FOLDABLE
 import sergio.sastre.composable.preview.scanner.android.device.domain.Type.PHONE
 import sergio.sastre.composable.preview.scanner.android.device.domain.Type.TABLET
@@ -18,7 +20,7 @@ enum class GenericDevices(
 
     MEDIUM_TABLET(
         Device(
-            id = Identifier.MEDIUM_TABLET,
+            identifier = Identifier.MEDIUM_TABLET,
             dimensions = Dimensions(
                 width = 2560f,
                 height = 1600f,
@@ -26,7 +28,7 @@ enum class GenericDevices(
             ),
             densityDpi = 320,
             orientation = LANDSCAPE,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = TABLET
         )
@@ -34,7 +36,7 @@ enum class GenericDevices(
 
     SMALL_PHONE(
         Device(
-            id = Identifier.SMALL_PHONE,
+            identifier = Identifier.SMALL_PHONE,
             dimensions = Dimensions(
                 width = 720f,
                 height = 1280f,
@@ -42,7 +44,7 @@ enum class GenericDevices(
             ),
             densityDpi = 320,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = PHONE
         )
@@ -50,7 +52,7 @@ enum class GenericDevices(
 
     MEDIUM_PHONE(
         Device(
-            id = Identifier.MEDIUM_PHONE,
+            identifier = Identifier.MEDIUM_PHONE,
             dimensions = Dimensions(
                 width = 1080f,
                 height = 2400f,
@@ -58,7 +60,7 @@ enum class GenericDevices(
             ),
             densityDpi = 420,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = PHONE
         )
@@ -66,7 +68,7 @@ enum class GenericDevices(
 
     RESIZABLE_EXPERIMENTAL(
         Device(
-            id = Identifier.RESIZABLE_EXPERIMENTAL,
+            identifier = Identifier.RESIZABLE_EXPERIMENTAL,
             dimensions = Dimensions(
                 width = 1084f,
                 height = 2400f,
@@ -74,7 +76,7 @@ enum class GenericDevices(
             ),
             densityDpi = 420,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = FOLDABLE
         )
@@ -82,7 +84,7 @@ enum class GenericDevices(
 
     FWVGA_3_7IN_SLIDER (
         Device(
-            id = Identifier.FWVGA_3_7IN_SLIDER,
+            identifier = Identifier.FWVGA_3_7IN_SLIDER,
             dimensions = Dimensions(
                 width = 480f,
                 height = 854f,
@@ -90,7 +92,7 @@ enum class GenericDevices(
             ),
             densityDpi = 240,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = PHONE
         )
@@ -98,7 +100,7 @@ enum class GenericDevices(
 
     FWVGA_5_4IN (
         Device(
-            id = Identifier.FWVGA_5_4IN,
+            identifier = Identifier.FWVGA_5_4IN,
             dimensions = Dimensions(
                 width = 480f,
                 height = 854f,
@@ -106,7 +108,7 @@ enum class GenericDevices(
             ),
             densityDpi = 160,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = PHONE
         )
@@ -114,7 +116,7 @@ enum class GenericDevices(
 
     QVGA_2_7IN (
         Device(
-            id = Identifier.QVGA_2_7IN,
+            identifier = Identifier.QVGA_2_7IN,
             dimensions = Dimensions(
                 width = 240f,
                 height = 320f,
@@ -122,7 +124,7 @@ enum class GenericDevices(
             ),
             densityDpi = 120,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = PHONE
         )
@@ -130,7 +132,7 @@ enum class GenericDevices(
 
     HVGA_3_2IN_SLIDER_ADP1 (
         Device(
-            id = Identifier.HVGA_3_2IN_ADP1,
+            identifier = Identifier.HVGA_3_2IN_ADP1,
             dimensions = Dimensions(
                 width = 320f,
                 height = 480f,
@@ -138,7 +140,7 @@ enum class GenericDevices(
             ),
             densityDpi = 160,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = PHONE
         )
@@ -146,7 +148,7 @@ enum class GenericDevices(
 
     QVGA_2_7IN_SLIDER (
         Device(
-            id = Identifier.QVGA_2_7IN_SLIDER,
+            identifier = Identifier.QVGA_2_7IN_SLIDER,
             dimensions = Dimensions(
                 width = 240f,
                 height = 320f,
@@ -154,7 +156,7 @@ enum class GenericDevices(
             ),
             densityDpi = 120,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = PHONE
         )
@@ -162,7 +164,7 @@ enum class GenericDevices(
 
     QVGA_3_2IN_ADP2 (
         Device(
-            id = Identifier.QVGA_3_2IN_ADP2,
+            identifier = Identifier.QVGA_3_2IN_ADP2,
             dimensions = Dimensions(
                 width = 320f,
                 height = 480f,
@@ -170,7 +172,7 @@ enum class GenericDevices(
             ),
             densityDpi = 160,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = PHONE
         )
@@ -178,7 +180,7 @@ enum class GenericDevices(
 
     WQVGA_3_3IN (
         Device(
-            id = Identifier.WQVGA_3_3IN,
+            identifier = Identifier.WQVGA_3_3IN,
             dimensions = Dimensions(
                 width = 240f,
                 height = 400f,
@@ -186,7 +188,7 @@ enum class GenericDevices(
             ),
             densityDpi = 120,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = PHONE
         )
@@ -194,7 +196,7 @@ enum class GenericDevices(
 
     WQVGA_3_4IN (
         Device(
-            id = Identifier.WQVGA_3_4IN,
+            identifier = Identifier.WQVGA_3_4IN,
             dimensions = Dimensions(
                 width = 240f,
                 height = 432f,
@@ -202,7 +204,7 @@ enum class GenericDevices(
             ),
             densityDpi = 120,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = PHONE
         )
@@ -210,7 +212,7 @@ enum class GenericDevices(
 
     WSVGA_TABLET_7IN (
         Device(
-            id = Identifier.WSVGA_TABLET_7IN,
+            identifier = Identifier.WSVGA_TABLET_7IN,
             dimensions = Dimensions(
                 width = 1024f,
                 height = 600f,
@@ -218,7 +220,7 @@ enum class GenericDevices(
             ),
             densityDpi = 160,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = TABLET
         )
@@ -226,7 +228,7 @@ enum class GenericDevices(
 
     NEXUS_ONE_WVGA_3_7IN (
         Device(
-            id = Identifier.NEXUS_ONE_WVGA_3_7IN,
+            identifier = Identifier.NEXUS_ONE_WVGA_3_7IN,
             dimensions = Dimensions(
                 width = 480f,
                 height = 800f,
@@ -234,7 +236,8 @@ enum class GenericDevices(
             ),
             densityDpi = 240,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            screenRatio = LONG,
+            shape = NOTROUND,
             chinSize = 0,
             type = PHONE
         )
@@ -242,7 +245,7 @@ enum class GenericDevices(
 
     WVGA_5_1IN (
         Device(
-            id = Identifier.WVGA_5_1IN,
+            identifier = Identifier.WVGA_5_1IN,
             dimensions = Dimensions(
                 width = 480f,
                 height = 800f,
@@ -250,7 +253,7 @@ enum class GenericDevices(
             ),
             densityDpi = 160,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = PHONE
         )
@@ -258,7 +261,7 @@ enum class GenericDevices(
 
     WXGA_4_7IN (
         Device(
-            id = Identifier.WXGA_4_7IN,
+            identifier = Identifier.WXGA_4_7IN,
             dimensions = Dimensions(
                 width = 1280f,
                 height = 720f,
@@ -266,7 +269,7 @@ enum class GenericDevices(
             ),
             densityDpi = 320,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = PHONE
         )
@@ -274,7 +277,7 @@ enum class GenericDevices(
 
     WXGA_TABLET_10_1IN (
         Device(
-            id = Identifier.WXGA_TABLET_10_1IN,
+            identifier = Identifier.WXGA_TABLET_10_1IN,
             dimensions = Dimensions(
                 width = 1280f,
                 height = 800f,
@@ -282,7 +285,7 @@ enum class GenericDevices(
             ),
             densityDpi = 160,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = TABLET
         )
@@ -290,7 +293,7 @@ enum class GenericDevices(
 
     NEXUS_S_WVGA_4IN (
         Device(
-            id = Identifier.NEXUS_S_WVGA_4IN,
+            identifier = Identifier.NEXUS_S_WVGA_4IN,
             dimensions = Dimensions(
                 width = 480f,
                 height = 800f,
@@ -298,7 +301,7 @@ enum class GenericDevices(
             ),
             densityDpi = 240,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = PHONE
         )
@@ -306,7 +309,7 @@ enum class GenericDevices(
 
     GALAXY_NEXUS_4_65IN_720P (
         Device(
-            id = Identifier.GALAXY_NEXUS_4_65IN_720P,
+            identifier = Identifier.GALAXY_NEXUS_4_65IN_720P,
             dimensions = Dimensions(
                 width = 720f,
                 height = 1280f,
@@ -314,7 +317,7 @@ enum class GenericDevices(
             ),
             densityDpi = 320,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = PHONE
         )
@@ -322,7 +325,7 @@ enum class GenericDevices(
 
     FREEFORM_13_5IN (
         Device(
-            id = Identifier.FREEFORM_13_5IN,
+            identifier = Identifier.FREEFORM_13_5IN,
             dimensions = Dimensions(
                 width = 2560f,
                 height = 1440f,
@@ -330,7 +333,7 @@ enum class GenericDevices(
             ),
             densityDpi = 240,
             orientation = LANDSCAPE,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = FOLDABLE
         )
@@ -338,7 +341,7 @@ enum class GenericDevices(
 
     FOLD_OUT_8IN (
         Device(
-            id = Identifier.FOLD_OUT_8IN,
+            identifier = Identifier.FOLD_OUT_8IN,
             dimensions = Dimensions(
                 width = 2200f,
                 height = 2480f,
@@ -346,7 +349,7 @@ enum class GenericDevices(
             ),
             densityDpi = 420,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = FOLDABLE
         )
@@ -354,7 +357,7 @@ enum class GenericDevices(
 
     FOLD_IN_WITH_OUTER_DISPLAY_7_6IN (
         Device(
-            id = Identifier.FOLD_IN_WITH_OUTER_DISPLAY_7_6IN,
+            identifier = Identifier.FOLD_IN_WITH_OUTER_DISPLAY_7_6IN,
             dimensions = Dimensions(
                 width = 1768f,
                 height = 2208f,
@@ -362,7 +365,7 @@ enum class GenericDevices(
             ),
             densityDpi = 420,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = FOLDABLE
         )
@@ -370,7 +373,7 @@ enum class GenericDevices(
 
     HORIZONTAL_FOLD_IN_6_7IN (
         Device(
-            id = Identifier.HORIZONTAL_FOLD_IN_6_7IN,
+            identifier = Identifier.HORIZONTAL_FOLD_IN_6_7IN,
             dimensions = Dimensions(
                 width = 1080f,
                 height = 2636f,
@@ -378,7 +381,7 @@ enum class GenericDevices(
             ),
             densityDpi = 480,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = FOLDABLE
         )
@@ -386,7 +389,7 @@ enum class GenericDevices(
 
     ROLLABLE_7_4IN (
         Device(
-            id = Identifier.ROLLABLE_7_4IN,
+            identifier = Identifier.ROLLABLE_7_4IN,
             dimensions = Dimensions(
                 width = 1600f,
                 height = 2428f,
@@ -394,7 +397,7 @@ enum class GenericDevices(
             ),
             densityDpi = 420,
             orientation = PORTRAIT,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = FOLDABLE
         )

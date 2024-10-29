@@ -5,7 +5,7 @@ import sergio.sastre.composable.preview.scanner.android.device.domain.Dimensions
 import sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceByIdentifier
 import sergio.sastre.composable.preview.scanner.android.device.domain.Identifier
 import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation.LANDSCAPE
-import sergio.sastre.composable.preview.scanner.android.device.domain.Shape.NORMAL
+import sergio.sastre.composable.preview.scanner.android.device.domain.Shape.NOTROUND
 import sergio.sastre.composable.preview.scanner.android.device.domain.Type.DESKTOP
 import sergio.sastre.composable.preview.scanner.android.device.domain.Unit.PX
 
@@ -15,7 +15,7 @@ enum class Desktop(
 
     SMALL_DESKTOP(
         Device(
-            id = Identifier.SMALL_DESKTOP,
+            identifier = Identifier.SMALL_DESKTOP,
             dimensions = Dimensions(
                 width = 1366f,
                 height = 768f,
@@ -23,7 +23,7 @@ enum class Desktop(
             ),
             densityDpi = 160,
             orientation = LANDSCAPE,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = DESKTOP
         )
@@ -31,7 +31,7 @@ enum class Desktop(
 
     MEDIUM_DESKTOP(
         Device(
-            id = Identifier.MEDIUM_DESKTOP,
+            identifier = Identifier.MEDIUM_DESKTOP,
             dimensions = Dimensions(
                 width = 3840f,
                 height = 2160f,
@@ -39,7 +39,7 @@ enum class Desktop(
             ),
             densityDpi = 320,
             orientation = LANDSCAPE,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = DESKTOP
         )
@@ -47,7 +47,7 @@ enum class Desktop(
 
     LARGE_DESKTOP(
         Device(
-            id = Identifier.LARGE_DESKTOP,
+            identifier = Identifier.LARGE_DESKTOP,
             dimensions = Dimensions(
                 width = 1920f,
                 height = 1080f,
@@ -55,7 +55,7 @@ enum class Desktop(
             ),
             densityDpi = 160,
             orientation = LANDSCAPE,
-            shape = NORMAL,
+            shape = NOTROUND,
             chinSize = 0,
             type = DESKTOP
         ),
