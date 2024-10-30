@@ -14,8 +14,9 @@ class AndroidComposablePreviewScannerInstrumentationTest {
         val previewsFromFile =
             AndroidComposablePreviewScanner()
                 .scanFile(getInstrumentation().context.assets.open("scan_result.json"))
+                .includePrivatePreviews()
                 .getPreviews()
 
-        assertEquals(previewsFromFile.size, 33)
+        assertEquals(previewsFromFile.size, 42)
     }
 }

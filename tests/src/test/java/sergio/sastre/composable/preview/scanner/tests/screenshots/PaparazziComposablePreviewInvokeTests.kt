@@ -41,7 +41,9 @@ class PaparazziComposablePreviewInvokeTests(
     }
 
     @get:Rule
-    val paparazzi = PaparazziBuilder.build(preview.previewInfo.device)
+    val paparazzi = Paparazzi(
+        deviceConfig = DeviceConfigBuilder.build(preview.previewInfo.device)
+    )
 
     @Test
     fun snapshot() {
@@ -50,23 +52,20 @@ class PaparazziComposablePreviewInvokeTests(
             preview()
         }
     }
-}
 
-object PaparazziBuilder {
-
-    fun build(previewDevice: String): Paparazzi {
-        val device = DevicePreviewInfoParser.parse(previewDevice) ?: return Paparazzi()
-        return Paparazzi(
-            deviceConfig = DeviceConfig(
+    object DeviceConfigBuilder {
+        fun build(previewDevice: String): DeviceConfig {
+            val device = DevicePreviewInfoParser.parse(previewDevice) ?: return DeviceConfig()
+            return DeviceConfig(
                 screenHeight = device.dimensions.height.toInt(),
                 screenWidth = device.dimensions.width.toInt(),
-                xdpi = device.densityDpi,
-                ydpi = device.densityDpi,
+                xdpi = device.densityDpi, // not 100% precise
+                ydpi = device.densityDpi, // not 100% precise
                 ratio = ScreenRatio.valueOf(device.screenRatio.name),
                 size = ScreenSize.valueOf(device.screenSize.name),
                 density = Density(device.densityDpi),
                 screenRound = ScreenRound.valueOf(device.shape.name)
             )
-        )
+        }
     }
 }

@@ -19,6 +19,7 @@ fun FontScaleExamplePreview(){
 }
 
 @Preview(device = Devices.DEFAULT)
+@Preview(device = Devices.AUTOMOTIVE_1024p)
 @Preview(device = "name:Nexus 10")
 @Preview(device = "id:pixel")
 @PreviewScreenSizes

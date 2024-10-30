@@ -1,12 +1,11 @@
 package sergio.sastre.composable.preview.scanner.android.device.domain
 
-import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
 import sergio.sastre.composable.preview.scanner.android.device.DevicePreviewInfoParser
 
 object RobolectricDeviceQualifierBuilder {
 
-    fun build(previewDevice: AndroidPreviewInfo): String? {
-        val device = DevicePreviewInfoParser.parse(previewDevice.device)
+    fun build(previewDevice: String): String? {
+        val device = DevicePreviewInfoParser.parse(previewDevice)
         return device?.let { nonNullDevice -> build(nonNullDevice) }
     }
 

@@ -42,8 +42,7 @@ class RoborazziComposablePreviewInvokeTests(
     @Config(sdk = [30])
     @Test
     fun snapshot() {
-
-        RobolectricDeviceQualifierBuilder.build(preview.previewInfo)?.run {
+        RobolectricDeviceQualifierBuilder.build(preview.previewInfo.device)?.run {
             RuntimeEnvironment.setQualifiers(this)
         }
 
