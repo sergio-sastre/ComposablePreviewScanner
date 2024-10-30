@@ -54,13 +54,13 @@ but does not work with
 ```kotlin
 dependencies {
    // jvm tests (e.g. with Roborazzi & Paparazzi)
-   testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:android:0.3.2")
+   testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:android:<version>")
 
    // instrumentation tests (e.g. with Shot, Dropshots & Android-Testify)
-   debugImplementation("io.github.sergio-sastre.ComposablePreviewScanner:android:0.3.2")
+   debugImplementation("io.github.sergio-sastre.ComposablePreviewScanner:android:<version>")
    
    // compose multiplatform (jvm-targets)
-   testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:jvm:0.3.2")
+   testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")
 }
 ```
 
@@ -187,10 +187,28 @@ object ComposablePreviewProvider : TestParameter.TestParameterValuesProvider {
 
 4. Map the PreviewInfo and PaparazziConfig values. For instance, you can use a custom class for that.
 ```kotlin
+
+// The DevicePreviewInfoParser used in this method is available since ComposablePreviewScanner 0.4.0
+object DeviceConfigBuilder {
+   fun build(previewDevice: String): DeviceConfig {
+      val device = DevicePreviewInfoParser.parse(previewDevice) ?: return DeviceConfig()
+      return DeviceConfig(
+         screenHeight = device.dimensions.height.toInt(),
+         screenWidth = device.dimensions.width.toInt(),
+         xdpi = device.densityDpi, // not 100% precise
+         ydpi = device.densityDpi, // not 100% precise
+         ratio = ScreenRatio.valueOf(device.screenRatio.name),
+         size = ScreenSize.valueOf(device.screenSize.name),
+         density = Density(device.densityDpi),
+         screenRound = ScreenRound.valueOf(device.shape.name)
+      )
+   }
+}
+
 object PaparazziPreviewRule {
     fun createFor(preview: ComposablePreview<AndroidPreviewInfo>): Paparazzi =
         Paparazzi(
-            deviceConfig = PIXEL_4A.copy(
+            deviceConfig = DeviceConfigBuilder.build(preview.previewInfo.device).copy(
                 nightMode =
                    when(preview.previewInfo.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
                       true -> NightMode.NIGHT
@@ -216,7 +234,9 @@ class PreviewTestParameterTests(
 
     @Test
     fun snapshot() {
-        paparazzi.snapshot {
+        // Recommended for more meaningful screenshot file names. See #Advanced Usage
+        val screenshotId = AndroidPreviewScreenshotIdBuilder(preview).ignoreClassName().build()
+        paparazzi.snapshot(name = screenshotId) {
             preview()
         }
     }
@@ -258,6 +278,11 @@ object RoborazziOptionsMapper {
 
 object RobolectricPreviewInfosApplier {
     fun applyFor(preview: ComposablePreview<AndroidPreviewInfo>) {
+       // Set the device from the preview info. Available since ComposablePreviewScanner 0.4.0
+       RobolectricDeviceQualifierBuilder.build(preview.previewInfo)?.run {
+          RuntimeEnvironment.setQualifiers(this)
+       }
+       
         val uiMode = nightMode =
            when(preview.previewInfo.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
               true -> "+night"
@@ -297,8 +322,11 @@ class PreviewParameterizedTests(
     @Test
     fun snapshot() {
         RobolectricPreviewInfosApplier.applyFor(preview)
-        
+
+        // Recommended for more meaningful screenshot file names. See #Advanced Usage
+        val screenshotId = AndroidPreviewScreenshotIdBuilder(preview).build()
         captureRoboImage(
+           filePath = "${screenshotId}.png",
            roborazziOptions = RoborazziOptionsMapper.createFor(preview)
         ) {
             preview()
@@ -424,6 +452,7 @@ Let's say we want to enable some custom Dropshots Config for some Previews, for 
 > So for this case, you'd have to convert locale "b+zh+Hans+CN" to "zh-Hans-CN" in order to use it with AndroidUiTestingUtils
 
 ## Advanced Usage
+### Screenshot File Names
 ComposablePreviewScanner also provides a class to customize the name of the generated screenshots based on its Preview Info.
 By default, it does not include the Preview Info in the screenshot file name if it is the same as its default value, but it can be configured to behave differently.
 That means, for @Preview(showBackground = false), showBackground would not be included in the screenshot file name since it is the default.
@@ -475,6 +504,34 @@ class MyClass {
 }
 ```
 createScreenshotIdFor(preview) will generate the following id: "MyClass.MyComposable.FONT_1_5f_WITHOUT_BACKGROUND"
+
+### Parsing Preview Device String
+Since 0.4.0, ComposablePreviewScanner also provides `DevicePreviewInfoParser.parse(device: String)`
+which returns a `Device` object containing all the necessary information to support different devices in your Roborazzi & Paparazzi screenshot tests!
+
+It can parse ALL possible combinations of "device strings" up to Android Studio Lady Bug, namely:
+```kotlin
+// The over 80 devices supported either by id and/or name, for instance:
+@Preview(device = "id:pixel_9_pro")
+@Preview(device = "name:Pixel 9 Pro")
+@Preview(device = "spec:parent=pixel_9_pro, orientation=landscape, navigation=buttons")
+
+// And custom devices
+@Preview(device = "spec:width = 411dp, height = 891dp, orientation = landscape, dpi = 420, isRound = false, chinSize = 0dp, cutout = corner")
+@Preview(device = "spec:id=reference_desktop,shape=Normal,width=1920,height=1080,unit=px,dpi=160") // in pixels
+@Preview(device = "spec:id=reference_desktop,shape=Normal,width=1920,height=1080,unit=dp,dpi=160") // in dp
+...
+```
+
+If you are using Roborazzi, you can streamline the process by just calling
+```kotlin
+RobolectricDeviceQualifierBuilder.build(preview.previewInfo)?.run {
+          RuntimeEnvironment.setQualifiers(this)
+}
+```
+before setting any other Robolectric 'cumulative qualifier' in your tests.
+
+For further info on how to use them, see [Roborazzi](#roborazzi) and [Paparazzi](#paparazzi) sections respectively.
 
 ## How It works
 This library is written on top of [ClassGraph](https://github.com/classgraph/classgraph), an uber-fast parallelized classpath scanner.
