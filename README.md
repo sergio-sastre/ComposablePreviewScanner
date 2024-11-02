@@ -191,16 +191,20 @@ object ComposablePreviewProvider : TestParameter.TestParameterValuesProvider {
 // The DevicePreviewInfoParser used in this method is available since ComposablePreviewScanner 0.4.0
 object DeviceConfigBuilder {
    fun build(previewDevice: String): DeviceConfig {
-      val device = DevicePreviewInfoParser.parse(previewDevice) ?: return DeviceConfig()
+      val parsedDevice = DevicePreviewInfoParser.parse(device)?.inPx() ?: return DeviceConfig()
       return DeviceConfig(
-         screenHeight = device.dimensions.height.toInt(),
-         screenWidth = device.dimensions.width.toInt(),
-         xdpi = device.densityDpi, // not 100% precise
-         ydpi = device.densityDpi, // not 100% precise
-         ratio = ScreenRatio.valueOf(device.screenRatio.name),
-         size = ScreenSize.valueOf(device.screenSize.name),
-         density = Density(device.densityDpi),
-         screenRound = ScreenRound.valueOf(device.shape.name)
+         screenHeight = parsedDevice.dimensions.height.toInt(),
+         screenWidth = parsedDevice.dimensions.width.toInt(),
+         density = Density(parsedDevice.densityDpi),
+         xdpi = parsedDevice.densityDpi, // not 100% precise
+         ydpi = parsedDevice.densityDpi, // not 100% precise
+         size = ScreenSize.valueOf(parsedDevice.screenSize.name),
+         ratio = ScreenRatio.valueOf(parsedDevice.screenRatio.name),
+         screenRound = ScreenRound.valueOf(parsedDevice.shape.name),
+         orientation = when (parsedDevice.orientation) {
+            Orientation.PORTRAIT -> ScreenOrientation.PORTRAIT
+            Orientation.LANDSCAPE -> ScreenOrientation.LANDSCAPE
+         }
       )
    }
 }
