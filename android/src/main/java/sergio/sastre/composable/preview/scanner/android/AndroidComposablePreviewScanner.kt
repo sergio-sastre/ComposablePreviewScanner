@@ -10,7 +10,7 @@ import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposableP
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator
 import sergio.sastre.composable.preview.scanner.core.preview.ProvideComposablePreview
 import sergio.sastre.composable.preview.scanner.core.scanner.ComposablePreviewScanner
-import sergio.sastre.composable.preview.scanner.core.scanner.ComposablesWithPreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.previewfinder.ClasspathPreviewsFinder
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
@@ -22,7 +22,7 @@ import kotlin.reflect.jvm.isAccessible
  * and other annotations applied to the @Preview
  */
 class AndroidComposablePreviewScanner : ComposablePreviewScanner<AndroidPreviewInfo>(
-    ComposablesWithPreviewsFinder(
+    ClasspathPreviewsFinder(
         annotationToScanClassName = "androidx.compose.ui.tooling.preview.Preview",
         previewInfoMapper = AndroidComposablePreviewInfoMapper(),
         previewMapperCreator = AndroidPreviewMapperCreator()
@@ -33,24 +33,24 @@ class AndroidComposablePreviewScanner : ComposablePreviewScanner<AndroidPreviewI
         ComposablePreviewInfoMapper<AndroidPreviewInfo> {
         override fun mapToComposablePreviewInfo(parameters: AnnotationParameterValueList): AndroidPreviewInfo =
             AndroidPreviewInfo(
-                name = parameters.valueForKey("name"),
-                group = parameters.valueForKey("group"),
-                apiLevel = parameters.valueForKey("apiLevel"),
-                widthDp = parameters.valueForKey("widthDp"),
-                heightDp = parameters.valueForKey("heightDp"),
-                locale = parameters.valueForKey("locale"),
-                fontScale = parameters.valueForKey("fontScale"),
-                showBackground = parameters.valueForKey("showBackground"),
-                showSystemUi = parameters.valueForKey("showSystemUi"),
-                backgroundColor = parameters.valueForKey("backgroundColor"),
-                device = parameters.valueForKey("device"),
-                uiMode = parameters.valueForKey("uiMode"),
-                wallpaper = parameters.valueForKey("wallpaper"),
+                name = parameters.valueForKey("name") ?: "",
+                group = parameters.valueForKey("group") ?: "",
+                apiLevel = parameters.valueForKey("apiLevel") ?: -1,
+                widthDp = parameters.valueForKey("widthDp") ?: -1,
+                heightDp = parameters.valueForKey("heightDp") ?: -1,
+                locale = parameters.valueForKey("locale") ?: "",
+                fontScale = parameters.valueForKey("fontScale") ?: 1f,
+                showBackground = parameters.valueForKey("showBackground") ?: false,
+                showSystemUi = parameters.valueForKey("showSystemUi") ?: false,
+                backgroundColor = parameters.valueForKey("backgroundColor") ?: 0L,
+                device = parameters.valueForKey("device") ?: "",
+                uiMode = parameters.valueForKey("uiMode") ?: 0,
+                wallpaper = parameters.valueForKey("wallpaper") ?: -1,
             )
 
         @Suppress("UNCHECKED_CAST")
-        private fun <T> AnnotationParameterValueList.valueForKey(key: String): T =
-            this[key].value as T
+        private fun <T> AnnotationParameterValueList.valueForKey(key: String): T? =
+            this[key]?.value as T?
     }
 
     private class AndroidPreviewMapperCreator : ComposablePreviewMapperCreator<AndroidPreviewInfo> {

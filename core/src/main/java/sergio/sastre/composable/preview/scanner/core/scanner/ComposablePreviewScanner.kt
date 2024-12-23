@@ -2,6 +2,9 @@ package sergio.sastre.composable.preview.scanner.core.scanner
 
 import io.github.classgraph.ClassGraph
 import io.github.classgraph.ScanResult
+import sergio.sastre.composable.preview.scanner.core.scanner.classpath.Classpath
+import sergio.sastre.composable.preview.scanner.core.scanner.previewfinder.PreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.previewfinder.ClasspathPreviewsFinder
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter
 import java.io.File
@@ -9,10 +12,15 @@ import java.io.InputStream
 
 /**
  * Core Component to scan for Previews
+ * @param defaultPackageTreesOfCustomPreviews // TODO
  */
 abstract class ComposablePreviewScanner<T>(
-    private val findComposableWithPreviewsInClass: ComposablesWithPreviewsFinder<T>
+    private val findComposableWithPreviewsInClass: ClasspathPreviewsFinder<T>,
+    private val defaultPackageTreesOfCustomPreviews: List<String> = listOf("androidx.compose.ui.tooling.preview")
 ) {
+
+    private var composableWithAnnotationFinder: PreviewsFinder<T> =
+        findComposableWithPreviewsInClass
 
     private var updatedClassGraph = ClassGraph()
         .ignoreMethodVisibility()
@@ -26,7 +34,7 @@ abstract class ComposablePreviewScanner<T>(
      */
     @RequiresLargeHeap
     fun scanAllPackages(): ScanResultFilter<T> {
-        return ScanResultFilter(updatedClassGraph.scan(), findComposableWithPreviewsInClass)
+        return ScanResultFilter(updatedClassGraph.scan(), composableWithAnnotationFinder)
     }
 
     /**
@@ -39,7 +47,7 @@ abstract class ComposablePreviewScanner<T>(
             throw IllegalArgumentException("packages must not be empty. For that, use scanAllPackages() instead")
         }
         updatedClassGraph = updatedClassGraph.acceptPackages(*packageTrees)
-        return ScanResultFilter(updatedClassGraph.scan(), findComposableWithPreviewsInClass)
+        return ScanResultFilter(updatedClassGraph.scan(), composableWithAnnotationFinder)
     }
 
     /**
@@ -55,7 +63,35 @@ abstract class ComposablePreviewScanner<T>(
         updatedClassGraph = updatedClassGraph
             .acceptPackages(*include.toTypedArray())
             .rejectPackages(*exclude.toTypedArray())
-        return ScanResultFilter(updatedClassGraph.scan(), findComposableWithPreviewsInClass)
+        return ScanResultFilter(updatedClassGraph.scan(), composableWithAnnotationFinder)
+    }
+
+    // TODO -> Replace with list
+    fun overrideClasspath(classpath: Classpath) = apply {
+        val debugClassesPath = File(classpath.buildDir, classpath.packagePath)
+        composableWithAnnotationFinder = findComposableWithPreviewsInClass
+            .applyOverridenClasspaths(listOf(classpath.packagePath))
+            .applyCustomPreviewPackageTrees(defaultPackageTreesOfCustomPreviews)
+        updatedClassGraph.overrideClasspath(debugClassesPath.absolutePath)
+    }
+
+    fun overrideClasspath(classpath: String) = apply {
+        val currentDir = System.getProperty("user.dir") + "/build"
+        overrideClasspath(Classpath(currentDir, classpath))
+    }
+
+    /**
+     *
+     */
+    fun overrideClasspath(classpaths: List<Classpath>, packageTreesOfCustomPreviews: List<String>) = apply {
+        val debugClassesPaths = classpaths.map { classpath -> File(classpath.buildDir, classpath.packagePath) }
+        val absolutePaths = debugClassesPaths.map { it.absolutePath }
+        val packagePaths = classpaths.map { it.packagePath }
+        composableWithAnnotationFinder = findComposableWithPreviewsInClass
+            .applyOverridenClasspaths(packagePaths)
+            .applyCustomPreviewPackageTrees(packageTreesOfCustomPreviews + defaultPackageTreesOfCustomPreviews)
+
+        updatedClassGraph.overrideClasspath(absolutePaths)
     }
 
     /**
@@ -65,7 +101,7 @@ abstract class ComposablePreviewScanner<T>(
      */
     fun scanFile(jsonFile: File): ScanResultFilter<T> {
         val scanResult = ScanResult.fromJSON(jsonFile.bufferedReader().use { it.readLine() })
-        return ScanResultFilter(scanResult, findComposableWithPreviewsInClass)
+        return ScanResultFilter(scanResult, composableWithAnnotationFinder)
     }
 
     /**
@@ -77,6 +113,6 @@ abstract class ComposablePreviewScanner<T>(
      */
     fun scanFile(inputStream: InputStream): ScanResultFilter<T> {
         val scanResult = ScanResult.fromJSON(inputStream.bufferedReader().use { it.readLine() })
-        return ScanResultFilter(scanResult, findComposableWithPreviewsInClass)
+        return ScanResultFilter(scanResult, composableWithAnnotationFinder)
     }
 }

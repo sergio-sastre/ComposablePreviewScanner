@@ -12,6 +12,7 @@ import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
 import sergio.sastre.composable.preview.scanner.android.device.domain.RobolectricDeviceQualifierBuilder
 import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
+import sergio.sastre.composable.preview.scanner.core.scanner.classpath.SourceSetClasspath.MAIN_COMPILED_CLASSES_PATH
 
 /**
  * These tests ensure that the invoke() function of a ComposablePreview works as expected
@@ -28,6 +29,7 @@ class RoborazziComposablePreviewInvokeTests(
     companion object {
         private val cachedPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
             AndroidComposablePreviewScanner()
+                .overrideClasspath(MAIN_COMPILED_CLASSES_PATH)
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .includePrivatePreviews()
                 .getPreviews()

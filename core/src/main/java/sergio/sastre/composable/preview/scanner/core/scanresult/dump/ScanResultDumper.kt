@@ -46,10 +46,11 @@ class ScanResultDumper {
 
         fun dumpScanResultToFileInAssets(
             fileName: String,
-            flavourName: String = ""
+            variantName: String = ""
         ): ScanResultProcessor = apply {
             val path = System.getProperty("user.dir")
-            val directoryName = "$path/src/androidTest${flavourName.capitalize(Locale.ROOT)}/assets"
+            val capitalizedVariantName = variantName.replaceFirstChar { if (it. isLowerCase()) it. titlecase(Locale.ROOT) else it. toString() }
+            val directoryName = "$path/src/androidTest${capitalizedVariantName}/assets"
             createDirectory(directoryName)
             val outputFile = File(directoryName, fileName)
             outputFile.bufferedWriter().use { writer ->

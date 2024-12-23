@@ -1,6 +1,7 @@
 package sergio.sastre.composable.preview.scanner.tests.logic
 
 import android.content.res.Configuration
+import org.junit.Assert.assertEquals
 import sergio.sastre.composable.preview.scanner.StringProvider
 import sergio.sastre.composable.preview.scanner.customextraannotation.Device
 import sergio.sastre.composable.preview.scanner.customextraannotation.ScreenshotTestConfig
@@ -8,14 +9,54 @@ import sergio.sastre.composable.preview.scanner.excluded.ExcludeScreenshot
 import org.junit.Assume.assumeFalse
 import org.junit.Assume.assumeTrue
 import org.junit.Test
-
+import org.junit.Assert.assertTrue
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.preview.getAnnotation
+import sergio.sastre.composable.preview.scanner.core.scanner.classpath.SourceSetClasspath.MAIN_COMPILED_CLASSES_PATH
+import sergio.sastre.composable.preview.scanner.core.scanner.classpath.SourceSetClasspath.SCREENSHOT_TEST_COMPILED_CLASSES_PATH
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
 import java.io.FileNotFoundException
 
+// TODO: Test cases:
+// - Example that Combines CrossModuleCustomPreviews(custom/notCustom) + SameModuleCustomPreviews + just Previews + PreviewParameters
+// - Source Sets: AndroidTest, ScreenshotTest(done), Main(done) and different variant?
+// - Allow multiple source sets
+//      1. add source set to the package as suffix e.g. sergio.sastre.composable.preview.scanner.androidtest
+// - Add special method to read classpath in instrumentation tests
+// - Add this functionality to scanResultDumper
 class AndroidComposablePreviewScannerTest {
+
+    @Test
+    fun `GIVEN Previews from 'main' classpath THEN they are the same as Previews at buildTime`() {
+        val mainClasspathPreviews =
+            AndroidComposablePreviewScanner()
+                .overrideClasspath(MAIN_COMPILED_CLASSES_PATH)
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+                .getPreviews()
+                .map { it.previewInfo.toString() }
+
+        val buildTimePreviews =
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+                .getPreviews()
+                .map { it.previewInfo.toString() }
+
+        assertTrue(mainClasspathPreviews.containsAll(buildTimePreviews))
+        assertTrue(buildTimePreviews.containsAll(mainClasspathPreviews))
+    }
+
+    @Test
+    fun `GIVEN Previews from 'screenshotTest' classpath THEN they exist and are not empty`() {
+        val screenshotTestClasspathPreviews =
+            AndroidComposablePreviewScanner()
+                .overrideClasspath(SCREENSHOT_TEST_COMPILED_CLASSES_PATH)
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+                .getPreviews()
+                .map { it.previewInfo.toString() }
+
+        assertEquals(1, screenshotTestClasspathPreviews.size)
+    }
 
     @Test
     fun `GIVEN several package trees THEN previews from all package trees are included`() {
@@ -26,13 +67,13 @@ class AndroidComposablePreviewScannerTest {
                     "sergio.sastre.composable.preview.scanner.multiplepreviews"
                 )
                 .getPreviews()
-                .map { it.toString() }
+                .map { it.previewInfo.toString() }
 
         val includedPreviews =
             AndroidComposablePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.included")
                 .getPreviews()
-                .map { it.toString() }
+                .map { it.previewInfo.toString() }
 
         assumeTrue(includedPreviews.isNotEmpty())
 
@@ -40,7 +81,7 @@ class AndroidComposablePreviewScannerTest {
             AndroidComposablePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.multiplepreviews")
                 .getPreviews()
-                .map { it.toString() }
+                .map { it.previewInfo.toString() }
 
         assumeTrue(includedPlusMultiplePreviews.size > includedPreviews.size)
         assumeTrue(includedPlusMultiplePreviews.size > multiplePreviews.size)
@@ -309,7 +350,7 @@ class AndroidComposablePreviewScannerTest {
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.multiplepreviewswithpreviewparameters")
                 .getPreviews()
 
-        assert(previews.size == expectedAmountOfPreviews)
+        assertEquals(previews.size, expectedAmountOfPreviews)
     }
 
     @Test
