@@ -8,7 +8,7 @@ import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposableP
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator
 import sergio.sastre.composable.preview.scanner.core.scanner.ComposablePreviewScanner
-import sergio.sastre.composable.preview.scanner.core.scanner.ComposablesWithPreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.previewfinder.ClasspathPreviewsFinder
 import java.lang.reflect.Method
 
 /**
@@ -25,8 +25,8 @@ class CommonComposablePreviewScanner : ComposablePreviewScanner<CommonPreviewInf
     findComposableWithPreviewsInClass = CommonComposablePreviewFinder()
 ) {
     private object CommonComposablePreviewFinder {
-        operator fun invoke(): ComposablesWithPreviewsFinder<CommonPreviewInfo> =
-            ComposablesWithPreviewsFinder(
+        operator fun invoke(): ClasspathPreviewsFinder<CommonPreviewInfo> =
+            ClasspathPreviewsFinder(
                 annotationToScanClassName = "org.jetbrains.compose.ui.tooling.preview.Preview",
                 previewInfoMapper = CommonComposablePreviewInfoMapper(),
                 previewMapperCreator = CommonPreviewMapperCreator()

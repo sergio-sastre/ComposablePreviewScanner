@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.screenshot)
 }
 
 // Apply conditionally via CLI to avoid plugin clashes
@@ -21,6 +22,9 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
+        android.buildFeatures.buildConfig = true
+        buildConfigField("String", "BUILD_DIR_PATH", "\"${layout.buildDirectory.get().asFile.absolutePath}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -52,6 +56,8 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
 
     testOptions.unitTests {
         isIncludeAndroidResources = true

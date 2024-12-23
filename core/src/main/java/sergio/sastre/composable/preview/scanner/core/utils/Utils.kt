@@ -14,7 +14,8 @@ fun testFilePath(fileName: String): File {
 /**
  * Returns a file with the give fileName from assets located in src/androidTest$flavourName
  */
-fun assetsFilePath(fileName: String, flavourName: String = ""): File {
+fun assetsFilePath(fileName: String, variantName: String = ""): File {
     val path = System.getProperty("user.dir")
-    return File("$path/src/androidTest${flavourName.capitalize(Locale.ROOT)}/assets", fileName)
+    val capitalizedVariantName = variantName.replaceFirstChar { if (it. isLowerCase()) it. titlecase(Locale.ROOT) else it. toString() }
+    return File("$path/src/androidTest${capitalizedVariantName}/assets", fileName)
 }

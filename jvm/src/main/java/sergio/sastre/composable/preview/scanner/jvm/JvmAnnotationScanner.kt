@@ -8,7 +8,7 @@ import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposableP
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator
 import sergio.sastre.composable.preview.scanner.core.scanner.ComposablePreviewScanner
-import sergio.sastre.composable.preview.scanner.core.scanner.ComposablesWithPreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.previewfinder.ClasspathPreviewsFinder
 import java.lang.reflect.Method
 
 /**
@@ -27,8 +27,8 @@ class JvmAnnotationScanner(
     private object JvmAnnotationFinder {
         operator fun invoke(
             annotationToScanClassName: String
-        ): ComposablesWithPreviewsFinder<JvmAnnotationInfo> =
-            ComposablesWithPreviewsFinder(
+        ): ClasspathPreviewsFinder<JvmAnnotationInfo> =
+            ClasspathPreviewsFinder(
                 annotationToScanClassName = annotationToScanClassName,
                 previewInfoMapper = JvmComposablePreviewInfoMapper(),
                 previewMapperCreator = JvmPreviewMapperCreator()
