@@ -12,7 +12,9 @@ import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
 import sergio.sastre.composable.preview.scanner.android.device.domain.RobolectricDeviceQualifierBuilder
 import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
-import sergio.sastre.composable.preview.scanner.core.scanner.classpath.SourceSetClasspath.MAIN_COMPILED_CLASSES_PATH
+import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.Classpath
+import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.SourceSetClasspath.MAIN
+import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.SourceSetClasspath.SCREENSHOT_TEST
 
 /**
  * These tests ensure that the invoke() function of a ComposablePreview works as expected
@@ -20,20 +22,18 @@ import sergio.sastre.composable.preview.scanner.core.scanner.classpath.SourceSet
  *
  * ./gradlew :tests:recordRoborazziDebug --tests 'RoborazziComposablePreviewInvokeTests' -Plibrary=roborazzi
  */
-
 @RunWith(ParameterizedRobolectricTestRunner::class)
 class RoborazziComposablePreviewInvokeTests(
     private val preview: ComposablePreview<AndroidPreviewInfo>,
 ) {
 
     companion object {
-        private val cachedPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
+        private val cachedPreviews: List<ComposablePreview<AndroidPreviewInfo>> =
             AndroidComposablePreviewScanner()
-                .overrideClasspath(MAIN_COMPILED_CLASSES_PATH)
+                .overrideClasspath(Classpath(SCREENSHOT_TEST))
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .includePrivatePreviews()
                 .getPreviews()
-        }
 
         @JvmStatic
         @ParameterizedRobolectricTestRunner.Parameters

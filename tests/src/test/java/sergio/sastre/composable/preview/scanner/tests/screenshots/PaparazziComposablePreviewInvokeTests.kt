@@ -15,6 +15,8 @@ import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
 import sergio.sastre.composable.preview.scanner.android.device.DevicePreviewInfoParser
 import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
+import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.Classpath
+import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.SourceSetClasspath.SCREENSHOT_TEST
 
 /**
  * These tests ensure that the invoke() function of a ComposablePreview works as expected
@@ -30,6 +32,7 @@ class PaparazziComposablePreviewInvokeTests(
     companion object {
         private val cachedPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
             AndroidComposablePreviewScanner()
+                //.overrideClasspath(Classpath(SCREENSHOT_TEST))
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .includePrivatePreviews()
                 .getPreviews()

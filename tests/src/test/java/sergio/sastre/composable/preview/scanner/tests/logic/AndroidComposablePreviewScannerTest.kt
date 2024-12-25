@@ -13,13 +13,15 @@ import org.junit.Assert.assertTrue
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.preview.getAnnotation
-import sergio.sastre.composable.preview.scanner.core.scanner.classpath.SourceSetClasspath.MAIN_COMPILED_CLASSES_PATH
-import sergio.sastre.composable.preview.scanner.core.scanner.classpath.SourceSetClasspath.SCREENSHOT_TEST_COMPILED_CLASSES_PATH
+import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.Classpath
+import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.SourceSetClasspath.MAIN
+import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.SourceSetClasspath.SCREENSHOT_TEST
+import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.SourceSetClasspath.mainFor
+import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.SourceSetClasspath.screenshotTestFor
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
 import java.io.FileNotFoundException
 
 // TODO: Test cases:
-// - Example that Combines CrossModuleCustomPreviews(custom/notCustom) + SameModuleCustomPreviews + just Previews + PreviewParameters
 // - Source Sets: AndroidTest, ScreenshotTest(done), Main(done) and different variant?
 // - Allow multiple source sets
 //      1. add source set to the package as suffix e.g. sergio.sastre.composable.preview.scanner.androidtest
@@ -31,7 +33,7 @@ class AndroidComposablePreviewScannerTest {
     fun `GIVEN Previews from 'main' classpath THEN they are the same as Previews at buildTime`() {
         val mainClasspathPreviews =
             AndroidComposablePreviewScanner()
-                .overrideClasspath(MAIN_COMPILED_CLASSES_PATH)
+                .overrideClasspath(Classpath(MAIN))
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .getPreviews()
                 .map { it.previewInfo.toString() }
@@ -47,14 +49,43 @@ class AndroidComposablePreviewScannerTest {
     }
 
     @Test
-    fun `GIVEN Previews from 'screenshotTest' classpath THEN they exist and are not empty`() {
-        val screenshotTestClasspathPreviews =
+    fun `GIVEN Previews from 'main' release classpath THEN they are the same as Previews at buildTime`() {
+        val mainReleaseClasspathPreviews =
             AndroidComposablePreviewScanner()
-                .overrideClasspath(SCREENSHOT_TEST_COMPILED_CLASSES_PATH)
+                .overrideClasspath(Classpath(mainFor("release")))
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .getPreviews()
                 .map { it.previewInfo.toString() }
 
+        val buildTimePreviews =
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+                .getPreviews()
+                .map { it.previewInfo.toString() }
+
+        assertTrue(mainReleaseClasspathPreviews.containsAll(buildTimePreviews))
+        assertTrue(buildTimePreviews.containsAll(mainReleaseClasspathPreviews))
+    }
+
+    // execute ./gradlew tests:compileReleaseScreenshotTestKotlin before
+    @Test
+    fun `GIVEN Previews from 'screenshotTest' debug and release classpaths THEN they are not empty and contain the same previews`() {
+        val screenshotTestClasspathPreviews =
+            AndroidComposablePreviewScanner()
+                .overrideClasspath(Classpath(SCREENSHOT_TEST))
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+                .getPreviews()
+                .map { it.previewInfo.toString() }
+
+        val screenshotTestReleaseClasspathPreviews =
+            AndroidComposablePreviewScanner()
+                .overrideClasspath(Classpath(screenshotTestFor("release")))
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+                .getPreviews()
+                .map { it.previewInfo.toString() }
+
+        assertTrue(screenshotTestClasspathPreviews.containsAll(screenshotTestReleaseClasspathPreviews))
+        assertTrue(screenshotTestReleaseClasspathPreviews.containsAll(screenshotTestClasspathPreviews))
         assertEquals(1, screenshotTestClasspathPreviews.size)
     }
 
@@ -340,10 +371,17 @@ class AndroidComposablePreviewScannerTest {
     }
 
     @Test
-    fun `GIVEN preview parameters with StringProvider and @PreviewLightDark THEN it creates one preview for every combination`() {
+    fun `GIVEN preview parameters with StringProvider and MultiplePreviews THEN it creates one preview for every combination`() {
         val stringProviderValuesSize = StringProvider().values.toList().size
-        val previewLightDarkValuesSize = 2
-        val expectedAmountOfPreviews = stringProviderValuesSize * previewLightDarkValuesSize
+        /*
+        @Preview                 // 1 Preview
+        @MyCustomDarkModePreview // 2 Previews
+        @PreviewDynamicColors    // 4 Previews
+        --------------------------------------
+                         TOTAL = // 7 Previews
+         */
+        val multiplePreviewsAmount = 7
+        val expectedAmountOfPreviews = stringProviderValuesSize * multiplePreviewsAmount
 
         val previews =
             AndroidComposablePreviewScanner()

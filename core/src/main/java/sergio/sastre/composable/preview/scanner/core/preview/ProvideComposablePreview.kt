@@ -7,12 +7,12 @@ import java.lang.reflect.Proxy
  * Provides an invokable ComposablePreview
  */
 class ProvideComposablePreview<T> {
-
     operator fun invoke(
         composablePreviewMapper: ComposablePreviewMapper<T>,
         previewIndex: Int? = null,
         parameter: Any? = ComposablePreviewInvocationHandler.NoParameter,
     ): ComposablePreview<T> {
+
         val proxy = Proxy.newProxyInstance(
             ComposablePreview::class.java.classLoader,
             arrayOf(ComposablePreview::class.java),
@@ -21,6 +21,8 @@ class ProvideComposablePreview<T> {
                 parameter = parameter
             ),
         ) as ComposablePreview<T>
+
+        println("Classloader ComposablePreview: ${ComposablePreview::class.java.classLoader.javaClass.name}")
 
         // Wrap the call to the proxy in an object so that we can override the toString method
         // to provide a more descriptive name for the test and resulting snapshot filename.
@@ -40,7 +42,6 @@ class ProvideComposablePreview<T> {
             }
 
             private fun Class<*>.toClassName(): String = canonicalName ?: simpleName
-
         }
     }
 }
