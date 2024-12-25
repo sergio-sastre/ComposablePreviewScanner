@@ -1,35 +1,38 @@
-package sergio.sastre.composable.preview.scanner.core.scanner.classpath.overriden
+package sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.previewfinder.overriden
 
 import io.github.classgraph.AnnotationInfo
 import io.github.classgraph.ClassInfo
-import io.github.classgraph.MethodInfo
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewInfoMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator
-import sergio.sastre.composable.preview.scanner.core.scanner.previewfinder.PreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.classloader.ClassLoader
+import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.previewfinder.PreviewsFinder
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilterState
 
-class SameModuleComposableWithCustomPreviewsFinder<T>(
+internal class SameModuleComposableWithCustomPreviewsFinder<T>(
     private val annotationToScanClassName: String,
     private val previewInfoMapper: ComposablePreviewInfoMapper<T>,
-    private val previewMapperCreator: ComposablePreviewMapperCreator<T>
+    private val previewMapperCreator: ComposablePreviewMapperCreator<T>,
+    private val classLoader: ClassLoader,
 ): PreviewsFinder<T> {
 
-    override fun hasPreviewsIn(classInfo: ClassInfo): Boolean =
+    private fun hasPreviewsIn(classInfo: ClassInfo): Boolean =
         classInfo.hasDeclaredMethodAnnotation("$annotationToScanClassName\$Container")
 
     @Suppress("UNCHECKED_CAST")
     override fun findPreviewsFor(
-        clazz: Class<*>,
         classInfo: ClassInfo,
         scanResultFilterState: ScanResultFilterState<T>
     ): List<ComposablePreview<T>> {
+        if (!hasPreviewsIn(classInfo)) return emptyList()
+
         return classInfo.declaredMethodInfo.asSequence().flatMap { methodInfo ->
             methodInfo.getAnnotationInfo("$annotationToScanClassName\$Container")?.let {
-                if (methodInfo.hasExcludedAnnotation(scanResultFilterState) || scanResultFilterState.excludesMethod(methodInfo)) {
+                if (scanResultFilterState.hasExcludedAnnotation(methodInfo) || scanResultFilterState.excludesMethod(methodInfo)) {
                     emptySequence()
                 } else {
+                    val clazz = classLoader.loadClass(classInfo) // Class.forName(classInfo.name, false, this.javaClass.classLoader)
                     val methods = if (methodInfo.isPrivate) clazz.declaredMethods else clazz.methods
                     methods.asSequence()
                         .filter { it.name == methodInfo.name }
@@ -76,18 +79,4 @@ class SameModuleComposableWithCustomPreviewsFinder<T>(
                 mapper.mapToComposablePreviews()
             }
     }
-
-
-    private fun ScanResultFilterState<T>.excludesMethod(methodInfo: MethodInfo): Boolean =
-        !includesPrivatePreviews && methodInfo.isPrivate
-
-    private fun MethodInfo.hasExcludedAnnotation(scanResultFilterState: ScanResultFilterState<T>) =
-        when (scanResultFilterState.excludedAnnotations.isNotEmpty()) {
-            true -> scanResultFilterState.excludedAnnotations.any {
-                this.getAnnotationInfo(it) != null
-            }
-
-            false -> false
-        }
-
 }

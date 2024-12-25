@@ -2,9 +2,9 @@ package sergio.sastre.composable.preview.scanner.core.scanner
 
 import io.github.classgraph.ClassGraph
 import io.github.classgraph.ScanResult
-import sergio.sastre.composable.preview.scanner.core.scanner.classpath.Classpath
-import sergio.sastre.composable.preview.scanner.core.scanner.previewfinder.PreviewsFinder
-import sergio.sastre.composable.preview.scanner.core.scanner.previewfinder.ClasspathPreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.Classpath
+import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.previewfinder.PreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.previewfinder.ClasspathPreviewsFinder
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter
 import java.io.File
@@ -16,7 +16,7 @@ import java.io.InputStream
  */
 abstract class ComposablePreviewScanner<T>(
     private val findComposableWithPreviewsInClass: ClasspathPreviewsFinder<T>,
-    private val defaultPackageTreesOfCustomPreviews: List<String> = listOf("androidx.compose.ui.tooling.preview")
+    private val defaultPackageTreesOfCustomPreviews: List<String> = emptyList()
 ) {
 
     private var composableWithAnnotationFinder: PreviewsFinder<T> =
@@ -28,6 +28,7 @@ abstract class ComposablePreviewScanner<T>(
         .enableMethodInfo()
         .enableAnnotationInfo()
         .enableMemoryMapping()
+        //.enableExternalClasses() // TODO necessary?
 
     /**
      * Scan previews in all packages, including those of external dependencies.
@@ -66,32 +67,16 @@ abstract class ComposablePreviewScanner<T>(
         return ScanResultFilter(updatedClassGraph.scan(), composableWithAnnotationFinder)
     }
 
-    // TODO -> Replace with list
-    fun overrideClasspath(classpath: Classpath) = apply {
-        val debugClassesPath = File(classpath.buildDir, classpath.packagePath)
+    fun overrideClasspath(
+        classpath: Classpath,
+        packageTreesOfCustomPreviews: List<String> = emptyList()
+    ) = apply {
+        val absolutePath = File(classpath.buildDir, classpath.packagePath).absolutePath
         composableWithAnnotationFinder = findComposableWithPreviewsInClass
-            .applyOverridenClasspaths(listOf(classpath.packagePath))
-            .applyCustomPreviewPackageTrees(defaultPackageTreesOfCustomPreviews)
-        updatedClassGraph.overrideClasspath(debugClassesPath.absolutePath)
-    }
-
-    fun overrideClasspath(classpath: String) = apply {
-        val currentDir = System.getProperty("user.dir") + "/build"
-        overrideClasspath(Classpath(currentDir, classpath))
-    }
-
-    /**
-     *
-     */
-    fun overrideClasspath(classpaths: List<Classpath>, packageTreesOfCustomPreviews: List<String>) = apply {
-        val debugClassesPaths = classpaths.map { classpath -> File(classpath.buildDir, classpath.packagePath) }
-        val absolutePaths = debugClassesPaths.map { it.absolutePath }
-        val packagePaths = classpaths.map { it.packagePath }
-        composableWithAnnotationFinder = findComposableWithPreviewsInClass
-            .applyOverridenClasspaths(packagePaths)
+            .applyOverridenClasspath(classpath.packagePath)
             .applyCustomPreviewPackageTrees(packageTreesOfCustomPreviews + defaultPackageTreesOfCustomPreviews)
 
-        updatedClassGraph.overrideClasspath(absolutePaths)
+        updatedClassGraph.overrideClasspath(absolutePath)
     }
 
     /**

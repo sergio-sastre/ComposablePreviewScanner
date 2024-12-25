@@ -10,7 +10,7 @@ import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposableP
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator
 import sergio.sastre.composable.preview.scanner.core.preview.ProvideComposablePreview
 import sergio.sastre.composable.preview.scanner.core.scanner.ComposablePreviewScanner
-import sergio.sastre.composable.preview.scanner.core.scanner.previewfinder.ClasspathPreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.previewfinder.ClasspathPreviewsFinder
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
@@ -22,11 +22,12 @@ import kotlin.reflect.jvm.isAccessible
  * and other annotations applied to the @Preview
  */
 class AndroidComposablePreviewScanner : ComposablePreviewScanner<AndroidPreviewInfo>(
-    ClasspathPreviewsFinder(
+    findComposableWithPreviewsInClass = ClasspathPreviewsFinder(
         annotationToScanClassName = "androidx.compose.ui.tooling.preview.Preview",
         previewInfoMapper = AndroidComposablePreviewInfoMapper(),
-        previewMapperCreator = AndroidPreviewMapperCreator()
-    )
+        previewMapperCreator = AndroidPreviewMapperCreator(),
+    ),
+    defaultPackageTreesOfCustomPreviews = listOf("androidx.compose.ui.tooling.preview")
 ) {
 
     private class AndroidComposablePreviewInfoMapper :
