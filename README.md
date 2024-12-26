@@ -342,6 +342,11 @@ class PreviewParameterizedTests(
 5. Run these Roborazzi tests together with the existing ones by executing the corresponding command e.g. ./gradlew yourModule:recordRoborazziDebug
 
 ## Instrumentation Screenshot Tests
+You can find executable examples that use ComposablePreviewScanner with the different instrumentation-based libraries in the corresponding links below:
+- [Dropshots](https://github.com/sergio-sastre/Android-screenshot-testing-playground/tree/master/recyclerviewscreen-previews/dropshots)
+- [Shot](https://github.com/sergio-sastre/Android-screenshot-testing-playground/tree/master/recyclerviewscreen-previews/shot)
+- [Android-Testify](https://github.com/sergio-sastre/Android-screenshot-testing-playground/tree/master/recyclerviewscreen-previews/android-testify)</br>
+
 Android does not use the standard Java bytecode format and does not actually even have a runtime classpath.
 Therefore, the simplest way to support instrumentation tests, is to...
 1. run the scan in a unit test & save it in a file accessible by instrumentation tests e.g. in assets
