@@ -77,6 +77,11 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling")
     implementation("androidx.compose.ui:ui-tooling-preview")
 
+    screenshotTestImplementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.8")
+    debugImplementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.8") {
+        because("We would get NoClassFound exception when running Paparazzi and Roborazzi tests since it is used for ScreenshotImplementation")
+    }
+
     implementation(libs.material)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

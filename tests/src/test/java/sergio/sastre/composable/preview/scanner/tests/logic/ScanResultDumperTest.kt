@@ -51,7 +51,7 @@ class ScanResultDumperTest {
             ScanResultDumper()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .dumpScanResultToFileInAssets(
-                    fileName = "scan_result.json",
+                    scanFileName = "scan_result.json",
                     variantName = "debug"
                 )
 
@@ -75,7 +75,7 @@ class ScanResultDumperTest {
             ScanResultDumper()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .dumpScanResultToFileInAssets(
-                    fileName = "scan_result.json",
+                    scanFileName = "scan_result.json",
                     variantName = "debug"
                 )
 

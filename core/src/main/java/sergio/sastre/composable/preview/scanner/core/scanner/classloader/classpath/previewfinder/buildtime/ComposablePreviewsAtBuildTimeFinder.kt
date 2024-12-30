@@ -1,6 +1,7 @@
 package sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.previewfinder.buildtime
 
 import io.github.classgraph.AnnotationInfo
+import io.github.classgraph.AnnotationInfoList
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
@@ -19,7 +20,7 @@ import java.lang.reflect.Method
  * @param previewMapperCreator Returns a Mapper that convert a Composable annotated with one or more @Preview into a Sequence of ComposablePreview, one for each @Preview
  */
 internal class ComposablePreviewsAtBuildTimeFinder<T>(
-    private val annotationToScanClassName: String,
+    override val annotationToScanClassName: String,
     private val previewInfoMapper: ComposablePreviewInfoMapper<T>,
     private val previewMapperCreator: ComposablePreviewMapperCreator<T>,
     private val classLoader: ClassLoader,

@@ -1,5 +1,6 @@
 package sergio.sastre.composable.preview.scanner.core.scanresult.filter
 
+import io.github.classgraph.AnnotationInfoList
 import io.github.classgraph.ScanResult
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.previewfinder.PreviewsFinder
@@ -62,12 +63,13 @@ class ScanResultFilter<T> internal constructor(
 
     fun getPreviews(): List<ComposablePreview<T>> =
         scanResult.use { scanResult ->
-            scanResult.allClasses
+            scanResult
+                .allClasses
                 .asSequence()
                 .flatMap { classInfo ->
                     previewsFinder.findPreviewsFor(
                         classInfo,
-                        scanResultFilterState
+                        scanResultFilterState,
                     )
                 }
                 .toList()

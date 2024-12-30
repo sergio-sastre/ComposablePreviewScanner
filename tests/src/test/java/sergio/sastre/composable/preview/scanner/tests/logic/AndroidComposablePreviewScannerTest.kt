@@ -33,7 +33,7 @@ class AndroidComposablePreviewScannerTest {
     fun `GIVEN Previews from 'main' classpath THEN they are the same as Previews at buildTime`() {
         val mainClasspathPreviews =
             AndroidComposablePreviewScanner()
-                .overrideClasspath(Classpath(MAIN))
+                .setTargetSourceSet(Classpath(MAIN))
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .getPreviews()
                 .map { it.previewInfo.toString() }
@@ -52,7 +52,7 @@ class AndroidComposablePreviewScannerTest {
     fun `GIVEN Previews from 'main' release classpath THEN they are the same as Previews at buildTime`() {
         val mainReleaseClasspathPreviews =
             AndroidComposablePreviewScanner()
-                .overrideClasspath(Classpath(mainFor("release")))
+                .setTargetSourceSet(Classpath(mainFor("release")))
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .getPreviews()
                 .map { it.previewInfo.toString() }
@@ -72,14 +72,14 @@ class AndroidComposablePreviewScannerTest {
     fun `GIVEN Previews from 'screenshotTest' debug and release classpaths THEN they are not empty and contain the same previews`() {
         val screenshotTestClasspathPreviews =
             AndroidComposablePreviewScanner()
-                .overrideClasspath(Classpath(SCREENSHOT_TEST))
+                .setTargetSourceSet(Classpath(SCREENSHOT_TEST))
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .getPreviews()
                 .map { it.previewInfo.toString() }
 
         val screenshotTestReleaseClasspathPreviews =
             AndroidComposablePreviewScanner()
-                .overrideClasspath(Classpath(screenshotTestFor("release")))
+                .setTargetSourceSet(Classpath(screenshotTestFor("release")))
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .getPreviews()
                 .map { it.previewInfo.toString() }

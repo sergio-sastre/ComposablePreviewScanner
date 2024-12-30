@@ -4,10 +4,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
+import kotlinx.collections.immutable.persistentListOf
+
+val immutableList = persistentListOf("Example")
+
 class ComposePreviewScreenshotTests {
     @Composable
     fun Example() {
-        Text("Example")
+        Text(immutableList.first())
     }
 
     @Preview
