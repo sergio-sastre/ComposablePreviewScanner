@@ -1,43 +1,33 @@
 package sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.previewfinder.overriden
 
-import io.github.classgraph.ClassGraph
 import io.github.classgraph.ClassInfo
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewInfoMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator
+import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.previewfinder.overriden.annotationloader.CustomPreviewAnnotationLoader
 import sergio.sastre.composable.preview.scanner.core.scanner.classloader.ClassLoader
 import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.previewfinder.PreviewsFinder
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilterState
 
 internal class CrossModuleComposableWithCustomPreviewsFinder<T>(
-    private val annotationToScanClassName: String,
+    override val annotationToScanClassName: String,
     private val previewInfoMapper: ComposablePreviewInfoMapper<T>,
     private val previewMapperCreator: ComposablePreviewMapperCreator<T>,
-    private val customPreviewsPackageTrees: List<String>,
     private val classLoader: ClassLoader,
+    private val customPreviewAnnotationLoader: CustomPreviewAnnotationLoader
 ) : PreviewsFinder<T> {
 
-    private val previewRepeatableAnnotations by lazy {
-        ClassGraph()
-            .enableAnnotationInfo()
-            .acceptPackages(*customPreviewsPackageTrees.toTypedArray())
-            .scan()
-            .use { scanResult ->
-                scanResult
-                    .allClasses
-                    .associate { clazz ->
-                        clazz.name to clazz.annotationInfo.filter { it.name == annotationToScanClassName }
-                    }.filterValues { it.isNotEmpty() }
-            }
+    private val customPreviewAnnotationInfoList by lazy {
+        customPreviewAnnotationLoader.loadCustomPreviewAnnotation()
     }
 
     private fun hasPreviewsIn(
         classInfo: ClassInfo,
     ): Boolean =
-        when (customPreviewsPackageTrees.isNotEmpty()) {
-            true -> previewRepeatableAnnotations.any { classInfo.hasDeclaredMethodAnnotation(it.key) && it.value.isNotEmpty() }
-            false -> false // otherwise it scans ALL
+        when (customPreviewAnnotationInfoList.isNotEmpty()) {
+            true -> customPreviewAnnotationInfoList.any { classInfo.hasDeclaredMethodAnnotation(it.key) && it.value.isNotEmpty() }
+            false -> false
         }
 
     override fun findPreviewsFor(
@@ -49,7 +39,7 @@ internal class CrossModuleComposableWithCustomPreviewsFinder<T>(
         val composablePreviews: MutableList<ComposablePreview<T>> = mutableListOf()
         classInfo.declaredMethodInfo.asSequence().forEach { methodInfo ->
             val containedAnnotations =
-                previewRepeatableAnnotations.filter { classInfo.hasDeclaredMethodAnnotation(it.key) && it.value.isNotEmpty() }
+                customPreviewAnnotationInfoList.filter { classInfo.hasDeclaredMethodAnnotation(it.key) && it.value.isNotEmpty() }
 
             containedAnnotations.onEach { previewAnnotation ->
                 methodInfo.getAnnotationInfo(previewAnnotation.key)?.let {

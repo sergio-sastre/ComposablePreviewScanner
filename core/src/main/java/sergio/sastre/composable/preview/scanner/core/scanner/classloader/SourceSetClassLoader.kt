@@ -7,9 +7,10 @@ import java.net.URLClassLoader
 internal class SourceSetClassLoader(
     private val classpath: String
 ): ClassLoader {
+    private val buildDir = "build/$classpath"
 
     override fun loadClass(classInfo: ClassInfo): Class<*> {
-        val url = File("build/$classpath").toURI().toURL()
+        val url = File(buildDir).toURI().toURL()
         val classLoader = URLClassLoader(arrayOf(url), this.javaClass.classLoader)
         return classLoader.loadClass(classInfo.name)
     }

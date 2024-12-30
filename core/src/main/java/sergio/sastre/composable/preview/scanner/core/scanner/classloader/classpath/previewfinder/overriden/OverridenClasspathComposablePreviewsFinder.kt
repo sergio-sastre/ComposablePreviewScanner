@@ -4,17 +4,18 @@ import io.github.classgraph.ClassInfo
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewInfoMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator
+import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.previewfinder.overriden.annotationloader.CustomPreviewAnnotationLoader
 import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.previewfinder.PreviewsFinder
 import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.previewfinder.buildtime.ComposablePreviewsAtBuildTimeFinder
 import sergio.sastre.composable.preview.scanner.core.scanner.classloader.ClassLoader
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilterState
 
 internal class OverridenClasspathComposablePreviewsFinder<T>(
-    annotationToScanClassName: String,
+    override val annotationToScanClassName: String,
     previewInfoMapper: ComposablePreviewInfoMapper<T>,
     previewMapperCreator: ComposablePreviewMapperCreator<T>,
-    customPreviewsPackageTrees: List<String>,
     classLoader: ClassLoader,
+    crossModuleCustomPreviewAnnotationLoader: CustomPreviewAnnotationLoader
 ) : PreviewsFinder<T> {
 
     private val composableAnnotationFinders =
@@ -30,8 +31,8 @@ internal class OverridenClasspathComposablePreviewsFinder<T>(
                 annotationToScanClassName,
                 previewInfoMapper,
                 previewMapperCreator,
-                customPreviewsPackageTrees,
-                classLoader
+                classLoader,
+                crossModuleCustomPreviewAnnotationLoader
             ),
 
             SameModuleComposableWithCustomPreviewsFinder(
@@ -44,11 +45,12 @@ internal class OverridenClasspathComposablePreviewsFinder<T>(
 
     override fun findPreviewsFor(
         classInfo: ClassInfo,
-        scanResultFilterState: ScanResultFilterState<T>
+        scanResultFilterState: ScanResultFilterState<T>,
     ): List<ComposablePreview<T>> {
         val composablePreviews: MutableList<ComposablePreview<T>> = mutableListOf()
         composableAnnotationFinders.forEach {
-            composablePreviews.addAll(it.findPreviewsFor(classInfo, scanResultFilterState))
+            val previews = it.findPreviewsFor(classInfo, scanResultFilterState)
+            composablePreviews.addAll(previews)
         }
         return composablePreviews
     }

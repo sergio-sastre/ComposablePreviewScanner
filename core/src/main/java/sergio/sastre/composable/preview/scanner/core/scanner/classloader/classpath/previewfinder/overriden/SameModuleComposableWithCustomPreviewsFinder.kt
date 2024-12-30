@@ -11,7 +11,7 @@ import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpa
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilterState
 
 internal class SameModuleComposableWithCustomPreviewsFinder<T>(
-    private val annotationToScanClassName: String,
+    override val annotationToScanClassName: String,
     private val previewInfoMapper: ComposablePreviewInfoMapper<T>,
     private val previewMapperCreator: ComposablePreviewMapperCreator<T>,
     private val classLoader: ClassLoader,
@@ -23,7 +23,7 @@ internal class SameModuleComposableWithCustomPreviewsFinder<T>(
     @Suppress("UNCHECKED_CAST")
     override fun findPreviewsFor(
         classInfo: ClassInfo,
-        scanResultFilterState: ScanResultFilterState<T>
+        scanResultFilterState: ScanResultFilterState<T>,
     ): List<ComposablePreview<T>> {
         if (!hasPreviewsIn(classInfo)) return emptyList()
 
@@ -32,7 +32,7 @@ internal class SameModuleComposableWithCustomPreviewsFinder<T>(
                 if (scanResultFilterState.hasExcludedAnnotation(methodInfo) || scanResultFilterState.excludesMethod(methodInfo)) {
                     emptySequence()
                 } else {
-                    val clazz = classLoader.loadClass(classInfo) // Class.forName(classInfo.name, false, this.javaClass.classLoader)
+                    val clazz = classLoader.loadClass(classInfo)
                     val methods = if (methodInfo.isPrivate) clazz.declaredMethods else clazz.methods
                     methods.asSequence()
                         .filter { it.name == methodInfo.name }

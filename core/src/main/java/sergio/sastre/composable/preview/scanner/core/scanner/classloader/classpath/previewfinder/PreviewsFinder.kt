@@ -6,8 +6,10 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResul
 
 interface PreviewsFinder<T> {
 
-   fun findPreviewsFor(
-       classInfo: ClassInfo,
-       scanResultFilterState: ScanResultFilterState<T>,
+    val annotationToScanClassName: String
+
+    fun findPreviewsFor(
+        classInfo: ClassInfo,
+        scanResultFilterState: ScanResultFilterState<T>,
     ): List<ComposablePreview<T>>
 }
