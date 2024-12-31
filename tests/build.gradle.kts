@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.screenshot)
+    alias(libs.plugins.testify)
 }
 
 // Apply conditionally via CLI to avoid plugin clashes
@@ -67,6 +68,11 @@ android {
     }
 }
 
+testify {
+    moduleName = ":tests"
+    applicationPackageId = "composable.preview.scanner"
+}
+
 dependencies {
     implementation(project(":android"))
     implementation(project(":jvm"))
@@ -94,6 +100,10 @@ dependencies {
     testImplementation(libs.robolectric)
     testImplementation(libs.paparazzi)
 
+    androidTestImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.android.ui.testing.utils)
+    androidTestImplementation(libs.androidx.navigation.compose)
+    androidTestImplementation("com.github.sergio-sastre.AndroidUiTestingUtils:android-testify:2.5.0")
 }

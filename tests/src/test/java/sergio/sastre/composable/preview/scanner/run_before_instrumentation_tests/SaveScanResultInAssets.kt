@@ -3,6 +3,7 @@ package sergio.sastre.composable.preview.scanner.run_before_instrumentation_test
 import org.junit.Test
 import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.Classpath
 import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.SourceSetClasspath.MAIN
+import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.SourceSetClasspath.SCREENSHOT_TEST
 import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper
 import sergio.sastre.composable.preview.scanner.core.utils.assetsFilePath
 
@@ -12,7 +13,7 @@ class SaveScanResultInAssets {
         val scanResultFileName = "scan_result.json"
 
         ScanResultDumper()
-            .setTargetSourceSet(Classpath(MAIN))
+            .setTargetSourceSet(Classpath(SCREENSHOT_TEST))
             .scanPackageTrees("sergio.sastre.composable.preview.scanner")
             .dumpScanResultToFileInAssets(scanResultFileName)
 
