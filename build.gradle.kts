@@ -7,4 +7,5 @@ plugins {
     alias(libs.plugins.jetbrains.compose) version "1.6.11" apply false
     alias(libs.plugins.roborazzi) version "1.22.0" apply false
     alias(libs.plugins.paparazzi) version "1.3.4" apply false
+    alias(libs.plugins.testify) version "3.2.0" apply false
 }
