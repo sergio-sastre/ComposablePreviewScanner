@@ -2,7 +2,7 @@ package sergio.sastre.composable.preview.scanner.core.scanresult.dump
 
 import io.github.classgraph.ClassGraph
 import io.github.classgraph.ScanResult
-import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.Classpath
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.Classpath
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import java.io.File
 import java.io.FileNotFoundException
@@ -22,7 +22,7 @@ class ScanResultDumper {
     fun setTargetSourceSet(
         classpath: Classpath,
     ) = apply {
-        val absolutePath = File(classpath.buildDir, classpath.packagePath).absolutePath
+        val absolutePath = File(classpath.rootDir, classpath.packagePath).absolutePath
         updatedClassGraph.overrideClasspath(absolutePath)
     }
 
@@ -52,38 +52,46 @@ class ScanResultDumper {
             return dir
         }
 
-        //TODO - modify to dump also customPreviews
+        /**
+         * Dumps the ScanResult of the target package trees for the given variantName (.e.g debug/release) into a file in assets,
+         * so it can be read while executing instrumentation tests.
+         */
         fun dumpScanResultToFileInAssets(
             scanFileName: String,
             variantName: String = "",
-            customPreviewsPackageTrees: List<String> = listOf("androidx.compose.ui.tooling.preview")
-            ): ScanResultProcessor = apply {
+            customPreviewsPackageTrees: List<String> = listOf("androidx.compose.ui.tooling.preview"),
+            customPreviewsFileName: String = "custom_previews.json"
+        ): ScanResultProcessor = apply {
             val path = System.getProperty("user.dir")
-            val capitalizedVariantName = variantName.replaceFirstChar { if (it. isLowerCase()) it. titlecase(Locale.ROOT) else it. toString() }
+            val capitalizedVariantName =
+                variantName.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
             val directoryName = "$path/src/androidTest${capitalizedVariantName}/assets"
             createDirectory(directoryName)
+
             val outputScanFile = File(directoryName, scanFileName)
             outputScanFile.bufferedWriter().use { writer ->
                 writer.write(scanResult.toJSON())
             }
-
-            // TODO from here
-            val customPreviewsScanResult = ClassGraph()
-                .acceptPackages(*customPreviewsPackageTrees.toTypedArray())
-                .enableAnnotationInfo()
-                .scan()
-
-            val outputCustomPreviewsFile = File(directoryName,"custom_previews.json")
-            outputCustomPreviewsFile.bufferedWriter().use { writer ->
-                writer.write(customPreviewsScanResult.toJSON())
-            }
-            // TODO till here
-
             println("Scan Results dump to output file path: ${outputScanFile.absolutePath}")
+
+            if (customPreviewsPackageTrees.isNotEmpty()) {
+                val customPreviewsScanResult = ClassGraph()
+                    .acceptPackages(*customPreviewsPackageTrees.toTypedArray())
+                    .enableAnnotationInfo()
+                    .scan()
+
+                val outputCustomPreviewsFile = File(directoryName, customPreviewsFileName)
+                outputCustomPreviewsFile.bufferedWriter().use { writer ->
+                    writer.write(customPreviewsScanResult.toJSON())
+                }
+
+                println("Custom Previews dump to output file path: ${outputCustomPreviewsFile.absolutePath}")
+            }
         }
 
-        //TODO - check if necessary to change?
-        fun dumpScanResultToFile(outputFile: File): ScanResultProcessor = apply {
+        fun dumpScanResultToFile(
+            outputFile: File
+        ): ScanResultProcessor = apply {
             outputFile.bufferedWriter().use { writer ->
                 writer.write(scanResult.toJSON())
             }

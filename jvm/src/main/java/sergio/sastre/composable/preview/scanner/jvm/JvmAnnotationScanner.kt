@@ -8,7 +8,7 @@ import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposableP
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator
 import sergio.sastre.composable.preview.scanner.core.scanner.ComposablePreviewScanner
-import sergio.sastre.composable.preview.scanner.core.scanner.classloader.classpath.previewfinder.ClasspathPreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.previewfinder.ClasspathPreviewsFinder
 import java.lang.reflect.Method
 
 /**

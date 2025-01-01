@@ -1,5 +1,6 @@
 [versions]
 agp = "8.5.2"
+androidTestify = "2.5.0"
 classgraph = "4.8.177"
 coreKtx = "1.12.0"
 junit = "4.13.2"
@@ -22,8 +23,10 @@ testParameterInjector = "1.16"
 screenshot = "0.0.1-alpha07"
 utils = "2.5.0"
 testify = "3.2.0"
+espressoCore = "3.6.1"
 
 [libraries]
+android-testify = { module = "com.github.sergio-sastre.AndroidUiTestingUtils:android-testify", version.ref = "androidTestify" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
@@ -43,6 +46,7 @@ roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose"
 paparazzi = { module = "app.cash.paparazzi:paparazzi", version.ref = "paparazzi"}
 test-parameter-injector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
 android-ui-testing-utils = { module = "com.github.sergio-sastre.AndroidUiTestingUtils:utils", version.ref = "utils" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
