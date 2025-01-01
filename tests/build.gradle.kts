@@ -25,7 +25,6 @@ android {
         versionName = "1.0"
 
         android.buildFeatures.buildConfig = true
-        buildConfigField("String", "BUILD_DIR_PATH", "\"${layout.buildDirectory.get().asFile.absolutePath}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -37,6 +36,16 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+    }
+
+    val includeScreenshotTests = project.hasProperty("includeSourceSetScreenshotTest")
+    if (includeScreenshotTests){
+        sourceSets {
+            getByName("androidTest") {
+                java.srcDir("src/screenshotTest/java")//, "src/androidTest/java")
+                res.srcDir("src/screenshotTest/res")//"src/androidTest/res")
+            }
         }
     }
 
@@ -76,6 +85,7 @@ testify {
 dependencies {
     implementation(project(":android"))
     implementation(project(":jvm"))
+    implementation(project(":custompreviews"))
     implementation(platform(libs.androidx.compose.bom))
     implementation("androidx.compose.runtime:runtime")
     implementation("androidx.compose.ui:ui")
@@ -105,5 +115,5 @@ dependencies {
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.android.ui.testing.utils)
     androidTestImplementation(libs.androidx.navigation.compose)
-    androidTestImplementation("com.github.sergio-sastre.AndroidUiTestingUtils:android-testify:2.5.0")
+    androidTestImplementation(libs.android.testify)
 }
