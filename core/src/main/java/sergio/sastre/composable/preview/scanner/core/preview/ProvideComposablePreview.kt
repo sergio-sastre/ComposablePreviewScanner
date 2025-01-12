@@ -7,12 +7,12 @@ import java.lang.reflect.Proxy
  * Provides an invokable ComposablePreview
  */
 class ProvideComposablePreview<T> {
-
     operator fun invoke(
         composablePreviewMapper: ComposablePreviewMapper<T>,
         previewIndex: Int? = null,
         parameter: Any? = ComposablePreviewInvocationHandler.NoParameter,
     ): ComposablePreview<T> {
+
         val proxy = Proxy.newProxyInstance(
             ComposablePreview::class.java.classLoader,
             arrayOf(ComposablePreview::class.java),
@@ -40,7 +40,6 @@ class ProvideComposablePreview<T> {
             }
 
             private fun Class<*>.toClassName(): String = canonicalName ?: simpleName
-
         }
     }
 }

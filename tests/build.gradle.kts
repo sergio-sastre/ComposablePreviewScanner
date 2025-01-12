@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.screenshot)
+    alias(libs.plugins.testify)
 }
 
 // Apply conditionally via CLI to avoid plugin clashes
@@ -22,6 +24,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        android.buildFeatures.buildConfig = true
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -32,6 +36,16 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+    }
+
+    val includeScreenshotTests = project.hasProperty("includeSourceSetScreenshotTest")
+    if (includeScreenshotTests) {
+        sourceSets {
+            getByName("androidTest") {
+                java.srcDir("src/screenshotTest/java")//, "src/androidTest/java")
+                res.srcDir("src/screenshotTest/res")//"src/androidTest/res")
+            }
         }
     }
 
@@ -53,6 +67,8 @@ android {
         jvmTarget = "17"
     }
 
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
+
     testOptions.unitTests {
         isIncludeAndroidResources = true
         all {
@@ -61,15 +77,33 @@ android {
     }
 }
 
+testify {
+    moduleName = ":tests"
+    applicationPackageId = "composable.preview.scanner"
+}
+
+/*
+tasks.withType<Test> {
+    dependsOn("compileDebugScreenshotTestKotlin")
+    dependsOn("compileReleaseScreenshotTestKotlin")
+}
+ */
+
 dependencies {
     implementation(project(":android"))
     implementation(project(":jvm"))
+    implementation(project(":custompreviews"))
     implementation(platform(libs.androidx.compose.bom))
     implementation("androidx.compose.runtime:runtime")
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui-tooling")
     implementation("androidx.compose.ui:ui-tooling-preview")
+
+    screenshotTestImplementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.8")
+    debugImplementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.8") {
+        because("We would get NoClassFound exception when running Paparazzi and Roborazzi tests since it is used for ScreenshotImplementation")
+    }
 
     implementation(libs.material)
     implementation(libs.androidx.core.ktx)
@@ -83,6 +117,10 @@ dependencies {
     testImplementation(libs.robolectric)
     testImplementation(libs.paparazzi)
 
+    androidTestImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.android.ui.testing.utils)
+    androidTestImplementation(libs.androidx.navigation.compose)
+    androidTestImplementation(libs.android.testify)
 }

@@ -1,6 +1,7 @@
 package sergio.sastre.composable.preview.scanner.tests.logic
 
 import android.content.res.Configuration
+import org.junit.Assert.assertEquals
 import sergio.sastre.composable.preview.scanner.StringProvider
 import sergio.sastre.composable.preview.scanner.customextraannotation.Device
 import sergio.sastre.composable.preview.scanner.customextraannotation.ScreenshotTestConfig
@@ -8,10 +9,13 @@ import sergio.sastre.composable.preview.scanner.excluded.ExcludeScreenshot
 import org.junit.Assume.assumeFalse
 import org.junit.Assume.assumeTrue
 import org.junit.Test
-
+import org.junit.Assert.assertTrue
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.preview.getAnnotation
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.Classpath
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.MAIN
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.SCREENSHOT_TEST
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
 import java.io.FileNotFoundException
 
@@ -26,13 +30,13 @@ class AndroidComposablePreviewScannerTest {
                     "sergio.sastre.composable.preview.scanner.multiplepreviews"
                 )
                 .getPreviews()
-                .map { it.toString() }
+                .map { it.previewInfo.toString() }
 
         val includedPreviews =
             AndroidComposablePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.included")
                 .getPreviews()
-                .map { it.toString() }
+                .map { it.previewInfo.toString() }
 
         assumeTrue(includedPreviews.isNotEmpty())
 
@@ -40,7 +44,7 @@ class AndroidComposablePreviewScannerTest {
             AndroidComposablePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.multiplepreviews")
                 .getPreviews()
-                .map { it.toString() }
+                .map { it.previewInfo.toString() }
 
         assumeTrue(includedPlusMultiplePreviews.size > includedPreviews.size)
         assumeTrue(includedPlusMultiplePreviews.size > multiplePreviews.size)
@@ -50,7 +54,7 @@ class AndroidComposablePreviewScannerTest {
     }
 
     @Test
-    fun `GIVEN same composable with different absolute path THEN their screenshot names are different`(){
+    fun `GIVEN same composable with different absolute path THEN their screenshot names are different`() {
         val sameComposable1Preview =
             AndroidComposablePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.samecomposable1")
@@ -299,17 +303,24 @@ class AndroidComposablePreviewScannerTest {
     }
 
     @Test
-    fun `GIVEN preview parameters with StringProvider and @PreviewLightDark THEN it creates one preview for every combination`() {
+    fun `GIVEN preview parameters with StringProvider and MultiplePreviews THEN it creates one preview for every combination`() {
         val stringProviderValuesSize = StringProvider().values.toList().size
-        val previewLightDarkValuesSize = 2
-        val expectedAmountOfPreviews = stringProviderValuesSize * previewLightDarkValuesSize
+        /*
+        @Preview                 // 1 Preview
+        @MyCustomDarkModePreview // 2 Previews
+        @PreviewDynamicColors    // 4 Previews
+        --------------------------------------
+                         TOTAL = // 7 Previews
+         */
+        val multiplePreviewsAmount = 7
+        val expectedAmountOfPreviews = stringProviderValuesSize * multiplePreviewsAmount
 
         val previews =
             AndroidComposablePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.multiplepreviewswithpreviewparameters")
                 .getPreviews()
 
-        assert(previews.size == expectedAmountOfPreviews)
+        assertEquals(previews.size, expectedAmountOfPreviews)
     }
 
     @Test
@@ -334,13 +345,13 @@ class AndroidComposablePreviewScannerTest {
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun `GIVEN scan package trees without arguments, THEN throw IllegalArgumentException`(){
+    fun `GIVEN scan package trees without arguments, THEN throw IllegalArgumentException`() {
         AndroidComposablePreviewScanner()
             .scanPackageTrees()
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun `GIVEN scan package trees without include arguments, THEN throw IllegalArgumentException`(){
+    fun `GIVEN scan package trees without include arguments, THEN throw IllegalArgumentException`() {
         AndroidComposablePreviewScanner()
             .scanPackageTrees(
                 include = emptyList(),

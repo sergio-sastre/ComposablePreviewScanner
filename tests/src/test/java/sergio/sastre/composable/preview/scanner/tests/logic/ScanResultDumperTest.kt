@@ -3,6 +3,8 @@ package sergio.sastre.composable.preview.scanner.tests.logic
 import org.junit.Assume
 import org.junit.Test
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.Classpath
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.*
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper
 import sergio.sastre.composable.preview.scanner.core.utils.assetsFilePath
@@ -40,10 +42,10 @@ class ScanResultDumperTest {
     }
 
     @Test
-    fun `GIVEN a scan result file doesnot exist WHEN scan result is dumped into that file with a flavour THEN that file exists in that flavour`() {
+    fun `GIVEN a scan result file does not exist WHEN scan result is dumped into that file with a flavour THEN that file exists in that flavour`() {
         val scanResultFile = assetsFilePath(
             fileName = "scan_result.json",
-            flavourName = "debug"
+            variantName = "debug"
         )
         Assume.assumeTrue(scanResultFile.exists().not())
 
@@ -51,8 +53,8 @@ class ScanResultDumperTest {
             ScanResultDumper()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .dumpScanResultToFileInAssets(
-                    fileName = "scan_result.json",
-                    flavourName = "debug"
+                    scanFileName = "scan_result.json",
+                    variantName = "debug"
                 )
 
             assert(scanResultFile.exists())
@@ -62,12 +64,11 @@ class ScanResultDumperTest {
         }
     }
 
-
     @Test
-    fun `GIVEN a scan result file doesnot exist WHEN scan result for some previews is dumped into that file THEN that file contains those previews`() {
+    fun `GIVEN a scan result file does not exist WHEN scan result for some previews is dumped into that file THEN that file contains those previews`() {
         val scanResultFile = assetsFilePath(
             fileName = "scan_result.json",
-            flavourName = "debug"
+            variantName = "debug"
         )
         Assume.assumeTrue(scanResultFile.exists().not())
 
@@ -75,8 +76,8 @@ class ScanResultDumperTest {
             ScanResultDumper()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .dumpScanResultToFileInAssets(
-                    fileName = "scan_result.json",
-                    flavourName = "debug"
+                    scanFileName = "scan_result.json",
+                    variantName = "debug"
                 )
 
             val previews = AndroidComposablePreviewScanner()
@@ -91,6 +92,48 @@ class ScanResultDumperTest {
             assert(previews.toString() == previewsFromFile.toString())
         } finally {
             scanResultFile.delete()
+            assetsFilePath(
+                fileName = "custom_previews.json",
+                variantName = "debug"
+            ).delete()
+        }
+    }
+
+    @Test
+    fun `GIVEN a scan result file does not exist WHEN scan result for some previews in MAIN is dumped into that file THEN that file contains those previews`() {
+        val scanResultFile = assetsFilePath(
+            fileName = "scan_result.json",
+            variantName = "debug"
+        )
+        Assume.assumeTrue(scanResultFile.exists().not())
+
+        try {
+            ScanResultDumper()
+                .setTargetSourceSet(Classpath(MAIN))
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+                .dumpScanResultToFileInAssets(
+                    scanFileName = "scan_result.json",
+                    variantName = "debug"
+                )
+
+            val previews = AndroidComposablePreviewScanner()
+                .setTargetSourceSet(Classpath(MAIN))
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+                .getPreviews()
+
+            val previewsFromFile =
+                AndroidComposablePreviewScanner()
+                    .setTargetSourceSet(Classpath(MAIN))
+                    .scanFile(scanResultFile)
+                    .getPreviews()
+
+            assert(previews.toString() == previewsFromFile.toString())
+        } finally {
+            scanResultFile.delete()
+            assetsFilePath(
+                fileName = "custom_previews.json",
+                variantName = "debug"
+            ).delete()
         }
     }
 }
