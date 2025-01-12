@@ -4,7 +4,7 @@ import org.junit.Assume
 import org.junit.Test
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.Classpath
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSetClasspath.MAIN
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.*
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper
 import sergio.sastre.composable.preview.scanner.core.utils.assetsFilePath
@@ -92,6 +92,10 @@ class ScanResultDumperTest {
             assert(previews.toString() == previewsFromFile.toString())
         } finally {
             scanResultFile.delete()
+            assetsFilePath(
+                fileName = "custom_previews.json",
+                variantName = "debug"
+            ).delete()
         }
     }
 
@@ -126,6 +130,10 @@ class ScanResultDumperTest {
             assert(previews.toString() == previewsFromFile.toString())
         } finally {
             scanResultFile.delete()
+            assetsFilePath(
+                fileName = "custom_previews.json",
+                variantName = "debug"
+            ).delete()
         }
     }
 }

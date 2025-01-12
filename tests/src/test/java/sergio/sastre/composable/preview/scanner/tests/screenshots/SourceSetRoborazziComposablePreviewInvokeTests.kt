@@ -13,8 +13,9 @@ import sergio.sastre.composable.preview.scanner.android.device.domain.Robolectri
 import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.Classpath
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSetClasspath.MAIN
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSetClasspath.SCREENSHOT_TEST
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.ANDROID_TEST
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.MAIN
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.SCREENSHOT_TEST
 
 /**
  * These tests ensure that the invoke() function of a ComposablePreview works as expected
@@ -42,10 +43,17 @@ class SourceSetRoborazziComposablePreviewInvokeTests(
                 .includePrivatePreviews()
                 .getPreviews()
 
+        private val cachedAndroidTestPreviews: List<ComposablePreview<AndroidPreviewInfo>> =
+            AndroidComposablePreviewScanner()
+                .setTargetSourceSet(Classpath(ANDROID_TEST))
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+                .includePrivatePreviews()
+                .getPreviews()
+
         @JvmStatic
         @ParameterizedRobolectricTestRunner.Parameters
         fun values(): List<ComposablePreview<AndroidPreviewInfo>> =
-            cachedMainPreviews + cachedScreenshotTestPreviews
+            cachedMainPreviews + cachedScreenshotTestPreviews + cachedAndroidTestPreviews
     }
 
     @GraphicsMode(GraphicsMode.Mode.NATIVE)

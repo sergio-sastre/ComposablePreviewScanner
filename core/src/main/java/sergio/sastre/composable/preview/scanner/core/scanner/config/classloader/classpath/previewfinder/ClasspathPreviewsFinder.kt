@@ -10,6 +10,7 @@ import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.previewfinder.buildtime.ComposablePreviewsAtBuildTimeFinder
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.ReflectionClassLoader
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.SourceSetClassLoader
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.Classpath
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.previewfinder.overriden.OverridenClasspathComposablePreviewsFinder
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilterState
 
@@ -17,7 +18,7 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResul
  * @param annotationToScanClassName The full className of the annotation the Composables we want to find are annotated with.
  *      This is usually the @Preview annotation, but could be any other one as far as it does not have AnnotationRetention.SOURCE
  * @param previewInfoMapper A Mapper that converts an AnnotationParameterValueList into the expected PreviewInfo class, e.g. containing apiLevel, Locale, UiMode, FontScale...
- * @param previewMapperCreator Returns a Mapper that convert a Composable annotated with one or more @Preview into a Sequence of ComposablePreview, one for each @Preview
+ * @param previewMapperCreator Returns a Mapper that converts a Composable annotated with one or more @Preview into a Sequence of ComposablePreviews, one for each @Preview
  */
 class ClasspathPreviewsFinder<T>(
     override val annotationToScanClassName: String,
@@ -25,18 +26,24 @@ class ClasspathPreviewsFinder<T>(
     private val previewMapperCreator: ComposablePreviewMapperCreator<T>,
 ) : PreviewsFinder<T> {
 
-    private var overridenClassPath: String? = null
+    private var overridenClassPath: Classpath? = null
     private val crossModuleCustomPreviewsPackageTrees = mutableListOf<String>()
 
     private var scanResult: ScanResult? = null
 
-    private val crossmoduleCustomPreviewAnnotationLoader by lazy {
+    private val crossModuleCustomPreviewAnnotationLoader by lazy {
         scanResult?.let {
             ScanResultCustomPreviewAnnotationLoader(it, annotationToScanClassName)
         } ?: PackageTreesCustomPreviewAnnotationLoader(
             crossModuleCustomPreviewsPackageTrees,
             annotationToScanClassName
         )
+        // TODO -> reasons to fail (source set)
+        // 1. Instrumentation test ->
+        //      1.1 SourceSet ScreenshotTest -> include 'screenshotTest' sources
+        //          Catch this error in ClassLoader
+        //      2.1 Not using scanFromFile -> does not allow other versions...
+        //          Catch this error in the ScanMethods
     }
 
     private val previewsFinder: PreviewsFinder<T>
@@ -48,7 +55,7 @@ class ClasspathPreviewsFinder<T>(
                         previewInfoMapper = previewInfoMapper,
                         previewMapperCreator = previewMapperCreator,
                         classLoader = SourceSetClassLoader(it),
-                        crossModuleCustomPreviewAnnotationLoader = crossmoduleCustomPreviewAnnotationLoader
+                        crossModuleCustomPreviewAnnotationLoader = crossModuleCustomPreviewAnnotationLoader
                     )
                 }
                 ?: ComposablePreviewsAtBuildTimeFinder(
@@ -64,7 +71,7 @@ class ClasspathPreviewsFinder<T>(
     ): List<ComposablePreview<T>> =
         previewsFinder.findPreviewsFor(classInfo, scanResultFilterState)
 
-    fun applyOverridenClasspath(classPath: String) = apply {
+    fun applyOverridenClasspath(classPath: Classpath) = apply {
         overridenClassPath = classPath
     }
 

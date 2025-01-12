@@ -19,10 +19,23 @@ class ScanResultDumper {
         .enableAnnotationInfo()
         .enableMemoryMapping()
 
+    // TODO -> rewrite this to allow api
+
+    /**
+     * Prepares the dumper to find previews scanned from a Source Set like 'screenshotTest', 'androidTest', 'main' or a custom one via the given sourceSetClasspath
+     * It uses compiled classes of that source set.
+     * Check Classpath to find their locations under the /build folder of the corresponding module.
+     *
+     * Make sure those compiled classes exist and are up to date before scanning them.
+     * For that you can execute ./gradlew :<module>:compile<variant><sourceSet>Kotlin,
+     * for instance: ./gradlew :mymodule:compileReleaseScreenshotTestKotlin
+     *
+     * @param sourceSetClasspath the classpath pointing to the package where compiled classes of a Source Set are located
+     */
     fun setTargetSourceSet(
-        classpath: Classpath,
+        sourceSetClasspath: Classpath,
     ) = apply {
-        val absolutePath = File(classpath.rootDir, classpath.packagePath).absolutePath
+        val absolutePath = File(sourceSetClasspath.rootDir, sourceSetClasspath.packagePath).absolutePath
         updatedClassGraph.overrideClasspath(absolutePath)
     }
 
@@ -55,11 +68,19 @@ class ScanResultDumper {
         /**
          * Dumps the ScanResult of the target package trees for the given variantName (.e.g debug/release) into a file in assets,
          * so it can be read while executing instrumentation tests.
+         *
+         * @param scanFileName name of the file here the previews info is stored
+         * @param variantName usually "debug" or "release" but could be any other custom buildType or flavour.
+         * @param packageTreesOfCustomPreviews package where external previews (i.e. previews defined in another dependency or module)
+         * different can be found.
+         * In most cases, you just need the default "androidx.compose.ui.tooling.preview" package,
+         * unless you see some custom-annotated-Previews missing, whose annotation packages should be added here.
+         * @param customPreviewsFileName name of the file where the packageTreesOfCustomPreviews info is stored
          */
         fun dumpScanResultToFileInAssets(
             scanFileName: String,
             variantName: String = "",
-            customPreviewsPackageTrees: List<String> = listOf("androidx.compose.ui.tooling.preview"),
+            packageTreesOfCustomPreviews: List<String> = listOf("androidx.compose.ui.tooling.preview"),
             customPreviewsFileName: String = "custom_previews.json"
         ): ScanResultProcessor = apply {
             val path = System.getProperty("user.dir")
@@ -74,9 +95,9 @@ class ScanResultDumper {
             }
             println("Scan Results dump to output file path: ${outputScanFile.absolutePath}")
 
-            if (customPreviewsPackageTrees.isNotEmpty()) {
+            if (packageTreesOfCustomPreviews.isNotEmpty()) {
                 val customPreviewsScanResult = ClassGraph()
-                    .acceptPackages(*customPreviewsPackageTrees.toTypedArray())
+                    .acceptPackages(*packageTreesOfCustomPreviews.toTypedArray())
                     .enableAnnotationInfo()
                     .scan()
 

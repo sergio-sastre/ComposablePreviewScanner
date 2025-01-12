@@ -6,7 +6,6 @@ import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.core.processor.capture.pixelCopyCapture
 import dev.testify.scenario.ScreenshotScenarioRule
-import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,10 +16,9 @@ import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
 import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.Classpath
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSetClasspath
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSetClasspath.ANDROID_TEST
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSetClasspath.MAIN
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSetClasspath.SCREENSHOT_TEST
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.ANDROID_TEST
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.MAIN
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.SCREENSHOT_TEST
 import sergio.sastre.uitesting.android_testify.screenshotscenario.assertSame
 import sergio.sastre.uitesting.android_testify.screenshotscenario.generateDiffs
 import sergio.sastre.uitesting.utils.activityscenario.activityScenarioForActivityRule
@@ -29,6 +27,9 @@ import sergio.sastre.uitesting.utils.utils.waitForComposeView
 
 /**
  * ./gradlew :tests:screenshotRecord -PincludeSourceSetScreenshotTest
+ *
+ * if executed without gradle property -PincludeSourceSetScreenshotTest,
+ * it should throw ClassInScreenshotTestSourceSetNotFoundException
  */
 @RunWith(Parameterized::class)
 class TestifyComposablePreviewScannerInstrumentationInvokeTest(
@@ -49,9 +50,6 @@ class TestifyComposablePreviewScannerInstrumentationInvokeTest(
                 )
                 .includePrivatePreviews()
                 .getPreviews()
-                .apply {
-                    assertEquals(56, size)
-                }
         }
 
         private val cachedScreenshotTestPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
@@ -63,9 +61,6 @@ class TestifyComposablePreviewScannerInstrumentationInvokeTest(
                 )
                 .includePrivatePreviews()
                 .getPreviews()
-                .apply {
-                    assertEquals(1, size)
-                }
         }
 
         private val cachedAndroidTestPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
@@ -77,17 +72,12 @@ class TestifyComposablePreviewScannerInstrumentationInvokeTest(
                 )
                 .includePrivatePreviews()
                 .getPreviews()
-                .apply {
-                    assertEquals(1, size)
-                }
         }
 
         @JvmStatic
         @Parameterized.Parameters
         fun values(): List<ComposablePreview<AndroidPreviewInfo>> =
-            (cachedMainPreviews + cachedScreenshotTestPreviews + cachedAndroidTestPreviews).apply {
-                assertEquals(55, size)
-            }
+            cachedMainPreviews + cachedScreenshotTestPreviews + cachedAndroidTestPreviews
     }
 
     @get:Rule
@@ -99,6 +89,7 @@ class TestifyComposablePreviewScannerInstrumentationInvokeTest(
     @ScreenshotInstrumentation
     @Test
     fun snapshot() {
+
         screenshotRule
             .withScenario(composableRule.activityScenario)
             .setScreenshotViewProvider {

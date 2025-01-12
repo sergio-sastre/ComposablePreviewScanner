@@ -22,8 +22,6 @@ class ProvideComposablePreview<T> {
             ),
         ) as ComposablePreview<T>
 
-        println("Classloader ComposablePreview: ${ComposablePreview::class.java.classLoader.javaClass.name}")
-
         // Wrap the call to the proxy in an object so that we can override the toString method
         // to provide a more descriptive name for the test and resulting snapshot filename.
         return object : ComposablePreview<T> by proxy {
