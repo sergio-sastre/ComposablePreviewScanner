@@ -3,20 +3,30 @@ package sergio.sastre.composable.preview.scanner
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-
-import kotlinx.collections.immutable.persistentListOf
-
-val immutableList = persistentListOf("Example")
+import androidx.compose.ui.tooling.preview.PreviewDynamicColors
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import sergio.sastre.composable.preview.custompreviews.CrossModuleCustomPreview
 
 class ComposePreviewScreenshotTests {
     @Composable
-    fun Example() {
-        Text(immutableList.first())
+    fun Example(text: String) {
+        Text(text)
     }
 
-    @Preview
+    // Total: 14 Previews
+    @Preview                 // 1 Preview
+    @MyCustomDarkModePreview // 2 Previews
+    @PreviewDynamicColors    // 4 previews
     @Composable
-    fun ExamplePreview() {
-        Example()
+    fun ScreenshotTestExampleMultiplePreviewWithParams(
+        @PreviewParameter(provider = StringProvider::class) name: String
+    ) {
+        Example(name)
+    }
+
+    @CrossModuleCustomPreview // 3 Previews
+    @Composable
+    fun ScreenshotTestExampleMultiplePreview(){
+        Example("Example")
     }
 }

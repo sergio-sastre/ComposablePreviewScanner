@@ -3,7 +3,7 @@ package sergio.sastre.composable.preview.scanner.core.scanner.config.classloader
 import io.github.classgraph.AnnotationInfoList
 import io.github.classgraph.ClassGraph
 
-class PackageTreesCustomPreviewAnnotationLoader(
+internal class PackageTreesCustomPreviewAnnotationLoader(
     private val packageTreesOfCustomPreviews: List<String> = emptyList(),
     private val annotationToScanClassName: String
 ) : CustomPreviewAnnotationLoader {

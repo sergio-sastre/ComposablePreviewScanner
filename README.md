@@ -17,17 +17,17 @@ A library to help auto-generate screenshot tests from Composable Previews with a
 JVM-based (i.e. Paparazzi, Roborazzi) as well as Instrumentation-based (i.e. Shot, Dropshots, Android-Testify, etc.)
 
 # Comparison with other solutions
-|                                           | Composable Preview Scanner | Showkase      | Compose Preview Screenshot Testing |
-|-------------------------------------------|------------------------------------|---------------|------------------------------------|
-| Independent of AGP version                | ✅                                  | ✅             | ❌                                  |
-| Library-agnostic solution                 | ✅                                  | ✅             | ❌<sup>1</sup>                      |
-| Scans previews in "main" source           | ✅                                  | ✅             | ❌<sup>2</sup>                      |
-| Preview Infos available                   | ✅                                  | ❌<sup>3</sup> | ✅                                  |
-| Specific Config (e.g. for Libs) available | ✅<sup>4</sup>                      | ❌             | ⚠️<sup>5</sup>                               |
-| Compose Multiplatform Previews support            | *✅<sup>6</sup>                     | ❌<sup>7</sup> | ❌                                  |
+|                                                      | Composable Preview Scanner                    | Showkase                                      | Compose Preview Screenshot Testing |
+|------------------------------------------------------|-----------------------------------------------|-----------------------------------------------|------------------------------------|
+| Independent of AGP version                           | ✅                                             | ✅                                             | ❌                                  |
+| Library-agnostic solution                            | ✅                                             | ✅                                             | ❌<sup>1</sup>                      |
+| Scans previews in different sources sets<sup>2</sup> | ✅ main<br/>✅ screenshotTest<br/>✅ androidTest | ✅ main<br/>❌ screenshotTest<br/>❌ androidTest | ❌ main<br/>✅ screenshotTest<br/>❌ androidTest                     |
+| Preview Infos available                              | ✅                                             | ❌<sup>3</sup>                                 | ✅                                  |
+| Specific Config (e.g. for Libs) available            | ✅<sup>4</sup>                                 | ❌                                             | ⚠️<sup>5</sup>                               |
+| Compose Multiplatform Previews support               | *✅<sup>6</sup>                                | ❌<sup>7</sup>                                 | ❌                                  |
 
 <sup>1</sup> Compose Preview Screenshot Testing is a standalone solution based on LayoutLib, whereas ComposablePreviewScanner and Showkase provide Composables' infos so you can run screenshot tests with your favourite screenshot testing library.</br></br>
-<sup>2</sup> Compose Preview Screenshot Testing requires to put the previews in a brand-new "screenshotTest" source. ComposablePreviewScanner and Showkase only work with previews in the "main" source, so if you want to have the previews used for screenshot tests separate, I recommend to create an extra module for them and their screenshot tests and do not include that module in :app.</br></br>
+<sup>2</sup> From version 0.5.0, ComposablePreviewScanner can scan previews in any source set. Compose Preview Screenshot Testing requires to put the previews in a brand-new "screenshotTest" source.</br></br>
 <sup>3</sup> Showkase components only hold information about the Composable, but not about the Preview Info (i.e. ApiLevel, Locale, UiMode, FontScale...).</br></br>
 <sup>4</sup> ComposablePreviewScanner supports adding extra lib-config (e.g. Paparazzi's Rendering Mode or Roborazzi's compare options) in the form of annotations that are additionally added to the preview. You can check how in the examples below in [Jvm Screenshot Tests](#jvm-screenshot-tests) and [Instrumentation Screenshot Tests](#instrumentation-screenshot-tests) respectively.</br></br>
 <sup>5</sup> Compose Preview Screenshot Testing supports *only general tolerance* via gradle plugin from version [0.0.1-alpha06](https://developer.android.com/studio/preview/compose-screenshot-testing#001-alpha06)</br></br>
@@ -39,9 +39,7 @@ ComposablePreviewScanner also works with:
 - Multi-Previews, including  `@PreviewScreenSizes`, `@PreviewFontScales`, `@PreviewLightDark`, and `@PreviewDynamicColors`.
 - private `@Previews` (from version 0.1.3+)
 - `@Previews` inside public classes<sup>1</sup> (from version 0.3.0+), not nested classes though
-
-but does not work with
-- `@Previews` that are not located in the "main" source
+- `@Previews` located in any source set, like "main", "screenshotTest" and "androidTest" (from version 0.5.0+)
 
 <sup>1</sup> Compose Preview Screenshot Testing tool requires to put your `@Previews` inside a class. By supporting this, you can keep `@Previews` in a separate class, and keep that class in the "main" source to auto-generate screenshot tests from them with ComposablePreviewScanner and Roborazzi, Paparazzi or any instrumentation-based screenshot testing library, or move that class to "screenshotTest" source to auto-generate screenshot tests from them with Compose Preview Screenshot Testing.
 
@@ -87,10 +85,8 @@ dependencies {
 }
 ```
 
-
-
 # How to use
-## Direct links
+## Libraries
 1. [Jvm Screenshot Tests](#jvm-screenshot-tests)</br>
    1.1  [Paparazzi](#paparazzi)</br>
    1.2  [Roborazzi](#roborazzi)</br>
@@ -102,6 +98,11 @@ The API is pretty simple:
 
 ```kotlin
 AndroidComposablePreviewScanner() // or CommonComposablePreviewScanner(), see Compose Multiplatform section
+    // optional to scan previews in compiled classes of other source sets, like "screenshotTest" or "androidTest"
+    // if omitted, it scans previews in Main at build time
+    .setTargetSourceSet(
+       Classpath(SourceSet.SCREENSHOT_TEST) // scan previews under "screenshotTest"
+    )
     .scanPackageTrees(
         include = listOf("your.package", "your.package2"),
         exclude = listOf("your.package.subpackage1", "your.package2.subpackage1")
@@ -116,20 +117,92 @@ AndroidComposablePreviewScanner() // or CommonComposablePreviewScanner(), see Co
         ScreenshotConfig2::class.java
     )
     .includePrivatePreviews() // Otherwise they are ignored
-    .filterPreviews { 
-        // filter by any previewInfo: name, group, apiLevel, locale, uiMode, fontScale...
+    // optional to filter by any previewInfo: name, group, apiLevel, locale, uiMode, fontScale...
+    .filterPreviews {
         previewInfo ->  previewInfo.apiLevel == 30 
     }
     // ---
     .getPreviews()
 ```
 
-There are 2 more options to scan previews:
+## Scanning
+
+### Scanning SourceSets (screenshotTest, androidTest, main)
+By default, ComposablePreviewScanner scans `@Preview`s in the 'main' sourceSet at build time.
+However, one can scan previews in other Source Sets different from 'main' by using `.setTargetSourceSet(classpath:Classpath)`,
+where `classpath` is the local path to the compiled classes of that Source Set.</br>
+ComposablePreviewScanner provides some default values to facilitate this:
+```kotlin
+// Previews under "screenshotTest"
+Classpath(SourceSet.SCREENSHOT_TEST)
+
+// Previews under "androidTest"
+Classpath(SourceSet.ANDROID_TEST)
+
+// Previews under "main"... 
+// This is not necessary for JVM-based screenshot testing libraries since they can scan previews at build time
+Classpath(SourceSet.MAIN)
+```
+
+Therefore, you have to make sure the corresponding compiled classes for that sourceSet exist and are up to date.
+The simplest way is to execute the corresponding compile task before running your tests or dumping the scan result to a file, namely `<module>:compile<Variant><Sourceset>Kotlin`, for instance
+1. ScreenshotTest 
+   - Debug ->   `:mymodule:compileDebugScreenshotTestKotlin`
+   - Release -> `:mymodule:compileReleaseScreenshotTestKotlin`
+2. AndroidTest
+   - Debug ->   `:mymodule:compileDebugAndroidTestKotlin`
+   - Release -> `:mymodule:compileReleaseAndroidTestKotlin`
+
+To ensure you don't forget it, you can configure gradle accordingly, so those tasks are always executed previously.
+For instance, if you're using Roborazzi or Paparazzi and want to scan previews in the `screenshotTest` Source Set for the `debug` variant
+```kotlin
+// Execute always before unit tests, including Roborazzi/Paparazzi tests
+tasks.withType<Test> {
+   dependsOn("compileDebugScreenshotTestKotlin")
+}
+```
+
+And last but not least, make sure all the code inside the previews of the target Source Set is also
+available in 'test' (for Roborazzi and Paparazzi) or 'android test' (for any instrumentation-based library).</br>
+So, let's say that you only have `@Preview`s in `screenshotTest`, and not in 'main'. Therefore you've only added that dependency to 'screenshotTest':
+```kotlin
+screenshotTestImplementation("androidx.compose.ui:ui-tooling-preview:<version>")
+```
+If you're running Roborazzi or Paparazzi screenshot tests, you'll need to add that dependency to 'test' build Type
+```kotlin
+screenshotTestImplementation("androidx.compose.ui:ui-tooling-preview:<version>")
+testImplementation("androidx.compose.ui:ui-tooling-preview:<version>")
+```
+
+> [!WARNING]
+> For instrumentation tests and Source Sets different from 'main' or 'androidTest', like 'screenshotTest', you'll also need to ensure that the classes of those source sets
+> are also included in the .apk installed on the device or emulator, or it will throw ClassNotFoundErrors.
+> The easiest way to achieve this is to add the following code snippet to your gradle file:
+> ```kotlin
+> val includeScreenshotTests = project.hasProperty("includeSourceSetScreenshotTest")
+> if (includeScreenshotTests) {
+>     sourceSets {
+>        getByName("androidTest") {
+>           java.srcDir("src/screenshotTest/java") //or kotlin
+>           res.srcDir("src/screenshotTest/res")
+>        }
+>     }
+>}
+> ```
+> And pass that gradle property when executing the screenshot tests via command-line, e.g.:
+> ./gradlew :tests:screenshotRecord -PincludeSourceSetScreenshotTest
+> 
+> This is NOT necessary for JVM-based screenshot testing libraries like Roborazzi and paparazzi
+
+### Scanning source Options (packages, files, inputStreams)
+Apart from `scanPackageTrees(include:List<String>, exclude:List<String>)`, there are 2 more options to scan previews:
 1. All Packages: `scanAllPackages()`. This might require a huge amount of memory since it would scan not only in a set of packages, but in all packages used in your app/module (i.e. also in its transitive dependencies). This is in 99% of the cases unnecessary, and scanning the main package trees of your module should be sufficient. 
 2. From a file containing the ScanResult. This speeds up your screenshot tests, since avoids the time-consuming process of scanning each time by reusing the previously scanned data: </br>
    2.1. `scanFile(jsonFile: File)`. Use this for JVM-based screenshot testing libraries (i.e. Roborazzi & Paparazzi).</br>
-   2.2. `scanFile(inputStream: InputStream)`. This is useful for Instrumentation-based screenshot testing libraries.</br></br>
-To dump the ScanResult into a File, the easiest is to create a unit test for that. Likely to be provided via gradle task in the future:
+   2.2. `scanFile(targetInputStream: InputStream, customPreviewsInfoInputStream: InputStream)`. This is meant for Instrumentation-based screenshot testing libraries.</br></br>
+To dump the ScanResult into a File, the recommended approach from ComposablePreviewScanner 0.5.0 on is to create a gradle task for that:
+// To be documented soon
+As an alternative, you can also create a unit test for that:
 ```kotlin
 class SaveScanResultInFiles {
     @Test
@@ -137,6 +210,7 @@ class SaveScanResultInFiles {
         val scanResultFileName = "scan_result.json"
 
         ScanResultDumper()
+            .setTargetSourceSet(Classpath(SourceSet.ANDROID_TEST)) // optional
             .scanPackageTrees("my.package")
             // for unit tests
             .dumpScanResultToFile(scanResultFileName)
@@ -148,8 +222,6 @@ class SaveScanResultInFiles {
     }
 }
 ```
-> [!WARNING]  
-> You'll have to ensure that the file is already generated before running the screenshot tests. You'll also need to keep it up to date. 
 
 ## JVM Screenshot Tests
 
@@ -343,7 +415,10 @@ class PreviewParameterizedTests(
 
 ## Instrumentation Screenshot Tests
 Android does not use the standard Java bytecode format and does not actually even have a runtime classpath.
-Therefore, the simplest way to support instrumentation tests, is to...
+Moreover, the "build" folders, where the compiled classes are located, are accessible from instrumentation tests.
+Therefore, the current way to support instrumentation tests, is by previously dumping the relevant classes into a file and moving it into a folder that can be accessed while running instrumentation tests.
+There are 2 means to achieve this.
+// TODO
 1. run the scan in a unit test & save it in a file accessible by instrumentation tests e.g. in assets
 ```kotlin
 class SaveScanResultInAssets {

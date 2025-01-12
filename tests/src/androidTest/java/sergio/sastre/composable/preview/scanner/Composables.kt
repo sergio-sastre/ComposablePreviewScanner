@@ -8,15 +8,13 @@ import kotlinx.collections.immutable.persistentListOf
 
 val immutableList = persistentListOf("Example")
 
-class AndroidTestSourceSetComposePreviewScreenshotTests {
-    @Composable
-    fun Example() {
-        Text(immutableList.first())
-    }
+@Composable
+fun Example() {
+    Text(immutableList.first())
+}
 
-    @Preview
-    @Composable
-    fun ExamplePreview() {
-        Example()
-    }
+@Preview
+@Composable
+fun AndroidTestExamplePreview() {
+    Example()
 }

@@ -40,7 +40,7 @@ android {
     }
 
     val includeScreenshotTests = project.hasProperty("includeSourceSetScreenshotTest")
-    if (includeScreenshotTests){
+    if (includeScreenshotTests) {
         sourceSets {
             getByName("androidTest") {
                 java.srcDir("src/screenshotTest/java")//, "src/androidTest/java")
@@ -81,6 +81,13 @@ testify {
     moduleName = ":tests"
     applicationPackageId = "composable.preview.scanner"
 }
+
+/*
+tasks.withType<Test> {
+    dependsOn("compileDebugScreenshotTestKotlin")
+    dependsOn("compileReleaseScreenshotTestKotlin")
+}
+ */
 
 dependencies {
     implementation(project(":android"))
