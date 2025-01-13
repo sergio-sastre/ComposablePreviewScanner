@@ -41,7 +41,7 @@ ComposablePreviewScanner also works with:
 - `@Previews` inside public classes<sup>1</sup> (from version 0.3.0+), not nested classes though
 - `@Previews` located in any source set, like "main", "screenshotTest" and "androidTest" (from version 0.5.0+)
 
-<sup>1</sup> Compose Preview Screenshot Testing tool requires to put your `@Previews` inside a class. By supporting this, you can keep `@Previews` in a separate class, and keep that class in the "main" source to auto-generate screenshot tests from them with ComposablePreviewScanner and Roborazzi, Paparazzi or any instrumentation-based screenshot testing library, or move that class to "screenshotTest" source to auto-generate screenshot tests from them with Compose Preview Screenshot Testing.
+<sup>1</sup> Compose Preview Screenshot Testing tool requires to put your `@Previews` inside a class.
 
 # How to set up
 > [!WARNING]  
@@ -200,9 +200,7 @@ Apart from `scanPackageTrees(include:List<String>, exclude:List<String>)`, there
 2. From a file containing the ScanResult. This speeds up your screenshot tests, since avoids the time-consuming process of scanning each time by reusing the previously scanned data: </br>
    2.1. `scanFile(jsonFile: File)`. Use this for JVM-based screenshot testing libraries (i.e. Roborazzi & Paparazzi).</br>
    2.2. `scanFile(targetInputStream: InputStream, customPreviewsInfoInputStream: InputStream)`. This is meant for Instrumentation-based screenshot testing libraries.</br></br>
-To dump the ScanResult into a File, the recommended approach from ComposablePreviewScanner 0.5.0 on is to create a gradle task for that:
-// To be documented soon
-As an alternative, you can also create a unit test for that:
+You can create a unit test for that:
 ```kotlin
 class SaveScanResultInFiles {
     @Test
