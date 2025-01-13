@@ -420,8 +420,6 @@ You can find executable examples that use ComposablePreviewScanner with the diff
 Android does not use the standard Java bytecode format and does not actually even have a runtime classpath.
 Moreover, the "build" folders, where the compiled classes are located, are accessible from instrumentation tests.
 Therefore, the current way to support instrumentation tests, is by previously dumping the relevant classes into a file and moving it into a folder that can be accessed while running instrumentation tests.
-There are 2 means to achieve this.
-// TODO
 1. run the scan in a unit test & save it in a file accessible by instrumentation tests e.g. in assets
 ```kotlin
 class SaveScanResultInAssets {
