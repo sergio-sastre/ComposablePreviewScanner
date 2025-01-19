@@ -97,27 +97,32 @@ dependencies {
 The API is pretty simple:
 
 ```kotlin
-AndroidComposablePreviewScanner() // or CommonComposablePreviewScanner(), see Compose Multiplatform section
-    // optional to scan previews in compiled classes of other source sets, like "screenshotTest" or "androidTest"
-    // if omitted, it scans previews in 'main' at build time
+AndroidComposablePreviewScanner()
+    // Optional to scan previews in compiled classes of other source sets, like "screenshotTest" or "androidTest"
+    // If omitted, it scans previews in 'main' at build time
     .setTargetSourceSet(
        Classpath(SourceSet.SCREENSHOT_TEST) // scan previews under "screenshotTest"
     )
+    // Compulsory to define where to scan for Previews.
+    // See 'Scanning source Options (packages, files, inputStreams)
     .scanPackageTrees(
         include = listOf("your.package", "your.package2"),
         exclude = listOf("your.package.subpackage1", "your.package2.subpackage1")
     )
-    // options to filter scanned previews
+    // Optional to filter out scanned previews
     .excludeIfAnnotatedWithAnyOf(
         ExcludeForScreenshot::class.java, 
         ExcludeForScreenshot2::class.java
     )
+    // Optional to include configuration info of the screenshot testing library in use
+    // See 'How to use -> Libraries' above for further info
     .includeAnnotationInfoForAllOf(
         ScreenshotConfig::class.java,
         ScreenshotConfig2::class.java
     )
-    .includePrivatePreviews() // Otherwise they are ignored
-    // optional to filter by any previewInfo: name, group, apiLevel, locale, uiMode, fontScale...
+    // Optional to also provide private Previews
+    .includePrivatePreviews()
+    // Optional to filter by any previewInfo: name, group, apiLevel, locale, uiMode, fontScale...
     .filterPreviews {
         previewInfo ->  previewInfo.apiLevel == 30 
     }
@@ -127,9 +132,9 @@ AndroidComposablePreviewScanner() // or CommonComposablePreviewScanner(), see Co
 
 ## Scanning
 
-### Scanning SourceSets (screenshotTest, androidTest, main)
-By default, ComposablePreviewScanner scans `@Preview`s in the 'main' sourceSet at build time.
-However, one can scan previews in other Source Sets different from 'main' by using `.setTargetSourceSet(classpath:Classpath)`,
+### Scanning Source Sets (screenshotTest, androidTest, main)
+By default, ComposablePreviewScanner scans `@Preview`s in the `main` Source Set at build time.
+However, one can scan previews in other Source Sets different from `main` by using `.setTargetSourceSet(classpath:Classpath)`,
 where `classpath` is the local path to the compiled classes of that Source Set.</br>
 ComposablePreviewScanner provides some default values to facilitate this:
 ```kotlin
@@ -139,8 +144,9 @@ Classpath(SourceSet.SCREENSHOT_TEST)
 // Previews under "androidTest"
 Classpath(SourceSet.ANDROID_TEST)
 ```
-</br>
-Therefore, you have to make sure the corresponding compiled classes for that sourceSet exist and are up to date.
+
+#### Ensure compiled classes exist
+You have to make sure the corresponding compiled classes for that Source Set exist and are up to date.
 The simplest way is to execute the corresponding compile task before running your tests or dumping the scan result to a file, namely `<module>:compile<Variant><Sourceset>Kotlin`, for instance
 1. ScreenshotTest 
    - Debug ->   `:mymodule:compileDebugScreenshotTestKotlin`
@@ -157,10 +163,11 @@ tasks.withType<Test> {
    dependsOn("compileDebugScreenshotTestKotlin")
 }
 ```
-</br>
-And last but not least, make sure all the code inside the previews of the target Source Set is also
-available in 'test' (for Roborazzi and Paparazzi) or 'android test' (for any instrumentation-based library).</br>
-So, let's say that you only have `@Preview`s in `screenshotTest`, and not in 'main'. Therefore you've only added that dependency to 'screenshotTest':
+
+#### Ensure Source Set dependencies available in tests
+Last but not least, make sure all the code inside the previews of the target Source Set is also
+available in `test` (for Roborazzi and Paparazzi) or `android test` (for any instrumentation-based library).</br>
+So, let's say that you only have `@Preview`s in `screenshotTest`, and not in `main`. Therefore you've only added that dependency to `screenshotTest`:
 ```kotlin
 screenshotTestImplementation("androidx.compose.ui:ui-tooling-preview:<version>")
 ```
