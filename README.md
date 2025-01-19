@@ -33,7 +33,7 @@ JVM-based (i.e. Paparazzi, Roborazzi) as well as Instrumentation-based (i.e. Sho
 <sup>5</sup> Compose Preview Screenshot Testing supports *only general tolerance* via gradle plugin from version [0.0.1-alpha06](https://developer.android.com/studio/preview/compose-screenshot-testing#001-alpha06)</br></br>
 <sup>6</sup> ComposablePreviewScanner provides some Compose Multiplatform support: It can scan `@Preview`s in `common`, as described in the [Compose-Multiplatform](#compose-multiplatform-support) section. Compose-Desktop `@Preview`s are still not supported out of the box because of [this issue](https://youtrack.jetbrains.com/issue/CMP-5675), but you can check the [Compose-Desktop support](#compose-desktop-support) section for a workaround.</br></br>
 <sup>7</sup> [Showkase: Compose Multiplatform Support](https://github.com/airbnb/Showkase/issues/364)
-
+</br></br></br>
 ComposablePreviewScanner also works with:
 - `@PreviewParameters`
 - Multi-Previews, including  `@PreviewScreenSizes`, `@PreviewFontScales`, `@PreviewLightDark`, and `@PreviewDynamicColors`.
@@ -41,7 +41,7 @@ ComposablePreviewScanner also works with:
 - `@Previews` inside public classes<sup>1</sup> (from version 0.3.0+), not nested classes though
 - `@Previews` located in any source set, like "main", "screenshotTest" and "androidTest" (from version 0.5.0+)
 
-<sup>1</sup> Compose Preview Screenshot Testing tool requires to put your `@Previews` inside a class.
+<sup>1</sup> The [Compose Preview Screenshot Testing tool](https://developer.android.com/studio/preview/compose-screenshot-testing) from Google requires to put your `@Previews` inside a class.
 
 # How to set up
 > [!WARNING]  
@@ -92,6 +92,10 @@ dependencies {
    1.2  [Roborazzi](#roborazzi)</br>
 2. [Instrumentation Screenshot Tests](#instrumentation-screenshot-tests)
 3. [Compose Multiplatform Support](#compose-multiplatform-support)
+
+> [!NOTE]
+> [Roborazzi](https://github.com/takahirom/roborazzi) has integrated ComposablePreviewScanner in its plugin since [version 1.22](https://github.com/takahirom/roborazzi/releases/tag/1.22.0)
+
 
 ## API   
 The API is pretty simple:
