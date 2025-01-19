@@ -99,7 +99,7 @@ The API is pretty simple:
 ```kotlin
 AndroidComposablePreviewScanner() // or CommonComposablePreviewScanner(), see Compose Multiplatform section
     // optional to scan previews in compiled classes of other source sets, like "screenshotTest" or "androidTest"
-    // if omitted, it scans previews in Main at build time
+    // if omitted, it scans previews in 'main' at build time
     .setTargetSourceSet(
        Classpath(SourceSet.SCREENSHOT_TEST) // scan previews under "screenshotTest"
     )
@@ -138,12 +138,8 @@ Classpath(SourceSet.SCREENSHOT_TEST)
 
 // Previews under "androidTest"
 Classpath(SourceSet.ANDROID_TEST)
-
-// Previews under "main"... 
-// This is not necessary for JVM-based screenshot testing libraries since they can scan previews at build time
-Classpath(SourceSet.MAIN)
 ```
-
+</br>
 Therefore, you have to make sure the corresponding compiled classes for that sourceSet exist and are up to date.
 The simplest way is to execute the corresponding compile task before running your tests or dumping the scan result to a file, namely `<module>:compile<Variant><Sourceset>Kotlin`, for instance
 1. ScreenshotTest 
@@ -161,7 +157,7 @@ tasks.withType<Test> {
    dependsOn("compileDebugScreenshotTestKotlin")
 }
 ```
-
+</br>
 And last but not least, make sure all the code inside the previews of the target Source Set is also
 available in 'test' (for Roborazzi and Paparazzi) or 'android test' (for any instrumentation-based library).</br>
 So, let's say that you only have `@Preview`s in `screenshotTest`, and not in 'main'. Therefore you've only added that dependency to 'screenshotTest':
@@ -418,7 +414,7 @@ You can find executable examples that use ComposablePreviewScanner with the diff
 - [Android-Testify](https://github.com/sergio-sastre/Android-screenshot-testing-playground/tree/master/recyclerviewscreen-previews/android-testify)</br>
 
 Android does not use the standard Java bytecode format and does not actually even have a runtime classpath.
-Moreover, the "build" folders, where the compiled classes are located, are accessible from instrumentation tests.
+Moreover, the "build" folders, where the compiled classes are located, are not accessible from instrumentation tests.
 Therefore, the current way to support instrumentation tests, is by previously dumping the relevant classes into a file and moving it into a folder that can be accessed while running instrumentation tests.
 1. run the scan in a unit test & save it in a file accessible by instrumentation tests e.g. in assets
 ```kotlin
