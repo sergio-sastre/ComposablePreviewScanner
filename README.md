@@ -257,7 +257,7 @@ object ComposablePreviewProvider : TestParameter.TestParameterValuesProvider {
         AndroidComposablePreviewScanner()
             .scanPackageTrees("my.package", "my.package2")
             .includeAnnotationInfoForAllOf(PaparazziConfig::class.java)
-            ... // any other filtering option
+            // any other filtering option ...
             .getPreviews()
 }
 ```
@@ -267,39 +267,75 @@ object ComposablePreviewProvider : TestParameter.TestParameterValuesProvider {
 
 // The DevicePreviewInfoParser used in this method is available since ComposablePreviewScanner 0.4.0
 object DeviceConfigBuilder {
-   fun build(previewDevice: String): DeviceConfig {
-      val parsedDevice = DevicePreviewInfoParser.parse(device)?.inPx() ?: return DeviceConfig()
-      return DeviceConfig(
-         screenHeight = parsedDevice.dimensions.height.toInt(),
-         screenWidth = parsedDevice.dimensions.width.toInt(),
-         density = Density(parsedDevice.densityDpi),
-         xdpi = parsedDevice.densityDpi, // not 100% precise
-         ydpi = parsedDevice.densityDpi, // not 100% precise
-         size = ScreenSize.valueOf(parsedDevice.screenSize.name),
-         ratio = ScreenRatio.valueOf(parsedDevice.screenRatio.name),
-         screenRound = ScreenRound.valueOf(parsedDevice.shape.name),
-         orientation = when (parsedDevice.orientation) {
-            Orientation.PORTRAIT -> ScreenOrientation.PORTRAIT
-            Orientation.LANDSCAPE -> ScreenOrientation.LANDSCAPE
-         }
-      )
-   }
+    fun build(preview: AndroidPreviewInfo): DeviceConfig {
+        val parsedDevice =
+            DevicePreviewInfoParser.parse(preview.device)?.inPx() ?: return DeviceConfig()
+        val conversionFactor = parsedDevice.densityDpi / 160f
+        val previewWidthInPx = ceil(preview.widthDp * conversionFactor).toInt()
+        val previewHeightInPx = ceil(preview.heightDp * conversionFactor).toInt()
+
+        return DeviceConfig(
+            screenHeight = when (preview.heightDp > 0) {
+                true -> previewHeightInPx
+                false -> parsedDevice.dimensions.height.toInt()
+            },
+            screenWidth = when (preview.widthDp > 0) {
+                true -> previewWidthInPx
+                false -> parsedDevice.dimensions.width.toInt()
+            },
+            density = Density(parsedDevice.densityDpi),
+            xdpi = parsedDevice.densityDpi, // not 100% precise
+            ydpi = parsedDevice.densityDpi, // not 100% precise
+            size = ScreenSize.valueOf(parsedDevice.screenSize.name),
+            ratio = ScreenRatio.valueOf(parsedDevice.screenRatio.name),
+            screenRound = ScreenRound.valueOf(parsedDevice.shape.name),
+            orientation = when (parsedDevice.orientation) {
+                Orientation.PORTRAIT -> ScreenOrientation.PORTRAIT
+                Orientation.LANDSCAPE -> ScreenOrientation.LANDSCAPE
+            },
+            locale = preview.locale.ifBlank { "en" },
+            nightMode =
+            when (preview.uiMode and UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES) {
+                true -> NightMode.NIGHT
+                false -> NightMode.NOTNIGHT
+            },
+        )
+    }
 }
 
 object PaparazziPreviewRule {
-    fun createFor(preview: ComposablePreview<AndroidPreviewInfo>): Paparazzi =
-        Paparazzi(
-            deviceConfig = DeviceConfigBuilder.build(preview.previewInfo.device).copy(
-                nightMode =
-                   when(preview.previewInfo.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
-                      true -> NightMode.NIGHT
-                      false -> NightMode.NOTNIGHT
-                }
-                ... // other configurations
-            ),
+    fun createFor(preview: ComposablePreview<AndroidPreviewInfo>): Paparazzi {
+        return Paparazzi(
+            deviceConfig = DeviceConfigBuilder.build(preview.previewInfo),
+            supportsRtl = true,
+            showSystemUi = preview.previewInfo.showSystemUi,
+            // other configurations...
             maxPercentDifference = preview.getAnnotation<PaparazziConfig>()?.maxPercentDifference ?: 0F
         )
+    }
 }
+
+// Additional to support @Preview's 'showBackground' and 'backgroundColor' properties
+@Composable
+fun PreviewBackground(
+    showBackground: Boolean,
+    backgroundColor: Long,
+    content: @Composable () -> Unit
+) {
+    when (showBackground) {
+        false -> content()
+        true -> {
+            val color = when (backgroundColor != 0L) {
+                true -> Color(backgroundColor)
+                false -> Color.White
+            }
+            Box(Modifier.background(color)) {
+                content()
+            }
+        }
+    }
+}
+
 ```
 
 5. Create the corresponding Parameterized Test:
@@ -318,7 +354,13 @@ class PreviewTestParameterTests(
         // Recommended for more meaningful screenshot file names. See #Advanced Usage
         val screenshotId = AndroidPreviewScreenshotIdBuilder(preview).ignoreClassName().build()
         paparazzi.snapshot(name = screenshotId) {
-            preview()
+            PreviewBackground(
+               showBackground = preview.previewInfo.showBackground,
+               backgroundColor = preview.previewInfo.backgroundColor,
+            ) {
+               preview()
+            }
+
         }
     }
 }
