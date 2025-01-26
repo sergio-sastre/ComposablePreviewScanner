@@ -162,7 +162,7 @@ The simplest way is to execute the corresponding compile task before running you
 To ensure you don't forget it, you can configure gradle accordingly, so those tasks are always executed previously.
 For instance, if you're using Roborazzi or Paparazzi and want to scan previews in the `screenshotTest` Source Set for the `debug` variant
 ```kotlin
-// Execute always before unit tests, including Roborazzi/Paparazzi tests
+// Create Compiled Classes always before unit tests, including Roborazzi/Paparazzi tests
 tasks.withType<Test> {
    dependsOn("compileDebugScreenshotTestKotlin")
 }
@@ -182,7 +182,7 @@ testImplementation("androidx.compose.ui:ui-tooling-preview:<version>")
 ```
 
 > [!WARNING]
-> For instrumentation tests and Source Sets different from 'main' or 'androidTest', like 'screenshotTest', you'll also need to ensure that the classes of those source sets
+> For instrumentation tests and Source Sets different from `main` or `androidTest`, like `screenshotTest`, you'll also need to ensure that the classes of those source sets
 > are also included in the .apk installed on the device or emulator, or it will throw ClassNotFoundErrors.
 > The easiest way to achieve this is to add the following code snippet to your gradle file:
 > ```kotlin
