@@ -197,7 +197,7 @@ testImplementation("androidx.compose.ui:ui-tooling-preview:<version>")
 >}
 > ```
 > And pass that gradle property when executing the screenshot tests via command-line, e.g.:
-> ./gradlew :tests:screenshotRecord -PincludeSourceSetScreenshotTest
+> `./gradlew :tests:screenshotRecord -PincludeSourceSetScreenshotTest`
 > 
 > This is NOT necessary for JVM-based screenshot testing libraries like Roborazzi and paparazzi
 
@@ -246,7 +246,7 @@ annotation class PaparazziConfig(val maxPercentDifferent: Double)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun MyComposable(){
-    ...
+   // Composable code here
 }
 ```
 
@@ -371,7 +371,7 @@ class PreviewTestParameterTests(
 }
 ```
 
-6. Run these Paparazzi tests together with the existing ones by executing the corresponding command e.g. ./gradlew yourModule:recordPaparazziDebug
+6. Run these Paparazzi tests together with the existing ones by executing the corresponding command e.g. `./gradlew yourModule:recordPaparazziDebug`
 
 ### Roborazzi
 You can find [executable examples here](https://github.com/sergio-sastre/Android-screenshot-testing-playground/tree/master/lazycolumnscreen-previews/roborazzi/src)
@@ -389,7 +389,7 @@ annotation class RoborazziConfig(val comparisonThreshold: Double)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun MyComposable(){
-    ...
+    // Composable code here
 }
 ```
 
@@ -465,7 +465,7 @@ class PreviewParameterizedTests(
 }
 ```
 
-5. Run these Roborazzi tests together with the existing ones by executing the corresponding command e.g. ./gradlew yourModule:recordRoborazziDebug
+5. Run these Roborazzi tests together with the existing ones by executing the corresponding command e.g. `./gradlew yourModule:recordRoborazziDebug`
 
 ## Instrumentation Screenshot Tests
 You can find executable examples that use ComposablePreviewScanner with the different instrumentation-based libraries in the corresponding links below:
@@ -510,8 +510,8 @@ Let's say we want to enable some custom Dropshots Config for some Previews, for 
    @DropshotsConfig(comparisonThreshold = 0.15)
    @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
    @Composable
-   fun MyComposable(){
-      ...
+   fun MyComposable() {
+      // Composable code here
    }
    ```
    - Map the PreviewInfo and DropshotsConfig values. For instance, you can use a custom class for that. To map the Preview Info values, I recommend to use the ActivityScenarioForComposableRule of [AndroidUiTestingUtils](https://github.com/sergio-sastre/AndroidUiTestingUtils)
@@ -526,22 +526,36 @@ Let's say we want to enable some custom Dropshots Config for some Previews, for 
    }
 
    object ActivityScenarioForComposablePreviewRule {
-      fun createFor(preview: ComposablePreview<AndroidPreviewInfo>): ActivityScenarioForComposableRule {
-         val uiMode = when(preview.previewInfo.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
-            true -> UiMode.NIGHT
-            false -> UiMode.DAY
-         }
-         return ActivityScenarioForComposableRule(
-            config = ComposableConfigItem(
-                uiMode = uiMode
-                ... // other configurations
-            )
-         )    
-      }
+       fun createFor(preview: ComposablePreview<AndroidPreviewInfo>): ActivityScenarioForComposableRule {
+           val uiMode =
+               when (preview.previewInfo.uiMode and UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES) {
+                   true -> UiMode.NIGHT
+                   false -> UiMode.DAY
+               }
+
+           val orientation =
+               when (DevicePreviewInfoParser.parse(preview.previewInfo.device)?.orientation == Orientation.LANDSCAPE) {
+                   true -> ComposableConfigOrientation.LANDSCAPE
+                   false -> ComposableConfigOrientation.PORTRAIT
+               }
+
+           val locale =
+               preview.previewInfo.locale.removePrefix("b+").replace("+", "-").ifBlank { "en" }
+
+           return ActivityScenarioForComposableRule(
+               backgroundColor = Color.TRANSPARENT,
+               config = ComposableConfigItem(
+                   uiMode = uiMode,
+                   fontSize = FontSizeScale.Value(preview.previewInfo.fontScale),
+                   orientation = orientation,
+                   locale = locale
+               )
+           )
+       }
    }
    ```
-   - Create the corresponding Parameterized Test:
-   ```kotlin
+- Create the corresponding Parameterized Test:
+```kotlin
    @RunWith(ParameterizedTestRunner::class)
    class PreviewParameterizedTests(
       private val preview: ComposablePreview<AndroidPreviewInfo>,
@@ -581,11 +595,12 @@ Let's say we want to enable some custom Dropshots Config for some Previews, for 
       }
    }
    ```
-   - Run these Dropshots tests together with the existing ones by executing the corresponding command e.g. ./gradlew yourModule:connectedAndroidTest -Pdropshots.record
+   - Run these Dropshots tests together with the existing ones by executing the corresponding command e.g. `./gradlew yourModule:connectedAndroidTest -Pdropshots.record`
 
 > [!WARNING]
 > Beware that Locale Strings in Preview Infos, unlike AndroidUiTestingUtils, use The BCP-47 tag but with + instead of - as separators, and have the prefix b+. Therefore, the BCP-47 tag "zh-Hans-CN" would be written as "b+zh+Hans+CN" instead. 
-> So for this case, you'd have to convert locale "b+zh+Hans+CN" to "zh-Hans-CN" in order to use it with AndroidUiTestingUtils
+> So for this case, you'd have to convert locale "b+zh+Hans+CN" to "zh-Hans-CN" in order to use it with AndroidUiTestingUtils, for instance as showcased above: </br>
+> `val locale = preview.previewInfo.locale.removePrefix("b+").replace("+", "-").ifBlank { "en" }`
 
 ## Advanced Usage
 ### Screenshot File Names
@@ -635,11 +650,11 @@ class MyClass {
     @Preview(widthDp = 33, heightDp = 33, fontScale = 1.5f)
     @Composable
     fun MyComposable(){
-        ...
+        // Composable code here
     }
 }
 ```
-createScreenshotIdFor(preview) will generate the following id: "MyClass.MyComposable.FONT_1_5f_WITHOUT_BACKGROUND"
+createScreenshotIdFor(preview) will generate the following id: `"MyClass.MyComposable.FONT_1_5f_WITHOUT_BACKGROUND"`
 
 ### Parsing Preview Device String
 Since 0.4.0, ComposablePreviewScanner also provides `DevicePreviewInfoParser.parse(device: String)`
@@ -656,16 +671,7 @@ It can parse ALL possible combinations of "device strings" up to Android Studio 
 @Preview(device = "spec:width = 411dp, height = 891dp, orientation = landscape, dpi = 420, isRound = false, chinSize = 0dp, cutout = corner")
 @Preview(device = "spec:id=reference_desktop,shape=Normal,width=1920,height=1080,unit=px,dpi=160") // in pixels
 @Preview(device = "spec:id=reference_desktop,shape=Normal,width=1920,height=1080,unit=dp,dpi=160") // in dp
-...
 ```
-
-If you are using Roborazzi, you can streamline the process by just calling
-```kotlin
-RobolectricDeviceQualifierBuilder.build(preview.previewInfo)?.run {
-          RuntimeEnvironment.setQualifiers(this)
-}
-```
-before setting any other Robolectric 'cumulative qualifier' in your tests.
 
 For further info on how to use them, see [Roborazzi](#roborazzi) and [Paparazzi](#paparazzi) sections respectively.
 
@@ -676,17 +682,17 @@ Classpath can scan everything that is available either at bytecode level or at r
 This is also the case of annotations without retention or with either `AnnotationRetention.BINARY` or `AnnotationRetention.RUNTIME`, like Android Composable Previews
 ```kotlin
 package androidx.compose.ui.tooling.preview
-...
+
 @Retention(AnnotationRetention.BINARY)
 annotation class Preview(
-...
+   // Preview code here ...
 )
 ```
 
 However, those with `AnnotationRetention.SOURCE` are not visible to Classgraph. Such annotations are mainly used for IDE tooling, and that is the case for the Compose-Desktop Preview annotation.
 ```kotlin
 package androidx.compose.desktop.ui.tooling.preview
-...
+
 @Retention(AnnotationRetention.SOURCE)
 annotation class Preview
 ```
@@ -743,7 +749,7 @@ class PreviewParameterizedTests(
 }
 ```
 
-3. Run these screenshot tests together with the existing ones by executing the corresponding command e.g. ./gradlew yourModule:recordRoborazziDebug
+3. Run these screenshot tests together with the existing ones by executing the corresponding command e.g. `./gradlew yourModule:recordRoborazziDebug`
 
 ### Compose-Desktop Support
 As we've seen in the previous section [How it works](#how-it-works), Compose-Desktop previews are still not visible to ClassGraph since they use `AnnotationRetention.SOURCE`.
@@ -771,7 +777,7 @@ In the meanwhile, it is also possible to workaround this limitation with Composa
         @Preview // It'd also work without this annotation
         @Composable
         fun MyDesktopComposable() { 
-            ...
+            // Composable code here
         }
    }
 ```
@@ -805,7 +811,7 @@ class DesktopPreviewScreenshotTests {
 }
 ```
 
-6. Run these Roborazzi tests by executing the corresponding command e.g. ./gradlew yourModule:recordRoborazziJvm (if using the Kotlin Jvm Plugin)
+6. Run these Roborazzi tests by executing the corresponding command e.g. `./gradlew yourModule:recordRoborazziJvm` (if using the Kotlin Jvm Plugin)
 
 # Tech talks
 In these tech-talks have also been mentioned the benefits of using ComposablePreviewScanner:
