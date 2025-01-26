@@ -404,21 +404,24 @@ object RoborazziOptionsMapper {
        } ?: RoborazziOptions()
 }
 
-object RobolectricPreviewInfosApplier {
-    fun applyFor(preview: ComposablePreview<AndroidPreviewInfo>) {
-       // Set the device from the preview info. Available since ComposablePreviewScanner 0.4.0
-       RobolectricDeviceQualifierBuilder.build(preview.previewInfo)?.run {
-          RuntimeEnvironment.setQualifiers(this)
-       }
-       
-        val uiMode = nightMode =
-           when(preview.previewInfo.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
-              true -> "+night"
-              false -> "+notnight"
-           }
-        RuntimeEnvironment.setQualifiers(uiMode)
-       ... // other configurations
-    }
+object RoborazziComposeOptionsMapper {
+    @OptIn(ExperimentalRoborazziApi::class)
+    fun createFor(preview: ComposablePreview<AndroidPreviewInfo>): RoborazziComposeOptions =
+        RoborazziComposeOptions {
+            val previewInfo = preview.previewInfo
+            previewDevice(previewInfo.device.ifBlank { Devices.NEXUS_5 } )
+            size(
+                widthDp = previewInfo.widthDp,
+                heightDp = previewInfo.heightDp
+            )
+            background(
+                showBackground = previewInfo.showBackground,
+                backgroundColor = previewInfo.backgroundColor
+            )
+            locale(previewInfo.locale)
+            uiMode(previewInfo.uiMode)
+            fontScale(previewInfo.fontScale)
+        }
 }
 ```
 Check the following link for a full list of [Robolectric device qualifiers](https://robolectric.org/device-configuration/) and this blog post on how to [set the cumulative Qualifiers dynamically](https://sergiosastre.hashnode.dev/efficient-testing-with-robolectric-roborazzi-across-many-ui-states-devices-and-configurations)
@@ -449,13 +452,12 @@ class PreviewParameterizedTests(
     @Config(sdk = [30]) // same as the previews we've filtered
     @Test
     fun snapshot() {
-        RobolectricPreviewInfosApplier.applyFor(preview)
-
         // Recommended for more meaningful screenshot file names. See #Advanced Usage
         val screenshotId = AndroidPreviewScreenshotIdBuilder(preview).build()
         captureRoboImage(
            filePath = "${screenshotId}.png",
-           roborazziOptions = RoborazziOptionsMapper.createFor(preview)
+           roborazziOptions = RoborazziOptionsMapper.createFor(preview),
+           roborazziComposeOptions = RoborazziComposeOptionsMapper.createFor(preview)
         ) {
             preview()
         }
