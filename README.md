@@ -108,12 +108,12 @@ AndroidComposablePreviewScanner()
        Classpath(SourceSet.SCREENSHOT_TEST) // scan previews under "screenshotTest"
     )
     // Compulsory to define where to scan for Previews.
-    // See 'Scanning source Options (packages, files, inputStreams)
+    // See 'Scanning source Options (packages, files, inputStreams)'
     .scanPackageTrees(
         include = listOf("your.package", "your.package2"),
         exclude = listOf("your.package.subpackage1", "your.package2.subpackage1")
     )
-    // Optional to filter out scanned previews
+    // Optional to filter out scanned previews with any of the given annotations
     .excludeIfAnnotatedWithAnyOf(
         ExcludeForScreenshot::class.java, 
         ExcludeForScreenshot2::class.java
@@ -305,15 +305,16 @@ object DeviceConfigBuilder {
 
 object PaparazziPreviewRule {
     fun createFor(preview: ComposablePreview<AndroidPreviewInfo>): Paparazzi {
+        val previewInfo = preview.previewInfo
         return Paparazzi(
             deviceConfig = DeviceConfigBuilder.build(preview.previewInfo),
             supportsRtl = true,
-            showSystemUi = preview.previewInfo.showSystemUi,
+            showSystemUi = previewInfo.showSystemUi,
             renderingMode = when {
                 previewInfo.widthDp > 0 && previewInfo.heightDp > 0 -> SessionParams.RenderingMode.FULL_EXPAND
                 previewInfo.heightDp > 0 -> SessionParams.RenderingMode.V_SCROLL
                 else -> SessionParams.RenderingMode.SHRINK
-            }
+            },
             // other configurations...
             maxPercentDifference = preview.getAnnotation<PaparazziConfig>()?.maxPercentDifference ?: 0F
         )
@@ -365,7 +366,6 @@ class PreviewTestParameterTests(
             ) {
                preview()
             }
-
         }
     }
 }
@@ -615,8 +615,7 @@ fun createScreenshotIdFor(preview: ComposablePreview<AndroidPreviewInfo>) =
         // so ignore them to avoid them duplicated what might throw a FileNotFoundException
         // due to the longName
        .ignoreClassName()
-       .ignoreMethodName()
-            
+       .ignoreMethodName()     
        .ignoreForId("heightDp")
        .ignoreForId("widthDp")
        .overrideDefaultIdFor(
@@ -712,8 +711,8 @@ Assuming that you have:
 
 Here is how you could also run screenshot tests for those Compose Multiplatform `@Previews` together, for instance, with Roborazzi (would also work with Paparazzi or any Instrumentation-based library).
 
-1. Add `:jvm` dependency from ComposablePreviewScanner 0.2.0+
-   `testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")`
+1. Add `:jvm` dependency for ComposablePreviewScanner 0.2.0+
+   `testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")`
 
 2. Add an additional Parameterized screenshot test for these Compose Multiplatform `@Previews`
 ```kotlin
