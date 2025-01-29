@@ -15,10 +15,10 @@ import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreview
 import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
 import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.Classpath
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.ANDROID_TEST
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.MAIN
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.SCREENSHOT_TEST
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.ANDROID_TEST
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.MAIN
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.SCREENSHOT_TEST
 import sergio.sastre.uitesting.android_testify.screenshotscenario.assertSame
 import sergio.sastre.uitesting.android_testify.screenshotscenario.generateDiffs
 import sergio.sastre.uitesting.utils.activityscenario.activityScenarioForActivityRule

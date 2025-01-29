@@ -1,13 +1,13 @@
-package sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.previewfinder.overriden
+package sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.overriden
 
 import io.github.classgraph.ClassInfo
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewInfoMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.previewfinder.overriden.annotationloader.CustomPreviewAnnotationLoader
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.previewfinder.PreviewsFinder
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.previewfinder.buildtime.ComposablePreviewsAtBuildTimeFinder
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.ClassLoader
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.overriden.annotationloader.CustomPreviewAnnotationLoader
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.PreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.buildtime.ComposablePreviewsAtBuildTimeFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.classloaders.ClassLoader
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilterState
 
 internal class OverridenClasspathComposablePreviewsFinder<T>(
@@ -18,6 +18,12 @@ internal class OverridenClasspathComposablePreviewsFinder<T>(
     crossModuleCustomPreviewAnnotationLoader: CustomPreviewAnnotationLoader
 ) : PreviewsFinder<T> {
 
+    /**
+     * Scanning in Compiled classes requires some extra considerations im comparison with Build time scanning
+     * to find previews due to the way Kotlin classes are compiled
+     * 1. Some custom Preview methods defined in the very same module suffixed with $Container
+     * 2. Some custom Preview methods defined in external dependencies must be extra loaded to make heir info available
+     */
     private val composableAnnotationFinders =
         listOf(
             ComposablePreviewsAtBuildTimeFinder(

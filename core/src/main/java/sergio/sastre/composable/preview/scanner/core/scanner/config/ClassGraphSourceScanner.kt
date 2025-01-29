@@ -2,7 +2,7 @@ package sergio.sastre.composable.preview.scanner.core.scanner.config
 
 import io.github.classgraph.ClassGraph
 import io.github.classgraph.ScanResult
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.previewfinder.ClasspathPreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.ClasspathPreviewsFinder
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter
 import java.io.File

@@ -9,13 +9,10 @@ import sergio.sastre.composable.preview.scanner.excluded.ExcludeScreenshot
 import org.junit.Assume.assumeFalse
 import org.junit.Assume.assumeTrue
 import org.junit.Test
-import org.junit.Assert.assertTrue
+import sergio.sastre.composable.preview.scanner.ListProvider
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.preview.getAnnotation
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.Classpath
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.MAIN
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.SCREENSHOT_TEST
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
 import java.io.FileNotFoundException
 
@@ -284,6 +281,21 @@ class AndroidComposablePreviewScannerTest {
 
         assert(previewsWithParameterLimit1.size == 1)
         assert(previewsWithParameterLimit1.first().previewIndex == 0)
+    }
+
+    @Test
+    fun `GIVEN 2 previews with same method Name but different params are considered different`() {
+        val stringProviderValues = StringProvider().values.toList()
+        val intProviderValues = ListProvider().values.toList()
+        assumeTrue(stringProviderValues.size == 2)
+        assumeTrue(intProviderValues.size == 2)
+
+        val previewsWithSameMethodName =
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.samemethodname")
+                .getPreviews()
+
+        assert(previewsWithSameMethodName.size == 5)
     }
 
     @Test

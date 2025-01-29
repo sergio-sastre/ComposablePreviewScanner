@@ -10,7 +10,7 @@ import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposableP
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator
 import sergio.sastre.composable.preview.scanner.core.preview.ProvideComposablePreview
 import sergio.sastre.composable.preview.scanner.core.scanner.ComposablePreviewScanner
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.previewfinder.ClasspathPreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.ClasspathPreviewsFinder
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter

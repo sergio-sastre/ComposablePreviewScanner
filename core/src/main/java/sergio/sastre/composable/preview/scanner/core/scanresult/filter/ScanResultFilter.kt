@@ -3,7 +3,7 @@ package sergio.sastre.composable.preview.scanner.core.scanresult.filter
 
 import io.github.classgraph.ScanResult
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.previewfinder.PreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.PreviewsFinder
 
 /**
  * Filter the ComposablePreviews of a given ScanResult.

@@ -425,6 +425,20 @@ class AndroidComposablePreviewScreenshotIdTest {
     }
 
     @Test
+    fun `GIVEN methodParameters not ignored, THEN declaringClass is included`() {
+        val preview = previewBuilder(
+            methodParameters = "name_String",
+        )
+
+        assert(
+            AndroidPreviewScreenshotIdBuilder(preview)
+                .addParameterType()
+                .build()
+                .contains("name_String")
+        )
+    }
+
+    @Test
     fun `GIVEN methodName ignored, THEN methodName is not included`() {
         val preview = previewBuilder(
             methodName = "PreviewName",
@@ -494,13 +508,15 @@ class AndroidComposablePreviewScreenshotIdTest {
         previewIndex: Int? = null,
         otherAnnotationsInfo: AnnotationInfoList? = null,
         declaringClass: String = "",
-        methodName: String = ""
+        methodName: String = "",
+        methodParameters: String = "",
     ): ComposablePreview<AndroidPreviewInfo> = object : ComposablePreview<AndroidPreviewInfo> {
         override val previewInfo: AndroidPreviewInfo = previewInfo
         override val previewIndex: Int? = previewIndex
         override val otherAnnotationsInfo: AnnotationInfoList? = otherAnnotationsInfo
         override val declaringClass: String = declaringClass
         override val methodName: String = methodName
+        override val methodParameters: String = methodParameters
 
         @Composable
         override fun invoke() {

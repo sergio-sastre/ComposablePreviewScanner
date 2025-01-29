@@ -1,15 +1,15 @@
-package sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.previewfinder.buildtime
+package sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.buildtime
 
 import io.github.classgraph.AnnotationInfo
-import io.github.classgraph.AnnotationInfoList
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewInfoMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.ClassLoader
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.previewfinder.PreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.classloaders.ClassLoader
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.MethodFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.PreviewsFinder
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilterState
 import java.lang.reflect.Method
 
@@ -37,24 +37,17 @@ internal class ComposablePreviewsAtBuildTimeFinder<T>(
 
         return classInfo.declaredMethodInfo.asSequence().flatMap { methodInfo ->
             methodInfo.getAnnotationInfo(annotationToScanClassName)?.let {
-                if (scanResultFilterState.hasExcludedAnnotation(methodInfo) || scanResultFilterState.excludesMethod(methodInfo)) {
+                if (scanResultFilterState.hasExcludedAnnotation(methodInfo) || scanResultFilterState.excludesMethod(
+                        methodInfo
+                    )
+                ) {
                     emptySequence()
                 } else {
-                    val clazz = classLoader.loadClass(classInfo)
-                    val methods = if (methodInfo.isPrivate) clazz.declaredMethods else clazz.methods
-                    methods.asSequence()
-                        .filter { it.name == methodInfo.name }
-                        .onEach {
-                            if (methodInfo.isPrivate) {
-                                it.isAccessible = true
-                            }
-                        }
-                        .flatMap { method ->
-                            method.repeatMethodPerPreviewAnnotation(
-                                methodInfo,
-                                scanResultFilterState
-                            )
-                        }
+                    val method = MethodFinder(classInfo, classLoader).find(methodInfo)
+                    method.repeatMethodPerPreviewAnnotation(
+                        methodInfo,
+                        scanResultFilterState
+                    )
                 }
             } ?: emptySequence()
         }

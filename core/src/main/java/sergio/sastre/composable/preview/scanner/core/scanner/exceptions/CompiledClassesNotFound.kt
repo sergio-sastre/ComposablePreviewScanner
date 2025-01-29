@@ -1,6 +1,6 @@
 package sergio.sastre.composable.preview.scanner.core.scanner.exceptions
 
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.Classpath
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
 import java.io.File
 
 class CompiledClassesNotFound(classpath: Classpath) : Exception(

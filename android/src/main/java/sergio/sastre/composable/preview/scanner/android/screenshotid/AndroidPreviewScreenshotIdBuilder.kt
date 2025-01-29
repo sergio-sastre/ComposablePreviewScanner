@@ -1,7 +1,7 @@
 package sergio.sastre.composable.preview.scanner.android.screenshotid
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Wallpapers
 import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
@@ -33,6 +33,7 @@ class AndroidPreviewScreenshotIdBuilder(
 
     private var ignoreClassName: Boolean = false
     private var ignoreMethodName: Boolean = false
+    private var ignoreParameterType: Boolean = true
 
     fun overrideDefaultIdFor(
         previewInfoName: String,
@@ -55,15 +56,23 @@ class AndroidPreviewScreenshotIdBuilder(
         ignoreMethodName = true
     }
 
+    /**
+     * TODO -> explain why
+     */
+    fun addParameterType() = apply {
+        ignoreParameterType = false
+    }
+
+    @SuppressLint("NewApi")
     fun build(): String =
         buildList {
             val previewInfoId =
                 defaultPreviewInfoId.values.filterNot { it.isNullOrBlank() }.joinToString("_")
-            val declaringClass = when(ignoreClassName){
+            val declaringClass = when (ignoreClassName) {
                 true -> null
                 false -> composablePreview.declaringClass
             }
-            val methodName = when(ignoreMethodName){
+            val methodName = when (ignoreMethodName) {
                 true -> null
                 false -> composablePreview.methodName
             }
@@ -75,6 +84,9 @@ class AndroidPreviewScreenshotIdBuilder(
                 )
                     .filter { it.isNotBlank() }.joinToString(".")
             )
+            if (!ignoreParameterType && composablePreview.methodParameters.isNotBlank()) {
+                add("_${composablePreview.methodParameters}")
+            }
             if (composablePreview.previewIndex != null) {
                 add(composablePreview.previewIndex)
             }
@@ -159,7 +171,7 @@ class AndroidPreviewScreenshotIdBuilder(
             } else {
                 when (uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
                     true -> "NIGHT"
-                    else ->  "DAY"
+                    else -> "DAY"
                 }
             }
 
