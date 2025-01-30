@@ -57,7 +57,11 @@ class AndroidPreviewScreenshotIdBuilder(
     }
 
     /**
-     * TODO -> explain why
+     * When using @PreviewParameters, this includes the parameter type in the generated screenshotId.
+     *
+     * The use case for this is, for Composable Preview Methods inside a class or file that
+     * have the same name, but different signature (i.e. the arguments differ).
+     * Without this option, both methods would get the same screenshot file name resulting in file overriding
      */
     fun doNotIgnoreMethodParametersType() = apply {
         ignoreMethodParametersType = false
