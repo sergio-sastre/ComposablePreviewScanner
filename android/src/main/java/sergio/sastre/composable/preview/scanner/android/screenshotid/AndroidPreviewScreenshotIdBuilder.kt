@@ -33,7 +33,7 @@ class AndroidPreviewScreenshotIdBuilder(
 
     private var ignoreClassName: Boolean = false
     private var ignoreMethodName: Boolean = false
-    private var ignoreParameterType: Boolean = true
+    private var ignoreMethodParametersType: Boolean = true
 
     fun overrideDefaultIdFor(
         previewInfoName: String,
@@ -59,8 +59,8 @@ class AndroidPreviewScreenshotIdBuilder(
     /**
      * TODO -> explain why
      */
-    fun addParameterType() = apply {
-        ignoreParameterType = false
+    fun doNotIgnoreMethodParametersType() = apply {
+        ignoreMethodParametersType = false
     }
 
     @SuppressLint("NewApi")
@@ -84,7 +84,7 @@ class AndroidPreviewScreenshotIdBuilder(
                 )
                     .filter { it.isNotBlank() }.joinToString(".")
             )
-            if (!ignoreParameterType && composablePreview.methodParameters.isNotBlank()) {
+            if (!ignoreMethodParametersType && composablePreview.methodParameters.isNotBlank()) {
                 add("_${composablePreview.methodParameters}")
             }
             if (composablePreview.previewIndex != null) {

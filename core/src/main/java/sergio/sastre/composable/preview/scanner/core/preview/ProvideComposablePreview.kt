@@ -32,26 +32,34 @@ class ProvideComposablePreview<T> {
                 composablePreviewMapper.previewMethod.declaringClass.toClassName()
             override val methodName: String = composablePreviewMapper.previewMethod.name
 
-            @Suppress("NewApi")
-            override val methodParameters: String =
-                // Composable from preview methods contain always 2 parameters added at the end  by the compiler:
-                //  1. androidx.compose.runtime.Composer
-                //  2. Int
-                // So if it uses @PreviewParameter, those are at the beginning
-                composablePreviewMapper.previewMethod.genericParameterTypes
-                    .dropLast(2)
-                    .joinToString("_") { it.typeName.replace(Regex("\\b[a-zA-Z_][a-zA-Z0-9_]*\\."), "") }
+            override val methodParameters: String = methodParametersAsString()
 
             override fun toString(): String {
                 return buildList<String> {
                     add(composablePreviewMapper.previewMethod.declaringClass.toClassName())
                     add(composablePreviewMapper.previewMethod.name)
-                    //add(composablePreviewMapper.previewMethod.parameterTypes.joinToString("_") { it.name })
+                    add(methodParametersAsString())
                     if (previewIndex != null) add(previewIndex.toString())
                 }.joinToString("_")
             }
 
             private fun Class<*>.toClassName(): String = canonicalName ?: simpleName
+
+            /**
+             * Composable from preview methods contain always 2 parameters added at the end  by the compiler:
+             * 1. androidx.compose.runtime.Composer
+             * 2. Int
+             * So if it uses @PreviewParameter, such parameters are located at the beginning
+             */
+            @Suppress("NewApi")
+            private fun methodParametersAsString(): String =
+                composablePreviewMapper
+                    .previewMethod
+                    .genericParameterTypes
+                    .dropLast(2)
+                    .joinToString("_") {
+                        it.typeName.replace(Regex("\\b[a-zA-Z_][a-zA-Z0-9_]*\\."), "")
+                    }
         }
     }
 }

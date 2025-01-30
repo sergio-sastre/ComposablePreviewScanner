@@ -103,7 +103,9 @@ class TestifyComposablePreviewScannerInstrumentationInvokeTest(
             .configure { captureMethod = ::pixelCopyCapture }
             .generateDiffs(true)
             .assertSame(
-                name = AndroidPreviewScreenshotIdBuilder(preview).build()
+                name = AndroidPreviewScreenshotIdBuilder(preview)
+                    .doNotIgnoreMethodParametersType()
+                    .build()
             )
     }
 }

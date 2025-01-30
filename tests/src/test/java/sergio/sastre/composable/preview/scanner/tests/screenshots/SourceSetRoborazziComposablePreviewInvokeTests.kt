@@ -29,26 +29,38 @@ class SourceSetRoborazziComposablePreviewInvokeTests(
 ) {
 
     companion object {
-        private val cachedMainPreviews: List<ComposablePreview<AndroidPreviewInfo>> =
+        private val cachedMainPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
             AndroidComposablePreviewScanner()
-                .setTargetSourceSet(Classpath(MAIN))
+                .setTargetSourceSet(
+                    sourceSetClasspath = Classpath(MAIN),
+                    packageTreesOfCrossModuleCustomPreviews = listOf("sergio.sastre.composable.preview.custompreviews")
+                )
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .includePrivatePreviews()
                 .getPreviews()
+        }
 
-        private val cachedScreenshotTestPreviews: List<ComposablePreview<AndroidPreviewInfo>> =
+        private val cachedScreenshotTestPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
             AndroidComposablePreviewScanner()
-                .setTargetSourceSet(Classpath(SCREENSHOT_TEST))
+                .setTargetSourceSet(
+                    sourceSetClasspath = Classpath(SCREENSHOT_TEST),
+                    packageTreesOfCrossModuleCustomPreviews = listOf("sergio.sastre.composable.preview.custompreviews")
+                )
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .includePrivatePreviews()
                 .getPreviews()
+        }
 
-        private val cachedAndroidTestPreviews: List<ComposablePreview<AndroidPreviewInfo>> =
+        private val cachedAndroidTestPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
             AndroidComposablePreviewScanner()
-                .setTargetSourceSet(Classpath(ANDROID_TEST))
+                .setTargetSourceSet(
+                    sourceSetClasspath = Classpath(ANDROID_TEST),
+                    packageTreesOfCrossModuleCustomPreviews = listOf("sergio.sastre.composable.preview.custompreviews")
+                )
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .includePrivatePreviews()
                 .getPreviews()
+        }
 
         @JvmStatic
         @ParameterizedRobolectricTestRunner.Parameters
@@ -63,10 +75,10 @@ class SourceSetRoborazziComposablePreviewInvokeTests(
         RobolectricDeviceQualifierBuilder.build(preview.previewInfo.device)?.run {
             RuntimeEnvironment.setQualifiers(this)
         }
-
-        captureRoboImage(
-            filePath = "${AndroidPreviewScreenshotIdBuilder(preview).build()}.png",
-        ) {
+        val screenshotName = AndroidPreviewScreenshotIdBuilder(preview)
+            .doNotIgnoreMethodParametersType()
+            .build()
+        captureRoboImage(filePath = "${screenshotName}.png") {
             preview()
         }
     }

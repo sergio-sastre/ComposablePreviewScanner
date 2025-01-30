@@ -432,7 +432,7 @@ class AndroidComposablePreviewScreenshotIdTest {
 
         assert(
             AndroidPreviewScreenshotIdBuilder(preview)
-                .addParameterType()
+                .doNotIgnoreMethodParametersType()
                 .build()
                 .contains("name_String")
         )

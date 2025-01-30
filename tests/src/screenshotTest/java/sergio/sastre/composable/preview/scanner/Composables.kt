@@ -18,7 +18,7 @@ class ComposePreviewScreenshotTests {
     @MyCustomDarkModePreview // 2 Previews
     @PreviewDynamicColors    // 4 previews
     @Composable
-    fun ScreenshotTestExampleMultiplePreviewWithParams(
+    fun ScreenshotTestExampleMultiplePreview(
         @PreviewParameter(provider = StringProvider::class) name: String
     ) {
         Example(name)

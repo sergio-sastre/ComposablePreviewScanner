@@ -44,10 +44,10 @@ class BuildTimeRoborazziComposablePreviewInvokeTests(
             RuntimeEnvironment.setQualifiers(this)
         }
 
-        val name = AndroidPreviewScreenshotIdBuilder(preview).addParameterType().build()
-        captureRoboImage(
-            filePath = "${name}.png",
-        ) {
+        val name = AndroidPreviewScreenshotIdBuilder(preview)
+            .doNotIgnoreMethodParametersType()
+            .build()
+        captureRoboImage(filePath = "${name}.png") {
             preview()
         }
     }
