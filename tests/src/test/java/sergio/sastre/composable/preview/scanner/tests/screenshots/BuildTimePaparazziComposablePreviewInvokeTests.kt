@@ -20,7 +20,7 @@ import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
  * These tests ensure that the invoke() function of a ComposablePreview works as expected
  * for all the @Composable's in the main source at build time.
  *
- * ./gradlew :tests:recordPaparazziDebug --tests 'PBuildTimePaparazziComposablePreviewInvokeTests' -Plibrary=paparazzi
+ * ./gradlew :tests:recordPaparazziDebug --tests 'BuildTimePaparazziComposablePreviewInvokeTests' -Plibrary=paparazzi
  */
 @RunWith(Parameterized::class)
 class BuildTimePaparazziComposablePreviewInvokeTests(
@@ -47,7 +47,10 @@ class BuildTimePaparazziComposablePreviewInvokeTests(
 
     @Test
     fun snapshot() {
-        val screenshotId = AndroidPreviewScreenshotIdBuilder(preview).ignoreClassName().build()
+        val screenshotId = AndroidPreviewScreenshotIdBuilder(preview)
+            .ignoreClassName()
+            .doNotIgnoreMethodParametersType()
+            .build()
         paparazzi.snapshot(name = screenshotId) {
             preview()
         }

@@ -1,7 +1,7 @@
 package sergio.sastre.composable.preview.scanner.android.screenshotid
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Wallpapers
 import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
@@ -33,6 +33,7 @@ class AndroidPreviewScreenshotIdBuilder(
 
     private var ignoreClassName: Boolean = false
     private var ignoreMethodName: Boolean = false
+    private var ignoreMethodParametersType: Boolean = true
 
     fun overrideDefaultIdFor(
         previewInfoName: String,
@@ -55,15 +56,27 @@ class AndroidPreviewScreenshotIdBuilder(
         ignoreMethodName = true
     }
 
+    /**
+     * When using @PreviewParameters, this includes the parameter type in the generated screenshotId.
+     *
+     * The use case for this is, for Composable Preview Methods inside a class or file that
+     * have the same name, but different signature (i.e. the arguments differ).
+     * Without this option, both methods would get the same screenshot file name resulting in file overriding
+     */
+    fun doNotIgnoreMethodParametersType() = apply {
+        ignoreMethodParametersType = false
+    }
+
+    @SuppressLint("NewApi")
     fun build(): String =
         buildList {
             val previewInfoId =
                 defaultPreviewInfoId.values.filterNot { it.isNullOrBlank() }.joinToString("_")
-            val declaringClass = when(ignoreClassName){
+            val declaringClass = when (ignoreClassName) {
                 true -> null
                 false -> composablePreview.declaringClass
             }
-            val methodName = when(ignoreMethodName){
+            val methodName = when (ignoreMethodName) {
                 true -> null
                 false -> composablePreview.methodName
             }
@@ -75,6 +88,9 @@ class AndroidPreviewScreenshotIdBuilder(
                 )
                     .filter { it.isNotBlank() }.joinToString(".")
             )
+            if (!ignoreMethodParametersType && composablePreview.methodParameters.isNotBlank()) {
+                add("_${composablePreview.methodParameters}")
+            }
             if (composablePreview.previewIndex != null) {
                 add(composablePreview.previewIndex)
             }
@@ -159,7 +175,7 @@ class AndroidPreviewScreenshotIdBuilder(
             } else {
                 when (uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
                     true -> "NIGHT"
-                    else ->  "DAY"
+                    else -> "DAY"
                 }
             }
 

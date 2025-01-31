@@ -1,6 +1,6 @@
-package sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.validator
+package sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.validator
 
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.Classpath
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
 import sergio.sastre.composable.preview.scanner.core.scanner.exceptions.CompiledClassesNotFound
 import sergio.sastre.composable.preview.scanner.core.utils.isRunningOnJvm
 import java.io.File

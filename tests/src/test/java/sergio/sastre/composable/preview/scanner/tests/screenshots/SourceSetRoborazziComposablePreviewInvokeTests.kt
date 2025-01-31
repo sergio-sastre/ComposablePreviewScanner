@@ -12,10 +12,10 @@ import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
 import sergio.sastre.composable.preview.scanner.android.device.domain.RobolectricDeviceQualifierBuilder
 import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.Classpath
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.ANDROID_TEST
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.MAIN
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.SCREENSHOT_TEST
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.ANDROID_TEST
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.MAIN
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.SCREENSHOT_TEST
 
 /**
  * These tests ensure that the invoke() function of a ComposablePreview works as expected
@@ -29,26 +29,38 @@ class SourceSetRoborazziComposablePreviewInvokeTests(
 ) {
 
     companion object {
-        private val cachedMainPreviews: List<ComposablePreview<AndroidPreviewInfo>> =
+        private val cachedMainPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
             AndroidComposablePreviewScanner()
-                .setTargetSourceSet(Classpath(MAIN))
+                .setTargetSourceSet(
+                    sourceSetClasspath = Classpath(MAIN),
+                    packageTreesOfCrossModuleCustomPreviews = listOf("sergio.sastre.composable.preview.custompreviews")
+                )
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .includePrivatePreviews()
                 .getPreviews()
+        }
 
-        private val cachedScreenshotTestPreviews: List<ComposablePreview<AndroidPreviewInfo>> =
+        private val cachedScreenshotTestPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
             AndroidComposablePreviewScanner()
-                .setTargetSourceSet(Classpath(SCREENSHOT_TEST))
+                .setTargetSourceSet(
+                    sourceSetClasspath = Classpath(SCREENSHOT_TEST),
+                    packageTreesOfCrossModuleCustomPreviews = listOf("sergio.sastre.composable.preview.custompreviews")
+                )
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .includePrivatePreviews()
                 .getPreviews()
+        }
 
-        private val cachedAndroidTestPreviews: List<ComposablePreview<AndroidPreviewInfo>> =
+        private val cachedAndroidTestPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
             AndroidComposablePreviewScanner()
-                .setTargetSourceSet(Classpath(ANDROID_TEST))
+                .setTargetSourceSet(
+                    sourceSetClasspath = Classpath(ANDROID_TEST),
+                    packageTreesOfCrossModuleCustomPreviews = listOf("sergio.sastre.composable.preview.custompreviews")
+                )
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .includePrivatePreviews()
                 .getPreviews()
+        }
 
         @JvmStatic
         @ParameterizedRobolectricTestRunner.Parameters
@@ -63,10 +75,10 @@ class SourceSetRoborazziComposablePreviewInvokeTests(
         RobolectricDeviceQualifierBuilder.build(preview.previewInfo.device)?.run {
             RuntimeEnvironment.setQualifiers(this)
         }
-
-        captureRoboImage(
-            filePath = "${AndroidPreviewScreenshotIdBuilder(preview).build()}.png",
-        ) {
+        val screenshotName = AndroidPreviewScreenshotIdBuilder(preview)
+            .doNotIgnoreMethodParametersType()
+            .build()
+        captureRoboImage(filePath = "${screenshotName}.png") {
             preview()
         }
     }

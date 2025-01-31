@@ -2,10 +2,10 @@ package sergio.sastre.composable.preview.scanner.core.scanner
 
 import io.github.classgraph.ClassGraph
 import sergio.sastre.composable.preview.scanner.core.scanner.config.ClassGraphSourceScanner
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.Classpath
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.previewfinder.ClasspathPreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.ClasspathPreviewsFinder
 import sergio.sastre.composable.preview.scanner.core.scanner.config.SourceScanner
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.validator.ClasspathValidator
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.validator.ClasspathValidator
 import sergio.sastre.composable.preview.scanner.core.scanner.exceptions.ScanSourceNotSupported
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter

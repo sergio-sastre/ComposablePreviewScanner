@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.previewfinder
+package sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder
 
 import io.github.classgraph.ClassInfo
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview

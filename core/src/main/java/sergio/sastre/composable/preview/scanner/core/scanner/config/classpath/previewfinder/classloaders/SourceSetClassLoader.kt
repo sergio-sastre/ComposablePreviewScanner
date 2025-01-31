@@ -1,7 +1,7 @@
-package sergio.sastre.composable.preview.scanner.core.scanner.config.classloader
+package sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.classloaders
 
 import io.github.classgraph.ClassInfo
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.Classpath
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
 import sergio.sastre.composable.preview.scanner.core.scanner.exceptions.ClassNotFoundInSourceSetException
 import sergio.sastre.composable.preview.scanner.core.utils.isRunningOnJvm
 import java.io.File

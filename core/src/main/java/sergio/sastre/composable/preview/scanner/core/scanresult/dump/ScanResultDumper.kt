@@ -2,14 +2,18 @@ package sergio.sastre.composable.preview.scanner.core.scanresult.dump
 
 import io.github.classgraph.ClassGraph
 import io.github.classgraph.ScanResult
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.Classpath
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import java.io.File
 import java.io.FileNotFoundException
 import java.util.Locale
 
 /**
- * Dumps the ScanResult of the target package trees into a file
+ * Dumps the ScanResult of the target package trees into a file.
+ *
+ * WARNING: This is mainly intended for Instrumentation tests.
+ * For that, one needs to create a unit test that dumps the Previews into a file, and that is
+ * the purpose of this class
  */
 class ScanResultDumper {
     private var updatedClassGraph = ClassGraph()
@@ -18,8 +22,6 @@ class ScanResultDumper {
         .enableMethodInfo()
         .enableAnnotationInfo()
         .enableMemoryMapping()
-
-    // TODO -> rewrite this to allow api
 
     /**
      * Prepares the dumper to find previews scanned from a Source Set like 'screenshotTest', 'androidTest', 'main' or a custom one via the given sourceSetClasspath
