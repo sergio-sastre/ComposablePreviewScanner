@@ -49,7 +49,7 @@ class Dimensions(
                 Dimensions(
                     height = ceil(height * conversionFactor),
                     width = ceil(width * conversionFactor),
-                    unit = Unit.DP
+                    unit = Unit.PX
                 )
         }
     }

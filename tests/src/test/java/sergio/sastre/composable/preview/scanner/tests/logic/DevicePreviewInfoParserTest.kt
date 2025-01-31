@@ -321,20 +321,30 @@ class DevicePreviewInfoParserTest {
     }
 
     @Test
-    fun `GIVEN device WHEN converted to Dp AND back to Px THEN returns original device with error margin up to 2f`(
+    fun `GIVEN device WHEN converted to Dp AND back to Px twice THEN returns original device with error margin up to 2f`(
         @TestParameter deviceMapping: DeviceIdMapping
     ) {
         val originalDeviceInPx =
             DevicePreviewInfoParser.parse(deviceMapping.deviceId)
 
-        val deviceInDpAndBackInPx =
-            originalDeviceInPx!!.inDp().inPx()
+        val deviceInDp =
+            originalDeviceInPx!!.inDp()
+
+        val deviceBackInPx = deviceInDp.inPx()
+
+        val deviceBackInDp = deviceBackInPx.inDp()
 
         assertEquals(
-            originalDeviceInPx.dimensions.height, deviceInDpAndBackInPx.dimensions.height, 2f
+            originalDeviceInPx.dimensions.height, deviceBackInPx.dimensions.height, 2f
         )
         assertEquals(
-            originalDeviceInPx.dimensions.width, deviceInDpAndBackInPx.dimensions.width, 2f
+            originalDeviceInPx.dimensions.width, deviceBackInPx.dimensions.width, 2f
+        )
+        assertEquals(
+            deviceInDp.dimensions.height, deviceBackInDp.dimensions.height, 2f
+        )
+        assertEquals(
+            deviceInDp.dimensions.width, deviceBackInDp.dimensions.width, 2f
         )
     }
 
