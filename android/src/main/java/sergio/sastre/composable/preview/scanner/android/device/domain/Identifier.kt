@@ -71,6 +71,9 @@ data class Identifier(val id: String? = null, val name: String? = null) {
         val TV_4K = Identifier(id = "tv_4k", name = "Television (4K)")
         val TV_1080p = Identifier(id = "tv_1080p", name = "Television (1080p)")
 
+        // XR Devices
+        val XR_DEVICE = Identifier(id = "xr_device", name = "XR Device")
+
         // Generic Devices
         val MEDIUM_TABLET = Identifier(id = "medium_tablet", name = "Medium Tablet")
         val SMALL_PHONE = Identifier(id = "small_phone", name = "Small Phone")
