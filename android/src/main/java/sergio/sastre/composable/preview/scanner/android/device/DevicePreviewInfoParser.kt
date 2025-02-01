@@ -22,6 +22,7 @@ import sergio.sastre.composable.preview.scanner.android.device.types.Phone
 import sergio.sastre.composable.preview.scanner.android.device.types.Tablet
 import sergio.sastre.composable.preview.scanner.android.device.types.Television
 import sergio.sastre.composable.preview.scanner.android.device.types.Wear
+import sergio.sastre.composable.preview.scanner.android.device.types.XR
 
 object DevicePreviewInfoParser {
     fun parse(device: String): Device? {
@@ -53,6 +54,7 @@ private object GetDeviceById {
             ?: findByDeviceId<Automotive>(id)?.device
             ?: findByDeviceId<Television>(id)?.device
             ?: findByDeviceId<GenericDevices>(id)?.device
+            ?: findByDeviceId<XR>(id)?.device
     }
 }
 
@@ -66,6 +68,7 @@ private object GetDeviceByName {
             ?: findByDeviceName<Automotive>(name)?.device
             ?: findByDeviceName<Television>(name)?.device
             ?: findByDeviceName<GenericDevices>(name)?.device
+            ?: findByDeviceName<XR>(name)?.device
     }
 }
 

@@ -7,10 +7,8 @@ import sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceB
 import sergio.sastre.composable.preview.scanner.android.device.domain.Identifier
 import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation.LANDSCAPE
 import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation.PORTRAIT
-import sergio.sastre.composable.preview.scanner.android.device.domain.ScreenRatio
 import sergio.sastre.composable.preview.scanner.android.device.domain.ScreenRatio.LONG
 import sergio.sastre.composable.preview.scanner.android.device.domain.ScreenRatio.NOTLONG
-import sergio.sastre.composable.preview.scanner.android.device.domain.ScreenSize
 import sergio.sastre.composable.preview.scanner.android.device.domain.ScreenSize.NORMAL
 import sergio.sastre.composable.preview.scanner.android.device.domain.Shape.NOTROUND
 import sergio.sastre.composable.preview.scanner.android.device.domain.Type.PHONE

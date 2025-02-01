@@ -392,6 +392,31 @@ class DevicePreviewInfoParserTest {
         )
     }
 
+    enum class XR_DEVICE(val identifier:String) {
+        ID("id:xr_device"),
+        NAME("name:XR Device")
+    }
+    @Test
+    fun `GIVEN XR Device, has expected dimensions, density and orientation`(
+        @TestParameter xrDevice: XR_DEVICE
+    ) {
+        val expectedDevice =
+            DevicePreviewInfoParser.parse(xrDevice.identifier)!!
+
+        assertEquals(
+            expectedDevice.dimensions.width, 2560f
+        )
+        assertEquals(
+            expectedDevice.dimensions.height, 2558f
+        )
+        assertEquals(
+            expectedDevice.densityDpi, 320
+        )
+        assertEquals(
+            expectedDevice.orientation, LANDSCAPE
+        )
+    }
+
     private fun String.extractWidth(): Float {
         val regex = "w(\\d+)dp".toRegex()
         return regex.find(this)!!.groupValues[1].toFloat()

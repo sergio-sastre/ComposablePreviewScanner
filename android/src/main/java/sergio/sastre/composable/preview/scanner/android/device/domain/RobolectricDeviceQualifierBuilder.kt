@@ -22,6 +22,7 @@ object RobolectricDeviceQualifierBuilder {
             Type.TABLET -> null
             Type.DESKTOP -> null
             Type.FOLDABLE -> null
+            Type.XR -> null
             Type.WEAR -> "watch"
             Type.CAR -> "car"
             Type.TV -> "television"
