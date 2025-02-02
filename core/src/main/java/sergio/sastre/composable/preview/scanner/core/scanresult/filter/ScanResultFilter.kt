@@ -20,13 +20,10 @@ class ScanResultFilter<T> internal constructor(
      * WARNING: throws a [RepeatableAnnotationNotSupportedException] if any of the annotations is repeatable
      */
     fun excludeIfAnnotatedWithAnyOf(vararg annotations: Class<out Annotation>) = apply {
-        val repeatableAnnotations = annotations.filter { it.isAnnotationPresent(Repeatable::class.java) }
-        if (repeatableAnnotations.isNotEmpty()){
-            throw RepeatableAnnotationNotSupportedException(
-                methodName = "excludeIfAnnotatedWithAnyOf()",
-                repeatableAnnotations = repeatableAnnotations
-            )
-        }
+        throwExceptionIfAnyAnnotationIsRepeatable(
+            methodName = "excludeIfAnnotatedWithAnyOf()",
+            annotations = annotations.toList()
+        )
         scanResultFilterState = scanResultFilterState.copy(
             excludedAnnotations = annotations.toList()
         )
@@ -48,13 +45,10 @@ class ScanResultFilter<T> internal constructor(
      * WARNING: throws a [RepeatableAnnotationNotSupportedException] if any of the annotations is repeatable
      */
     fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>) = apply {
-        val repeatableAnnotations = annotations.filter { it.isAnnotationPresent(Repeatable::class.java) }
-        if (repeatableAnnotations.isNotEmpty()){
-            throw RepeatableAnnotationNotSupportedException(
-                methodName = "includeAnnotationInfoForAllOf()",
-                repeatableAnnotations = repeatableAnnotations
-            )
-        }
+        throwExceptionIfAnyAnnotationIsRepeatable(
+            methodName = "includeAnnotationInfoForAllOf()",
+            annotations = annotations.toList()
+        )
         scanResultFilterState = scanResultFilterState.copy(
             namesOfIncludeAnnotationsInfo = annotations.map { it.name }.toSet()
         )
@@ -92,4 +86,17 @@ class ScanResultFilter<T> internal constructor(
                 }
                 .toList()
         }
+
+    private fun throwExceptionIfAnyAnnotationIsRepeatable(
+        methodName: String,
+        annotations: List<Class<out Annotation>>
+    ) {
+        val repeatableAnnotations = annotations.filter { it.isAnnotationPresent(Repeatable::class.java) }
+        if (repeatableAnnotations.isNotEmpty()){
+            throw RepeatableAnnotationNotSupportedException(
+                methodName = methodName,
+                repeatableAnnotations = repeatableAnnotations
+            )
+        }
+    }
 }
