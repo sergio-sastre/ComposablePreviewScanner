@@ -516,7 +516,7 @@ class AndroidComposablePreviewScreenshotIdTest {
         override val otherAnnotationsInfo: AnnotationInfoList? = otherAnnotationsInfo
         override val declaringClass: String = declaringClass
         override val methodName: String = methodName
-        override val methodParameters: String = methodParameters
+        override val methodParametersType: String = methodParameters
 
         @Composable
         override fun invoke() {

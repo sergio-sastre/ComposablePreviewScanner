@@ -297,6 +297,9 @@ class AndroidComposablePreviewScannerTest {
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.samemethodname")
                 .getPreviews()
 
+        // 2 for stringProvider
+        // 1 for listProvider
+        // 1 without parameter
         assert(previewsWithSameMethodName.size == 4)
     }
 

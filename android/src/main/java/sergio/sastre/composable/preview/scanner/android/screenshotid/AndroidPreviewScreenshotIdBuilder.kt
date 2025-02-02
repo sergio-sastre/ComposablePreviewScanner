@@ -88,8 +88,8 @@ class AndroidPreviewScreenshotIdBuilder(
                 )
                     .filter { it.isNotBlank() }.joinToString(".")
             )
-            if (!ignoreMethodParametersType && composablePreview.methodParameters.isNotBlank()) {
-                add("_${composablePreview.methodParameters}")
+            if (!ignoreMethodParametersType && composablePreview.methodParametersType.isNotBlank()) {
+                add("_${composablePreview.methodParametersType}")
             }
             if (composablePreview.previewIndex != null) {
                 add(composablePreview.previewIndex)
