@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.overriden
+package sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.compiledclass
 
 import io.github.classgraph.AnnotationInfo
 import io.github.classgraph.ClassInfo
@@ -11,7 +11,14 @@ import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.pr
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.PreviewsFinder
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilterState
 
-internal class SameModuleComposableWithCustomPreviewsFinder<T>(
+/**
+ * This is necessary when using a custom source set that scans Previews from compiled classes.
+ *
+ * That is because in compiled classes, when a Repeatable annotation like @Preview is repeated,
+ * their name is suffixed with $Container and the values of each annotation are grouped under
+ * the parameterValues of the previously mentioned suffixed annotation.
+ */
+internal class MultiplePreviewsInCompiledClassFinder<T>(
     override val annotationToScanClassName: String,
     private val previewInfoMapper: ComposablePreviewInfoMapper<T>,
     private val previewMapperCreator: ComposablePreviewMapperCreator<T>,

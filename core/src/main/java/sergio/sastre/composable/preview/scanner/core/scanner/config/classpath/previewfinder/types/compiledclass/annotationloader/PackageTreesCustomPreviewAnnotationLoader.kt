@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.overriden.annotationloader
+package sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.compiledclass.annotationloader
 
 import io.github.classgraph.AnnotationInfoList
 import io.github.classgraph.ClassGraph

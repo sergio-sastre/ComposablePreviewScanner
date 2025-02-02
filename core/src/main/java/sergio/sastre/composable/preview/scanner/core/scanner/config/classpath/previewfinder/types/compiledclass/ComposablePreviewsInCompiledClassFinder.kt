@@ -1,16 +1,16 @@
-package sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.overriden
+package sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.compiledclass
 
 import io.github.classgraph.ClassInfo
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewInfoMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.overriden.annotationloader.CustomPreviewAnnotationLoader
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.compiledclass.annotationloader.CustomPreviewAnnotationLoader
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.PreviewsFinder
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.buildtime.ComposablePreviewsAtBuildTimeFinder
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.classloaders.ClassLoader
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilterState
 
-internal class OverridenClasspathComposablePreviewsFinder<T>(
+internal class ComposablePreviewsInCompiledClassFinder<T>(
     override val annotationToScanClassName: String,
     previewInfoMapper: ComposablePreviewInfoMapper<T>,
     previewMapperCreator: ComposablePreviewMapperCreator<T>,
@@ -33,7 +33,7 @@ internal class OverridenClasspathComposablePreviewsFinder<T>(
                 classLoader
             ),
 
-            CrossModuleComposableWithCustomPreviewsFinder(
+            CrossModuleCustomPreviewsInCompiledClassFinder(
                 annotationToScanClassName,
                 previewInfoMapper,
                 previewMapperCreator,
@@ -41,7 +41,7 @@ internal class OverridenClasspathComposablePreviewsFinder<T>(
                 crossModuleCustomPreviewAnnotationLoader
             ),
 
-            SameModuleComposableWithCustomPreviewsFinder(
+            MultiplePreviewsInCompiledClassFinder(
                 annotationToScanClassName,
                 previewInfoMapper,
                 previewMapperCreator,
