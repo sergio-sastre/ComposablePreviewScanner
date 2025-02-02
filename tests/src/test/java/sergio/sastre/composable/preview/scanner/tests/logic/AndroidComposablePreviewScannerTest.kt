@@ -288,16 +288,16 @@ class AndroidComposablePreviewScannerTest {
     @Test
     fun `GIVEN 2 previews with same method Name but different params are considered different`() {
         val stringProviderValues = StringProvider().values.toList()
-        val intProviderValues = ListProvider().values.toList()
+        val listProviderValues = ListProvider().values.toList()
         assumeTrue(stringProviderValues.size == 2)
-        assumeTrue(intProviderValues.size == 2)
+        assumeTrue(listProviderValues.size == 1)
 
         val previewsWithSameMethodName =
             AndroidComposablePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.samemethodname")
                 .getPreviews()
 
-        assert(previewsWithSameMethodName.size == 5)
+        assert(previewsWithSameMethodName.size == 4)
     }
 
     @Test
