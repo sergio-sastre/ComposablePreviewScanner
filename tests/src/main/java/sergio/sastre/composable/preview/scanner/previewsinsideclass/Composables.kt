@@ -11,9 +11,12 @@ class Composables {
         Text("Example 2")
     }
 
+    /*
     @Preview(apiLevel = 31)
     @Composable
     fun ExamplePreview() {
         Example()
     }
+
+     */
 }
