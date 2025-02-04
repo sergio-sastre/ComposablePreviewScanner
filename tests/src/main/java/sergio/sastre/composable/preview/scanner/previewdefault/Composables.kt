@@ -1,20 +1,52 @@
 package sergio.sastre.composable.preview.scanner.previewdefault
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import sergio.sastre.composable.preview.scanner.StringProvider
 
-// TODO - default + Preview Parameters
-// TODO - These combinations inside a class
-// TODO - pass a Composable, which is more sofisticated
-// TODO - adjust screenshot Id when using default params (Composer shows up)
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-fun Example2(
-    name: Map<String,String> = mapOf("arg0" to "map"),
+fun ExampleDefault(
+    hello: String? = "arg1",
+    hello1: String = "arg2",
+    name: @Composable () -> Unit = { Text("Defaults = ")},
+    hello2: String = "arg3"
+) {
+    TopAppBar(
+        title = {
+            Column {
+                name()
+                Text("$hello $hello1 $hello2")
+            }
+        }
+    )
+}
+
+
+@Preview
+@Composable
+fun ExampleDefault(
+    name: Map<String, String> = mapOf("arg0" to "map"),
     hello: String? = "arg1",
     hello1: String = "arg2",
     hello2: String = "arg3"
-){
-    Text(name.keys.first() + " " + hello + " " + hello1 + " " +hello2)
+) {
+    Text(name.keys.first() + " " + hello + " " + hello1 + " " + hello2)
+}
+
+@Preview
+@Composable
+fun ExampleDefaultPlusPreviewParameters(
+    @PreviewParameter(StringProvider::class) name: String,
+    hello: String? = "arg1",
+    hello1: String = "arg2",
+    hello2: String = "arg3",
+) {
+    Text("$name $hello $hello1 $hello2")
 }

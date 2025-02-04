@@ -7,6 +7,8 @@ import kotlin.math.pow
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.kotlinFunction
 
+// TODO - throw error if default params + PreviewParameter, and PreviewParameter is not first (super edge case)
+// TODO - throw error if invoke fails() (Can I write a test for this?
 /**
  * Used to handle calls to a [composableMethod].
  * If a [parameter] is provided, it will be used as the first parameter of the call.
@@ -43,7 +45,8 @@ internal class ComposablePreviewInvocationHandler(
     }
 
     private fun fillMissingComposeArgs(passedComposeArgs: Array<out Any>?): Array<out Any?> {
-        val defaultParams = composableMethod.kotlinFunction!!.parameters.filter { it.isOptional }
+        val allParams = composableMethod.kotlinFunction!!.parameters
+        val defaultParams = allParams.filter { it.isOptional }
         when (defaultParams.isEmpty()) {
             true -> {
                 return passedComposeArgs ?: emptyArray()
@@ -55,21 +58,22 @@ internal class ComposablePreviewInvocationHandler(
 
                 // In kotlin reflect, null params resolve to default kotlin params.
                 // These params are added at the beginning of the method by the Compose Compiler
-                val defaultParamsAsNull: Array<out Any?> = arrayOfNulls(defaultParamsSize)
+                val defaultParamsAsNull: Array<out Any?> = arrayOfNulls(defaultParams.size)
 
                 // When default params available, the Compose Compiler adds a mask at the end of the method
                 // to map the default parameters to their corresponding default values.
                 //
-                // This mask contains 1 bit for each default parameter (0 -> null, 1 -> default value),
-                // so in order to resolve all default parameters to their corresponding default values,
+                // This mask contains 1 bit for each parameter (0 -> null, 1 -> default value),
+                // including default params and those passed via @PreviewParameters
+                // so in order to resolve all parameters to their corresponding values,
                 // you need the highest possible number in binary e.g.
                 // 1 param  -> 1
                 // 2 params -> 11 -> 3
                 // 3 params -> 111 -> 7
                 // 4 params -> 1111 -> 15
                 // x params -> 2 pow (x) - 1
-                val defaultParamsMask: MutableList<Int> = mutableListOf(2.0.pow(defaultParamsSize).toInt() - 1)
-                return (defaultParamsAsNull.toMutableList() + safeArgs.toMutableList() + defaultParamsMask).toTypedArray()
+                val paramsMask: MutableList<Int> = mutableListOf(2.0.pow(allParams.size).toInt() - 1)
+                return (defaultParamsAsNull.toMutableList() + safeArgs.toMutableList() + paramsMask).toTypedArray()
             }
         }
     }
