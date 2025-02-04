@@ -2,6 +2,7 @@ package sergio.sastre.composable.preview.scanner.core.preview
 
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 import kotlin.math.pow
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.kotlinFunction
@@ -22,23 +23,7 @@ internal class ComposablePreviewInvocationHandler(
     object NoParameter
 
     override fun invoke(proxy: Any?, method: Method?, args: Array<out Any>?): Any? {
-        val safeArgs1 = args ?: emptyArray()
-        val defaultParamSize =
-            composableMethod.kotlinFunction!!.parameters.filter { it.isOptional }.size
-        val defaultParamsAsNull: Array<out Any?> = arrayOfNulls(defaultParamSize)
-        val extras: MutableList<Int> = if(defaultParamSize > 0) mutableListOf(2.0.pow(defaultParamSize).toInt()-1) else mutableListOf()
-
-        // 4 params -> 2 a la 4
-        // 1 return 1,
-        // 3 -> returns 1+2,
-        // 5 -> returns 1+3,
-        // 7 -> returns 1+2+3,
-        // 9 -> returns 1+4
-        // 11 -> returns 1+2+4
-        // 13 -> returns 1+3+4
-        // 15 -> returns 1+2+3+4
-        val safeArgs: Array<out Any?> =
-            (defaultParamsAsNull.toMutableList() + safeArgs1.toMutableList() + extras).toTypedArray()
+        val safeArgs: Array<out Any?> = fillMissingComposeArgs(args)
 
         val safeArgsWithParam =
             when (parameter != NoParameter) {
@@ -46,17 +31,46 @@ internal class ComposablePreviewInvocationHandler(
                 false -> safeArgs
             }
 
-        return try {
-            composableMethod.invoke(null, *safeArgsWithParam)
-        } catch (exception: NullPointerException) {
-            // This is for @Composables inside a Class
-            // WARNING: This just handles one nesting level
-            composableMethod.invoke(
+        val isInsideClass = !Modifier.isStatic(composableMethod.modifiers)
+        val kotlinComposableMethod = composableMethod.kotlinFunction!!.apply { isAccessible = true }
+        return when (isInsideClass) {
+            false -> kotlinComposableMethod.call(*safeArgsWithParam)
+            true -> kotlinComposableMethod.call(
                 composableMethod.declaringClass.getDeclaredConstructor().newInstance(),
                 *safeArgsWithParam
             )
-        } catch (exception: IllegalArgumentException) {
-            composableMethod.kotlinFunction!!.apply { isAccessible = true }.call(*safeArgsWithParam)
+        }
+    }
+
+    private fun fillMissingComposeArgs(passedComposeArgs: Array<out Any>?): Array<out Any?> {
+        val defaultParams = composableMethod.kotlinFunction!!.parameters.filter { it.isOptional }
+        when (defaultParams.isEmpty()) {
+            true -> {
+                return passedComposeArgs ?: emptyArray()
+            }
+
+            false -> {
+                val safeArgs = passedComposeArgs ?: emptyArray()
+                val defaultParamsSize = defaultParams.size
+
+                // In kotlin reflect, null params resolve to default kotlin params.
+                // These params are added at the beginning of the method by the Compose Compiler
+                val defaultParamsAsNull: Array<out Any?> = arrayOfNulls(defaultParamsSize)
+
+                // When default params available, the Compose Compiler adds a mask at the end of the method
+                // to map the default parameters to their corresponding default values.
+                //
+                // This mask contains 1 bit for each default parameter (0 -> null, 1 -> default value),
+                // so in order to resolve all default parameters to their corresponding default values,
+                // you need the highest possible number in binary e.g.
+                // 1 param  -> 1
+                // 2 params -> 11 -> 3
+                // 3 params -> 111 -> 7
+                // 4 params -> 1111 -> 15
+                // x params -> 2 pow (x) - 1
+                val defaultParamsMask: MutableList<Int> = mutableListOf(2.0.pow(defaultParamsSize).toInt() - 1)
+                return (defaultParamsAsNull.toMutableList() + safeArgs.toMutableList() + defaultParamsMask).toTypedArray()
+            }
         }
     }
 }
