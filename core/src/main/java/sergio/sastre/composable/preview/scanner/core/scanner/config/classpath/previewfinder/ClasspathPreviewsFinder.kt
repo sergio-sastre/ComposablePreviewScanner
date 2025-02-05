@@ -5,13 +5,13 @@ import io.github.classgraph.ScanResult
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewInfoMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.overriden.annotationloader.PackageTreesCustomPreviewAnnotationLoader
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.overriden.annotationloader.ScanResultCustomPreviewAnnotationLoader
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.compiledclass.annotationloader.PackageTreesCustomPreviewAnnotationLoader
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.compiledclass.annotationloader.ScanResultCustomPreviewAnnotationLoader
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.buildtime.ComposablePreviewsAtBuildTimeFinder
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.classloaders.ReflectionClassLoader
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.classloaders.SourceSetClassLoader
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.overriden.OverridenClasspathComposablePreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.compiledclass.ComposablePreviewsInCompiledClassFinder
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilterState
 
 /**
@@ -44,7 +44,7 @@ class ClasspathPreviewsFinder<T>(
         get() =
             overridenClassPath
                 ?.let {
-                    OverridenClasspathComposablePreviewsFinder(
+                    ComposablePreviewsInCompiledClassFinder(
                         annotationToScanClassName = annotationToScanClassName,
                         previewInfoMapper = previewInfoMapper,
                         previewMapperCreator = previewMapperCreator,

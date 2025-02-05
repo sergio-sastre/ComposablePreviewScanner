@@ -6,7 +6,7 @@ import androidx.compose.ui.tooling.preview.PreviewDynamicColors
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import sergio.sastre.composable.preview.scanner.StringProvider
 import sergio.sastre.composable.preview.scanner.custompreviewannotation.MyCustomDarkModePreview
-import sergio.sastre.composable.preview.scanner.previewparameters.Example
+import sergio.sastre.composable.preview.scanner.previewparameter.Example
 
 // Total: 14 Previews
 @Preview                 // 1 Preview

@@ -32,13 +32,13 @@ class ProvideComposablePreview<T> {
                 composablePreviewMapper.previewMethod.declaringClass.toClassName()
             override val methodName: String = composablePreviewMapper.previewMethod.name
 
-            override val methodParameters: String = methodParametersAsString()
+            override val methodParametersType: String = methodParametersTypeAsString()
 
             override fun toString(): String {
                 return buildList<String> {
                     add(composablePreviewMapper.previewMethod.declaringClass.toClassName())
                     add(composablePreviewMapper.previewMethod.name)
-                    add(methodParametersAsString())
+                    add(methodParametersTypeAsString())
                     if (previewIndex != null) add(previewIndex.toString())
                 }.joinToString("_")
             }
@@ -46,18 +46,21 @@ class ProvideComposablePreview<T> {
             private fun Class<*>.toClassName(): String = canonicalName ?: simpleName
 
             /**
+             * Returns the type of the parameters as an underscore separated simple string
+             *
              * Composable from preview methods contain always 2 parameters added at the end  by the compiler:
              * 1. androidx.compose.runtime.Composer
              * 2. Int
              * So if it uses @PreviewParameter, such parameters are located at the beginning
              */
             @Suppress("NewApi")
-            private fun methodParametersAsString(): String =
+            private fun methodParametersTypeAsString(): String =
                 composablePreviewMapper
                     .previewMethod
                     .genericParameterTypes
                     .dropLast(2)
                     .joinToString("_") {
+                        // From java.lang.List<java.lang.Integer> to List<Integer>
                         it.typeName.replace(Regex("\\b[a-zA-Z_][a-zA-Z0-9_]*\\."), "")
                     }
         }

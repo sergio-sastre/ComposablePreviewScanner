@@ -2,6 +2,7 @@ package sergio.sastre.composable.preview.scanner.tests.logic
 
 import android.content.res.Configuration
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
 import sergio.sastre.composable.preview.scanner.StringProvider
 import sergio.sastre.composable.preview.scanner.customextraannotation.Device
 import sergio.sastre.composable.preview.scanner.customextraannotation.ScreenshotTestConfig
@@ -13,6 +14,7 @@ import sergio.sastre.composable.preview.scanner.ListProvider
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.preview.getAnnotation
+import sergio.sastre.composable.preview.scanner.core.scanresult.filter.exceptions.RepeatableAnnotationNotSupportedException
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
 import java.io.FileNotFoundException
 
@@ -286,16 +288,19 @@ class AndroidComposablePreviewScannerTest {
     @Test
     fun `GIVEN 2 previews with same method Name but different params are considered different`() {
         val stringProviderValues = StringProvider().values.toList()
-        val intProviderValues = ListProvider().values.toList()
+        val listProviderValues = ListProvider().values.toList()
         assumeTrue(stringProviderValues.size == 2)
-        assumeTrue(intProviderValues.size == 2)
+        assumeTrue(listProviderValues.size == 1)
 
         val previewsWithSameMethodName =
             AndroidComposablePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.samemethodname")
                 .getPreviews()
 
-        assert(previewsWithSameMethodName.size == 5)
+        // 2 for stringProvider
+        // 1 for listProvider
+        // 1 without parameter
+        assert(previewsWithSameMethodName.size == 4)
     }
 
     @Test
@@ -354,6 +359,32 @@ class AndroidComposablePreviewScannerTest {
         assert(extraAnnotation?.locale == "ar")
         assert(extraAnnotation?.array?.get(0) == "1")
         assert(extraAnnotation?.array?.get(1) == "2")
+    }
+
+    @Repeatable
+    annotation class RepeatableAnnotation
+    @Test
+    fun `GIVEN includeAnnotationInfoForAllOf contains any Repeatable annotation THEN it throws RepeatableAnnotationNotSupportedException`() {
+        val exception = assertThrows(RepeatableAnnotationNotSupportedException::class.java) {
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.customextraannotation")
+                .includeAnnotationInfoForAllOf(RepeatableAnnotation::class.java)
+                .getPreviews()
+        }
+
+        assertEquals("includeAnnotationInfoForAllOf() cannot be called with Repeatable annotations 'RepeatableAnnotation'", exception.message)
+    }
+
+    @Test
+    fun `GIVEN excludeIfAnnotatedWithAnyOf contains any Repeatable annotation THEN it throws RepeatableAnnotationNotSupportedException`() {
+        val exception = assertThrows(RepeatableAnnotationNotSupportedException::class.java) {
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.customextraannotation")
+                .excludeIfAnnotatedWithAnyOf(RepeatableAnnotation::class.java)
+                .getPreviews()
+        }
+
+        assertEquals("excludeIfAnnotatedWithAnyOf() cannot be called with Repeatable annotations 'RepeatableAnnotation'", exception.message)
     }
 
     @Test(expected = IllegalArgumentException::class)

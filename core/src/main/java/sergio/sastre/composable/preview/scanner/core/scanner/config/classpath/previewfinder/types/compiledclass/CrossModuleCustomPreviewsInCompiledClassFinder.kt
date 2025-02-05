@@ -1,17 +1,23 @@
-package sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.overriden
+package sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.compiledclass
 
 import io.github.classgraph.ClassInfo
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewInfoMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.overriden.annotationloader.CustomPreviewAnnotationLoader
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.compiledclass.annotationloader.CustomPreviewAnnotationLoader
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.classloaders.ClassLoader
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.MethodFinder
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.PreviewsFinder
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilterState
 
-internal class CrossModuleComposableWithCustomPreviewsFinder<T>(
+/**
+ * This is necessary when using a custom source set that scans Previews from compiled classes.
+ *
+ * That is because in compiled classes, when it contains a Custom Preview defined in another module,
+ * that annotation needs to be extra loaded to be accessible
+ */
+internal class CrossModuleCustomPreviewsInCompiledClassFinder<T>(
     override val annotationToScanClassName: String,
     private val previewInfoMapper: ComposablePreviewInfoMapper<T>,
     private val previewMapperCreator: ComposablePreviewMapperCreator<T>,
