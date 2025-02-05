@@ -1,5 +1,6 @@
 package sergio.sastre.composable.preview.scanner.core.preview
 
+import sergio.sastre.composable.preview.scanner.core.preview.exception.PreviewParameterIsNotFirstArgumentException
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -7,7 +8,6 @@ import kotlin.math.pow
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.kotlinFunction
 
-// TODO - throw error if default params + PreviewParameter, and PreviewParameter is not first (super edge case)
 // TODO - throw error if invoke fails() (Can I write a test for this?
 /**
  * Used to handle calls to a [composableMethod].
@@ -26,7 +26,6 @@ internal class ComposablePreviewInvocationHandler(
 
     override fun invoke(proxy: Any?, method: Method?, args: Array<out Any>?): Any? {
         val safeArgs: Array<out Any?> = fillMissingComposeArgs(args)
-
         val safeArgsWithParam =
             when (parameter != NoParameter) {
                 true -> arrayOf(parameter, *safeArgs)
@@ -45,16 +44,24 @@ internal class ComposablePreviewInvocationHandler(
     }
 
     private fun fillMissingComposeArgs(passedComposeArgs: Array<out Any>?): Array<out Any?> {
+        val safeArgs = passedComposeArgs ?: emptyArray()
         val allParams = composableMethod.kotlinFunction!!.parameters
         val defaultParams = allParams.filter { it.isOptional }
         when (defaultParams.isEmpty()) {
-            true -> {
-                return passedComposeArgs ?: emptyArray()
-            }
-
+            true -> return safeArgs
             false -> {
-                val safeArgs = passedComposeArgs ?: emptyArray()
-                val defaultParamsSize = defaultParams.size
+                // Very rare case:
+                // if @PreviewParameters & default parameters available
+                // And @PreviewParameters is not the first of all arguments
+                // we cannot handle it:
+                // we don't know the value of that argument to pass it at a certain index
+                // and it'd throw an UndeclaredThrowableException
+                if (allParams.any { !it.isOptional && it.index != 0 }){
+                    throw PreviewParameterIsNotFirstArgumentException(
+                        className =  composableMethod.declaringClass.name,
+                        methodName = composableMethod.name
+                    )
+                }
 
                 // In kotlin reflect, null params resolve to default kotlin params.
                 // These params are added at the beginning of the method by the Compose Compiler

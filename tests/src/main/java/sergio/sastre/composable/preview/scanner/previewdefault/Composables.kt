@@ -28,7 +28,6 @@ fun ExampleDefault(
     )
 }
 
-
 @Preview
 @Composable
 fun ExampleDefault(
@@ -40,6 +39,7 @@ fun ExampleDefault(
     Text(name.keys.first() + " " + hello + " " + hello1 + " " + hello2)
 }
 
+// Works as far as @PreviewParameter is the first in the list
 @Preview
 @Composable
 fun ExampleDefaultPlusPreviewParameters(
