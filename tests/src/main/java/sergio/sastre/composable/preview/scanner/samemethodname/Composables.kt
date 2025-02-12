@@ -30,6 +30,6 @@ fun ExampleSamePreviewName(
 
 @Preview
 @Composable
-fun ExampleSamePreviewName(){
+fun ExampleSamePreviewName() {
     Example("This is another preview")
 }

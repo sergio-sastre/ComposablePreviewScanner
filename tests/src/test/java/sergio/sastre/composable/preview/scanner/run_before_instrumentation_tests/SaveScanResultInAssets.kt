@@ -18,17 +18,35 @@ class SaveScanResultInAssets {
         ScanResultDumper()
             .setTargetSourceSet(Classpath(SCREENSHOT_TEST))
             .scanPackageTrees("sergio.sastre.composable.preview.scanner")
-            .dumpScanResultToFileInAssets(scanResultScreenshotTestFileName)
+            .dumpScanResultToFileInAssets(
+                scanFileName = scanResultScreenshotTestFileName,
+                packageTreesOfCustomPreviews = listOf(
+                    "androidx.compose.ui.tooling.preview",
+                    "sergio.sastre.composable.preview.custompreviews"
+                )
+            )
 
         ScanResultDumper()
             .setTargetSourceSet(Classpath(MAIN))
             .scanPackageTrees("sergio.sastre.composable.preview.scanner")
-            .dumpScanResultToFileInAssets(scanResultMainFileName)
+            .dumpScanResultToFileInAssets(
+                scanFileName = scanResultMainFileName,
+                packageTreesOfCustomPreviews = listOf(
+                    "androidx.compose.ui.tooling.preview",
+                    "sergio.sastre.composable.preview.custompreviews"
+                )
+            )
 
         ScanResultDumper()
             .setTargetSourceSet(Classpath(ANDROID_TEST))
             .scanPackageTrees("sergio.sastre.composable.preview.scanner")
-            .dumpScanResultToFileInAssets(scanResultAndroidTestFileName)
+            .dumpScanResultToFileInAssets(
+                scanFileName = scanResultAndroidTestFileName,
+                packageTreesOfCustomPreviews = listOf(
+                    "androidx.compose.ui.tooling.preview",
+                    "sergio.sastre.composable.preview.custompreviews"
+                )
+            )
 
         assert(
             assetsFilePath(scanResultScreenshotTestFileName).exists()

@@ -8,7 +8,6 @@ import kotlin.math.pow
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.kotlinFunction
 
-// TODO - throw error if invoke fails() (Can I write a test for this?
 /**
  * Used to handle calls to a [composableMethod].
  * If a [parameter] is provided, it will be used as the first parameter of the call.

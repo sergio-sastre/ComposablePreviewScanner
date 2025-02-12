@@ -31,12 +31,12 @@ fun ExampleDefault(
 @Preview
 @Composable
 fun ExampleDefault(
-    name: Map<String, String> = mapOf("arg0" to "map"),
-    hello: String? = "arg1",
-    hello1: String = "arg2",
-    hello2: String = "arg3"
+    arg0: Map<String, String> = mapOf("arg0" to "map"),
+    arg1: String? = "arg1",
+    arg2: String = "arg2",
+    arg3: String = "arg3"
 ) {
-    Text(name.keys.first() + " " + hello + " " + hello1 + " " + hello2)
+    Text("${arg0.keys.first()} $arg1 $arg2 $arg3")
 }
 
 // Works as far as @PreviewParameter is the first in the list

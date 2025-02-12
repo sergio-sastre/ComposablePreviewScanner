@@ -67,7 +67,9 @@ class ProvideComposablePreview<T> {
                     .dropLast(count)
                     .joinToString("_") {
                         // From java.lang.List<java.lang.Integer> to List<Integer>
-                        it.typeName.replace(Regex("\\b[a-zA-Z_][a-zA-Z0-9_]*\\."), "")
+                        it.typeName
+                            .replace(Regex("\\b[a-zA-Z_][a-zA-Z0-9_]*\\."), "")
+                            .replace("\\s+".toRegex(), "_") // blanks cause problems with some libs, like Android-Testify
                     }
             }
         }
