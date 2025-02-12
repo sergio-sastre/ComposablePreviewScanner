@@ -15,10 +15,10 @@ import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
 import sergio.sastre.composable.preview.scanner.android.device.DevicePreviewInfoParser
 import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.Classpath
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.ANDROID_TEST
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.MAIN
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.SCREENSHOT_TEST
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.ANDROID_TEST
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.MAIN
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.SCREENSHOT_TEST
 
 /**
  * These tests ensure that the invoke() function of a ComposablePreview works as expected
@@ -32,26 +32,38 @@ class SourceSetPaparazziComposablePreviewInvokeTests(
 ) {
 
     companion object {
-        private val cachedMainPreviews: List<ComposablePreview<AndroidPreviewInfo>> =
+        private val cachedMainPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
             AndroidComposablePreviewScanner()
-                .setTargetSourceSet(Classpath(MAIN))
+                .setTargetSourceSet(
+                    sourceSetClasspath = Classpath(MAIN),
+                    packageTreesOfCrossModuleCustomPreviews = listOf("sergio.sastre.composable.preview.custompreviews")
+                )
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .includePrivatePreviews()
                 .getPreviews()
+        }
 
-        private val cachedScreenshotTestPreviews: List<ComposablePreview<AndroidPreviewInfo>> =
+        private val cachedScreenshotTestPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
             AndroidComposablePreviewScanner()
-                .setTargetSourceSet(Classpath(SCREENSHOT_TEST))
+                .setTargetSourceSet(
+                    sourceSetClasspath = Classpath(SCREENSHOT_TEST),
+                    packageTreesOfCrossModuleCustomPreviews = listOf("sergio.sastre.composable.preview.custompreviews")
+                )
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .includePrivatePreviews()
                 .getPreviews()
+        }
 
-        private val cachedAndroidTestPreviews: List<ComposablePreview<AndroidPreviewInfo>> =
+        private val cachedAndroidTestPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
             AndroidComposablePreviewScanner()
-                .setTargetSourceSet(Classpath(ANDROID_TEST))
+                .setTargetSourceSet(
+                    sourceSetClasspath = Classpath(ANDROID_TEST),
+                    packageTreesOfCrossModuleCustomPreviews = listOf("sergio.sastre.composable.preview.custompreviews")
+                )
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .includePrivatePreviews()
                 .getPreviews()
+        }
 
         @JvmStatic
         @Parameterized.Parameters
@@ -66,7 +78,10 @@ class SourceSetPaparazziComposablePreviewInvokeTests(
 
     @Test
     fun snapshot() {
-        val screenshotId = AndroidPreviewScreenshotIdBuilder(preview).ignoreClassName().build()
+        val screenshotId = AndroidPreviewScreenshotIdBuilder(preview)
+            .ignoreClassName()
+            .doNotIgnoreMethodParametersType()
+            .build()
         paparazzi.snapshot(name = screenshotId) {
             preview()
         }

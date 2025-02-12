@@ -1,9 +1,9 @@
 package sergio.sastre.composable.preview.scanner.core.scanresult.filter
 
-
 import io.github.classgraph.ScanResult
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.previewfinder.PreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.PreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanresult.filter.exceptions.RepeatableAnnotationNotSupportedException
 
 /**
  * Filter the ComposablePreviews of a given ScanResult.
@@ -16,8 +16,14 @@ class ScanResultFilter<T> internal constructor(
 
     /**
      * Excludes previews which use any of the given annotations, so they will not be returned
+     *
+     * WARNING: throws a [RepeatableAnnotationNotSupportedException] if any of the annotations is repeatable
      */
     fun excludeIfAnnotatedWithAnyOf(vararg annotations: Class<out Annotation>) = apply {
+        throwExceptionIfAnyAnnotationIsRepeatable(
+            methodName = "excludeIfAnnotatedWithAnyOf()",
+            annotations = annotations.toList()
+        )
         scanResultFilterState = scanResultFilterState.copy(
             excludedAnnotations = annotations.toList()
         )
@@ -35,8 +41,14 @@ class ScanResultFilter<T> internal constructor(
      *
      * This makes that info in the annotations accessible in your screenshot tests
      * via (following the previous example) ComposablePreview.getAnnotation<ScreenshotTestConfig>()
+     *
+     * WARNING: throws a [RepeatableAnnotationNotSupportedException] if any of the annotations is repeatable
      */
     fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>) = apply {
+        throwExceptionIfAnyAnnotationIsRepeatable(
+            methodName = "includeAnnotationInfoForAllOf()",
+            annotations = annotations.toList()
+        )
         scanResultFilterState = scanResultFilterState.copy(
             namesOfIncludeAnnotationsInfo = annotations.map { it.name }.toSet()
         )
@@ -74,4 +86,17 @@ class ScanResultFilter<T> internal constructor(
                 }
                 .toList()
         }
+
+    private fun throwExceptionIfAnyAnnotationIsRepeatable(
+        methodName: String,
+        annotations: List<Class<out Annotation>>
+    ) {
+        val repeatableAnnotations = annotations.filter { it.isAnnotationPresent(Repeatable::class.java) }
+        if (repeatableAnnotations.isNotEmpty()){
+            throw RepeatableAnnotationNotSupportedException(
+                methodName = methodName,
+                repeatableAnnotations = repeatableAnnotations
+            )
+        }
+    }
 }

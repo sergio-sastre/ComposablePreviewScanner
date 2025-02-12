@@ -49,7 +49,7 @@ class Dimensions(
                 Dimensions(
                     height = ceil(height * conversionFactor),
                     width = ceil(width * conversionFactor),
-                    unit = Unit.DP
+                    unit = Unit.PX
                 )
         }
     }
@@ -84,4 +84,4 @@ enum class Navigation(val value: String) {
     BUTTONS("buttons")
 }
 
-enum class Type { PHONE, TABLET, DESKTOP, FOLDABLE, WEAR, CAR, TV }
+enum class Type { PHONE, TABLET, DESKTOP, FOLDABLE, WEAR, CAR, TV, XR }

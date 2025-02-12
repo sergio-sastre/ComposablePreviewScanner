@@ -1,17 +1,17 @@
-package sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.previewfinder
+package sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder
 
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.ScanResult
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewInfoMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.previewfinder.overriden.annotationloader.PackageTreesCustomPreviewAnnotationLoader
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.previewfinder.overriden.annotationloader.ScanResultCustomPreviewAnnotationLoader
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.previewfinder.buildtime.ComposablePreviewsAtBuildTimeFinder
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.ReflectionClassLoader
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.SourceSetClassLoader
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.Classpath
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.previewfinder.overriden.OverridenClasspathComposablePreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.compiledclass.annotationloader.PackageTreesCustomPreviewAnnotationLoader
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.compiledclass.annotationloader.ScanResultCustomPreviewAnnotationLoader
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.buildtime.ComposablePreviewsAtBuildTimeFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.classloaders.ReflectionClassLoader
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.classloaders.SourceSetClassLoader
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.compiledclass.ComposablePreviewsInCompiledClassFinder
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilterState
 
 /**
@@ -38,19 +38,13 @@ class ClasspathPreviewsFinder<T>(
             crossModuleCustomPreviewsPackageTrees,
             annotationToScanClassName
         )
-        // TODO -> reasons to fail (source set)
-        // 1. Instrumentation test ->
-        //      1.1 SourceSet ScreenshotTest -> include 'screenshotTest' sources
-        //          Catch this error in ClassLoader
-        //      2.1 Not using scanFromFile -> does not allow other versions...
-        //          Catch this error in the ScanMethods
     }
 
     private val previewsFinder: PreviewsFinder<T>
         get() =
             overridenClassPath
                 ?.let {
-                    OverridenClasspathComposablePreviewsFinder(
+                    ComposablePreviewsInCompiledClassFinder(
                         annotationToScanClassName = annotationToScanClassName,
                         previewInfoMapper = previewInfoMapper,
                         previewMapperCreator = previewMapperCreator,

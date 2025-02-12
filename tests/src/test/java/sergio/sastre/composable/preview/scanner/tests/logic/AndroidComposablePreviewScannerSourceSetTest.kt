@@ -5,9 +5,9 @@ import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeTrue
 import org.junit.Test
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.Classpath
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.MAIN
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.SCREENSHOT_TEST
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.MAIN
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.SCREENSHOT_TEST
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import java.io.File
 

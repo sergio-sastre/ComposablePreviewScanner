@@ -1,10 +1,10 @@
 package sergio.sastre.composable.preview.scanner.run_before_instrumentation_tests
 
 import org.junit.Test
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.Classpath
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.ANDROID_TEST
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.MAIN
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath.SourceSet.SCREENSHOT_TEST
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.ANDROID_TEST
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.MAIN
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.SCREENSHOT_TEST
 import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper
 import sergio.sastre.composable.preview.scanner.core.utils.assetsFilePath
 
@@ -18,17 +18,35 @@ class SaveScanResultInAssets {
         ScanResultDumper()
             .setTargetSourceSet(Classpath(SCREENSHOT_TEST))
             .scanPackageTrees("sergio.sastre.composable.preview.scanner")
-            .dumpScanResultToFileInAssets(scanResultScreenshotTestFileName)
+            .dumpScanResultToFileInAssets(
+                scanFileName = scanResultScreenshotTestFileName,
+                packageTreesOfCustomPreviews = listOf(
+                    "androidx.compose.ui.tooling.preview",
+                    "sergio.sastre.composable.preview.custompreviews"
+                )
+            )
 
         ScanResultDumper()
             .setTargetSourceSet(Classpath(MAIN))
             .scanPackageTrees("sergio.sastre.composable.preview.scanner")
-            .dumpScanResultToFileInAssets(scanResultMainFileName)
+            .dumpScanResultToFileInAssets(
+                scanFileName = scanResultMainFileName,
+                packageTreesOfCustomPreviews = listOf(
+                    "androidx.compose.ui.tooling.preview",
+                    "sergio.sastre.composable.preview.custompreviews"
+                )
+            )
 
         ScanResultDumper()
             .setTargetSourceSet(Classpath(ANDROID_TEST))
             .scanPackageTrees("sergio.sastre.composable.preview.scanner")
-            .dumpScanResultToFileInAssets(scanResultAndroidTestFileName)
+            .dumpScanResultToFileInAssets(
+                scanFileName = scanResultAndroidTestFileName,
+                packageTreesOfCustomPreviews = listOf(
+                    "androidx.compose.ui.tooling.preview",
+                    "sergio.sastre.composable.preview.custompreviews"
+                )
+            )
 
         assert(
             assetsFilePath(scanResultScreenshotTestFileName).exists()

@@ -18,7 +18,7 @@ class ComposePreviewScreenshotTests {
     @MyCustomDarkModePreview // 2 Previews
     @PreviewDynamicColors    // 4 previews
     @Composable
-    fun ScreenshotTestExampleMultiplePreviewWithParams(
+    fun ScreenshotTestExampleMultiplePreview(
         @PreviewParameter(provider = StringProvider::class) name: String
     ) {
         Example(name)
@@ -28,5 +28,16 @@ class ComposePreviewScreenshotTests {
     @Composable
     fun ScreenshotTestExampleMultiplePreview(){
         Example("Example")
+    }
+
+    @Preview
+    @Composable
+    fun ScreenshotTestExampleMultiplePreview(
+        name: Map<String,String> = mapOf("arg0" to "map"),
+        hello: String? = "arg1",
+        hello1: String = "arg2",
+        hello2: String = "arg3"
+    ){
+        Text(name.keys.first() + " " + hello + " " + hello1 + " " +hello2)
     }
 }

@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.core.scanner.config.classloader.classpath
+package sergio.sastre.composable.preview.scanner.core.scanner.config.classpath
 
 import java.util.Locale
 

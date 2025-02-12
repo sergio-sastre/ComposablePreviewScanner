@@ -12,23 +12,23 @@ import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
 import sergio.sastre.composable.preview.scanner.android.device.domain.RobolectricDeviceQualifierBuilder
 import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
+import sergio.sastre.composable.preview.scanner.core.preview.exception.PreviewParameterIsNotFirstArgumentException
 
 /**
  * These tests ensure that the invoke() function of a ComposablePreview works as expected
  * for all the @Composable's in the main source at build time.
  *
- * ./gradlew :tests:recordRoborazziDebug --tests 'BuildTimeRoborazziComposablePreviewInvokeTests' -Plibrary=roborazzi
+ * ./gradlew :tests:recordRoborazziDebug --tests 'ComposablePreviewInvokeExpectedErrorTests' -Plibrary=roborazzi
  */
 @RunWith(ParameterizedRobolectricTestRunner::class)
-class BuildTimeRoborazziComposablePreviewInvokeTests(
+class ComposablePreviewInvokeExpectedErrorTests(
     private val preview: ComposablePreview<AndroidPreviewInfo>,
 ) {
 
     companion object {
         private val cachedBuildTimePreviews: List<ComposablePreview<AndroidPreviewInfo>> =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner")
-                .includePrivatePreviews()
+                .scanPackageTrees("defaultparams.before.previewparameters.throwserror")
                 .getPreviews()
 
         @JvmStatic
@@ -38,7 +38,7 @@ class BuildTimeRoborazziComposablePreviewInvokeTests(
 
     @GraphicsMode(GraphicsMode.Mode.NATIVE)
     @Config(sdk = [30])
-    @Test
+    @Test(expected = PreviewParameterIsNotFirstArgumentException::class)
     fun snapshot() {
         RobolectricDeviceQualifierBuilder.build(preview.previewInfo.device)?.run {
             RuntimeEnvironment.setQualifiers(this)

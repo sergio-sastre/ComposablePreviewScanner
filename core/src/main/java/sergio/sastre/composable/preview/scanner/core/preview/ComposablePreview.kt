@@ -16,6 +16,7 @@ interface ComposablePreview<T> {
     val otherAnnotationsInfo: AnnotationInfoList?
     val declaringClass: String
     val methodName: String
+    val methodParametersType: String
 
     @Composable
     operator fun invoke()
