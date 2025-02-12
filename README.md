@@ -40,6 +40,7 @@ ComposablePreviewScanner also works with:
 - private `@Previews` (from version 0.1.3+)
 - `@Previews` inside public classes<sup>1</sup> (from version 0.3.0+), not nested classes though
 - `@Previews` located in any source set, like "main", "screenshotTest" and "androidTest" (from version 0.5.0+)
+- `@Previews` with default-parameters (from version 0.5.1+)
 
 <sup>1</sup> The [Compose Preview Screenshot Testing tool](https://developer.android.com/studio/preview/compose-screenshot-testing) from Google requires to put your `@Previews` inside a class.
 
@@ -615,7 +616,9 @@ fun createScreenshotIdFor(preview: ComposablePreview<AndroidPreviewInfo>) =
         // so ignore them to avoid them duplicated what might throw a FileNotFoundException
         // due to the longName
        .ignoreClassName()
-       .ignoreMethodName()     
+       .ignoreMethodName()
+       // use this if you have previews in the same file with the same method name but different signature
+       .doNotignoreMethodParametersType() 
        .ignoreForId("heightDp")
        .ignoreForId("widthDp")
        .overrideDefaultIdFor(

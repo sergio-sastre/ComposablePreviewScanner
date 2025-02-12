@@ -29,4 +29,15 @@ class ComposePreviewScreenshotTests {
     fun ScreenshotTestExampleMultiplePreview(){
         Example("Example")
     }
+
+    @Preview
+    @Composable
+    fun ScreenshotTestExampleMultiplePreview(
+        name: Map<String,String> = mapOf("arg0" to "map"),
+        hello: String? = "arg1",
+        hello1: String = "arg2",
+        hello2: String = "arg3"
+    ){
+        Text(name.keys.first() + " " + hello + " " + hello1 + " " +hello2)
+    }
 }

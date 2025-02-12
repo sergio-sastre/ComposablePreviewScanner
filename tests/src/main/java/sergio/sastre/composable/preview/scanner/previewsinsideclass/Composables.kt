@@ -11,9 +11,18 @@ class Composables {
         Text("Example 2")
     }
 
-    @Preview(apiLevel = 31)
+    @Preview
     @Composable
     fun ExamplePreview() {
         Example()
     }
+
+    @Preview
+    @Composable
+    fun ExamplePreview(
+        hello: String = "arg1",
+    ) {
+        Text(hello)
+    }
+
 }

@@ -2,6 +2,7 @@ package sergio.sastre.composable.preview.scanner.core.preview
 
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapper
 import java.lang.reflect.Proxy
+import kotlin.reflect.jvm.kotlinFunction
 
 /**
  * Provides an invokable ComposablePreview
@@ -48,21 +49,29 @@ class ProvideComposablePreview<T> {
             /**
              * Returns the type of the parameters as an underscore separated simple string
              *
-             * Composable from preview methods contain always 2 parameters added at the end  by the compiler:
+             * Composable from preview methods contain always 2 parameters added at the end by the compiler:
              * 1. androidx.compose.runtime.Composer
              * 2. Int
-             * So if it uses @PreviewParameter, such parameters are located at the beginning
+             *
+             * Moreover, if it is a Preview with default parameters, one extra 3. argument is added as a mask for default values
+             *
+             * All these 2-3 parameters are placed at the end of the method.
              */
             @Suppress("NewApi")
-            private fun methodParametersTypeAsString(): String =
-                composablePreviewMapper
-                    .previewMethod
+            private fun methodParametersTypeAsString(): String {
+                val previewMethod = composablePreviewMapper.previewMethod
+                val hasDefaultParams = previewMethod.kotlinFunction!!.parameters.any { it.isOptional }
+                val count = if (hasDefaultParams) 3 else 2
+                return previewMethod
                     .genericParameterTypes
-                    .dropLast(2)
+                    .dropLast(count)
                     .joinToString("_") {
                         // From java.lang.List<java.lang.Integer> to List<Integer>
-                        it.typeName.replace(Regex("\\b[a-zA-Z_][a-zA-Z0-9_]*\\."), "")
+                        it.typeName
+                            .replace(Regex("\\b[a-zA-Z_][a-zA-Z0-9_]*\\."), "")
+                            .replace("\\s+".toRegex(), "_") // blanks cause problems with some libs, like Android-Testify
                     }
+            }
         }
     }
 }
