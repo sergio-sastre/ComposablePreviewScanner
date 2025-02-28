@@ -16,6 +16,11 @@
 A library to help auto-generate screenshot tests from Composable Previews with any screenshot testing library:
 JVM-based (i.e. Paparazzi, Roborazzi) as well as Instrumentation-based (i.e. Shot, Dropshots, Android-Testify, etc.)
 
+#### Provide anonymous feedback
+Already using ComposablePreviewScanner?</br>
+I'd love to hear your thoughts!</br>
+Help shape its future by taking [this quick survey](https://forms.gle/jcvggBxv14CLqjFo6)
+
 # Comparison with other solutions
 |                                                      | Composable Preview Scanner                    | Showkase                                      | Compose Preview Screenshot Testing |
 |------------------------------------------------------|-----------------------------------------------|-----------------------------------------------|------------------------------------|
