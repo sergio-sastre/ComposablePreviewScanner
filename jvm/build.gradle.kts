@@ -11,6 +11,7 @@ java {
 dependencies {
     api(project(":core"))
     implementation (libs.classgraph)
+    implementation(libs.kotlin.reflect)
 }
 
 //https://www.talentica.com/blogs/publish-your-android-library-on-jitpack-for-better-reachability/

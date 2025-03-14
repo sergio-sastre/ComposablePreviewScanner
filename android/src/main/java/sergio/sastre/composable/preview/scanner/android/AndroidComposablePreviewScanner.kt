@@ -14,6 +14,7 @@ import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.pr
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
+import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.isAccessible
 
 /**

@@ -10,6 +10,9 @@ import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposableP
 import sergio.sastre.composable.preview.scanner.core.scanner.ComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.ClasspathPreviewsFinder
 import java.lang.reflect.Method
+import kotlin.reflect.KParameter
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
 
 /**
  * Scans the target package trees for the common @Preview s and returns their Composable,
@@ -46,15 +49,86 @@ class CommonComposablePreviewScanner : ComposablePreviewScanner<CommonPreviewInf
                 previewInfo: CommonPreviewInfo,
                 annotationsInfo: AnnotationInfoList?
             ): ComposablePreviewMapper<CommonPreviewInfo> =
-                object :
-                    ComposablePreviewMapper<CommonPreviewInfo>(
-                        previewMethod = previewMethod,
-                        previewInfo = previewInfo,
-                        annotationsInfo = annotationsInfo
-                    ) {
-                    override fun mapToComposablePreviews(): Sequence<ComposablePreview<CommonPreviewInfo>> =
-                        sequenceOf(ProvideComposablePreview<CommonPreviewInfo>().invoke(this))
+                CommonPreviewMapper(
+                    previewMethod = previewMethod,
+                    previewInfo = previewInfo,
+                    annotationsInfo = annotationsInfo
+                )
+        }
+
+        private data class CommonPreviewMapper<T>(
+            override val previewMethod: Method,
+            override val previewInfo: T,
+            override val annotationsInfo: AnnotationInfoList?,
+        ) : ComposablePreviewMapper<T>(previewMethod, previewInfo, annotationsInfo) {
+
+            private val provideComposablePreview = ProvideComposablePreview<T>()
+
+            private fun Method.findPreviewParameterAnnotation(): Any? {
+                val previewParameterClass = try {
+                    Class.forName("org.jetbrains.compose.ui.tooling.preview.PreviewParameter")
+                } catch (e: ClassNotFoundException) {
+                    return null
                 }
+
+                return this.parameterAnnotations
+                    .flatMap { it.toList() }
+                    .find { previewParameterClass.isInstance(it) }
+            }
+
+            /**
+             * Creates an instance of the provider class using reflection.
+             */
+            private fun createProviderInstance(providerClass: Class<*>): Any? {
+                val providerKClass = providerClass.kotlin
+                val noArgsConstructor = providerKClass.constructors.find { it.parameters.all(
+                    KParameter::isOptional) }
+                noArgsConstructor?.isAccessible = true
+                return noArgsConstructor?.call()
+            }
+
+            override fun mapToComposablePreviews(): Sequence<ComposablePreview<T>> {
+                val previewParameterAnnotation = previewMethod.findPreviewParameterAnnotation()
+                    ?: return sequenceOf(provideComposablePreview(this))
+
+                // **Retrieve provider class via reflection**
+                val providerClass = previewParameterAnnotation::class
+                    .memberProperties
+                    .find { it.name == "provider" } // Get `provider` property via reflection
+                    ?.apply { isAccessible = true }
+                    ?.getter
+                    ?.call(previewParameterAnnotation) as? Class<*>
+                    ?: return sequenceOf(provideComposablePreview(this))
+
+                val providerInstance = createProviderInstance(providerClass)
+                    ?: return sequenceOf(provideComposablePreview(this))
+
+                val values = providerInstance::class
+                    .memberProperties
+                    .find { it.name == "values" }
+                    ?.apply { isAccessible = true }
+                    ?.getter
+                    ?.call(providerInstance) as? Sequence<Any>
+                    ?: return sequenceOf(provideComposablePreview(this))
+
+                val limit = previewParameterAnnotation::class
+                    .memberProperties
+                    .find { it.name == "limit" }
+                    ?.apply { isAccessible = true }
+                    ?.getter
+                    ?.call(previewParameterAnnotation) as? Int ?: Int.MAX_VALUE
+
+                return values
+                    .take(limit)
+                    .mapIndexed { index, value -> index to value }
+                    .map { (index, value) ->
+                        provideComposablePreview(
+                            composablePreviewMapper = this,
+                            previewIndex = index,
+                            parameter = value,
+                        )
+                    }
+            }
         }
     }
 }
