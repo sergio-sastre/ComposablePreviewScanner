@@ -12,8 +12,8 @@ class CommonComposablePreviewScannerTest {
     fun `GIVEN Composable with common @Preview, WHEN Scanning a package tree with such composables, THEN it returns previews`() {
         val commonPreviews =
             CommonComposablePreviewScanner()
-            .scanPackageTrees("sergio.sastre.composable.preview.scanner.jvmcommon")
-            .getPreviews()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.jvmcommon")
+                .getPreviews()
 
         assert(commonPreviews.isNotEmpty())
     }
@@ -29,7 +29,7 @@ class CommonComposablePreviewScannerTest {
     }
 
     @Test
-    fun `GIVEN Composable with common @Preview and @PreviewParameter, WHEN Scanning that package tree, THEN it returns empty`() {
+    fun `GIVEN Composable with common @Preview and @PreviewParameter, WHEN Scanning that package tree, THEN it returns one preview per parameter`() {
         val stringProviderValuesSize = CommonStringProvider().values.toList().size
 
         val commonPreviews =

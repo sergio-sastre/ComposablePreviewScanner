@@ -15,8 +15,8 @@ import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.isAccessible
 
 /**
- * Scans the target package trees for the common @Preview s and returns their Composable,
- * which can be invoked.
+ * Scans the target package trees for the @Preview s in "common" in a Compose Multiplatform project
+ * and returns their Composable, which can be invoked.
  *
  * This is meant to be used for @Composables using the @Preview located in "org.jetbrains.compose.ui.tooling.preview.Preview",
  * which is used in Compose Multiplatform for common previews.
@@ -88,40 +88,32 @@ class CommonComposablePreviewScanner : ComposablePreviewScanner<CommonPreviewInf
             }
 
             override fun mapToComposablePreviews(): Sequence<ComposablePreview<T>> {
+                fun getPropertyValue(target: Any, propertyName: String): Any? {
+                    return target::class.memberProperties
+                        .find { it.name == propertyName }
+                        ?.apply { isAccessible = true }
+                        ?.getter
+                        ?.call(target)
+                }
+
                 val previewParameterAnnotation = previewMethod.findPreviewParameterAnnotation()
                     ?: return sequenceOf(provideComposablePreview(this))
 
-                // **Retrieve provider class via reflection**
-                val providerClass = previewParameterAnnotation::class
-                    .memberProperties
-                    .find { it.name == "provider" } // Get `provider` property via reflection
-                    ?.apply { isAccessible = true }
-                    ?.getter
-                    ?.call(previewParameterAnnotation) as? Class<*>
+                val providerClass = getPropertyValue(previewParameterAnnotation, "provider") as? Class<*>
                     ?: return sequenceOf(provideComposablePreview(this))
 
                 val providerInstance = createProviderInstance(providerClass)
                     ?: return sequenceOf(provideComposablePreview(this))
 
-                val values = providerInstance::class
-                    .memberProperties
-                    .find { it.name == "values" }
-                    ?.apply { isAccessible = true }
-                    ?.getter
-                    ?.call(providerInstance) as? Sequence<Any>
+                val values = getPropertyValue(providerInstance, "values") as? Sequence<Any>
                     ?: return sequenceOf(provideComposablePreview(this))
 
-                val limit = previewParameterAnnotation::class
-                    .memberProperties
-                    .find { it.name == "limit" }
-                    ?.apply { isAccessible = true }
-                    ?.getter
-                    ?.call(previewParameterAnnotation) as? Int ?: Int.MAX_VALUE
+                val limit = getPropertyValue(previewParameterAnnotation, "limit") as? Int 
+                    ?: Int.MAX_VALUE
 
                 return values
                     .take(limit)
-                    .mapIndexed { index, value -> index to value }
-                    .map { (index, value) ->
+                    .mapIndexed { index, value ->
                         provideComposablePreview(
                             composablePreviewMapper = this,
                             previewIndex = index,
