@@ -39,7 +39,9 @@ class ProvideComposablePreview<T> {
                 return buildList<String> {
                     add(composablePreviewMapper.previewMethod.declaringClass.toClassName())
                     add(composablePreviewMapper.previewMethod.name)
-                    add(methodParametersTypeAsString())
+                    if (methodParametersType.isNotBlank()){
+                        add(methodParametersType)
+                    }
                     if (previewIndex != null) add(previewIndex.toString())
                 }.joinToString("_")
             }
