@@ -297,10 +297,14 @@ class AndroidComposablePreviewScannerTest {
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.samemethodname")
                 .getPreviews()
 
+        val previewsAsStrings =
+            previewsWithSameMethodName.map { it.toString() }
+
         // 2 for stringProvider
         // 1 for listProvider
         // 1 without parameter
         assert(previewsWithSameMethodName.size == 4)
+        assert(previewsAsStrings.toSet().size == 4)
     }
 
     @Test
