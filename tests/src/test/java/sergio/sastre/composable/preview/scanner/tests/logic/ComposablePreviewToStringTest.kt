@@ -1,5 +1,7 @@
 package sergio.sastre.composable.preview.scanner.tests.logic
 
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.jvm.common.CommonComposablePreviewScanner
@@ -32,5 +34,40 @@ class ComposablePreviewToStringTest {
         assert(commonPreviews.all { it.last() != '_' })
     }
 
-    // TODO - test that the toString() includes all the relevant parameters for unique IDs
+    @Test
+    fun `GIVEN Android previews with @PreviewParameters WHEN toString THEN those preview names start with class, method and method parameters type and end with index`() {
+        val androidPreviews =
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees(
+                    "sergio.sastre.composable.preview.scanner.previewparameters",
+                )
+                .getPreviews()
+
+        val startWithClassAndMethodPattern = androidPreviews.all { preview ->
+            val previewString = preview.toString()
+            val expectedPattern = "${preview.declaringClass}_${preview.methodName}_${preview.methodParametersType}"
+            previewString.startsWith(expectedPattern)
+        }
+
+        val endWithDigits = androidPreviews.all { preview ->
+            preview.toString().substringAfterLast('_').all { it.isDigit() }
+        }
+
+        assertTrue(startWithClassAndMethodPattern)
+        assertTrue(endWithDigits)
+    }
+
+    @Test
+    fun `GIVEN Common preview WHEN toString THEN those preview names contain class name and method name`() {
+        val commonPreview =
+            CommonComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+                .getPreviews()
+                .first()
+
+        val previewToString = commonPreview.toString()
+        val expectedPreviewString = "${commonPreview.declaringClass}_${commonPreview.methodName}"
+
+        assertEquals(expectedPreviewString, previewToString)
+    }
 }
