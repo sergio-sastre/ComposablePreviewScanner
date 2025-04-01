@@ -37,9 +37,6 @@ class CommonComposablePreviewInvokeTests(
     @Config(sdk = [30])
     @Test
     fun snapshot() {
-
-        // TODO -> name finishes with underscore "_" and should not.
-        //  Maybe create screenshotIdBuilder??
         val name = preview.toString()
         captureRoboImage(filePath = "${name}.png") {
             preview()
