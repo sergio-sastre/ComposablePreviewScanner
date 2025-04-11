@@ -40,7 +40,7 @@ Help shape its future by taking [this quick survey](https://forms.gle/jcvggBxv14
 <sup>7</sup> [Showkase: Compose Multiplatform Support](https://github.com/airbnb/Showkase/issues/364)
 </br></br></br>
 ComposablePreviewScanner also works with:
-- `@PreviewParameters`
+- `@PreviewParameters` (for Compose Multiplatform since 0.6.0+)
 - Multi-Previews, including  `@PreviewScreenSizes`, `@PreviewFontScales`, `@PreviewLightDark`, and `@PreviewDynamicColors`.
 - private `@Previews` (from version 0.1.3+)
 - `@Previews` inside public classes<sup>1</sup> (from version 0.3.0+), not nested classes though
@@ -823,8 +823,28 @@ class DesktopPreviewScreenshotTests {
 # Tech talks
 In these tech-talks have also been mentioned the benefits of using ComposablePreviewScanner:
 - DroidKaigi 2024 [in JA 🇯🇵 with EN 🇬🇧 slides]:</br>
-[Understand the mechanism! Let's do screenshots testing of Compose Previews with various variations](https://www.youtube.com/watch?app=desktop&v=c4AxUXTQgw4) by [Sumio Toyama](https://x.com/sumio_tym)
+[Understand the mechanism! Let's do screenshots testing of Compose Previews with various variations](https://www.youtube.com/watch?app=desktop&v=c4AxUXTQgw4) by [Sumio Toyama](https://x.com/sumio_tym)</br>
+- [“Fast Feedback loops & Composable Preview Scanner”](https://www.youtube.com/watch?v=SphQelcGdHk) with the Skool Android Community</br>
 
+# Testing
+The core of ComposablePreviewScanner was developed using Test-Driven Development (TDD).</br>
+I strongly believe this approach is one of the key reasons the library has very few known bugs although it's widely used with over 150k monthly downloads.
+
+However, some tests have specific preconditions and may be skipped if those aren't met.</br>
+For example, when running tests to retrieve @Previews from a SourceSet other than main, such as screenshotTest or androidTest,
+the corresponding compiled classes must first be generated via the appropriate Gradle task.</br>
+
+To streamline this process and support my TDD workflow, I’ve created custom Gradle tasks that handle these prerequisites automatically,
+saving time and reducing friction during development.</br>
+They can also help you in case you fork this library and make some code adjustments, to ensure everything still works as expected.</br>
+
+These custom gradle tasks are the following:</br>
+1. API logic tests:`./gradlew :tests:testApi`
+2. SourceSet logic tests: `./gradlew :tests:testSourceSets`
+3. Paparazzi integration tests: `./gradlew :tests:paparazziPreviews` and `./gradlew :tests:paparazziPreviews -Pverify=true`
+4. Roborazzi integration tests: `./gradlew :tests:roborazziPreviews` and `./gradlew :tests:roborazziPreviews -Pverify=true`
+
+Custom gradle tasks for Android-testify integration tests (i.e. instrumentation screenshot testing libraries) coming soon
 
 </br></br>
 <a href="https://www.flaticon.com/free-icons/magnify" title="magnify icons">Composable Preview Scanner logo modified from one by Freepik - Flaticon</a>
