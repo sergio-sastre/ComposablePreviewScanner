@@ -2,7 +2,6 @@ package sergio.sastre.composable.preview.scanner.core.preview.mappers
 
 import io.github.classgraph.AnnotationInfoList
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
-
 import java.lang.reflect.Method
 
 /**
