@@ -1,3 +1,5 @@
+
+// Run all unit tests: ./gradlew :tests:testLogic ; ./gradlew :tests:testSourceSets
 tasks.register<Test>("testLogic"){
     description = "Runs tests for ComposablePrevewScanner logic"
     group = "Verification"
