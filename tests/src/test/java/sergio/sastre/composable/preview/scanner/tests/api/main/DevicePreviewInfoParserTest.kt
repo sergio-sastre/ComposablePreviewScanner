@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.tests.logic.main
+package sergio.sastre.composable.preview.scanner.tests.api.main
 
 import app.cash.paparazzi.DeviceConfig
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers

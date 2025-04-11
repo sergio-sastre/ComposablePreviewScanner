@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.tests.logic.sourcesets
+package sergio.sastre.composable.preview.scanner.tests.api.sourcesets
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
