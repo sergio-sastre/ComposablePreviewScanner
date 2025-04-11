@@ -18,7 +18,8 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResul
  * @param annotationToScanClassName The full className of the annotation the Composables we want to find are annotated with.
  *      This is usually the @Preview annotation, but could be any other one as far as it does not have AnnotationRetention.SOURCE
  * @param previewInfoMapper A Mapper that converts an AnnotationParameterValueList into the expected PreviewInfo class, e.g. containing apiLevel, Locale, UiMode, FontScale...
- * @param previewMapperCreator Returns a Mapper that converts a Composable annotated with one or more @Preview into a Sequence of ComposablePreviews, one for each @Preview
+ * @param previewMapperCreator Returns a Mapper that converts a Composable @Preview containing some kind of @PreviewParameter as argument into a Sequence of ComposablePreviews,
+ * one for each value provided in that argument
  */
 class ClasspathPreviewsFinder<T>(
     override val annotationToScanClassName: String,

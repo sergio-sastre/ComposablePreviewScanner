@@ -1,5 +1,6 @@
 package sergio.sastre.composable.preview.scanner.tests.logic
 
+import org.junit.Assume.assumeTrue
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -50,6 +51,31 @@ class ComposablePreviewToStringTest {
         }
 
         val endWithDigits = androidPreviews.all { preview ->
+            preview.toString().substringAfterLast('_').all { it.isDigit() }
+        }
+
+        assertTrue(startWithClassAndMethodPattern)
+        assertTrue(endWithDigits)
+    }
+
+    @Test
+    fun `GIVEN Common previews with @PreviewParameters WHEN toString THEN those preview names start with class, method and method parameters type and end with index`() {
+        val commonPreviews =
+            CommonComposablePreviewScanner()
+                .scanPackageTrees(
+                    "sergio.sastre.composable.preview.scanner.jvmcommonwithpreviewparameters",
+                )
+                .getPreviews()
+
+        assumeTrue(commonPreviews.size > 1)
+
+        val startWithClassAndMethodPattern = commonPreviews.all { preview ->
+            val previewString = preview.toString()
+            val expectedPattern = "${preview.declaringClass}_${preview.methodName}_${preview.methodParametersType}"
+            previewString.startsWith(expectedPattern)
+        }
+
+        val endWithDigits = commonPreviews.all { preview ->
             preview.toString().substringAfterLast('_').all { it.isDigit() }
         }
 
