@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.tests.logic
+package sergio.sastre.composable.preview.scanner.tests.logic.main
 
 import org.junit.Assume.assumeTrue
 import org.junit.Assert.assertEquals

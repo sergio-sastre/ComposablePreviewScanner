@@ -13,6 +13,8 @@ if (project.hasProperty("library")) {
     }
 }
 
+apply(from = "custom-tests.gradle.kts")
+
 android {
     namespace = "sergio.sastre.composable.preview.scanner"
     compileSdk = 34
