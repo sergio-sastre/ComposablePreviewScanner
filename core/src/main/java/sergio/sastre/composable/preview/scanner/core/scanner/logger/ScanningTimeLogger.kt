@@ -4,17 +4,33 @@ import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Cl
 
 class ScanningTimeLogger {
 
-    private var scanningTime: Long = 0
+    private var scanningFilesTime: Long = 0
+    private var findPreviewsTime: Long = 0
     private var scanningSource: String = ""
     private var annotationName: String = ""
     private var classpath: Classpath? = null
 
     fun setScanningTime(scanningTime: Long) {
-        this.scanningTime = scanningTime
+        this.scanningFilesTime = scanningTime
+    }
+
+    fun setFindPreviewsTime(findPreviewsTime: Long) {
+        this.findPreviewsTime = findPreviewsTime
     }
 
     fun setPackageTrees(vararg packageTrees: String) {
-        scanningSource = "Package trees: ${packageTrees.joinToString(",")}"
+        scanningSource = "Package trees: ${packageTrees.joinToString(", ")}"
+    }
+
+    fun setPackageTrees(included: List<String>, excluded: List<String>) {
+        scanningSource =
+            "Included package trees: ${included.joinToString(", ")}" +
+                    "\n" +
+                    "Excluded package trees: ${excluded.joinToString(", ")}"
+    }
+
+    fun setAllPackages() {
+        scanningSource = "Scans all packages"
     }
 
     fun setSourceSet(classpath: Classpath) {
@@ -25,15 +41,20 @@ class ScanningTimeLogger {
         this.annotationName = annotationName
     }
 
-    fun printScanningTimeLog() {
+    fun printFullInfoLog() {
         println("Composable Preview Scanner")
-        println("=====================")
-        println("Annotation: $annotationName")
+        println("===============================")
+        println("@Preview annotation: $annotationName")
         classpath?.run {
             println("Source set (compiled classes path): $rootDir/$packagePath")
         }
         println(scanningSource)
-        println("Scanning time: $scanningTime ms")
+        println()
+        println("Time to scan target files: $scanningFilesTime ms")
+        println("Time to find @Previews: $findPreviewsTime ms")
+        println("---------------------------------------------------")
+        println("Total time: ${scanningFilesTime + findPreviewsTime} ms")
+        println()
         println()
     }
 }

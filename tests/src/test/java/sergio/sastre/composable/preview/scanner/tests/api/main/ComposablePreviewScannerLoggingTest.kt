@@ -5,6 +5,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.Assert.*
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
+import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 
@@ -27,55 +28,139 @@ class ComposablePreviewScannerLoggingTest {
     }
 
     @Test
-    fun `WHEN Scanning package trees THEN outputs scanning times after scan operation`() {
+    fun `WHEN Scanning package trees THEN outputs all scanning info except source set`() {
         // WHEN
         val scanner = AndroidComposablePreviewScanner()
-        scanner.scanPackageTrees("sergio.sastre.composable.preview.scanner")
+        scanner.scanPackageTrees(
+            "sergio.sastre.composable.preview.scanner.included",
+            "sergio.sastre.composable.preview.scanner.multiplepreviews"
+        ).getPreviews()
 
         // THEN
         val output = outputStreamCaptor.toString().trim()
-        assertTrue(
-            "Output contains the header",
-            output.contains("Composable Preview Scanner\n=====================")
-        )
-        assertTrue(
-            "Output contains annotation name",
-            output.contains("Annotation: androidx.compose.ui.tooling.preview.Preview")
-        )
+
+        // DOES NOT CONTAIN
         assertFalse(
             "Output does not contain source set",
             output.contains("Source set (compiled classes path)")
         )
+
+        // DOES CONTAIN
+        assertTrue(
+            "Output contains the header",
+            output.contains("Composable Preview Scanner")
+        )
+        assertTrue(
+            "Output contains annotation name",
+            output.contains("@Preview annotation: androidx.compose.ui.tooling.preview.Preview")
+        )
         assertTrue(
             "Output contains package trees",
-            output.contains("Package trees: sergio.sastre.composable.preview.scanner")
+            output.contains("Package trees: sergio.sastre.composable.preview.scanner.included, sergio.sastre.composable.preview.scanner.multiplepreviews")
         )
         assertTrue(
-            "Output should include scanning time in ms",
-            "Scanning time: \\d+ ms".toRegex().containsMatchIn(output)
+            "Output contains time to scan files in ms",
+            "Time to scan target files: \\d+ ms".toRegex().containsMatchIn(output)
+        )
+        assertTrue(
+            "Output contaiins time to find @Previews in ms",
+            "Time to find @Previews: \\d+ ms".toRegex().containsMatchIn(output)
+        )
+        assertTrue(
+            "Output contains total time in ms",
+            "Total time: \\d+ ms".toRegex().containsMatchIn(output)
         )
     }
 
-    /*
     @Test
-    fun `printScanningTimes should indicate when no scans have been performed`() {
-        // Arrange
-        val scanner = createConcreteScanner()
+    fun `WHEN including and-or excluding package trees THEN outputs all scanning info except source set`() {
+        // WHEN
+        val scanner = AndroidComposablePreviewScanner()
+        scanner.scanPackageTrees(
+            include = listOf("sergio.sastre.composable.preview.scanner"),
+            exclude = listOf("sergio.sastre.composable.preview.scanner.duplicates")
+        ).getPreviews()
 
-        // Act - Print times without performing any scan
-        scanner.printScanningTimes()
-
-        // Assert
+        // THEN
         val output = outputStreamCaptor.toString().trim()
-        assertEquals("No scanning operations performed yet.", output)
+
+        // DOES NOT CONTAIN
+        assertFalse(
+            "Output does not contain source set",
+            output.contains("Source set (compiled classes path)")
+        )
+
+        // DOES CONTAIN
+        assertTrue(
+            "Output contains the header",
+            output.contains("Composable Preview Scanner")
+        )
+        assertTrue(
+            "Output contains annotation name",
+            output.contains("@Preview annotation: androidx.compose.ui.tooling.preview.Preview")
+        )
+        assertTrue(
+            "Output contains included package trees",
+            output.contains("Included package trees: sergio.sastre.composable.preview.scanner")
+        )
+        assertTrue(
+            "Output contains excluded package trees",
+            output.contains("Excluded package trees: sergio.sastre.composable.preview.scanner.duplicates")
+        )
+        assertTrue(
+            "Output contains time to scan files in ms",
+            "Time to scan target files: \\d+ ms".toRegex().containsMatchIn(output)
+        )
+        assertTrue(
+            "Output contaiins time to find @Previews in ms",
+            "Time to find @Previews: \\d+ ms".toRegex().containsMatchIn(output)
+        )
+        assertTrue(
+            "Output contains total time in ms",
+            "Total time: \\d+ ms".toRegex().containsMatchIn(output)
+        )
     }
 
-    // Helper method to create a temporary JSON file for testing
-    private fun createTempJsonFile(): File {
-        val tempFile = Files.createTempFile("test", ".json").toFile()
-        tempFile.writeText("""{"previews":[]}""") // Minimal valid content
-        return tempFile
-    }
+    @OptIn(RequiresLargeHeap::class)
+    @Test
+    fun `WHEN scanning all packages THEN outputs all scanning info except source set`() {
+        // WHEN
+        val scanner = AndroidComposablePreviewScanner()
+        scanner.scanAllPackages().getPreviews()
 
-     */
+        // THEN
+        val output = outputStreamCaptor.toString().trim()
+
+        // DOES NOT CONTAIN
+        assertFalse(
+            "Output does not contain source set",
+            output.contains("Source set (compiled classes path)")
+        )
+
+        // DOES CONTAIN
+        assertTrue(
+            "Output contains the header",
+            output.contains("Composable Preview Scanner")
+        )
+        assertTrue(
+            "Output contains annotation name",
+            output.contains("@Preview annotation: androidx.compose.ui.tooling.preview.Preview")
+        )
+        assertTrue(
+            "Output contains all packages",
+            output.contains("Scans all packages")
+        )
+        assertTrue(
+            "Output contains time to scan files in ms",
+            "Time to scan target files: \\d+ ms".toRegex().containsMatchIn(output)
+        )
+        assertTrue(
+            "Output contaiins time to find @Previews in ms",
+            "Time to find @Previews: \\d+ ms".toRegex().containsMatchIn(output)
+        )
+        assertTrue(
+            "Output contains total time in ms",
+            "Total time: \\d+ ms".toRegex().containsMatchIn(output)
+        )
+    }
 }

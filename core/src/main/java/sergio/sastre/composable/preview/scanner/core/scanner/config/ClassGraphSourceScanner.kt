@@ -3,6 +3,7 @@ package sergio.sastre.composable.preview.scanner.core.scanner.config
 import io.github.classgraph.ClassGraph
 import io.github.classgraph.ScanResult
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.ClasspathPreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.logger.ScanningTimeLogger
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter
 import java.io.File
@@ -11,6 +12,7 @@ import java.io.InputStream
 class ClassGraphSourceScanner<T>(
     private val classGraph: ClassGraph,
     private val findComposableWithPreviewsInClass: ClasspathPreviewsFinder<T>,
+    private val scanningTimeLogger: ScanningTimeLogger,
 ): SourceScanner<T> {
 
     private var updatedClassGraph = classGraph
@@ -23,6 +25,7 @@ class ClassGraphSourceScanner<T>(
         return ScanResultFilter(
             updatedClassGraph.scan(),
             findComposableWithPreviewsInClass,
+            scanningTimeLogger
         )
     }
 
@@ -39,6 +42,7 @@ class ClassGraphSourceScanner<T>(
         return ScanResultFilter(
             updatedClassGraph.scan(),
             findComposableWithPreviewsInClass,
+            scanningTimeLogger
         )
     }
 
@@ -58,6 +62,7 @@ class ClassGraphSourceScanner<T>(
         return ScanResultFilter(
             updatedClassGraph.scan(),
             findComposableWithPreviewsInClass,
+            scanningTimeLogger
         )
     }
 
@@ -71,6 +76,7 @@ class ClassGraphSourceScanner<T>(
         return ScanResultFilter(
             scanResult,
             findComposableWithPreviewsInClass,
+            scanningTimeLogger
         )
     }
 
@@ -98,6 +104,7 @@ class ClassGraphSourceScanner<T>(
         return ScanResultFilter(
             scanResult,
             findComposableWithPreviewsInClass,
+            scanningTimeLogger
         )
     }
 }
