@@ -1,6 +1,7 @@
 package sergio.sastre.composable.preview.scanner.core.scanner
 
 import io.github.classgraph.ClassGraph
+import sergio.sastre.composable.preview.scanner.core.scanner.logger.ScanningTimeLogger
 import sergio.sastre.composable.preview.scanner.core.scanner.config.ClassGraphSourceScanner
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.ClasspathPreviewsFinder
@@ -34,6 +35,10 @@ abstract class ComposablePreviewScanner<T>(
     private val classGraphSourceScanner =
         ClassGraphSourceScanner(updatedClassGraph, findComposableWithPreviewsInClass)
 
+    private val scanningTimeLogger = ScanningTimeLogger().apply {
+        setAnnotationName(findComposableWithPreviewsInClass.annotationToScanClassName)
+    }
+
     /**
      * Prepares the scanner to find previews scanned from a Source Set like 'screenshotTest', 'androidTest', 'main' or a custom one via the given sourceSetClasspath
      * It uses compiled classes of that source set.
@@ -53,6 +58,7 @@ abstract class ComposablePreviewScanner<T>(
         packageTreesOfCrossModuleCustomPreviews: List<String> = emptyList()
     ): ClassGraphSourceScanner<T> {
         ClasspathValidator(sourceSetClasspath).validate()
+        scanningTimeLogger.setSourceSet(sourceSetClasspath)
 
         val absolutePath =
             File(sourceSetClasspath.rootDir, sourceSetClasspath.packagePath).absolutePath
@@ -90,7 +96,12 @@ abstract class ComposablePreviewScanner<T>(
      */
     override fun scanPackageTrees(vararg packageTrees: String): ScanResultFilter<T> {
         if (!isRunningOnJvm()) throw ScanSourceNotSupported()
-        return classGraphSourceScanner.scanPackageTrees(*packageTrees)
+        val startTime = System.currentTimeMillis()
+        val scanningResult = classGraphSourceScanner.scanPackageTrees(*packageTrees)
+        scanningTimeLogger.setScanningTime(System.currentTimeMillis() - startTime)
+        scanningTimeLogger.setPackageTrees(*packageTrees)
+        scanningTimeLogger.printScanningTimeLog()
+        return scanningResult
     }
 
     /**
