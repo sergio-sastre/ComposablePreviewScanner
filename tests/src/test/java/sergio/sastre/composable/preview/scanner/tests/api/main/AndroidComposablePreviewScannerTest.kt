@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.tests.logic
+package sergio.sastre.composable.preview.scanner.tests.api.main
 
 import android.content.res.Configuration
 import org.junit.Assert.assertEquals

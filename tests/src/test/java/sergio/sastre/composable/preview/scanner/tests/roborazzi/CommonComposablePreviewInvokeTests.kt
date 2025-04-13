@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.tests.screenshots
+package sergio.sastre.composable.preview.scanner.tests.roborazzi
 
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Test

@@ -1,7 +1,8 @@
-package sergio.sastre.composable.preview.scanner.tests.screenshots
+package sergio.sastre.composable.preview.scanner.tests.paparazzi
 
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
+import com.android.ide.common.rendering.api.SessionParams
 import com.android.resources.Density
 import com.android.resources.ScreenRatio
 import com.android.resources.ScreenRound
@@ -42,7 +43,8 @@ class BuildTimePaparazziComposablePreviewInvokeTests(
 
     @get:Rule
     val paparazzi = Paparazzi(
-        deviceConfig = DeviceConfigBuilder.build(preview.previewInfo.device)
+        deviceConfig = DeviceConfigBuilder.build(preview.previewInfo.device),
+        renderingMode = SessionParams.RenderingMode.SHRINK
     )
 
     @Test
