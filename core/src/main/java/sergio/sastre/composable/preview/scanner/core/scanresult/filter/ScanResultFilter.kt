@@ -3,6 +3,7 @@ package sergio.sastre.composable.preview.scanner.core.scanresult.filter
 import io.github.classgraph.ScanResult
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.PreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.logger.ScanningTimeLogger
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.exceptions.RepeatableAnnotationNotSupportedException
 
 /**
@@ -11,6 +12,7 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.filter.exception
 class ScanResultFilter<T> internal constructor(
     private val scanResult: ScanResult,
     private val previewsFinder: PreviewsFinder<T>,
+    private val scanningTimeLogger: ScanningTimeLogger,
 ) {
     private var scanResultFilterState = ScanResultFilterState<T>()
 
@@ -90,7 +92,9 @@ class ScanResultFilter<T> internal constructor(
 
     fun getPreviews(): List<ComposablePreview<T>> =
         scanResult.use { scanResult ->
-            scanResult
+            val startProcessing = System.currentTimeMillis()
+
+            val previews = scanResult
                 .allClasses
                 .asSequence()
                 .flatMap { classInfo ->
@@ -100,14 +104,23 @@ class ScanResultFilter<T> internal constructor(
                     )
                 }
                 .toList()
+
+            scanningTimeLogger.run {
+                val processingTime = System.currentTimeMillis() - startProcessing
+                setFindPreviewsTime(processingTime)
+                printFullInfoLog()
+            }
+
+            previews
         }
 
     private fun throwExceptionIfAnyAnnotationIsRepeatable(
         methodName: String,
         annotations: List<Class<out Annotation>>
     ) {
-        val repeatableAnnotations = annotations.filter { it.isAnnotationPresent(Repeatable::class.java) }
-        if (repeatableAnnotations.isNotEmpty()){
+        val repeatableAnnotations =
+            annotations.filter { it.isAnnotationPresent(Repeatable::class.java) }
+        if (repeatableAnnotations.isNotEmpty()) {
             throw RepeatableAnnotationNotSupportedException(
                 methodName = methodName,
                 repeatableAnnotations = repeatableAnnotations
