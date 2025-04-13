@@ -1,7 +1,6 @@
-
 // Run all unit tests:
 // ./gradlew :tests:testApi ; ./gradlew :tests:testSourceSets
-tasks.register<Test>("testApi"){
+tasks.register<Test>("testApi") {
     description = "Runs tests for ComposablePrevewScanner API"
     group = "Verification"
     maxHeapSize = "4g"
@@ -15,11 +14,11 @@ tasks.register<Test>("testApi"){
     }
 
     testLogging {
-        events("passed", "skipped", "failed")
+        events("passed", "skipped", "failed", "standardOut")
     }
 }
 
-tasks.register<Test>("testSourceSets"){
+tasks.register<Test>("testSourceSets") {
     description = "Runs tests for ComposablePrevewScanner source sets"
     group = "Verification"
     maxHeapSize = "4g"
@@ -37,7 +36,7 @@ tasks.register<Test>("testSourceSets"){
     }
 
     testLogging {
-        events("passed", "skipped", "failed")
+        events("passed", "skipped", "failed", "standardOut")
     }
 
     // This ensures compiled classes for SourceSets Tests are deleted

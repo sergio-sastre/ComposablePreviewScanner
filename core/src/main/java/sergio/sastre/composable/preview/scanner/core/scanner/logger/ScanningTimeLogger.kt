@@ -34,5 +34,6 @@ class ScanningTimeLogger {
         }
         println(scanningSource)
         println("Scanning time: $scanningTime ms")
+        println()
     }
 }
