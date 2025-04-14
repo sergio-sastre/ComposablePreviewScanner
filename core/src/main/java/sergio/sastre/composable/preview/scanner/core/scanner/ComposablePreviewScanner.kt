@@ -137,7 +137,11 @@ abstract class ComposablePreviewScanner<T>(
      */
     override fun scanFile(jsonFile: File): ScanResultFilter<T> {
         if (!isRunningOnJvm()) throw ScanSourceNotSupported()
-        return classGraphSourceScanner.scanFile(jsonFile)
+        val startTime = System.currentTimeMillis()
+        val scanningResult = classGraphSourceScanner.scanFile(jsonFile)
+        scanningTimeLogger.setScanningTime(System.currentTimeMillis() - startTime)
+        scanningTimeLogger.setScanningFromFile(jsonFile.name)
+        return scanningResult
     }
 
     /**
