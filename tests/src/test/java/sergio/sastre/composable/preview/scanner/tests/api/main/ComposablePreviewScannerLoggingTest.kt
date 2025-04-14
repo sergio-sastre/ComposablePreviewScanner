@@ -4,8 +4,11 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.Assert.*
+import org.junit.Assume
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
+import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper
+import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 
@@ -155,12 +158,70 @@ class ComposablePreviewScannerLoggingTest {
             "Time to scan target files: \\d+ ms".toRegex().containsMatchIn(output)
         )
         assertTrue(
-            "Output contaiins time to find @Previews in ms",
+            "Output contains time to find @Previews in ms",
             "Time to find @Previews: \\d+ ms".toRegex().containsMatchIn(output)
         )
         assertTrue(
             "Output contains total time in ms",
             "Total time: \\d+ ms".toRegex().containsMatchIn(output)
         )
+    }
+
+    @Test
+    fun `GIVEN file with previews generated WHEN scanning from file THEN outputs all scanning info except source set`() {
+        val scanResultFile = testFilePath("scan_result.json")
+        Assume.assumeTrue(scanResultFile.exists().not())
+
+        try {
+            // GIVEN
+            ScanResultDumper()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+                .dumpScanResultToFile(scanResultFile)
+
+            // WHEN
+            assert(scanResultFile.exists())
+
+            AndroidComposablePreviewScanner()
+                .scanFile(scanResultFile)
+                .getPreviews()
+
+            // THEN
+            val output = outputStreamCaptor.toString().trim()
+
+            // DOES NOT CONTAIN
+            assertFalse(
+                "Output does not contain source set",
+                output.contains("Source set (compiled classes path)")
+            )
+
+            // DOES CONTAIN
+            assertTrue(
+                "Output contains the header",
+                output.contains("Composable Preview Scanner")
+            )
+            assertTrue(
+                "Output contains annotation name",
+                output.contains("@Preview annotation: androidx.compose.ui.tooling.preview.Preview")
+            )
+            assertTrue(
+                "Output contains from file",
+                output.contains("Scans from file: scan_result.json")
+            )
+            assertTrue(
+                "Output contains time to scan files in ms",
+                "Time to scan target files: \\d+ ms".toRegex().containsMatchIn(output)
+            )
+            assertTrue(
+                "Output contains time to find @Previews in ms",
+                "Time to find @Previews: \\d+ ms".toRegex().containsMatchIn(output)
+            )
+            assertTrue(
+                "Output contains total time in ms",
+                "Total time: \\d+ ms".toRegex().containsMatchIn(output)
+            )
+
+        } finally {
+            scanResultFile.delete()
+        }
     }
 }

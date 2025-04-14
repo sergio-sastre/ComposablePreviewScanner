@@ -33,6 +33,10 @@ class ScanningTimeLogger {
         scanningSource = "Scans all packages"
     }
 
+    fun setScanningFromFile(fileName: String) {
+        scanningSource = "Scans from file: $fileName"
+    }
+
     fun setSourceSet(classpath: Classpath) {
         this.classpath = classpath
     }
