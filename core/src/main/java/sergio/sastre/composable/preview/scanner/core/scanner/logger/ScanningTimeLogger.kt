@@ -1,6 +1,8 @@
 package sergio.sastre.composable.preview.scanner.core.scanner.logger
 
+import io.github.classgraph.ScanResult
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
+import kotlin.system.measureTimeMillis
 
 class ScanningTimeLogger {
 
@@ -10,8 +12,15 @@ class ScanningTimeLogger {
     private var annotationName: String = ""
     private var classpath: Classpath? = null
 
-    fun setScanningTime(scanningTime: Long) {
-        this.scanningFilesTime = scanningTime
+    fun measureScanningTimeAndGetResult(
+        actionToMeasure:() -> ScanResult
+    ): ScanResult {
+        val scanResult: ScanResult
+        val durationInMillis = measureTimeMillis {
+            scanResult = actionToMeasure()
+        }
+        this.scanningFilesTime = durationInMillis
+        return scanResult
     }
 
     fun setFindPreviewsTime(findPreviewsTime: Long) {

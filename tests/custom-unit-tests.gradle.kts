@@ -24,8 +24,10 @@ tasks.register<Test>("testSourceSets") {
     maxHeapSize = "4g"
 
     // source sets classes need to exist before executing these tests, otherwise they're skipped
+    tasks.findByName("compileReleaseKotlin")?.let { dependsOn(it) }
     tasks.findByName("compileDebugScreenshotTestKotlin")?.let { dependsOn(it) }
     tasks.findByName("compileReleaseScreenshotTestKotlin")?.let { dependsOn(it) }
+    tasks.findByName("compileDebugAndroidTestKotlin")?.let { dependsOn(it) }
 
     val testDebugTask = tasks.getByName("testDebugUnitTest") as Test
     testClassesDirs = testDebugTask.testClassesDirs
