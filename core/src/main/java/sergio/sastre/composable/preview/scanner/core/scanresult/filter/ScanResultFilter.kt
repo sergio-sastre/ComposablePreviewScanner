@@ -92,26 +92,21 @@ class ScanResultFilter<T> internal constructor(
 
     fun getPreviews(): List<ComposablePreview<T>> =
         scanResult.use { scanResult ->
-            val startProcessing = System.currentTimeMillis()
-
-            val previews = scanResult
-                .allClasses
-                .asSequence()
-                .flatMap { classInfo ->
-                    previewsFinder.findPreviewsFor(
-                        classInfo,
-                        scanResultFilterState,
-                    )
-                }
-                .toList()
-
-            scanningTimeLogger.run {
-                val processingTime = System.currentTimeMillis() - startProcessing
-                setFindPreviewsTime(processingTime)
-                printFullInfoLog()
+            scanningTimeLogger.measureFindPreviewsTimeAndGetResult {
+                scanResult
+                    .allClasses
+                    .asSequence()
+                    .flatMap { classInfo ->
+                        previewsFinder.findPreviewsFor(
+                            classInfo,
+                            scanResultFilterState,
+                        )
+                    }
+                    .toList()
+            }.also {
+                scanningTimeLogger.setAmountOfPreviews(it.size)
+                scanningTimeLogger.printFullInfoLog()
             }
-
-            previews
         }
 
     private fun throwExceptionIfAnyAnnotationIsRepeatable(

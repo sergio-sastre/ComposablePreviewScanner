@@ -31,11 +31,20 @@ abstract class ComposablePreviewScanner<T>(
             .enableAnnotationInfo()
             .enableMemoryMapping()
 
-    private val classGraphSourceScanner =
-        ClassGraphSourceScanner(
-            updatedClassGraph,
-            findComposableWithPreviewsInClass
+    private var classpath: Classpath? = null
+    private var isLoggingEnabled = true
+
+    private val classGraphSourceScanner
+        get() = ClassGraphSourceScanner(
+            classGraph = updatedClassGraph,
+            classpath = classpath,
+            findComposableWithPreviewsInClass = findComposableWithPreviewsInClass,
+            isLoggingEnabled = isLoggingEnabled
         )
+
+    fun disableLogging(): SourceScanner<T> = apply {
+        isLoggingEnabled = false
+    }
 
     /**
      * Prepares the scanner to find previews scanned from a Source Set like 'screenshotTest', 'androidTest', 'main' or a custom one via the given sourceSetClasspath
@@ -66,12 +75,9 @@ abstract class ComposablePreviewScanner<T>(
             )
 
         updatedClassGraph.overrideClasspath(absolutePath)
+        classpath = sourceSetClasspath
 
-        return ClassGraphSourceScanner(
-            classGraph = updatedClassGraph,
-            classpath = sourceSetClasspath,
-            findComposableWithPreviewsInClass = findComposableWithPreviewsInClass
-        )
+        return classGraphSourceScanner
     }
 
     /**

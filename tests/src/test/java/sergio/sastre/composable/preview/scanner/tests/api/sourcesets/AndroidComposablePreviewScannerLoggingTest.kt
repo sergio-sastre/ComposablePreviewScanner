@@ -1,9 +1,8 @@
 package sergio.sastre.composable.preview.scanner.tests.api.sourcesets
 
-import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeTrue
-import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
@@ -12,12 +11,11 @@ import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Cl
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.ANDROID_TEST
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.MAIN
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.SCREENSHOT_TEST
-import java.io.ByteArrayOutputStream
+import sergio.sastre.composable.preview.scanner.utils.SystemOutputTestRule
 import java.io.File
-import java.io.PrintStream
 
 @RunWith(Parameterized::class)
-class AndroidComposablePreviewScannerLoggingTest<T>(
+class AndroidComposablePreviewScannerLoggingTest(
     val classpath: Classpath
 ) {
 
@@ -40,21 +38,8 @@ class AndroidComposablePreviewScannerLoggingTest<T>(
         }
     }
 
-    // Fields to store the original System.out and our capturing stream
-    private val standardOut = System.out
-    private val outputStreamCaptor = ByteArrayOutputStream()
-
-    @Before
-    fun setUp() {
-        // Redirect System.out to our ByteArrayOutputStream
-        System.setOut(PrintStream(outputStreamCaptor))
-    }
-
-    @After
-    fun tearDown() {
-        // Restore the original System.out after each test
-        System.setOut(standardOut)
-    }
+    @get:Rule
+    val systemOutputTestRule = SystemOutputTestRule()
 
     @Test
     fun `WHEN Scanning in a given source set THEN outputs root dir and package path of that source set classpath`() {
@@ -71,12 +56,9 @@ class AndroidComposablePreviewScannerLoggingTest<T>(
             .getPreviews()
 
         // THEN
-        val output = outputStreamCaptor.toString().trim()
-
-        // DOES CONTAIN
         assertTrue(
             "Output does contain source set",
-            output.contains("Source set (compiled classes path): ${classpath.rootDir}/${classpath.packagePath}")
+            systemOutputTestRule.systemOutput.contains("Source set (compiled classes path): ${classpath.rootDir}/${classpath.packagePath}")
         )
     }
 }
