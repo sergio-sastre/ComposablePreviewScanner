@@ -13,12 +13,14 @@ import java.io.InputStream
 class ClassGraphSourceScanner<T>(
     private val classGraph: ClassGraph,
     private val findComposableWithPreviewsInClass: ClasspathPreviewsFinder<T>,
-    private val classpath: Classpath? = null
+    private val classpath: Classpath?,
+    private val isLoggingEnabled: Boolean
 ) : SourceScanner<T> {
 
     private var updatedClassGraph = classGraph
 
     private val scanningTimeLogger = ScanningTimeLogger().apply {
+        setLoggingEnabled(isLoggingEnabled)
         setAnnotationName(findComposableWithPreviewsInClass.annotationToScanClassName)
         classpath?.apply { setSourceSet(this) }
     }

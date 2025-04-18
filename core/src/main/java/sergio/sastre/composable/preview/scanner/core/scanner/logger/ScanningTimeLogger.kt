@@ -1,6 +1,7 @@
 package sergio.sastre.composable.preview.scanner.core.scanner.logger
 
 import io.github.classgraph.ScanResult
+import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
 import kotlin.system.measureTimeMillis
 
@@ -10,7 +11,9 @@ class ScanningTimeLogger {
     private var findPreviewsTime: Long = 0
     private var scanningSource: String = ""
     private var annotationName: String = ""
+    private var previewsAmount: Int = 0
     private var classpath: Classpath? = null
+    private var isLoggingEnabled: Boolean = true
 
     fun measureScanningTimeAndGetResult(
         actionToMeasure:() -> ScanResult
@@ -21,6 +24,21 @@ class ScanningTimeLogger {
         }
         this.scanningFilesTime = durationInMillis
         return scanResult
+    }
+
+    fun <T>measureFindPreviewsTimeAndGetResult(
+        actionToMeasure:() -> List<ComposablePreview<T>>
+    ): List<ComposablePreview<T>> {
+        val scanResult: List<ComposablePreview<T>>
+        val durationInMillis = measureTimeMillis {
+            scanResult = actionToMeasure()
+        }
+        this.findPreviewsTime = durationInMillis
+        return scanResult
+    }
+
+    fun setLoggingEnabled(isLoggingEnabled: Boolean) {
+        this.isLoggingEnabled = isLoggingEnabled
     }
 
     fun setFindPreviewsTime(findPreviewsTime: Long) {
@@ -54,19 +72,28 @@ class ScanningTimeLogger {
         this.annotationName = annotationName
     }
 
+    fun setAmountOfPreviews(amount: Int) {
+        this.previewsAmount = amount
+    }
+
     fun printFullInfoLog() {
+        if (!isLoggingEnabled) return
+
         println("Composable Preview Scanner")
         println("===============================")
-        println("@Preview annotation: $annotationName")
+        println(scanningSource)
         classpath?.run {
             println("Source set (compiled classes path): $rootDir/$packagePath")
         }
-        println(scanningSource)
+        println()
+        println("@Preview annotation: $annotationName")
+        println("Amount of @Previews found: $previewsAmount")
         println()
         println("Time to scan target files: $scanningFilesTime ms")
         println("Time to find @Previews: $findPreviewsTime ms")
         println("---------------------------------------------------")
         println("Total time: ${scanningFilesTime + findPreviewsTime} ms")
+        println("===============================")
         println()
         println()
     }
