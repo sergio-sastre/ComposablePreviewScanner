@@ -5,14 +5,43 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.Assert.*
 import org.junit.Assume
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
+import sergio.sastre.composable.preview.scanner.core.scanner.ComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
+import sergio.sastre.composable.preview.scanner.jvm.common.CommonComposablePreviewScanner
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 
-class ComposablePreviewScannerLoggingTest {
+@RunWith(Parameterized::class)
+class ComposablePreviewScannerLoggingTest<T>(
+    val scanner: Scanner<T>
+) {
+
+    class Scanner<T>(
+        val previewScanner: ComposablePreviewScanner<T>,
+        val annotation: String
+    )
+
+    companion object {
+        @JvmStatic
+        @Parameterized.Parameters
+        fun parameters(): Array<Any> {
+            return arrayOf(
+                Scanner(
+                    previewScanner = AndroidComposablePreviewScanner(),
+                    annotation = "androidx.compose.ui.tooling.preview.Preview"
+                ),
+                Scanner(
+                    previewScanner = CommonComposablePreviewScanner(),
+                    annotation = "org.jetbrains.compose.ui.tooling.preview.Preview"
+                )
+            )
+        }
+    }
 
     // Fields to store the original System.out and our capturing stream
     private val standardOut = System.out
@@ -33,11 +62,11 @@ class ComposablePreviewScannerLoggingTest {
     @Test
     fun `WHEN Scanning package trees THEN outputs all scanning info except source set`() {
         // WHEN
-        val scanner = AndroidComposablePreviewScanner()
-        scanner.scanPackageTrees(
-            "sergio.sastre.composable.preview.scanner.included",
-            "sergio.sastre.composable.preview.scanner.multiplepreviews"
-        ).getPreviews()
+        scanner.previewScanner
+            .scanPackageTrees(
+                "sergio.sastre.composable.preview.scanner.included",
+                "sergio.sastre.composable.preview.scanner.multiplepreviews"
+            ).getPreviews()
 
         // THEN
         val output = outputStreamCaptor.toString().trim()
@@ -55,7 +84,7 @@ class ComposablePreviewScannerLoggingTest {
         )
         assertTrue(
             "Output contains annotation name",
-            output.contains("@Preview annotation: androidx.compose.ui.tooling.preview.Preview")
+            output.contains("@Preview annotation: ${scanner.annotation}")
         )
         assertTrue(
             "Output contains package trees",
@@ -78,11 +107,11 @@ class ComposablePreviewScannerLoggingTest {
     @Test
     fun `WHEN including and-or excluding package trees THEN outputs all scanning info except source set`() {
         // WHEN
-        val scanner = AndroidComposablePreviewScanner()
-        scanner.scanPackageTrees(
-            include = listOf("sergio.sastre.composable.preview.scanner"),
-            exclude = listOf("sergio.sastre.composable.preview.scanner.duplicates")
-        ).getPreviews()
+        scanner.previewScanner
+            .scanPackageTrees(
+                include = listOf("sergio.sastre.composable.preview.scanner"),
+                exclude = listOf("sergio.sastre.composable.preview.scanner.duplicates")
+            ).getPreviews()
 
         // THEN
         val output = outputStreamCaptor.toString().trim()
@@ -100,7 +129,7 @@ class ComposablePreviewScannerLoggingTest {
         )
         assertTrue(
             "Output contains annotation name",
-            output.contains("@Preview annotation: androidx.compose.ui.tooling.preview.Preview")
+            output.contains("@Preview annotation: ${scanner.annotation}")
         )
         assertTrue(
             "Output contains included package trees",
@@ -115,7 +144,7 @@ class ComposablePreviewScannerLoggingTest {
             "Time to scan target files: \\d+ ms".toRegex().containsMatchIn(output)
         )
         assertTrue(
-            "Output contaiins time to find @Previews in ms",
+            "Output contains time to find @Previews in ms",
             "Time to find @Previews: \\d+ ms".toRegex().containsMatchIn(output)
         )
         assertTrue(
@@ -128,8 +157,7 @@ class ComposablePreviewScannerLoggingTest {
     @Test
     fun `WHEN scanning all packages THEN outputs all scanning info except source set`() {
         // WHEN
-        val scanner = AndroidComposablePreviewScanner()
-        scanner.scanAllPackages().getPreviews()
+        scanner.previewScanner.scanAllPackages().getPreviews()
 
         // THEN
         val output = outputStreamCaptor.toString().trim()
@@ -147,7 +175,7 @@ class ComposablePreviewScannerLoggingTest {
         )
         assertTrue(
             "Output contains annotation name",
-            output.contains("@Preview annotation: androidx.compose.ui.tooling.preview.Preview")
+            output.contains("@Preview annotation: ${scanner.annotation}")
         )
         assertTrue(
             "Output contains all packages",
@@ -181,7 +209,7 @@ class ComposablePreviewScannerLoggingTest {
             // WHEN
             assert(scanResultFile.exists())
 
-            AndroidComposablePreviewScanner()
+            scanner.previewScanner
                 .scanFile(scanResultFile)
                 .getPreviews()
 
@@ -201,7 +229,7 @@ class ComposablePreviewScannerLoggingTest {
             )
             assertTrue(
                 "Output contains annotation name",
-                output.contains("@Preview annotation: androidx.compose.ui.tooling.preview.Preview")
+                output.contains("@Preview annotation: ${scanner.annotation}")
             )
             assertTrue(
                 "Output contains from file",

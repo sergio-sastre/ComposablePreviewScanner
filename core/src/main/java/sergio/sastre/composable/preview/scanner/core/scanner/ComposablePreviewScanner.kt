@@ -1,7 +1,6 @@
 package sergio.sastre.composable.preview.scanner.core.scanner
 
 import io.github.classgraph.ClassGraph
-import sergio.sastre.composable.preview.scanner.core.scanner.logger.ScanningTimeLogger
 import sergio.sastre.composable.preview.scanner.core.scanner.config.ClassGraphSourceScanner
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.ClasspathPreviewsFinder
@@ -32,12 +31,11 @@ abstract class ComposablePreviewScanner<T>(
             .enableAnnotationInfo()
             .enableMemoryMapping()
 
-    private val scanningTimeLogger = ScanningTimeLogger().apply {
-        setAnnotationName(findComposableWithPreviewsInClass.annotationToScanClassName)
-    }
-
     private val classGraphSourceScanner =
-        ClassGraphSourceScanner(updatedClassGraph, findComposableWithPreviewsInClass, scanningTimeLogger)
+        ClassGraphSourceScanner(
+            updatedClassGraph,
+            findComposableWithPreviewsInClass
+        )
 
     /**
      * Prepares the scanner to find previews scanned from a Source Set like 'screenshotTest', 'androidTest', 'main' or a custom one via the given sourceSetClasspath
@@ -58,7 +56,6 @@ abstract class ComposablePreviewScanner<T>(
         packageTreesOfCrossModuleCustomPreviews: List<String> = emptyList()
     ): ClassGraphSourceScanner<T> {
         ClasspathValidator(sourceSetClasspath).validate()
-        scanningTimeLogger.setSourceSet(sourceSetClasspath)
 
         val absolutePath =
             File(sourceSetClasspath.rootDir, sourceSetClasspath.packagePath).absolutePath
@@ -72,8 +69,8 @@ abstract class ComposablePreviewScanner<T>(
 
         return ClassGraphSourceScanner(
             classGraph = updatedClassGraph,
-            findComposableWithPreviewsInClass = findComposableWithPreviewsInClass,
-            scanningTimeLogger = scanningTimeLogger
+            classpath = sourceSetClasspath,
+            findComposableWithPreviewsInClass = findComposableWithPreviewsInClass
         )
     }
 
@@ -85,11 +82,7 @@ abstract class ComposablePreviewScanner<T>(
     @RequiresLargeHeap
     override fun scanAllPackages(): ScanResultFilter<T> {
         if (!isRunningOnJvm()) throw ScanSourceNotSupported()
-        val startTime = System.currentTimeMillis()
-        val scanningResult = classGraphSourceScanner.scanAllPackages()
-        scanningTimeLogger.setScanningTime(System.currentTimeMillis() - startTime)
-        scanningTimeLogger.setAllPackages()
-        return scanningResult
+        return classGraphSourceScanner.scanAllPackages()
     }
 
     /**
@@ -101,11 +94,7 @@ abstract class ComposablePreviewScanner<T>(
      */
     override fun scanPackageTrees(vararg packageTrees: String): ScanResultFilter<T> {
         if (!isRunningOnJvm()) throw ScanSourceNotSupported()
-        val startTime = System.currentTimeMillis()
-        val scanningResult = classGraphSourceScanner.scanPackageTrees(*packageTrees)
-        scanningTimeLogger.setScanningTime(System.currentTimeMillis() - startTime)
-        scanningTimeLogger.setPackageTrees(*packageTrees)
-        return scanningResult
+        return classGraphSourceScanner.scanPackageTrees(*packageTrees)
     }
 
     /**
@@ -121,11 +110,7 @@ abstract class ComposablePreviewScanner<T>(
         exclude: List<String>
     ): ScanResultFilter<T> {
         if (!isRunningOnJvm()) throw ScanSourceNotSupported()
-        val startTime = System.currentTimeMillis()
-        val scanningResult = classGraphSourceScanner.scanPackageTrees(include, exclude)
-        scanningTimeLogger.setScanningTime(System.currentTimeMillis() - startTime)
-        scanningTimeLogger.setPackageTrees(include, exclude)
-        return scanningResult
+        return classGraphSourceScanner.scanPackageTrees(include, exclude)
     }
 
     /**
@@ -137,11 +122,7 @@ abstract class ComposablePreviewScanner<T>(
      */
     override fun scanFile(jsonFile: File): ScanResultFilter<T> {
         if (!isRunningOnJvm()) throw ScanSourceNotSupported()
-        val startTime = System.currentTimeMillis()
-        val scanningResult = classGraphSourceScanner.scanFile(jsonFile)
-        scanningTimeLogger.setScanningTime(System.currentTimeMillis() - startTime)
-        scanningTimeLogger.setScanningFromFile(jsonFile.name)
-        return scanningResult
+        return classGraphSourceScanner.scanFile(jsonFile)
     }
 
     /**
