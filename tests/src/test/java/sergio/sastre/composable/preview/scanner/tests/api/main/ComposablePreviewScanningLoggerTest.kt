@@ -15,7 +15,7 @@ import sergio.sastre.composable.preview.scanner.jvm.common.CommonComposablePrevi
 import sergio.sastre.composable.preview.scanner.utils.SystemOutputTestRule
 
 @RunWith(Parameterized::class)
-class ComposablePreviewScannerLoggingTest<T>(
+class ComposablePreviewScanningLoggerTest<T>(
     // New Scanner instance on each test
     val scannerFactory: () -> Scanner<T>
 ) {
@@ -65,7 +65,6 @@ class ComposablePreviewScannerLoggingTest<T>(
         // THEN
         val output = systemOutputTestRule.systemOutput
 
-        // DOES NOT CONTAIN
         assertTrue(
             "Output does not contain logs",
             output.isEmpty()
@@ -78,8 +77,8 @@ class ComposablePreviewScannerLoggingTest<T>(
         val scanner = scannerFactory()
         scanner.previewScanner
             .scanPackageTrees(
-                "sergio.sastre.composable.preview.scanner.included",
-                "sergio.sastre.composable.preview.scanner.jvmcommon",
+                "sergio.sastre.composable.preview.scanner.included",  // contains AndroidPreviews
+                "sergio.sastre.composable.preview.scanner.jvmcommon", // contains CommonPreviews
             ).getPreviews()
 
         // THEN

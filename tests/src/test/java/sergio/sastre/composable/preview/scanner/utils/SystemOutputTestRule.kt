@@ -28,7 +28,7 @@ class SystemOutputTestRule : TestRule {
     val systemOutput: String
         get() = outputStreamCaptor.toString()
 
-    fun clearOutput() {
+    private fun clearOutput() {
         outputStreamCaptor.reset()
     }
 }

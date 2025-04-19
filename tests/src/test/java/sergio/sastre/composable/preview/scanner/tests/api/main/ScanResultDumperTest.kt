@@ -61,6 +61,10 @@ class ScanResultDumperTest {
             assert(scanResultFile.path.contains("src/androidTestDebug/assets"))
         } finally {
             scanResultFile.delete()
+            assetsFilePath(
+                fileName = "custom_previews.json",
+                variantName = "debug"
+            ).delete()
         }
     }
 
