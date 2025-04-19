@@ -3,7 +3,7 @@ package sergio.sastre.composable.preview.scanner.core.scanresult.filter
 import io.github.classgraph.ScanResult
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.PreviewsFinder
-import sergio.sastre.composable.preview.scanner.core.scanner.logger.ScanningTimeLogger
+import sergio.sastre.composable.preview.scanner.core.scanner.logger.PreviewScanningLogger
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.exceptions.RepeatableAnnotationNotSupportedException
 
 /**
@@ -12,7 +12,7 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.filter.exception
 class ScanResultFilter<T> internal constructor(
     private val scanResult: ScanResult,
     private val previewsFinder: PreviewsFinder<T>,
-    private val scanningTimeLogger: ScanningTimeLogger,
+    private val previewScanningLogger: PreviewScanningLogger,
 ) {
     private var scanResultFilterState = ScanResultFilterState<T>()
 
@@ -92,7 +92,7 @@ class ScanResultFilter<T> internal constructor(
 
     fun getPreviews(): List<ComposablePreview<T>> =
         scanResult.use { scanResult ->
-            scanningTimeLogger.measureFindPreviewsTimeAndGetResult {
+            previewScanningLogger.measureFindPreviewsTimeAndGetResult {
                 scanResult
                     .allClasses
                     .asSequence()
@@ -104,8 +104,8 @@ class ScanResultFilter<T> internal constructor(
                     }
                     .toList()
             }.also {
-                scanningTimeLogger.setAmountOfPreviews(it.size)
-                scanningTimeLogger.printFullInfoLog()
+                previewScanningLogger.addAmountOfPreviews(it.size)
+                previewScanningLogger.printFullInfoLog()
             }
         }
 
