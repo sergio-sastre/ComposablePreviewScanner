@@ -15,7 +15,7 @@ import sergio.sastre.composable.preview.scanner.utils.SystemOutputTestRule
 import java.io.File
 
 @RunWith(Parameterized::class)
-class AndroidComposablePreviewScannerLoggingTest(
+class AndroidComposablePreviewScanningLoggingTest(
     val classpath: Classpath
 ) {
 
