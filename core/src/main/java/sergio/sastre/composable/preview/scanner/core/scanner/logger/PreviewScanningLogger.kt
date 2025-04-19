@@ -5,7 +5,7 @@ import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
 import kotlin.system.measureTimeMillis
 
-class ScanningTimeLogger {
+internal class PreviewScanningLogger {
 
     private var scanningFilesTime: Long = 0
     private var findPreviewsTime: Long = 0
@@ -26,7 +26,7 @@ class ScanningTimeLogger {
         return scanResult
     }
 
-    fun <T>measureFindPreviewsTimeAndGetResult(
+    fun <T> measureFindPreviewsTimeAndGetResult(
         actionToMeasure:() -> List<ComposablePreview<T>>
     ): List<ComposablePreview<T>> {
         val scanResult: List<ComposablePreview<T>>
@@ -37,50 +37,47 @@ class ScanningTimeLogger {
         return scanResult
     }
 
-    fun setLoggingEnabled(isLoggingEnabled: Boolean) {
+    fun enableLogging(isLoggingEnabled: Boolean) {
         this.isLoggingEnabled = isLoggingEnabled
     }
 
-    fun setFindPreviewsTime(findPreviewsTime: Long) {
-        this.findPreviewsTime = findPreviewsTime
-    }
-
-    fun setPackageTrees(vararg packageTrees: String) {
+    fun useScanningSourcePackageTrees(vararg packageTrees: String) {
         scanningSource = "Package trees: ${packageTrees.joinToString(", ")}"
     }
 
-    fun setPackageTrees(included: List<String>, excluded: List<String>) {
+    fun useScanningSourcePackageTrees(included: List<String>, excluded: List<String>) {
         scanningSource =
             "Included package trees: ${included.joinToString(", ")}" +
                     "\n" +
                     "Excluded package trees: ${excluded.joinToString(", ")}"
     }
 
-    fun setAllPackages() {
+    fun useScanningSourceAllPackages() {
         scanningSource = "Scans all packages"
     }
 
-    fun setScanningFromFile(fileName: String) {
+    fun useScanningSourceFile(fileName: String) {
         scanningSource = "Scans from file: $fileName"
     }
 
-    fun setSourceSet(classpath: Classpath) {
+    fun addSourceSetInfo(classpath: Classpath) {
         this.classpath = classpath
     }
 
-    fun setAnnotationName(annotationName: String) {
+    fun addPreviewAnnotationName(annotationName: String) {
         this.annotationName = annotationName
     }
 
-    fun setAmountOfPreviews(amount: Int) {
+    fun addAmountOfPreviews(amount: Int) {
         this.previewsAmount = amount
     }
 
     fun printFullInfoLog() {
         if (!isLoggingEnabled) return
 
+        println("==============================================================")
         println("Composable Preview Scanner")
-        println("===============================")
+        println("==============================================================")
         println(scanningSource)
         classpath?.run {
             println("Source set (compiled classes path): $rootDir/$packagePath")
@@ -91,10 +88,9 @@ class ScanningTimeLogger {
         println()
         println("Time to scan target files: $scanningFilesTime ms")
         println("Time to find @Previews: $findPreviewsTime ms")
-        println("---------------------------------------------------")
+        println("--------------------------------------------------------------")
         println("Total time: ${scanningFilesTime + findPreviewsTime} ms")
-        println("===============================")
-        println()
+        println("==============================================================")
         println()
     }
 }
