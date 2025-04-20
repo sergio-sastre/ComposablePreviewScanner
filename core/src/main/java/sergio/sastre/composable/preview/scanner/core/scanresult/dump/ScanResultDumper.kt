@@ -4,6 +4,7 @@ import io.github.classgraph.ClassGraph
 import io.github.classgraph.ScanResult
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
+import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.core.scanresult.logger.ScanResultLogger
 import java.io.File
 import java.io.FileNotFoundException
@@ -26,8 +27,9 @@ class ScanResultDumper {
 
     private val scanResultLogger = ScanResultLogger()
 
-    fun disableLogging() = apply {
-        scanResultLogger.enableLogging(false)
+    @RequiresShowStandardStreams
+    fun enableScanningLogs() = apply {
+        scanResultLogger.enableLogging(true)
     }
 
     /**

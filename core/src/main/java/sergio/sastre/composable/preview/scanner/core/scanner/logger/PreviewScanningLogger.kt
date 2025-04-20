@@ -13,7 +13,7 @@ internal class PreviewScanningLogger {
     private var annotationName: String = ""
     private var previewsAmount: Int = 0
     private var classpath: Classpath? = null
-    private var isLoggingEnabled: Boolean = true
+    private var isLoggingEnabled: Boolean = false
 
     fun measureScanningTimeAndGetResult(
         actionToMeasure:() -> ScanResult

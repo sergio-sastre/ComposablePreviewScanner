@@ -11,6 +11,7 @@ import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Cl
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.ANDROID_TEST
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.MAIN
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.SCREENSHOT_TEST
+import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.utils.SystemOutputTestRule
 import java.io.File
 
@@ -33,7 +34,7 @@ class AndroidComposablePreviewScanningLoggingTest(
                 ),
                 Classpath(
                     sourceSet = SCREENSHOT_TEST
-                ),
+                )
             )
         }
     }
@@ -41,6 +42,7 @@ class AndroidComposablePreviewScanningLoggingTest(
     @get:Rule
     val systemOutputTestRule = SystemOutputTestRule()
 
+    @RequiresShowStandardStreams
     @Test
     fun `WHEN Scanning in a given source set THEN outputs root dir and package path of that source set classpath`() {
         // WHEN
@@ -48,6 +50,7 @@ class AndroidComposablePreviewScanningLoggingTest(
         assumeTrue(file.exists())
 
         AndroidComposablePreviewScanner()
+            .enableScanningLogs()
             .setTargetSourceSet(
                 sourceSetClasspath = classpath,
                 packageTreesOfCrossModuleCustomPreviews = listOf("sergio.sastre.composable.preview.custompreviews")
