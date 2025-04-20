@@ -6,6 +6,7 @@ import org.junit.Assume
 import org.junit.Rule
 import org.junit.Test
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
+import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper
 import sergio.sastre.composable.preview.scanner.core.utils.assetsFilePath
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
@@ -18,16 +19,14 @@ class ScanResultDumperScanningLoggerTest {
     @get:Rule
     val systemOutputTestRule = SystemOutputTestRule()
 
-
     @Test
-    fun `WHEN logging is disabled THEN outputs nothing`() {
+    fun `WHEN logging is not enabled THEN outputs nothing`() {
         // WHEN
         val scanResultFile = testFilePath("scan_result.json")
         Assume.assumeTrue(scanResultFile.exists().not())
 
         try {
             ScanResultDumper()
-                .disableLogging()
                 .scanPackageTrees(
                     "sergio.sastre.composable.preview.scanner.included",
                     "sergio.sastre.composable.preview.scanner.multiplepreviews"
@@ -46,6 +45,7 @@ class ScanResultDumperScanningLoggerTest {
         }
     }
 
+    @RequiresShowStandardStreams
     @Test
     fun `WHEN Scanning package trees THEN outputs all scanning info except source set`() {
         // WHEN
@@ -54,6 +54,7 @@ class ScanResultDumperScanningLoggerTest {
 
         try {
             ScanResultDumper()
+                .enableScanningLogs()
                 .scanPackageTrees(
                     "sergio.sastre.composable.preview.scanner.included",
                     "sergio.sastre.composable.preview.scanner.multiplepreviews"
@@ -80,7 +81,7 @@ class ScanResultDumperScanningLoggerTest {
             )
             assertTrue(
                 "Output contains name of file to dump scan result",
-                output.contains("File to dump Scan result: ${scanResultFile.absolutePath}")
+                output.contains("File to dump Scan Result: ${scanResultFile.absolutePath}")
             )
             assertTrue(
                 "Output contains time to scan files in ms",
@@ -91,8 +92,8 @@ class ScanResultDumperScanningLoggerTest {
         }
     }
 
-
-    @OptIn(RequiresLargeHeap::class)
+    @RequiresShowStandardStreams
+    @RequiresLargeHeap
     @Test
     fun `WHEN Scanning all packages THEN outputs all scanning info except source set`() {
         // WHEN
@@ -101,6 +102,7 @@ class ScanResultDumperScanningLoggerTest {
 
         try {
             ScanResultDumper()
+                .enableScanningLogs()
                 .scanAllPackages()
                 .dumpScanResultToFile(scanResultFile)
 
@@ -124,7 +126,7 @@ class ScanResultDumperScanningLoggerTest {
             )
             assertTrue(
                 "Output contains name of file to dump scan result",
-                output.contains("File to dump Scan result: ${scanResultFile.absolutePath}")
+                output.contains("File to dump Scan Result: ${scanResultFile.absolutePath}")
             )
             assertTrue(
                 "Output contains time to scan files in ms",
@@ -135,6 +137,7 @@ class ScanResultDumperScanningLoggerTest {
         }
     }
 
+    @RequiresShowStandardStreams
     @Test
     fun `WHEN dumping scan result to file in Assets THEN outputs all scanning info except source set`() {
         // WHEN
@@ -151,6 +154,7 @@ class ScanResultDumperScanningLoggerTest {
 
         try {
             ScanResultDumper()
+                .enableScanningLogs()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .dumpScanResultToFileInAssets(
                     scanFileName = "scan_result.json",
@@ -174,7 +178,7 @@ class ScanResultDumperScanningLoggerTest {
             )
             assertTrue(
                 "Output contains name of file to dump scan result",
-                output.contains("File to dump Scan result: ${scanResultFile.absolutePath}")
+                output.contains("File to dump Scan Result: ${scanResultFile.absolutePath}")
             )
             assertTrue(
                 "Output contains name of file to dump custom previews",

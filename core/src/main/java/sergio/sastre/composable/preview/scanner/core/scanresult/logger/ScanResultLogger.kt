@@ -11,7 +11,7 @@ internal class ScanResultLogger {
     private var classpath: Classpath? = null
     private var scanResultFileName: String? = null
     private var customPreviewsFileName: String? = null
-    private var isLoggingEnabled: Boolean = true
+    private var isLoggingEnabled: Boolean = false
 
     fun measureDumpTime(
         actionToMeasure:() -> Unit
@@ -64,7 +64,7 @@ internal class ScanResultLogger {
             println("Source set (compiled classes path): $rootDir/$packagePath")
         }
         scanResultFileName?.run {
-            println("File to dump Scan result: $this")
+            println("File to dump Scan Result: $this")
         }
         customPreviewsFileName?.run {
             println("File to dump Custom Previews: $this")

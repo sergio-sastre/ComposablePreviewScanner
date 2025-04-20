@@ -1,6 +1,5 @@
 package sergio.sastre.composable.preview.scanner.tests.api.sourcesets
 
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Assume
 import org.junit.Rule
@@ -11,6 +10,7 @@ import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Cl
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.ANDROID_TEST
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.MAIN
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.SCREENSHOT_TEST
+import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper
 import sergio.sastre.composable.preview.scanner.core.utils.assetsFilePath
 import sergio.sastre.composable.preview.scanner.utils.SystemOutputTestRule
@@ -42,6 +42,7 @@ class ScanResultDumperScanningLoggerTest(
     @get:Rule
     val systemOutputTestRule = SystemOutputTestRule()
 
+    @RequiresShowStandardStreams
     @Test
     fun `WHEN dumping scan result to file in Assets THEN outputs all scanning info except source set`() {
         // WHEN
@@ -56,6 +57,7 @@ class ScanResultDumperScanningLoggerTest(
 
         try {
             ScanResultDumper()
+                .enableScanningLogs()
                 .setTargetSourceSet(classpath)
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .dumpScanResultToFileInAssets(

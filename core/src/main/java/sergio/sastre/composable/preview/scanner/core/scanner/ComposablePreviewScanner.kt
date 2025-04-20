@@ -8,6 +8,7 @@ import sergio.sastre.composable.preview.scanner.core.scanner.config.SourceScanne
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.validator.ClasspathValidator
 import sergio.sastre.composable.preview.scanner.core.scanner.exceptions.ScanSourceNotSupported
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
+import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter
 import sergio.sastre.composable.preview.scanner.core.utils.isRunningOnJvm
 import java.io.File
@@ -32,7 +33,7 @@ abstract class ComposablePreviewScanner<T>(
             .enableMemoryMapping()
 
     private var classpath: Classpath? = null
-    private var isLoggingEnabled = true
+    private var isLoggingEnabled = false
 
     private val classGraphSourceScanner
         get() = ClassGraphSourceScanner(
@@ -42,8 +43,9 @@ abstract class ComposablePreviewScanner<T>(
             isLoggingEnabled = isLoggingEnabled
         )
 
-    fun disableLogging(): SourceScanner<T> = apply {
-        isLoggingEnabled = false
+    @RequiresShowStandardStreams
+    fun enableScanningLogs(): ComposablePreviewScanner<T> = apply {
+        isLoggingEnabled = true
     }
 
     /**

@@ -9,6 +9,7 @@ import org.junit.runners.Parameterized
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.core.scanner.ComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
+import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
 import sergio.sastre.composable.preview.scanner.jvm.common.CommonComposablePreviewScanner
@@ -51,11 +52,10 @@ class ComposablePreviewScanningLoggerTest<T>(
     }
 
     @Test
-    fun `WHEN logging is disabled THEN outputs nothing`() {
+    fun `WHEN logging is not enabled THEN outputs nothing`() {
         // WHEN
         val scanner = scannerFactory()
         scanner.previewScanner
-            .disableLogging()
             .scanPackageTrees(
                 "sergio.sastre.composable.preview.scanner.included",
                 "sergio.sastre.composable.preview.scanner.multiplepreviews"
@@ -71,11 +71,13 @@ class ComposablePreviewScanningLoggerTest<T>(
         )
     }
 
+    @RequiresShowStandardStreams
     @Test
     fun `WHEN Scanning package trees THEN outputs all scanning info except source set`() {
         // WHEN
         val scanner = scannerFactory()
         scanner.previewScanner
+            .enableScanningLogs()
             .scanPackageTrees(
                 "sergio.sastre.composable.preview.scanner.included",  // contains AndroidPreviews
                 "sergio.sastre.composable.preview.scanner.jvmcommon", // contains CommonPreviews
@@ -113,7 +115,7 @@ class ComposablePreviewScanningLoggerTest<T>(
         )
         assertTrue(
             "Output contains time to find @Previews in ms",
-            "Time to find @Previews: $regexAnyNumberBut0 ms".toRegex().containsMatchIn(output)
+            "Time to find @Previews: \\d+ ms".toRegex().containsMatchIn(output)
         )
         assertTrue(
             "Output contains total time in ms",
@@ -121,11 +123,13 @@ class ComposablePreviewScanningLoggerTest<T>(
         )
     }
 
+    @RequiresShowStandardStreams
     @Test
     fun `WHEN including and-or excluding package trees THEN outputs all scanning info except source set`() {
         // WHEN
         val scanner = scannerFactory()
         scanner.previewScanner
+            .enableScanningLogs()
             .scanPackageTrees(
                 include = listOf("sergio.sastre.composable.preview.scanner"),
                 exclude = listOf("sergio.sastre.composable.preview.scanner.duplicates")
@@ -167,7 +171,7 @@ class ComposablePreviewScanningLoggerTest<T>(
         )
         assertTrue(
             "Output contains time to find @Previews in ms",
-            "Time to find @Previews: $regexAnyNumberBut0 ms".toRegex().containsMatchIn(output)
+            "Time to find @Previews: \\d+ ms".toRegex().containsMatchIn(output)
         )
         assertTrue(
             "Output contains total time in ms",
@@ -175,12 +179,13 @@ class ComposablePreviewScanningLoggerTest<T>(
         )
     }
 
-    @OptIn(RequiresLargeHeap::class)
+    @RequiresShowStandardStreams
+    @RequiresLargeHeap
     @Test
     fun `WHEN scanning all packages THEN outputs all scanning info except source set`() {
         // WHEN
         val scanner = scannerFactory()
-        scanner.previewScanner.scanAllPackages().getPreviews()
+        scanner.previewScanner.enableScanningLogs().scanAllPackages().getPreviews()
 
         // THEN
         val output = systemOutputTestRule.systemOutput
@@ -214,7 +219,7 @@ class ComposablePreviewScanningLoggerTest<T>(
         )
         assertTrue(
             "Output contains time to find @Previews in ms",
-            "Time to find @Previews: $regexAnyNumberBut0 ms".toRegex().containsMatchIn(output)
+            "Time to find @Previews: \\d+ ms".toRegex().containsMatchIn(output)
         )
         assertTrue(
             "Output contains total time in ms",
@@ -222,6 +227,7 @@ class ComposablePreviewScanningLoggerTest<T>(
         )
     }
 
+    @RequiresShowStandardStreams
     @Test
     fun `GIVEN file with previews generated WHEN scanning from file THEN outputs all scanning info except source set`() {
         val scanResultFile = testFilePath("scan_result.json")
@@ -238,6 +244,7 @@ class ComposablePreviewScanningLoggerTest<T>(
 
             val scanner = scannerFactory()
             scanner.previewScanner
+                .enableScanningLogs()
                 .scanFile(scanResultFile)
                 .getPreviews()
 
@@ -274,7 +281,7 @@ class ComposablePreviewScanningLoggerTest<T>(
             )
             assertTrue(
                 "Output contains time to find @Previews in ms",
-                "Time to find @Previews: $regexAnyNumberBut0 ms".toRegex().containsMatchIn(output)
+                "Time to find @Previews: \\d+ ms".toRegex().containsMatchIn(output)
             )
             assertTrue(
                 "Output contains total time in ms",
