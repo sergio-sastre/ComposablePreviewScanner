@@ -108,6 +108,8 @@ The API is pretty simple:
 
 ```kotlin
 AndroidComposablePreviewScanner()
+    // Optional to log scanning info like scanning time or amount of previews found
+    .enableScanningLogs()
     // Optional to scan previews in compiled classes of other source sets, like "screenshotTest" or "androidTest"
     // If omitted, it scans previews in 'main' at build time
     .setTargetSourceSet(
