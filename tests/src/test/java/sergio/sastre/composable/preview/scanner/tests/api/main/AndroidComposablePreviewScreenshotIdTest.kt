@@ -21,6 +21,7 @@ import sergio.sastre.composable.preview.scanner.android.device.types.Phone
 import sergio.sastre.composable.preview.scanner.android.device.types.Tablet
 import sergio.sastre.composable.preview.scanner.android.device.types.Television
 import sergio.sastre.composable.preview.scanner.android.device.types.Wear
+import sergio.sastre.composable.preview.scanner.android.device.types.XR
 import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 
@@ -568,7 +569,8 @@ class AndroidComposablePreviewScreenshotIdTest {
                 Automotive.entries,
                 Television.entries,
                 Wear.entries,
-                GenericDevices.entries
+                GenericDevices.entries,
+                XR.entries,
             ).flatMap { entry -> entry.mapNotNull { it.device.identifier } }
         }
     }

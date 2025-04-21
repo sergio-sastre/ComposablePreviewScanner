@@ -38,6 +38,7 @@ data class Identifier(val id: String? = null, val name: String? = null) {
         val PIXEL_8A = Identifier(id = "pixel_8a", name = "Pixel 8a")
         val PIXEL_8_PRO = Identifier(id = "pixel_8_pro", name = "Pixel 8 Pro")
         val PIXEL_9 = Identifier(id = "pixel_9", name = "Pixel 9")
+        val PIXEL_9A = Identifier(id = "pixel_9a", name = "Pixel 9a")
         val PIXEL_9_PRO = Identifier(id = "pixel_9_pro", name = "Pixel 9 Pro")
         val PIXEL_9_PRO_XL = Identifier(id = "pixel_9_pro_xl", name = "Pixel 9 Pro XL")
         val PIXEL_9_PRO_FOLD = Identifier(id = "pixel_9_pro_fold", name = "Pixel 9 Pro Fold")
