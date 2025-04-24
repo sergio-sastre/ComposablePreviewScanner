@@ -16,6 +16,7 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHea
 import sergio.sastre.composable.preview.scanner.core.preview.getAnnotation
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.exceptions.RepeatableAnnotationNotSupportedException
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
+import sergio.sastre.composable.preview.scanner.included.IncludeScreenshot
 import java.io.FileNotFoundException
 
 class AndroidComposablePreviewScannerTest {
@@ -184,6 +185,29 @@ class AndroidComposablePreviewScannerTest {
         assumeTrue(previewsInExcludedPackage.size > previewsWithoutExcludeScreenshotAnnotation.size)
 
         assert(previewsWithoutExcludeScreenshotAnnotation.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN some previews in 'included' package contain IncludeScreenshot annotation WHEN I include previews with IncludeScreenshot THEN some are included`() {
+        val previewsInIncludedPackage =
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.included")
+                .getPreviews()
+
+        val previewsWithIncludedScreenshotAnnotation =
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.included")
+                .includeIfAnnotatedWithAnyOf(IncludeScreenshot::class.java)
+                .getPreviews()
+
+        val previewsWithoutIncludeScreenshotAnnotation =
+            previewsInIncludedPackage.filter { it.getAnnotation<IncludeScreenshot>() == null }
+
+        // All previews contain IncludeScreenshot
+        assumeTrue(previewsWithoutIncludeScreenshotAnnotation.size == previewsInIncludedPackage.size)
+        assumeTrue(previewsInIncludedPackage.size > previewsWithIncludedScreenshotAnnotation.size)
+
+        assert(previewsWithIncludedScreenshotAnnotation.isNotEmpty())
     }
 
     @Test
@@ -385,6 +409,18 @@ class AndroidComposablePreviewScannerTest {
         }
 
         assertEquals("excludeIfAnnotatedWithAnyOf() cannot be called with Repeatable annotations 'RepeatableAnnotation'", exception.message)
+    }
+
+    @Test
+    fun `GIVEN includeIfAnnotatedWithAnyOf contains any Repeatable annotation THEN it throws RepeatableAnnotationNotSupportedException`() {
+        val exception = assertThrows(RepeatableAnnotationNotSupportedException::class.java) {
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.customextraannotation")
+                .includeIfAnnotatedWithAnyOf(RepeatableAnnotation::class.java)
+                .getPreviews()
+        }
+
+        assertEquals("includeIfAnnotatedWithAnyOf() cannot be called with Repeatable annotations 'RepeatableAnnotation'", exception.message)
     }
 
     @Test(expected = IllegalArgumentException::class)

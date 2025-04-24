@@ -4,7 +4,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
+annotation class IncludeScreenshot
+
 @Composable
+@IncludeScreenshot
 fun Example(){
     Text("Example")
 }
@@ -16,6 +19,7 @@ fun Example2(){
 
 @Preview
 @Composable
+@IncludeScreenshot
 fun ExamplePreview(){
     Example()
 }

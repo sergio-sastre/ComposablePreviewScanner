@@ -7,9 +7,9 @@ import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewInfoMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.classloaders.ClassLoader
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.MethodFinder
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.PreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.classloaders.ClassLoader
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilterState
 import java.lang.reflect.Method
 
@@ -37,17 +37,14 @@ internal class ComposablePreviewsAtBuildTimeFinder<T>(
 
         return classInfo.declaredMethodInfo.asSequence().flatMap { methodInfo ->
             methodInfo.getAnnotationInfo(annotationToScanClassName)?.let {
-                if (scanResultFilterState.hasExcludedAnnotation(methodInfo) || scanResultFilterState.excludesMethod(
-                        methodInfo
-                    )
-                ) {
-                    emptySequence()
-                } else {
+                if (scanResultFilterState.shouldIncludeMethod(methodInfo)) {
                     val method = MethodFinder(classInfo, classLoader).find(methodInfo)
                     method.repeatMethodPerPreviewAnnotation(
                         methodInfo,
                         scanResultFilterState
                     )
+                } else {
+                    emptySequence()
                 }
             } ?: emptySequence()
         }

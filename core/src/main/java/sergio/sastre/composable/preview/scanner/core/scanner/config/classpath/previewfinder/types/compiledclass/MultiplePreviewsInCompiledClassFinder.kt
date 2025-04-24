@@ -6,9 +6,9 @@ import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewInfoMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.classloaders.ClassLoader
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.MethodFinder
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.PreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.classloaders.ClassLoader
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilterState
 
 /**
@@ -23,7 +23,7 @@ internal class MultiplePreviewsInCompiledClassFinder<T>(
     private val previewInfoMapper: ComposablePreviewInfoMapper<T>,
     private val previewMapperCreator: ComposablePreviewMapperCreator<T>,
     private val classLoader: ClassLoader,
-): PreviewsFinder<T> {
+) : PreviewsFinder<T> {
 
     private fun hasPreviewsIn(classInfo: ClassInfo): Boolean =
         classInfo.hasDeclaredMethodAnnotation("$annotationToScanClassName\$Container")
@@ -37,9 +37,7 @@ internal class MultiplePreviewsInCompiledClassFinder<T>(
 
         return classInfo.declaredMethodInfo.asSequence().flatMap { methodInfo ->
             methodInfo.getAnnotationInfo("$annotationToScanClassName\$Container")?.let {
-                if (scanResultFilterState.hasExcludedAnnotation(methodInfo) || scanResultFilterState.excludesMethod(methodInfo)) {
-                    emptySequence()
-                } else {
+                if (scanResultFilterState.shouldIncludeMethod(methodInfo)) {
                     val method = MethodFinder(classInfo, classLoader).find(methodInfo)
                     val previewMethods: MutableList<ComposablePreviewMapper<T>> = mutableListOf()
                     val previews: Array<Any> = it.parameterValues.getValue("value") as Array<Any>
@@ -66,6 +64,8 @@ internal class MultiplePreviewsInCompiledClassFinder<T>(
                             }
                         }
                     previewMethods.asSequence()
+                } else {
+                    emptySequence()
                 }
 
             } ?: emptySequence()
