@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.tests.logic
+package sergio.sastre.composable.preview.scanner.tests.api.main
 
 import android.content.res.Configuration
 import org.junit.Assert.assertEquals
@@ -321,10 +321,14 @@ class AndroidComposablePreviewScannerTest {
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.samemethodname")
                 .getPreviews()
 
+        val previewsAsStrings =
+            previewsWithSameMethodName.map { it.toString() }
+
         // 2 for stringProvider
         // 1 for listProvider
         // 1 without parameter
         assert(previewsWithSameMethodName.size == 4)
+        assert(previewsAsStrings.toSet().size == 4)
     }
 
     @Test

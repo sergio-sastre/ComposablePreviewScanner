@@ -5,10 +5,10 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import io.github.classgraph.AnnotationInfoList
 import io.github.classgraph.AnnotationParameterValueList
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
+import sergio.sastre.composable.preview.scanner.core.preview.ProvideComposablePreview
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewInfoMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator
-import sergio.sastre.composable.preview.scanner.core.preview.ProvideComposablePreview
 import sergio.sastre.composable.preview.scanner.core.scanner.ComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.ClasspathPreviewsFinder
 import java.lang.reflect.Method

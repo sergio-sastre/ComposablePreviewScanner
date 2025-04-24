@@ -55,6 +55,8 @@ internal class ComposablePreviewInvocationHandler(
                 // we cannot handle it:
                 // we don't know the value of that argument to pass it at a certain index
                 // and it'd throw an UndeclaredThrowableException
+                //
+                // Update: It seems that from AS Meerkat on, this is enforced :)
                 if (allParams.any { !it.isOptional && it.index != 0 }){
                     throw PreviewParameterIsNotFirstArgumentException(
                         className =  composableMethod.declaringClass.name,
