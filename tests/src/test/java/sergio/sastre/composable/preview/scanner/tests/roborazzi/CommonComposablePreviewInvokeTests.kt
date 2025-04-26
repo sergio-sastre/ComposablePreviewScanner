@@ -6,6 +6,7 @@ import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.jvm.common.CommonComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.jvm.common.CommonPreviewInfo
@@ -22,8 +23,10 @@ class CommonComposablePreviewInvokeTests(
 ) {
 
     companion object {
+        @OptIn(RequiresShowStandardStreams::class)
         private val cachedBuildTimePreviews: List<ComposablePreview<CommonPreviewInfo>> =
             CommonComposablePreviewScanner()
+                .enableScanningLogs()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .includePrivatePreviews()
                 .getPreviews()

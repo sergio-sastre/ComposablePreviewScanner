@@ -75,8 +75,9 @@ android {
 
     testOptions.unitTests {
         isIncludeAndroidResources = true
-        all {
-            it.jvmArgs("-Xmx4g")
+        all { test ->
+            test.jvmArgs("-Xmx4g")
+            test.testLogging { showStandardStreams = true }
         }
     }
 }

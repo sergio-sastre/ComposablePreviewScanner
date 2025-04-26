@@ -4,6 +4,8 @@ import io.github.classgraph.ClassGraph
 import io.github.classgraph.ScanResult
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
+import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
+import sergio.sastre.composable.preview.scanner.core.scanresult.logger.ScanResultLogger
 import java.io.File
 import java.io.FileNotFoundException
 import java.util.Locale
@@ -23,6 +25,13 @@ class ScanResultDumper {
         .enableAnnotationInfo()
         .enableMemoryMapping()
 
+    private val scanResultLogger = ScanResultLogger()
+
+    @RequiresShowStandardStreams
+    fun enableScanningLogs() = apply {
+        scanResultLogger.enableLogging(true)
+    }
+
     /**
      * Prepares the dumper to find previews scanned from a Source Set like 'screenshotTest', 'androidTest', 'main' or a custom one via the given sourceSetClasspath
      * It uses compiled classes of that source set.
@@ -37,17 +46,21 @@ class ScanResultDumper {
     fun setTargetSourceSet(
         sourceSetClasspath: Classpath,
     ) = apply {
-        val absolutePath = File(sourceSetClasspath.rootDir, sourceSetClasspath.packagePath).absolutePath
+        val absolutePath =
+            File(sourceSetClasspath.rootDir, sourceSetClasspath.packagePath).absolutePath
         updatedClassGraph.overrideClasspath(absolutePath)
+        scanResultLogger.addSourceSetInfo(sourceSetClasspath)
     }
 
     @RequiresLargeHeap
     fun scanAllPackages(): ScanResultProcessor {
+        scanResultLogger.useScanningSourceAllPackages()
         return ScanResultProcessor(updatedClassGraph.scan())
     }
 
     fun scanPackageTrees(vararg packages: String): ScanResultProcessor {
         updatedClassGraph = updatedClassGraph.acceptPackages(*packages)
+        scanResultLogger.useScanningSourcePackageTrees(*packages)
         return ScanResultProcessor(updatedClassGraph.scan())
     }
 
@@ -59,9 +72,9 @@ class ScanResultDumper {
             val dir = File(directoryName)
             if (!dir.exists()) {
                 if (dir.mkdirs()) {
-                    println("Assets Directory created: ${dir.absolutePath}");
+                    println("Assets Directory created: ${dir.absolutePath}")
                 } else {
-                    throw FileNotFoundException("Assets Directory has not been created: ${dir.absolutePath}");
+                    throw FileNotFoundException("Assets Directory has not been created: ${dir.absolutePath}")
                 }
             }
             return dir
@@ -85,40 +98,46 @@ class ScanResultDumper {
             packageTreesOfCustomPreviews: List<String> = listOf("androidx.compose.ui.tooling.preview"),
             customPreviewsFileName: String = "custom_previews.json"
         ): ScanResultProcessor = apply {
-            val path = System.getProperty("user.dir")
-            val capitalizedVariantName =
-                variantName.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
-            val directoryName = "$path/src/androidTest${capitalizedVariantName}/assets"
-            createDirectory(directoryName)
+            scanResultLogger.measureDumpTime {
+                val path = System.getProperty("user.dir")
+                val capitalizedVariantName =
+                    variantName.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
+                val directoryName = "$path/src/androidTest${capitalizedVariantName}/assets"
+                createDirectory(directoryName)
 
-            val outputScanFile = File(directoryName, scanFileName)
-            outputScanFile.bufferedWriter().use { writer ->
-                writer.write(scanResult.toJSON())
-            }
-            println("Scan Results dump to output file path: ${outputScanFile.absolutePath}")
-
-            if (packageTreesOfCustomPreviews.isNotEmpty()) {
-                val customPreviewsScanResult = ClassGraph()
-                    .acceptPackages(*packageTreesOfCustomPreviews.toTypedArray())
-                    .enableAnnotationInfo()
-                    .scan()
-
-                val outputCustomPreviewsFile = File(directoryName, customPreviewsFileName)
-                outputCustomPreviewsFile.bufferedWriter().use { writer ->
-                    writer.write(customPreviewsScanResult.toJSON())
+                val outputScanFile = File(directoryName, scanFileName)
+                outputScanFile.bufferedWriter().use { writer ->
+                    writer.write(scanResult.toJSON())
                 }
 
-                println("Custom Previews dump to output file path: ${outputCustomPreviewsFile.absolutePath}")
+                scanResultLogger.addScanResultFileName(outputScanFile)
+
+                if (packageTreesOfCustomPreviews.isNotEmpty()) {
+                    val customPreviewsScanResult = ClassGraph()
+                        .acceptPackages(*packageTreesOfCustomPreviews.toTypedArray())
+                        .enableAnnotationInfo()
+                        .scan()
+
+                    val outputCustomPreviewsFile = File(directoryName, customPreviewsFileName)
+                    outputCustomPreviewsFile.bufferedWriter().use { writer ->
+                        writer.write(customPreviewsScanResult.toJSON())
+                    }
+                    scanResultLogger.addCustomPreviewsFileName(outputCustomPreviewsFile)
+                }
             }
+            scanResultLogger.printFullInfoLog()
         }
 
         fun dumpScanResultToFile(
             outputFile: File
         ): ScanResultProcessor = apply {
-            outputFile.bufferedWriter().use { writer ->
-                writer.write(scanResult.toJSON())
+            scanResultLogger.addScanResultFileName(outputFile)
+            scanResultLogger.measureDumpTime {
+                outputFile.bufferedWriter().use { writer ->
+                    writer.write(scanResult.toJSON())
+                }
             }
-            println("Scan Results dump to output file path: ${outputFile.absolutePath}")
+            scanResultLogger.printFullInfoLog()
         }
     }
 }
