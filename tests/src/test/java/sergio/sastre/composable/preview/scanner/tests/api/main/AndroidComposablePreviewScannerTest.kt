@@ -442,4 +442,26 @@ class AndroidComposablePreviewScannerTest {
                 exclude = listOf("whatever")
             )
     }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `GIVEN includeIfAnnotatedWithAnyOf without arguments, THEN throw IllegalArgumentException`() {
+        AndroidComposablePreviewScanner()
+            .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+            .includeIfAnnotatedWithAnyOf()
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `GIVEN excludeAnnotationInfoForAllOf without arguments, THEN throw IllegalArgumentException`() {
+        AndroidComposablePreviewScanner()
+            .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+            .excludeIfAnnotatedWithAnyOf()
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `GIVEN includeAnnotationInfoForAllOf without arguments, THEN throw IllegalArgumentException`() {
+        AndroidComposablePreviewScanner()
+            .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+            .includeAnnotationInfoForAllOf()
+    }
+
 }

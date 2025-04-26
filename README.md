@@ -122,9 +122,16 @@ AndroidComposablePreviewScanner()
         exclude = listOf("your.package.subpackage1", "your.package2.subpackage1")
     )
     // Optional to filter out scanned previews with any of the given annotations
+    // Warning: this and its 'include' counterpart are mutually exclusive by API design
     .excludeIfAnnotatedWithAnyOf(
         ExcludeForScreenshot::class.java, 
         ExcludeForScreenshot2::class.java
+    )
+    // Optional to filter in only scanned previews with any of the given annotations
+    // Warning: this and its 'exclude' counterpart are mutually exclusive by API design
+    .includeIfAnnotatedWithAnyOf(
+      IncludeForScreenshot::class.java,
+      IncludeForScreenshot2::class.java
     )
     // Optional to include configuration info of the screenshot testing library in use
     // See 'How to use -> Libraries' above for further info

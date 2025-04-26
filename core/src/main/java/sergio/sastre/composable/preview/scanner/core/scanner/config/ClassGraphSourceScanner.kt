@@ -47,8 +47,8 @@ class ClassGraphSourceScanner<T>(
      * @param packageTrees where we want to scan previews
      */
     override fun scanPackageTrees(vararg packageTrees: String): ScanResultFilter<T> {
-        if (packageTrees.isEmpty()) {
-            throw IllegalArgumentException("packages must not be empty. For that, use scanAllPackages() instead")
+        require(packageTrees.isNotEmpty()) {
+            "packageTrees must not be empty. For that, use scanAllPackages() instead"
         }
         previewScanningLogger.useScanningSourcePackageTrees(*packageTrees)
         updatedClassGraph = updatedClassGraph.acceptPackages(*packageTrees)

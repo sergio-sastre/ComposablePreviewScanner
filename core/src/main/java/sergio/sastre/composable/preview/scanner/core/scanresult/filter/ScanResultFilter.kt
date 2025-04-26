@@ -55,6 +55,9 @@ class ScanResultFilter<T> internal constructor(
     override fun excludeIfAnnotatedWithAnyOf(
         vararg annotations: Class<out Annotation>
     ): ExclusiveFilter<T> {
+        require(annotations.isNotEmpty()) {
+            "annotations must not be empty. For that, leave it out instead"
+        }
         throwExceptionIfAnyAnnotationIsRepeatable(
             methodName = "excludeIfAnnotatedWithAnyOf()",
             annotations = annotations.toList()
@@ -66,13 +69,16 @@ class ScanResultFilter<T> internal constructor(
     }
 
     /**
-     * Includes previews which use any of the given annotations
+     * Only includes previews which use any of the given annotations, otherwise they are filtered out
      *
      * WARNING: throws a [RepeatableAnnotationNotSupportedException] if any of the annotations is repeatable
      */
     override fun includeIfAnnotatedWithAnyOf(
         vararg annotations: Class<out Annotation>
     ): InclusiveFilter<T> {
+        require(annotations.isNotEmpty()) {
+            "annotations must not be empty. For that, leave it out instead"
+        }
         throwExceptionIfAnyAnnotationIsRepeatable(
             methodName = "includeIfAnnotatedWithAnyOf()",
             annotations = annotations.toList()
@@ -99,6 +105,9 @@ class ScanResultFilter<T> internal constructor(
      * WARNING: throws a [RepeatableAnnotationNotSupportedException] if any of the annotations is repeatable
      */
     override fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): ScanResultFilter<T> {
+        require(annotations.isNotEmpty()) {
+            "annotations must not be empty. For that, leave it out instead"
+        }
         throwExceptionIfAnyAnnotationIsRepeatable(
             methodName = "includeAnnotationInfoForAllOf()",
             annotations = annotations.toList()
