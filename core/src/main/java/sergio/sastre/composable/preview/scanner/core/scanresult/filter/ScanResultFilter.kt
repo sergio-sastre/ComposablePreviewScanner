@@ -14,27 +14,27 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.filter.exception
  * They are mutually exclusive by their API design
  */
 interface BaseScanResultFilter<T> {
-    fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): ScanResultFilter<T>
-    fun includePrivatePreviews(): ScanResultFilter<T>
-    fun filterPreviews(predicate: (T) -> Boolean): ScanResultFilter<T>
     fun getPreviews(): List<ComposablePreview<T>>
 }
 
 interface InitialScanResultFilter<T> : BaseScanResultFilter<T> {
     fun excludeIfAnnotatedWithAnyOf(vararg annotations: Class<out Annotation>): ExclusiveFilter<T>
     fun includeIfAnnotatedWithAnyOf(vararg annotations: Class<out Annotation>): InclusiveFilter<T>
+    fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): InitialScanResultFilter<T>
+    fun includePrivatePreviews(): InitialScanResultFilter<T>
+    fun filterPreviews(predicate: (T) -> Boolean): InitialScanResultFilter<T>
 }
 
 interface ExclusiveFilter<T> : BaseScanResultFilter<T> {
-    override fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): ScanResultFilter<T>
-    override fun includePrivatePreviews(): ScanResultFilter<T>
-    override fun filterPreviews(predicate: (T) -> Boolean): ScanResultFilter<T>
+    fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): ExclusiveFilter<T>
+    fun includePrivatePreviews(): ExclusiveFilter<T>
+    fun filterPreviews(predicate: (T) -> Boolean): ExclusiveFilter<T>
 }
 
 interface InclusiveFilter<T> : BaseScanResultFilter<T> {
-    override fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): ScanResultFilter<T>
-    override fun includePrivatePreviews(): ScanResultFilter<T>
-    override fun filterPreviews(predicate: (T) -> Boolean): ScanResultFilter<T>
+    fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): InclusiveFilter<T>
+    fun includePrivatePreviews(): InclusiveFilter<T>
+    fun filterPreviews(predicate: (T) -> Boolean): InclusiveFilter<T>
 }
 
 /**
