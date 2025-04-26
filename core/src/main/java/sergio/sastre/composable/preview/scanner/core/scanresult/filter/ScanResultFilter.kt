@@ -30,6 +30,21 @@ class ScanResultFilter<T> internal constructor(
     }
 
     /**
+     * Includes previews which use any of the given annotations
+     *
+     * WARNING: throws a [RepeatableAnnotationNotSupportedException] if any of the annotations is repeatable
+     */
+    fun includeIfAnnotatedWithAnyOf(vararg annotations: Class<out Annotation>) = apply {
+        throwExceptionIfAnyAnnotationIsRepeatable(
+            methodName = "includeIfAnnotatedWithAnyOf()",
+            annotations = annotations.toList()
+        )
+        scanResultFilterState = scanResultFilterState.copy(
+            includedAnnotations = annotations.toList()
+        )
+    }
+
+    /**
      * Relevant info for screenshot testing a given preview
      * (e.g. tolerance, renderingMode, etc.) can be passed via annotations. For instance
      *

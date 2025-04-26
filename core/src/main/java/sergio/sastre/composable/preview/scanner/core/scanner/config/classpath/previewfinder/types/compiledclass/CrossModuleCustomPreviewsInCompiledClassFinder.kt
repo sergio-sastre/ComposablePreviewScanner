@@ -50,7 +50,7 @@ internal class CrossModuleCustomPreviewsInCompiledClassFinder<T>(
 
             containedAnnotations.onEach { previewAnnotation ->
                 methodInfo.getAnnotationInfo(previewAnnotation.key)?.let {
-                    if ((scanResultFilterState.hasExcludedAnnotation(methodInfo) || scanResultFilterState.excludesMethod(methodInfo)).not()) {
+                    if (scanResultFilterState.shouldIncludeMethod(methodInfo)) {
                         val method = MethodFinder(classInfo, classLoader).find(methodInfo)
                         val previewMethods: MutableList<ComposablePreviewMapper<T>> =
                             mutableListOf()
