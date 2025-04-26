@@ -485,6 +485,21 @@ enum class Phone(
             type = PHONE
         )
     ),
+    PIXEL_9A(
+        Device(
+            identifier = Identifier.PIXEL_9A,
+            dimensions = Dimensions(
+                width = 1080f,
+                height = 2424f,
+                unit = PX
+            ),
+            densityDpi = 420,
+            orientation = PORTRAIT,
+            shape = NOTROUND,
+            chinSize = 0,
+            type = PHONE
+        )
+    ),
     PIXEL_9(
         Device(
             identifier = Identifier.PIXEL_9,
