@@ -7,13 +7,44 @@ import sergio.sastre.composable.preview.scanner.core.scanner.logger.PreviewScann
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.exceptions.RepeatableAnnotationNotSupportedException
 
 /**
+ * The reason for these interfaces is to avoid API misuse:
+ * If includeIfAnnotatedWithAnyOf() is called, then excludeIfAnnotatedWithAnyOf() cannot be called,
+ * and vice versa.
+ *
+ * They are mutually exclusive by their API design
+ */
+interface BaseScanResultFilter<T> {
+    fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): ScanResultFilter<T>
+    fun includePrivatePreviews(): ScanResultFilter<T>
+    fun filterPreviews(predicate: (T) -> Boolean): ScanResultFilter<T>
+    fun getPreviews(): List<ComposablePreview<T>>
+}
+
+interface InitialScanResultFilter<T> : BaseScanResultFilter<T> {
+    fun excludeIfAnnotatedWithAnyOf(vararg annotations: Class<out Annotation>): ExclusiveFilter<T>
+    fun includeIfAnnotatedWithAnyOf(vararg annotations: Class<out Annotation>): InclusiveFilter<T>
+}
+
+interface ExclusiveFilter<T> : BaseScanResultFilter<T> {
+    override fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): ScanResultFilter<T>
+    override fun includePrivatePreviews(): ScanResultFilter<T>
+    override fun filterPreviews(predicate: (T) -> Boolean): ScanResultFilter<T>
+}
+
+interface InclusiveFilter<T> : BaseScanResultFilter<T> {
+    override fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): ScanResultFilter<T>
+    override fun includePrivatePreviews(): ScanResultFilter<T>
+    override fun filterPreviews(predicate: (T) -> Boolean): ScanResultFilter<T>
+}
+
+/**
  * Filter the ComposablePreviews of a given ScanResult.
  */
 class ScanResultFilter<T> internal constructor(
     private val scanResult: ScanResult,
     private val previewsFinder: PreviewsFinder<T>,
     private val previewScanningLogger: PreviewScanningLogger,
-) {
+) : InitialScanResultFilter<T>, ExclusiveFilter<T>, InclusiveFilter<T> {
     private var scanResultFilterState = ScanResultFilterState<T>()
 
     /**
@@ -21,7 +52,9 @@ class ScanResultFilter<T> internal constructor(
      *
      * WARNING: throws a [RepeatableAnnotationNotSupportedException] if any of the annotations is repeatable
      */
-    fun excludeIfAnnotatedWithAnyOf(vararg annotations: Class<out Annotation>) = apply {
+    override fun excludeIfAnnotatedWithAnyOf(
+        vararg annotations: Class<out Annotation>
+    ): ExclusiveFilter<T> {
         throwExceptionIfAnyAnnotationIsRepeatable(
             methodName = "excludeIfAnnotatedWithAnyOf()",
             annotations = annotations.toList()
@@ -29,6 +62,7 @@ class ScanResultFilter<T> internal constructor(
         scanResultFilterState = scanResultFilterState.copy(
             excludedAnnotations = annotations.toList()
         )
+        return this
     }
 
     /**
@@ -36,7 +70,9 @@ class ScanResultFilter<T> internal constructor(
      *
      * WARNING: throws a [RepeatableAnnotationNotSupportedException] if any of the annotations is repeatable
      */
-    fun includeIfAnnotatedWithAnyOf(vararg annotations: Class<out Annotation>) = apply {
+    override fun includeIfAnnotatedWithAnyOf(
+        vararg annotations: Class<out Annotation>
+    ): InclusiveFilter<T> {
         throwExceptionIfAnyAnnotationIsRepeatable(
             methodName = "includeIfAnnotatedWithAnyOf()",
             annotations = annotations.toList()
@@ -44,6 +80,7 @@ class ScanResultFilter<T> internal constructor(
         scanResultFilterState = scanResultFilterState.copy(
             includedAnnotations = annotations.toList()
         )
+        return this
     }
 
     /**
@@ -61,7 +98,7 @@ class ScanResultFilter<T> internal constructor(
      *
      * WARNING: throws a [RepeatableAnnotationNotSupportedException] if any of the annotations is repeatable
      */
-    fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>) = apply {
+    override fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): ScanResultFilter<T> {
         throwExceptionIfAnyAnnotationIsRepeatable(
             methodName = "includeAnnotationInfoForAllOf()",
             annotations = annotations.toList()
@@ -69,28 +106,31 @@ class ScanResultFilter<T> internal constructor(
         scanResultFilterState = scanResultFilterState.copy(
             namesOfIncludeAnnotationsInfo = annotations.map { it.name }.toSet()
         )
+        return this
     }
 
     /**
      * By default, private previews are filtered out. You can use this option to also return them
      */
-    fun includePrivatePreviews() = apply {
+    override fun includePrivatePreviews(): ScanResultFilter<T> {
         scanResultFilterState = scanResultFilterState.copy(
             includesPrivatePreviews = true
         )
+        return this
     }
 
     /**
      * Filter only previews whose info meets the predicate, for instance
      * apiLevel >= 30 or group == "IncludeForScreenshotTests"
      */
-    fun filterPreviews(predicate: (T) -> Boolean) = apply {
+    override fun filterPreviews(predicate: (T) -> Boolean): ScanResultFilter<T> {
         scanResultFilterState = scanResultFilterState.copy(
             meetsPreviewCriteria = predicate,
         )
+        return this
     }
 
-    fun getPreviews(): List<ComposablePreview<T>> =
+    override fun getPreviews(): List<ComposablePreview<T>> =
         scanResult.use { scanResult ->
             previewScanningLogger.measureFindPreviewsTimeAndGetResult {
                 scanResult

@@ -192,6 +192,7 @@ class AndroidComposablePreviewScannerTest {
         val previewsInIncludedPackage =
             AndroidComposablePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.included")
+                .includeAnnotationInfoForAllOf(IncludeScreenshot::class.java)
                 .getPreviews()
 
         val previewsWithIncludedScreenshotAnnotation =
@@ -203,8 +204,8 @@ class AndroidComposablePreviewScannerTest {
         val previewsWithoutIncludeScreenshotAnnotation =
             previewsInIncludedPackage.filter { it.getAnnotation<IncludeScreenshot>() == null }
 
-        // All previews contain IncludeScreenshot
-        assumeTrue(previewsWithoutIncludeScreenshotAnnotation.size == previewsInIncludedPackage.size)
+        // Some previews contain IncludeScreenshot
+        assumeTrue(previewsWithoutIncludeScreenshotAnnotation.isNotEmpty())
         assumeTrue(previewsInIncludedPackage.size > previewsWithIncludedScreenshotAnnotation.size)
 
         assert(previewsWithIncludedScreenshotAnnotation.isNotEmpty())

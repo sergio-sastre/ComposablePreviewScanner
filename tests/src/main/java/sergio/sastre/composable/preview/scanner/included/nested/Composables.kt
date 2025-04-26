@@ -6,7 +6,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import sergio.sastre.composable.preview.scanner.included.IncludeScreenshot
 
 @Composable
-@IncludeScreenshot
 fun Example(){
     Text("Example")
 }
@@ -22,7 +21,6 @@ fun Example2(){
 fun ExamplePreview(){
     Example()
 }
-
 
 @Preview
 @Composable

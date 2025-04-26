@@ -7,7 +7,6 @@ import androidx.compose.ui.tooling.preview.Preview
 annotation class IncludeScreenshot
 
 @Composable
-@IncludeScreenshot
 fun Example(){
     Text("Example")
 }
