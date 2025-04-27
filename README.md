@@ -463,14 +463,16 @@ class PreviewParameterizedTests(
         fun values(): List<ComposablePreview<AndroidPreviewInfo>> = cachedPreviews
     }
 
+    // Recommended for more meaningful screenshot file names. See #Advanced Usage
+    fun screenshotNameFor(preview: ComposablePreview<AndroidPreviewInfo>): String =
+        "$DEFAULT_ROBORAZZI_OUTPUT_DIR_PATH/${AndroidPreviewScreenshotIdBuilder(preview).build()}.png"
+
     @GraphicsMode(GraphicsMode.Mode.NATIVE)
     @Config(sdk = [30]) // same as the previews we've filtered
     @Test
     fun snapshot() {
-        // Recommended for more meaningful screenshot file names. See #Advanced Usage
-        val screenshotId = AndroidPreviewScreenshotIdBuilder(preview).build()
         captureRoboImage(
-           filePath = "${screenshotId}.png",
+           filePath = screenshotNameFor(preview),
            roborazziOptions = RoborazziOptionsMapper.createFor(preview),
            roborazziComposeOptions = RoborazziComposeOptionsMapper.createFor(preview)
         ) {
