@@ -13,25 +13,25 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.filter.exception
  *
  * They are mutually exclusive by their API design
  */
-interface BaseScanResultFilter<T> {
+interface PreviewProvider<T> {
     fun getPreviews(): List<ComposablePreview<T>>
 }
 
-interface InitialScanResultFilter<T> : BaseScanResultFilter<T> {
+interface GeneralScanResultFilter<T> : PreviewProvider<T> {
     fun excludeIfAnnotatedWithAnyOf(vararg annotations: Class<out Annotation>): ExclusiveFilter<T>
     fun includeIfAnnotatedWithAnyOf(vararg annotations: Class<out Annotation>): InclusiveFilter<T>
-    fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): InitialScanResultFilter<T>
-    fun includePrivatePreviews(): InitialScanResultFilter<T>
-    fun filterPreviews(predicate: (T) -> Boolean): InitialScanResultFilter<T>
+    fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): GeneralScanResultFilter<T>
+    fun includePrivatePreviews(): GeneralScanResultFilter<T>
+    fun filterPreviews(predicate: (T) -> Boolean): GeneralScanResultFilter<T>
 }
 
-interface ExclusiveFilter<T> : BaseScanResultFilter<T> {
+interface ExclusiveFilter<T> : PreviewProvider<T> {
     fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): ExclusiveFilter<T>
     fun includePrivatePreviews(): ExclusiveFilter<T>
     fun filterPreviews(predicate: (T) -> Boolean): ExclusiveFilter<T>
 }
 
-interface InclusiveFilter<T> : BaseScanResultFilter<T> {
+interface InclusiveFilter<T> : PreviewProvider<T> {
     fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): InclusiveFilter<T>
     fun includePrivatePreviews(): InclusiveFilter<T>
     fun filterPreviews(predicate: (T) -> Boolean): InclusiveFilter<T>
@@ -44,7 +44,7 @@ class ScanResultFilter<T> internal constructor(
     private val scanResult: ScanResult,
     private val previewsFinder: PreviewsFinder<T>,
     private val previewScanningLogger: PreviewScanningLogger,
-) : InitialScanResultFilter<T>, ExclusiveFilter<T>, InclusiveFilter<T> {
+) : GeneralScanResultFilter<T>, ExclusiveFilter<T>, InclusiveFilter<T> {
     private var scanResultFilterState = ScanResultFilterState<T>()
 
     /**
