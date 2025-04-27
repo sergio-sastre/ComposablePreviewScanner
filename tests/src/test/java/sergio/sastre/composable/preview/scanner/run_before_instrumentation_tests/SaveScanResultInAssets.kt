@@ -1,6 +1,7 @@
 package sergio.sastre.composable.preview.scanner.run_before_instrumentation_tests
 
 import org.junit.Test
+import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.ANDROID_TEST
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.MAIN
@@ -9,6 +10,7 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultD
 import sergio.sastre.composable.preview.scanner.core.utils.assetsFilePath
 
 class SaveScanResultInAssets {
+    @OptIn(RequiresShowStandardStreams::class)
     @Test
     fun `task -- save scan result in assets`() {
         val scanResultScreenshotTestFileName = "scan_result_screenshot_test.json"
@@ -16,6 +18,7 @@ class SaveScanResultInAssets {
         val scanResultAndroidTestFileName = "scan_result_android_test.json"
 
         ScanResultDumper()
+            .enableScanningLogs()
             .setTargetSourceSet(Classpath(SCREENSHOT_TEST))
             .scanPackageTrees("sergio.sastre.composable.preview.scanner")
             .dumpScanResultToFileInAssets(
@@ -27,6 +30,7 @@ class SaveScanResultInAssets {
             )
 
         ScanResultDumper()
+            .enableScanningLogs()
             .setTargetSourceSet(Classpath(MAIN))
             .scanPackageTrees("sergio.sastre.composable.preview.scanner")
             .dumpScanResultToFileInAssets(
@@ -38,6 +42,7 @@ class SaveScanResultInAssets {
             )
 
         ScanResultDumper()
+            .enableScanningLogs()
             .setTargetSourceSet(Classpath(ANDROID_TEST))
             .scanPackageTrees("sergio.sastre.composable.preview.scanner")
             .dumpScanResultToFileInAssets(

@@ -1,12 +1,13 @@
 [versions]
 agp = "8.5.2"
 androidTestify = "2.5.0"
-classgraph = "4.8.177"
+classgraph = "4.8.179"
 coreKtx = "1.12.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 androidJunitVersion = "1.5.2"
 appcompat = "1.6.1"
+kotlinxCollectionsImmutable = "0.3.8"
 material = "1.11.0"
 navigationCompose = "2.7.7"
 composeBom = "2024.04.01"
@@ -39,6 +40,7 @@ androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "j
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidJunitVersion" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinReflect" }
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }

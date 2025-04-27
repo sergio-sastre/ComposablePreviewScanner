@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.tests.logic
+package sergio.sastre.composable.preview.scanner.tests.api.main
 
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable
@@ -21,6 +21,7 @@ import sergio.sastre.composable.preview.scanner.android.device.types.Phone
 import sergio.sastre.composable.preview.scanner.android.device.types.Tablet
 import sergio.sastre.composable.preview.scanner.android.device.types.Television
 import sergio.sastre.composable.preview.scanner.android.device.types.Wear
+import sergio.sastre.composable.preview.scanner.android.device.types.XR
 import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 
@@ -439,6 +440,42 @@ class AndroidComposablePreviewScreenshotIdTest {
     }
 
     @Test
+    fun `GIVEN 2 previews differ only in the methodParametersType WHEN these are not ignored, THEN the screenshotIds differ`() {
+        val preview1 = previewBuilder(
+            methodParameters = "name_String",
+        )
+        val preview2 = previewBuilder(
+            methodParameters = "name_Int",
+        )
+
+        val screenshotIdPreview1 = AndroidPreviewScreenshotIdBuilder(preview1)
+            .doNotIgnoreMethodParametersType()
+            .build()
+
+        val screenshotIdPreview2 = AndroidPreviewScreenshotIdBuilder(preview2)
+            .doNotIgnoreMethodParametersType()
+            .build()
+
+        assert(screenshotIdPreview1 != screenshotIdPreview2)
+    }
+
+    @Test
+    fun `GIVEN 2 previews differ only in the methodParametersType WHEN these are ignored, THEN the screenshotIds are the same`() {
+        val preview1 = previewBuilder(
+            methodParameters = "name_String",
+        )
+        val preview2 = previewBuilder(
+            methodParameters = "name_Int",
+        )
+
+        val screenshotIdPreview1 = AndroidPreviewScreenshotIdBuilder(preview1).build()
+
+        val screenshotIdPreview2 = AndroidPreviewScreenshotIdBuilder(preview2).build()
+
+        assert(screenshotIdPreview1 == screenshotIdPreview2)
+    }
+
+    @Test
     fun `GIVEN methodName ignored, THEN methodName is not included`() {
         val preview = previewBuilder(
             methodName = "PreviewName",
@@ -532,7 +569,8 @@ class AndroidComposablePreviewScreenshotIdTest {
                 Automotive.entries,
                 Television.entries,
                 Wear.entries,
-                GenericDevices.entries
+                GenericDevices.entries,
+                XR.entries,
             ).flatMap { entry -> entry.mapNotNull { it.device.identifier } }
         }
     }

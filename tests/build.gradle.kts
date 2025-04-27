@@ -13,6 +13,10 @@ if (project.hasProperty("library")) {
     }
 }
 
+apply(from = "custom-unit-tests.gradle.kts")
+apply(from = "custom-paparazzi-tests.gradle.kts")
+apply(from = "custom-roborazzi-tests.gradle.kts")
+
 android {
     namespace = "sergio.sastre.composable.preview.scanner"
     compileSdk = 34
@@ -71,8 +75,9 @@ android {
 
     testOptions.unitTests {
         isIncludeAndroidResources = true
-        all {
-            it.jvmArgs("-Xmx2g")
+        all { test ->
+            test.jvmArgs("-Xmx4g")
+            test.testLogging { showStandardStreams = true }
         }
     }
 }
@@ -81,13 +86,6 @@ testify {
     moduleName = ":tests"
     applicationPackageId = "composable.preview.scanner"
 }
-
-/*
-tasks.withType<Test> {
-    dependsOn("compileDebugScreenshotTestKotlin")
-    dependsOn("compileReleaseScreenshotTestKotlin")
-}
- */
 
 dependencies {
     implementation(project(":android"))
@@ -100,8 +98,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling")
     implementation("androidx.compose.ui:ui-tooling-preview")
 
-    screenshotTestImplementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.8")
-    debugImplementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.8") {
+    screenshotTestImplementation(libs.kotlinx.collections.immutable)
+    debugImplementation(libs.kotlinx.collections.immutable) {
         because("We would get NoClassFound exception when running Paparazzi and Roborazzi tests since it is used for ScreenshotImplementation")
     }
 

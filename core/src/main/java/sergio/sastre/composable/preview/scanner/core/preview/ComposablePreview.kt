@@ -7,8 +7,13 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.primaryConstructor
 
 /**
- * A Unique ComposablePreview. @Composable methods annotated with multi-previews @Preview result into
- * one ComposablePreview per @Preview, each of them identified by a previewIndex
+ * A Unique ComposablePreview.
+ *
+ * @Composable methods annotated with multi @Preview result into
+ * one ComposablePreview per @Preview, each of them identified by its [previewInfo]
+ *
+ * @Composable methods that take @PreviewParameter as argument result into
+ * one ComposablePreview per parameter, each of them identified by its [previewIndex]
  */
 interface ComposablePreview<T> {
     val previewInfo: T

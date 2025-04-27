@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.tests.logic
+package sergio.sastre.composable.preview.scanner.tests.api.main
 
 import android.content.res.Configuration
 import org.junit.Assert.assertEquals
@@ -16,6 +16,7 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHea
 import sergio.sastre.composable.preview.scanner.core.preview.getAnnotation
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.exceptions.RepeatableAnnotationNotSupportedException
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
+import sergio.sastre.composable.preview.scanner.included.IncludeScreenshot
 import java.io.FileNotFoundException
 
 class AndroidComposablePreviewScannerTest {
@@ -187,6 +188,30 @@ class AndroidComposablePreviewScannerTest {
     }
 
     @Test
+    fun `GIVEN some previews in 'included' package contain IncludeScreenshot annotation WHEN I include previews with IncludeScreenshot THEN some are included`() {
+        val previewsInIncludedPackage =
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.included")
+                .includeAnnotationInfoForAllOf(IncludeScreenshot::class.java)
+                .getPreviews()
+
+        val previewsWithIncludedScreenshotAnnotation =
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.included")
+                .includeIfAnnotatedWithAnyOf(IncludeScreenshot::class.java)
+                .getPreviews()
+
+        val previewsWithoutIncludeScreenshotAnnotation =
+            previewsInIncludedPackage.filter { it.getAnnotation<IncludeScreenshot>() == null }
+
+        // Some previews contain IncludeScreenshot
+        assumeTrue(previewsWithoutIncludeScreenshotAnnotation.isNotEmpty())
+        assumeTrue(previewsInIncludedPackage.size > previewsWithIncludedScreenshotAnnotation.size)
+
+        assert(previewsWithIncludedScreenshotAnnotation.isNotEmpty())
+    }
+
+    @Test
     fun `WHEN use a custom annotation for previews with night mode THEN those previews are included with night mode`() {
         val customPreviews =
             AndroidComposablePreviewScanner()
@@ -297,10 +322,14 @@ class AndroidComposablePreviewScannerTest {
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.samemethodname")
                 .getPreviews()
 
+        val previewsAsStrings =
+            previewsWithSameMethodName.map { it.toString() }
+
         // 2 for stringProvider
         // 1 for listProvider
         // 1 without parameter
         assert(previewsWithSameMethodName.size == 4)
+        assert(previewsAsStrings.toSet().size == 4)
     }
 
     @Test
@@ -387,6 +416,18 @@ class AndroidComposablePreviewScannerTest {
         assertEquals("excludeIfAnnotatedWithAnyOf() cannot be called with Repeatable annotations 'RepeatableAnnotation'", exception.message)
     }
 
+    @Test
+    fun `GIVEN includeIfAnnotatedWithAnyOf contains any Repeatable annotation THEN it throws RepeatableAnnotationNotSupportedException`() {
+        val exception = assertThrows(RepeatableAnnotationNotSupportedException::class.java) {
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.customextraannotation")
+                .includeIfAnnotatedWithAnyOf(RepeatableAnnotation::class.java)
+                .getPreviews()
+        }
+
+        assertEquals("includeIfAnnotatedWithAnyOf() cannot be called with Repeatable annotations 'RepeatableAnnotation'", exception.message)
+    }
+
     @Test(expected = IllegalArgumentException::class)
     fun `GIVEN scan package trees without arguments, THEN throw IllegalArgumentException`() {
         AndroidComposablePreviewScanner()
@@ -401,4 +442,26 @@ class AndroidComposablePreviewScannerTest {
                 exclude = listOf("whatever")
             )
     }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `GIVEN includeIfAnnotatedWithAnyOf without arguments, THEN throw IllegalArgumentException`() {
+        AndroidComposablePreviewScanner()
+            .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+            .includeIfAnnotatedWithAnyOf()
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `GIVEN excludeAnnotationInfoForAllOf without arguments, THEN throw IllegalArgumentException`() {
+        AndroidComposablePreviewScanner()
+            .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+            .excludeIfAnnotatedWithAnyOf()
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `GIVEN includeAnnotationInfoForAllOf without arguments, THEN throw IllegalArgumentException`() {
+        AndroidComposablePreviewScanner()
+            .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+            .includeAnnotationInfoForAllOf()
+    }
+
 }
