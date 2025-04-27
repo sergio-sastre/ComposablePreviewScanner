@@ -843,6 +843,10 @@ However, some tests have specific preconditions and may be skipped if those aren
 For example, when running tests to retrieve @Previews from a SourceSet other than main, such as screenshotTest or androidTest,
 the corresponding compiled classes must first be generated via the appropriate Gradle task.</br>
 
+Moreover, Paparazzi & Roborazzi tests also play a key role:
+1. Each of these libraries uses a different mechanism to download resources for running tests. ComposablePreviewScanner also loads certain classes by using ClassLoaders, and they must have been already downlaoded by Paparazzi and Roborazzi to [avoid issues like this one](https://github.com/sergio-sastre/ComposablePreviewScanner/issues/27). These tests help catch and avoid such errors.
+2. They ensure no errors in @Composable invocations. Since they can only occur within the context of a @Composable function, and standard unit tests cannot access Android resources (e.g. Composable framework), it is hard to verify their correctness without UI tests. 
+
 To streamline this process and support my TDD workflow, I’ve created custom Gradle tasks that handle these prerequisites automatically,
 saving time and reducing friction during development.</br>
 They can also help you in case you fork this library and make some code adjustments, to ensure everything still works as expected.</br>
