@@ -130,8 +130,8 @@ AndroidComposablePreviewScanner()
     // Optional to filter in only scanned previews with any of the given annotations
     // Warning: this and its 'exclude' counterpart are mutually exclusive by API design
     .includeIfAnnotatedWithAnyOf(
-      IncludeForScreenshot::class.java,
-      IncludeForScreenshot2::class.java
+        IncludeForScreenshot::class.java,
+        IncludeForScreenshot2::class.java
     )
     // Optional to include configuration info of the screenshot testing library in use
     // See 'How to use -> Libraries' above for further info
@@ -696,7 +696,7 @@ For further info on how to use them, see [Roborazzi](#roborazzi) and [Paparazzi]
 ## How It works
 This library is written on top of [ClassGraph](https://github.com/classgraph/classgraph), an uber-fast parallelized classpath scanner.
 
-Classpath can scan everything that is available either at bytecode level or at runtime.
+ClassGraph can scan everything that is available either at bytecode level or at runtime.
 This is also the case of annotations without retention or with either `AnnotationRetention.BINARY` or `AnnotationRetention.RUNTIME`, like Android Composable Previews
 ```kotlin
 package androidx.compose.ui.tooling.preview
@@ -838,16 +838,16 @@ In these tech-talks have also been mentioned the benefits of using ComposablePre
 - [“Fast Feedback loops & Composable Preview Scanner”](https://www.youtube.com/watch?v=SphQelcGdHk) with the Skool Android Community</br>
 
 # Testing
-The core of ComposablePreviewScanner was developed using Test-Driven Development (TDD).</br>
+The core of ComposablePreviewScanner has been (and it's being) developed using Test-Driven Development (TDD).</br>
 I strongly believe this approach is one of the key reasons the library has very few known bugs although it's widely used with over 150k monthly downloads.
 
 However, some tests have specific preconditions and may be skipped if those aren't met.</br>
 For example, when running tests to retrieve @Previews from a SourceSet other than main, such as screenshotTest or androidTest,
-the corresponding compiled classes must first be generated via the appropriate Gradle task.</br>
+the corresponding compiled classes must be generated first via the corresponding Gradle task.</br>
 
 Moreover, Paparazzi & Roborazzi tests also play a key role:
-1. Each of these libraries uses a different mechanism to download resources for running tests. ComposablePreviewScanner also loads certain classes by using ClassLoaders, and they must have been already downlaoded by Paparazzi and Roborazzi to [avoid issues like this one](https://github.com/sergio-sastre/ComposablePreviewScanner/issues/27). These tests help catch and avoid such errors.
-2. They ensure no errors in @Composable invocations. Since they can only occur within the context of a @Composable function, and standard unit tests cannot access Android resources (e.g. Composable framework), it is hard to verify their correctness without UI tests. 
+1. Each of these libraries uses a different mechanism to download Android resources for running tests. ComposablePreviewScanner also loads certain classes by using ClassLoaders, and for those classes to be available it is necessary that Paparazzi and Roborazzi already downloaded them to [avoid issues like this one](https://github.com/sergio-sastre/ComposablePreviewScanner/issues/27). These tests help catch and avoid such errors.
+2. They help avoid errors in @Composable invocations. Since they can only occur within the context of a @Composable function and standard unit tests cannot access Android resources (e.g. Composable framework), it is hard to verify their correctness without UI tests. 
 
 To streamline this process and support my TDD workflow, I’ve created custom Gradle tasks that handle these prerequisites automatically,
 saving time and reducing friction during development.</br>
