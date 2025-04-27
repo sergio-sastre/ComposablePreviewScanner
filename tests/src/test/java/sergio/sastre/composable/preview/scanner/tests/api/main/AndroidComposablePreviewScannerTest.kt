@@ -192,6 +192,7 @@ class AndroidComposablePreviewScannerTest {
         val previewsInIncludedPackage =
             AndroidComposablePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.included")
+                .includeAnnotationInfoForAllOf(IncludeScreenshot::class.java)
                 .getPreviews()
 
         val previewsWithIncludedScreenshotAnnotation =
@@ -203,8 +204,8 @@ class AndroidComposablePreviewScannerTest {
         val previewsWithoutIncludeScreenshotAnnotation =
             previewsInIncludedPackage.filter { it.getAnnotation<IncludeScreenshot>() == null }
 
-        // All previews contain IncludeScreenshot
-        assumeTrue(previewsWithoutIncludeScreenshotAnnotation.size == previewsInIncludedPackage.size)
+        // Some previews contain IncludeScreenshot
+        assumeTrue(previewsWithoutIncludeScreenshotAnnotation.isNotEmpty())
         assumeTrue(previewsInIncludedPackage.size > previewsWithIncludedScreenshotAnnotation.size)
 
         assert(previewsWithIncludedScreenshotAnnotation.isNotEmpty())
@@ -441,4 +442,26 @@ class AndroidComposablePreviewScannerTest {
                 exclude = listOf("whatever")
             )
     }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `GIVEN includeIfAnnotatedWithAnyOf without arguments, THEN throw IllegalArgumentException`() {
+        AndroidComposablePreviewScanner()
+            .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+            .includeIfAnnotatedWithAnyOf()
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `GIVEN excludeAnnotationInfoForAllOf without arguments, THEN throw IllegalArgumentException`() {
+        AndroidComposablePreviewScanner()
+            .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+            .excludeIfAnnotatedWithAnyOf()
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `GIVEN includeAnnotationInfoForAllOf without arguments, THEN throw IllegalArgumentException`() {
+        AndroidComposablePreviewScanner()
+            .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+            .includeAnnotationInfoForAllOf()
+    }
+
 }

@@ -122,9 +122,16 @@ AndroidComposablePreviewScanner()
         exclude = listOf("your.package.subpackage1", "your.package2.subpackage1")
     )
     // Optional to filter out scanned previews with any of the given annotations
+    // Warning: this and its 'include' counterpart are mutually exclusive by API design
     .excludeIfAnnotatedWithAnyOf(
         ExcludeForScreenshot::class.java, 
         ExcludeForScreenshot2::class.java
+    )
+    // Optional to filter in only scanned previews with any of the given annotations
+    // Warning: this and its 'exclude' counterpart are mutually exclusive by API design
+    .includeIfAnnotatedWithAnyOf(
+      IncludeForScreenshot::class.java,
+      IncludeForScreenshot2::class.java
     )
     // Optional to include configuration info of the screenshot testing library in use
     // See 'How to use -> Libraries' above for further info
@@ -835,6 +842,10 @@ I strongly believe this approach is one of the key reasons the library has very 
 However, some tests have specific preconditions and may be skipped if those aren't met.</br>
 For example, when running tests to retrieve @Previews from a SourceSet other than main, such as screenshotTest or androidTest,
 the corresponding compiled classes must first be generated via the appropriate Gradle task.</br>
+
+Moreover, Paparazzi & Roborazzi tests also play a key role:
+1. Each of these libraries uses a different mechanism to download resources for running tests. ComposablePreviewScanner also loads certain classes by using ClassLoaders, and they must have been already downlaoded by Paparazzi and Roborazzi to [avoid issues like this one](https://github.com/sergio-sastre/ComposablePreviewScanner/issues/27). These tests help catch and avoid such errors.
+2. They ensure no errors in @Composable invocations. Since they can only occur within the context of a @Composable function, and standard unit tests cannot access Android resources (e.g. Composable framework), it is hard to verify their correctness without UI tests. 
 
 To streamline this process and support my TDD workflow, I’ve created custom Gradle tasks that handle these prerequisites automatically,
 saving time and reducing friction during development.</br>
