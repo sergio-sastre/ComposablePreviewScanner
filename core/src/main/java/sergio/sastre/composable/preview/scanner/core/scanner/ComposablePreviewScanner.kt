@@ -9,6 +9,7 @@ import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.va
 import sergio.sastre.composable.preview.scanner.core.scanner.exceptions.ScanSourceNotSupported
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
+import sergio.sastre.composable.preview.scanner.core.scanner.exceptions.ScanningLogsNotSupported
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter
 import sergio.sastre.composable.preview.scanner.core.utils.isRunningOnJvm
 import java.io.File
@@ -43,8 +44,15 @@ abstract class ComposablePreviewScanner<T>(
             isLoggingEnabled = isLoggingEnabled
         )
 
+    /**
+     * Enables logging of the scanning process, like the time it takes to scan and find @Previews
+     * and the amount of previews found among others
+     *
+     * Warning: Not supported when running Instrumentation tests
+     */
     @RequiresShowStandardStreams
     fun enableScanningLogs(): ComposablePreviewScanner<T> = apply {
+        if(!isRunningOnJvm()) throw ScanningLogsNotSupported()
         isLoggingEnabled = true
     }
 

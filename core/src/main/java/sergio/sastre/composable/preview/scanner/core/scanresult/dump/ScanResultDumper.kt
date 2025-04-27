@@ -27,6 +27,9 @@ class ScanResultDumper {
 
     private val scanResultLogger = ScanResultLogger()
 
+    /**
+     * Enables logging of the scanning process, like the time it takes to scan and dump the results among others
+     */
     @RequiresShowStandardStreams
     fun enableScanningLogs() = apply {
         scanResultLogger.enableLogging(true)
