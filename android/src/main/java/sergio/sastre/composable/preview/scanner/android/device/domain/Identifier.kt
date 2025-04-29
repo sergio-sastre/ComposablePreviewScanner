@@ -12,7 +12,8 @@ data class Identifier(val id: String? = null, val name: String? = null) {
         val NEXUS_6 = Identifier(id = "Nexus 6", name = "Nexus 6")
         val NEXUS_6P = Identifier(id = "Nexus 6P", name = "Nexus 6P")
 
-        // Nexus 7 has a weird matching for id and name...
+        // @Preview parameter device "id:Nexus 7" and "name:Nexus 7" point indeed to different devices
+        // This matching problem is likely an error in Android Studio, but we want to keep it consistent with it
         val NEXUS_7_2012 = Identifier(id = "Nexus 7", name = "Nexus 7 (2012)")
         val NEXUS_7_2013 = Identifier(id = "Nexus 7 2013", name = "Nexus 7")
 
