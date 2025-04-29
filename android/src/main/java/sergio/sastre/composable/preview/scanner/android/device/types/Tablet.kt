@@ -16,6 +16,7 @@ enum class Tablet(
 
     PIXEL_TABLET(
         Device(
+            identifier = Identifier.PIXEL_TABLET,
             dimensions = Dimensions(
                 width = 2560f,
                 height = 1600f,
@@ -55,22 +56,6 @@ enum class Tablet(
             ),
             densityDpi = 420,
             orientation = LANDSCAPE,
-            shape = NOTROUND,
-            chinSize = 0,
-            type = TABLET
-        )
-    ),
-
-    NEXUS_7(
-        Device(
-            identifier = Identifier.NEXUS_7,
-            dimensions = Dimensions(
-                width = 800f,
-                height = 1280f,
-                unit = PX
-            ),
-            densityDpi = 213,
-            orientation = PORTRAIT,
             shape = NOTROUND,
             chinSize = 0,
             type = TABLET

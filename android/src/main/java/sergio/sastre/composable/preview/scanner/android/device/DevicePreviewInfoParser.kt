@@ -124,6 +124,7 @@ private object GetCustomDevice {
         val cutoutValue = cutout?.let { Cutout.entries.find { it.value == cutout } } ?: NONE
 
         return Device(
+            identifier = null,
             dimensions = dimensions,
             shape = roundShapeValue,
             densityDpi = dpiValue,
