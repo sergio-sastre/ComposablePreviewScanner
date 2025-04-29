@@ -11,9 +11,11 @@ data class Identifier(val id: String? = null, val name: String? = null) {
         val NEXUS_5X = Identifier(id = "Nexus 5X", name = "Nexus 5X")
         val NEXUS_6 = Identifier(id = "Nexus 6", name = "Nexus 6")
         val NEXUS_6P = Identifier(id = "Nexus 6P", name = "Nexus 6P")
-        val NEXUS_7 = Identifier(id = "Nexus 7", name = "Nexus 7")
-        val NEXUS_7_2012 = Identifier(id = null, name = "Nexus 7 (2012)")
-        val NEXUS_7_2013 = Identifier(id = "Nexus 7 2013", name = null)
+
+        // Nexus 7 has a weird matching for id and name...
+        val NEXUS_7_2012 = Identifier(id = "Nexus 7", name = "Nexus 7 (2012)")
+        val NEXUS_7_2013 = Identifier(id = "Nexus 7 2013", name = "Nexus 7")
+
         val NEXUS_9 = Identifier(id = "Nexus 9", name = "Nexus 9")
         val NEXUS_10 = Identifier(id = "Nexus 10", name = "Nexus 10")
         val PIXEL = Identifier(id = "pixel", name = "Pixel")
@@ -42,14 +44,18 @@ data class Identifier(val id: String? = null, val name: String? = null) {
         val PIXEL_9_PRO = Identifier(id = "pixel_9_pro", name = "Pixel 9 Pro")
         val PIXEL_9_PRO_XL = Identifier(id = "pixel_9_pro_xl", name = "Pixel 9 Pro XL")
         val PIXEL_9_PRO_FOLD = Identifier(id = "pixel_9_pro_fold", name = "Pixel 9 Pro Fold")
+        val PIXEL_TABLET = Identifier(id = "pixel_tablet", name = "Pixel Tablet")
         val PIXEL_C = Identifier(id = "pixel_c", name = "Pixel C")
         val PIXEL_FOLD = Identifier(id = "pixel_fold", name = "Pixel Fold")
 
         // Wear
         val WEAR_OS_SQUARE = Identifier(id = "wearos_square", name = "Wear OS Square")
-        val WEAR_OS_RECTANGULAR = Identifier(id = "wearos_rectangular", name = "Wear OS Rectangular")
-        val WEAR_OS_SMALL_ROUND = Identifier(id = "wearos_small_round", name = "Wear OS Small Round")
-        val WEAR_OS_LARGE_ROUND = Identifier(id = "wearos_large_round", name = "Wear OS Large Round")
+        val WEAR_OS_RECTANGULAR =
+            Identifier(id = "wearos_rectangular", name = "Wear OS Rectangular")
+        val WEAR_OS_SMALL_ROUND =
+            Identifier(id = "wearos_small_round", name = "Wear OS Small Round")
+        val WEAR_OS_LARGE_ROUND =
+            Identifier(id = "wearos_large_round", name = "Wear OS Large Round")
 
         // Desktop
         val SMALL_DESKTOP = Identifier(id = "desktop_small", name = "Small Desktop")
@@ -57,15 +63,30 @@ data class Identifier(val id: String? = null, val name: String? = null) {
         val LARGE_DESKTOP = Identifier(id = "desktop_large", name = "Large Desktop")
 
         // Automotive
-        val AUTOMOTIVE_ULTRAWIDE = Identifier(id ="automotive_ultrawide", name = "Automotive Ultrawide")
-        val AUTOMOTIVE_PORTRAIT = Identifier(id ="automotive_portrait", name = "Automotive Portrait")
-        val AUTOMOTIVE_LARGE_PORTRAIT = Identifier(id ="automotive_large_portrait", name = "Automotive Large Portrait")
-        val AUTOMOTIVE_DISTANT_DISPLAY = Identifier(id ="automotive_distant_display", name = "Automotive Distant Display")
-        val AUTOMOTIVE_DISTANT_DISPLAY_WITH_GOOGLE_PLAY = Identifier(id ="automotive_distant_display_with_play", name = "Automotive Distant Display with Google Play")
-        val AUTOMOTIVE_1024DP_LANDSCAPE = Identifier(id ="automotive_1024p_landscape", name = "Automotive (1024p landscape)")
-        val AUTOMOTIVE_1080DP_LANDSCAPE = Identifier(id ="automotive_1080p_landscape", name = "Automotive (1080p landscape)")
-        val AUTOMOTIVE_1408DP_LANDSCAPE = Identifier(id ="automotive_1408p_landscape_with_google_apis", name = "Automotive (1408p landscape)")
-        val AUTOMOTIVE_1408DP_LANDSCAPE_WITH_GOOGLE_PLAY = Identifier(id ="automotive_1408p_landscape_with_play", name = "Automotive (1408p landscape) with Google Play")
+        val AUTOMOTIVE_ULTRAWIDE =
+            Identifier(id = "automotive_ultrawide", name = "Automotive Ultrawide")
+        val AUTOMOTIVE_PORTRAIT =
+            Identifier(id = "automotive_portrait", name = "Automotive Portrait")
+        val AUTOMOTIVE_LARGE_PORTRAIT =
+            Identifier(id = "automotive_large_portrait", name = "Automotive Large Portrait")
+        val AUTOMOTIVE_DISTANT_DISPLAY =
+            Identifier(id = "automotive_distant_display", name = "Automotive Distant Display")
+        val AUTOMOTIVE_DISTANT_DISPLAY_WITH_GOOGLE_PLAY = Identifier(
+            id = "automotive_distant_display_with_play",
+            name = "Automotive Distant Display with Google Play"
+        )
+        val AUTOMOTIVE_1024DP_LANDSCAPE =
+            Identifier(id = "automotive_1024p_landscape", name = "Automotive (1024p landscape)")
+        val AUTOMOTIVE_1080DP_LANDSCAPE =
+            Identifier(id = "automotive_1080p_landscape", name = "Automotive (1080p landscape)")
+        val AUTOMOTIVE_1408DP_LANDSCAPE = Identifier(
+            id = "automotive_1408p_landscape_with_google_apis",
+            name = "Automotive (1408p landscape)"
+        )
+        val AUTOMOTIVE_1408DP_LANDSCAPE_WITH_GOOGLE_PLAY = Identifier(
+            id = "automotive_1408p_landscape_with_play",
+            name = "Automotive (1408p landscape) with Google Play"
+        )
 
         // Television
         val TV_720p = Identifier(id = "tv_720p", name = "Television (720p)")

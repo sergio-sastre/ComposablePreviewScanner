@@ -6,7 +6,7 @@ import kotlin.math.ceil
 import kotlin.math.floor
 
 data class Device(
-    val identifier: Identifier? = null,
+    val identifier: Identifier?,
     val dimensions: Dimensions,
     val densityDpi: Int,
     val orientation: Orientation,

@@ -9,6 +9,7 @@ import sergio.sastre.composable.preview.scanner.android.device.domain.Unit.PX
 
 val DEFAULT: Device
     get() = Device(
+        identifier = null,
         dimensions = Dimensions(
             width = 1080f,
             height = 2340f,

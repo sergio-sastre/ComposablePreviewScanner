@@ -3,10 +3,11 @@ package sergio.sastre.composable.preview.scanner.tests.api.main
 import app.cash.paparazzi.DeviceConfig
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.google.testing.junit.testparameterinjector.TestParameter
-import org.junit.runner.RunWith
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
+import org.junit.runner.RunWith
+import sergio.sastre.composable.preview.scanner.android.device.DevicePreviewInfoParser
 import sergio.sastre.composable.preview.scanner.android.device.domain.Cutout
 import sergio.sastre.composable.preview.scanner.android.device.domain.Dimensions
 import sergio.sastre.composable.preview.scanner.android.device.domain.Navigation
@@ -16,7 +17,6 @@ import sergio.sastre.composable.preview.scanner.android.device.domain.Orientatio
 import sergio.sastre.composable.preview.scanner.android.device.domain.Shape
 import sergio.sastre.composable.preview.scanner.android.device.domain.Shape.NOTROUND
 import sergio.sastre.composable.preview.scanner.android.device.domain.Shape.ROUND
-import sergio.sastre.composable.preview.scanner.android.device.DevicePreviewInfoParser
 import sergio.sastre.composable.preview.scanner.android.device.domain.Type
 import sergio.sastre.composable.preview.scanner.android.device.domain.Type.DESKTOP
 import sergio.sastre.composable.preview.scanner.android.device.domain.Type.FOLDABLE
@@ -44,6 +44,7 @@ class DevicePreviewInfoParserTest {
         DimensionsInPxExplicit("spec:height=100px,width=200px", Dimensions(100f, 200f, PX)),
         FloatDimensionsInDp("spec:height=100.5dp,width=200.1dp", Dimensions(100.5f, 200.1f, DP)),
     }
+
     @Test
     fun `GIVEN device height, extract its value`(
         @TestParameter customDimensions: CustomDimensions
@@ -69,6 +70,7 @@ class DevicePreviewInfoParserTest {
         NoDpi("spec:height=100dp,width=200dp", 420),
         WithDpi("spec:dpi=320$DIMENS", 320),
     }
+
     @Test
     fun `GIVEN dpi, extract its value`(
         @TestParameter customDpi: CustomDpi
@@ -92,6 +94,7 @@ class DevicePreviewInfoParserTest {
         ShapeNormal("spec:shape=Normal$DIMENS", NOTROUND),
         ShapeRound("spec:shape=Round$DIMENS", ROUND),
     }
+
     @Test
     fun `GIVEN shape, extract its value`(
         @TestParameter customShape: CustomShape
@@ -113,6 +116,7 @@ class DevicePreviewInfoParserTest {
         TypePhone("spec:id=reference_phone$DIMENS", PHONE),
         TypeTablet("spec:id=reference_tablet$DIMENS", TABLET),
     }
+
     @Test
     fun `GIVEN type, extract its value`(
         @TestParameter customType: CustomType
@@ -134,6 +138,7 @@ class DevicePreviewInfoParserTest {
         Portrait("spec:orientation=portrait$DIMENS", PORTRAIT),
         Landscape("spec:orientation=landscape$DIMENS", LANDSCAPE),
     }
+
     @Test
     fun `GIVEN orientation, extract its value`(
         @TestParameter customOrientation: CustomOrientation
@@ -157,6 +162,7 @@ class DevicePreviewInfoParserTest {
         PunchHole("spec:cutout=punch_hole$DIMENS", Cutout.PUNCH_HOLE),
         Tall("spec:cutout=tall$DIMENS", Cutout.TALL),
     }
+
     @Test
     fun `GIVEN cutout, extract its value`(
         @TestParameter customCutout: CustomCutouts
@@ -176,6 +182,7 @@ class DevicePreviewInfoParserTest {
         NoChinSizeDefaults0("spec:height=200dp,width=100dp", 0),
         ChinSize("spec:chinSize=8dp$DIMENS", 8),
     }
+
     @Test
     fun `GIVEN chinSize, extract its value`(
         @TestParameter customChinSize: CustomChinSize
@@ -196,6 +203,7 @@ class DevicePreviewInfoParserTest {
         NavigationGesture("spec:navigation=gesture$DIMENS", Navigation.GESTURE),
         NavigationButtons("spec:navigation=buttons$DIMENS", Navigation.BUTTONS),
     }
+
     @Test
     fun `GIVEN navigation, extract its value`(
         @TestParameter customNavigation: CustomNavigation
@@ -214,11 +222,28 @@ class DevicePreviewInfoParserTest {
         val expectedNavigation: Navigation
     ) {
         JustParent("spec:parent=Nexus One", PORTRAIT, Navigation.GESTURE),
-        ParentAndOrientationReversed("spec:orientation=landscape,parent=Nexus One", LANDSCAPE, Navigation.GESTURE),
-        ParentAndOrientation("spec:parent=Nexus One,orientation=landscape", LANDSCAPE, Navigation.GESTURE),
-        ParentAndNavigation("spec:parent=Nexus One,navigation=buttons", PORTRAIT, Navigation.BUTTONS),
-        ParentAndOrientationAndNavigation("spec:parent=Nexus One,orientation = landscape,navigation=buttons", LANDSCAPE, Navigation.BUTTONS),
+        ParentAndOrientationReversed(
+            "spec:orientation=landscape,parent=Nexus One",
+            LANDSCAPE,
+            Navigation.GESTURE
+        ),
+        ParentAndOrientation(
+            "spec:parent=Nexus One,orientation=landscape",
+            LANDSCAPE,
+            Navigation.GESTURE
+        ),
+        ParentAndNavigation(
+            "spec:parent=Nexus One,navigation=buttons",
+            PORTRAIT,
+            Navigation.BUTTONS
+        ),
+        ParentAndOrientationAndNavigation(
+            "spec:parent=Nexus One,orientation = landscape,navigation=buttons",
+            LANDSCAPE,
+            Navigation.BUTTONS
+        ),
     }
+
     @Test
     fun `GIVEN spec parent, has expected device with given orientation and navigation`(
         @TestParameter deviceParent: DeviceParent
@@ -236,8 +261,11 @@ class DevicePreviewInfoParserTest {
         val deviceId: String,
         val roborazziDeviceQualifier: String,
     ) {
+        // Android previews have a very weird matching for this device; id:Nexus 7 and name:Nexus 7 map to different devices
+        Nexus7Name("name:Nexus 7", RobolectricDeviceQualifiers.Nexus7),
+        Nexus7Id("id:Nexus 7 2013", RobolectricDeviceQualifiers.Nexus7),
+
         NexusOne("id:Nexus One", RobolectricDeviceQualifiers.NexusOne),
-        Nexus7("id:Nexus 7", RobolectricDeviceQualifiers.Nexus7),
         Nexus9("id:Nexus 9", RobolectricDeviceQualifiers.Nexus9),
         PixelC("id:pixel_c", RobolectricDeviceQualifiers.PixelC),
         PixelXL("id:pixel_xl", RobolectricDeviceQualifiers.PixelXL),
@@ -259,8 +287,12 @@ class DevicePreviewInfoParserTest {
         SmallDesktop("id:desktop_small", RobolectricDeviceQualifiers.SmallDesktop),
         MediumDesktop("id:desktop_medium", RobolectricDeviceQualifiers.MediumDesktop),
         LargeDesktop("id:desktop_large", RobolectricDeviceQualifiers.LargeDesktop),
-        Automotive1024pLandscape("id:automotive_1024p_landscape", RobolectricDeviceQualifiers.Automotive1024plandscape)
+        Automotive1024pLandscape(
+            "id:automotive_1024p_landscape",
+            RobolectricDeviceQualifiers.Automotive1024plandscape
+        )
     }
+
     @Test
     fun `GIVEN device id, WHEN converted to Dp, has expected Roborazzi height and width with error margin up to 1f`(
         @TestParameter deviceMapping: DeviceIdMapping
@@ -269,16 +301,22 @@ class DevicePreviewInfoParserTest {
         val expectedDeviceInDp = expectedDevice.inDp()
 
         assertEquals(
-            expectedDeviceInDp.dimensions.height, deviceMapping.roborazziDeviceQualifier.extractHeight(), 1f
+            expectedDeviceInDp.dimensions.height,
+            deviceMapping.roborazziDeviceQualifier.extractHeight(),
+            1f
         )
         assertEquals(
-            expectedDeviceInDp.dimensions.width, deviceMapping.roborazziDeviceQualifier.extractWidth(), 1f
+            expectedDeviceInDp.dimensions.width,
+            deviceMapping.roborazziDeviceQualifier.extractWidth(),
+            1f
         )
         assertEquals(
-            expectedDevice.screenRatio.name.lowercase(), deviceMapping.roborazziDeviceQualifier.extractScreenRatio()
+            expectedDevice.screenRatio.name.lowercase(),
+            deviceMapping.roborazziDeviceQualifier.extractScreenRatio()
         )
         assertEquals(
-            expectedDevice.screenSize.name.lowercase(), deviceMapping.roborazziDeviceQualifier.extractScreenSize()
+            expectedDevice.screenSize.name.lowercase(),
+            deviceMapping.roborazziDeviceQualifier.extractScreenSize()
         )
     }
 
@@ -305,6 +343,7 @@ class DevicePreviewInfoParserTest {
         WearOSSmallRound("id:wearos_small_round", DeviceConfig.WEAR_OS_SMALL_ROUND),
         WearOSSquare("id:wearos_square", DeviceConfig.WEAR_OS_SQUARE),
     }
+
     @Test
     fun `GIVEN device id, WHEN converted to Dp, has expected Paparazzi screen ratio`(
         @TestParameter deviceMapping: DeviceIdPaparazziMapping
@@ -312,11 +351,13 @@ class DevicePreviewInfoParserTest {
         val expectedDevice = DevicePreviewInfoParser.parse(deviceMapping.deviceId)!!
 
         assertEquals(
-            expectedDevice.screenRatio.name.lowercase(), deviceMapping.expectedDeviceConfig.ratio.name.lowercase()
+            expectedDevice.screenRatio.name.lowercase(),
+            deviceMapping.expectedDeviceConfig.ratio.name.lowercase()
         )
 
         assertEquals(
-            expectedDevice.screenSize.name.lowercase(), deviceMapping.expectedDeviceConfig.size.name.lowercase()
+            expectedDevice.screenSize.name.lowercase(),
+            deviceMapping.expectedDeviceConfig.size.name.lowercase()
         )
     }
 
@@ -370,13 +411,20 @@ class DevicePreviewInfoParserTest {
         WearOSLargeRound("name:Wear OS Large Round", RobolectricDeviceQualifiers.WearOSLargeRound),
         WearOSSmallRound("name:Wear OS Small Round", RobolectricDeviceQualifiers.WearOSSmallRound),
         WearOSSquare("name:Wear OS Square", RobolectricDeviceQualifiers.WearOSSquare),
-        WearOSRectangular("name:Wear OS Rectangular", RobolectricDeviceQualifiers.WearOSRectangular),
+        WearOSRectangular(
+            "name:Wear OS Rectangular",
+            RobolectricDeviceQualifiers.WearOSRectangular
+        ),
 
         SmallDesktop("name:Small Desktop", RobolectricDeviceQualifiers.SmallDesktop),
         MediumDesktop("name:Medium Desktop", RobolectricDeviceQualifiers.MediumDesktop),
         LargeDesktop("name:Large Desktop", RobolectricDeviceQualifiers.LargeDesktop),
-        Automotive1024pLandscape("name:Automotive (1024p landscape)", RobolectricDeviceQualifiers.Automotive1024plandscape)
+        Automotive1024pLandscape(
+            "name:Automotive (1024p landscape)",
+            RobolectricDeviceQualifiers.Automotive1024plandscape
+        )
     }
+
     @Test
     fun `GIVEN device name, WHEN converted to Dp, has expected Roborazzi height and width with error margin up to 1f`(
         @TestParameter deviceMapping: DeviceNameMapping
@@ -385,17 +433,22 @@ class DevicePreviewInfoParserTest {
             DevicePreviewInfoParser.parse(deviceMapping.deviceName)!!.inDp()
 
         assertEquals(
-            expectedDeviceInDp.dimensions.height, deviceMapping.roborazziDeviceQualifier.extractHeight(), 1f
+            expectedDeviceInDp.dimensions.height,
+            deviceMapping.roborazziDeviceQualifier.extractHeight(),
+            1f
         )
         assertEquals(
-            expectedDeviceInDp.dimensions.width, deviceMapping.roborazziDeviceQualifier.extractWidth(), 1f
+            expectedDeviceInDp.dimensions.width,
+            deviceMapping.roborazziDeviceQualifier.extractWidth(),
+            1f
         )
     }
 
-    enum class XR_DEVICE(val identifier:String) {
+    enum class XR_DEVICE(val identifier: String) {
         ID("id:xr_device"),
         NAME("name:XR Device")
     }
+
     @Test
     fun `GIVEN XR Device, has expected dimensions, density and orientation`(
         @TestParameter xrDevice: XR_DEVICE
