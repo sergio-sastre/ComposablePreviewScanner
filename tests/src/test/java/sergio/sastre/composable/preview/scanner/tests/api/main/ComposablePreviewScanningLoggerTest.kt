@@ -12,6 +12,7 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHea
 import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
+import sergio.sastre.composable.preview.scanner.glance.GlanceComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.jvm.common.CommonComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.utils.SystemOutputTestRule
 
@@ -46,11 +47,18 @@ class ComposablePreviewScanningLoggerTest<T>(
                         previewScanner = CommonComposablePreviewScanner(),
                         annotation = "org.jetbrains.compose.ui.tooling.preview.Preview"
                     )
+                },
+                {
+                    Scanner(
+                        previewScanner = GlanceComposablePreviewScanner(),
+                        annotation = "androidx.glance.preview.Preview"
+                    )
                 }
             )
         }
     }
 
+    // TODO -> what about glance and common??
     @Test
     fun `WHEN logging is not enabled THEN outputs nothing`() {
         // WHEN
