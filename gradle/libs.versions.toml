@@ -3,6 +3,7 @@ agp = "8.11.1"
 androidTestify = "2.7.0"
 classgraph = "4.8.181"
 coreKtx = "1.12.0"
+glancePreview = "1.1.1"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 androidJunitVersion = "1.5.2"
@@ -24,11 +25,13 @@ testParameterInjector = "1.18"
 utils = "2.7.0"
 testify = "3.2.2"
 espressoCore = "3.6.1"
+junitKtx = "1.2.1"
 
 [libraries]
 android-testify = { module = "com.github.sergio-sastre.AndroidUiTestingUtils:android-testify", version.ref = "androidTestify" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-glance-preview = { module = "androidx.glance:glance-preview", version.ref = "glancePreview" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "composeRuntime" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
@@ -47,6 +50,7 @@ paparazzi = { module = "app.cash.paparazzi:paparazzi", version.ref = "paparazzi"
 test-parameter-injector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
 android-ui-testing-utils = { module = "com.github.sergio-sastre.AndroidUiTestingUtils:utils", version.ref = "utils" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
