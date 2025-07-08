@@ -12,6 +12,8 @@ pluginManagement {
     }
 }
 
+includeBuild("paparazzi-plugin")
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -27,3 +29,4 @@ include(":core")
 include(":android")
 include(":jvm")
 include(":custompreviews")
+include(":paparazzi-plugin-tests")
