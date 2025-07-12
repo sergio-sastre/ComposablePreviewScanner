@@ -36,6 +36,7 @@ android {
     }
 }
 
+// Execute ./gradlew :paparazzi-plugin-tests:recordPaparazziDebug
 composablePreviewPaparazzi {
     enable = true
     packages = listOf("sergio.sastre.composable.preview.scanner.paparazzi.plugin")

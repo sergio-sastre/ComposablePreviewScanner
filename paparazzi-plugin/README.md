@@ -85,10 +85,10 @@ By running any of the following gradle tasks, the tests will be generated and th
 
 ```bash
 # Record screenshots
-./gradlew recordPaparazziDebug
+./gradlew your_module:recordPaparazziDebug
 
 # Verify screenshots
-./gradlew verifyPaparazziDebug
+./gradlew your_module:verifyPaparazziDebug
 ```
 
 ### Generate Tests
@@ -101,6 +101,20 @@ In case you only want to generate the tests without running them, execute the ge
 
 This will generate the corresponding test file in `src/test/` which will be automatically
 included in your test source set.
+
+## Verifying changes
+In case you want to adjust the plugin to your specific requirements, this project contains a module that
+allows to easily verify your changes.
+
+Feel free to clone this project and adjust the `GenerateComposablePreviewPaparazziTestTask` class.
+
+Then verify your changes by executing:
+
+```bash
+./gradlew paparazzi-plugin-tests:recordPaparazziDebug
+```
+
+Finally, take a look at the generated test class and screenshots to verify if the outputs are as expected.
 
 ## License
 
