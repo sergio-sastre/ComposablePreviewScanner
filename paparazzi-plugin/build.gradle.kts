@@ -12,12 +12,12 @@ repositories {
 gradlePlugin {
     plugins {
         create("composablePreviewPaparazziPlugin") {
-            id = "io.github.sergio-sastre.composable-preview-scanner.paparazzi"
+            id = "io.github.sergio-sastre.composable-preview-scanner.paparazzi-plugin"
             implementationClass =
                 "io.github.sergio.sastre.composable.preview.scanner.paparazzi.plugin.ComposablePreviewPaparazziPlugin"
             displayName = "Composable Preview Paparazzi Generator"
             description =
-                "A Gradle plugin that generates Paparazzi test files for Composable Previews"
+                "A Gradle plugin that generates and executes Paparazzi test files for screenshot testing Composable Previews"
         }
     }
 }

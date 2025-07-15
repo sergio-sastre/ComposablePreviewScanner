@@ -249,7 +249,7 @@ class SaveScanResultInFiles {
 You can find [executable examples here](https://github.com/sergio-sastre/Android-screenshot-testing-playground/tree/master/lazycolumnscreen-previews/paparazzi/src)
 
 > [!NOTE]
-> You can also find a paparazzi-plugin in this repo that generates all boilerplate code for you!
+> You can also find a paparazzi-plugin in this repo that generates all this boilerplate code for you!
 > Take a look at [its README.md](paparazzi-plugin/README.md)
 
 Let's say we want to enable some custom Paparazzi Config for some Previews, for instance a maxPercentDifferent value
@@ -271,8 +271,8 @@ fun MyComposable(){
 
 3. Include your annotation info in the Preview
 ```kotlin
-object ComposablePreviewProvider : TestParameter.TestParameterValuesProvider {
-    override fun provideValues(): List<ComposablePreview<AndroidPreviewInfo>> =
+object ComposablePreviewProvider : TestParameterValuesProvider() {
+    override fun provideValues(context: Context?): List<ComposablePreview<AndroidPreviewInfo>> =
         AndroidComposablePreviewScanner()
             .scanPackageTrees("my.package", "my.package2")
             .includeAnnotationInfoForAllOf(PaparazziConfig::class.java)
@@ -330,10 +330,7 @@ object DeviceConfigBuilder {
          size = ScreenSize.valueOf(parsedDevice.screenSize.name),
          ratio = ScreenRatio.valueOf(parsedDevice.screenRatio.name),
          screenRound = ScreenRound.valueOf(parsedDevice.shape.name),
-         orientation = when (parsedDevice.orientation) {
-            Orientation.PORTRAIT -> ScreenOrientation.PORTRAIT
-            Orientation.LANDSCAPE -> ScreenOrientation.LANDSCAPE
-         },
+         orientation = ScreenOrientation.valueOf(parsedDevice.orientation.name),
          locale = preview.locale.ifBlank { "en" },
          nightMode = when (preview.uiMode and UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES) {
             true -> NightMode.NIGHT

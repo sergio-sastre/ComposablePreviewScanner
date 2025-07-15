@@ -71,6 +71,7 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
             import com.android.resources.*
             import com.google.testing.junit.testparameterinjector.TestParameter
             import com.google.testing.junit.testparameterinjector.TestParameterInjector
+            import com.google.testing.junit.testparameterinjector.TestParameterValuesProvider
             import org.junit.Rule
             import org.junit.Test
             import org.junit.runner.RunWith
@@ -78,7 +79,6 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
             import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
             import sergio.sastre.composable.preview.scanner.android.device.DevicePreviewInfoParser
             import sergio.sastre.composable.preview.scanner.android.device.domain.Device
-            import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation
             import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
             import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
             import kotlin.math.ceil
@@ -134,10 +134,7 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                         size = ScreenSize.valueOf(parsedDevice.screenSize.name),
                         ratio = ScreenRatio.valueOf(parsedDevice.screenRatio.name),
                         screenRound = ScreenRound.valueOf(parsedDevice.shape.name),
-                        orientation = when (parsedDevice.orientation) {
-                            Orientation.PORTRAIT -> ScreenOrientation.PORTRAIT
-                            Orientation.LANDSCAPE -> ScreenOrientation.LANDSCAPE
-                        },
+                        orientation = ScreenOrientation.valueOf(parsedDevice.orientation.name),
                         locale = preview.locale.ifBlank { "en" },
                         nightMode = when (preview.uiMode and UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES) {
                             true -> NightMode.NIGHT
@@ -255,8 +252,8 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                 }
             }
             
-            class ComposablePreviewProvider : TestParameter.TestParameterValuesProvider {
-                override fun provideValues(): List<ComposablePreview<AndroidPreviewInfo>> {
+            class ComposablePreviewProvider : TestParameterValuesProvider() {
+                override fun provideValues(context: Context?): List<ComposablePreview<AndroidPreviewInfo>> {
                     return AndroidComposablePreviewScanner()
                         .scanPackageTrees($packagesExpr)
                         ${if (includePrivatePreviewsExpr) ".includePrivatePreviews()" else ""}

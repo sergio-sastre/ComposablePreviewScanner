@@ -44,7 +44,7 @@ into your project `settings.gradle.kts` file
 ```kotlin
 plugins {
     id("app.cash.paparazzi")
-    id("io.github.sergio-sastre.composable-preview-scanner.paparazzi") version "1.0.0"
+    id("io.github.sergio-sastre.composable-preview-scanner.paparazzi-plugin") version "1.0.0"
 }
 ```
 
@@ -67,6 +67,7 @@ These are necessary, because the generated test file requires imports from them:
 dependencies {
   testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:android:0.6.1")
   testImplementation("com.google.testparameterinjector:test-parameter-injector:1.16")
+  testImplementation("junit:junit:4.13.2")
 }
 ```
 
@@ -81,7 +82,7 @@ dependencies {
 | `testPackageName` | `String` | `"generated.paparazzi.tests"` | Package name for generated tests |
 
 ### Run the Generated Tests
-By running any of the following gradle tasks, the tests will be generated and then executed:
+By running any of the following gradle tasks, the tests will be generated AND then executed (both):
 
 ```bash
 # Record screenshots
@@ -96,10 +97,10 @@ By running any of the following gradle tasks, the tests will be generated and th
 In case you only want to generate the tests without running them, execute the generation task:
 
 ```bash
-./gradlew generateComposablePreviewPaparazziTests
+./gradlew your_module:generateComposablePreviewPaparazziTests
 ```
 
-This will generate the corresponding test file in `src/test/` which will be automatically
+This will ONLY generate the corresponding test file in `src/test/kotlin` which will be automatically
 included in your test source set.
 
 ## Verifying changes

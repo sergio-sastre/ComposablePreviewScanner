@@ -4,7 +4,7 @@ plugins {
 
     // These 2 are needed for screenshot testing
     alias(libs.plugins.paparazzi)
-    id("io.github.sergio-sastre.composable-preview-scanner.paparazzi")
+    id("io.github.sergio-sastre.composable-preview-scanner.paparazzi-plugin")
 }
 
 android {

@@ -22,7 +22,7 @@ fun setupGenerateComposablePreviewPaparazziTestsTask(
         GenerateComposablePreviewPaparazziTestsTask::class.java
     ) { task ->
         task.group = "verification"
-        task.description = "Generates Paparazzi test files for Composable Previews"
+        task.description = "Generates Paparazzi test files for screenshot testing Composable Previews"
 
         // Generate in src/test/kotlin instead of build directory
         task.outputDir.set(project.projectDir.resolve("src/test/kotlin"))
