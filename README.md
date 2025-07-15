@@ -248,6 +248,10 @@ class SaveScanResultInFiles {
 ### Paparazzi
 You can find [executable examples here](https://github.com/sergio-sastre/Android-screenshot-testing-playground/tree/master/lazycolumnscreen-previews/paparazzi/src)
 
+> [!NOTE]
+> You can also find a paparazzi-plugin in this repo that generates all this boilerplate code for you!
+> Take a look at [its README.md](paparazzi-plugin/README.md)
+
 Let's say we want to enable some custom Paparazzi Config for some Previews, for instance a maxPercentDifferent value
 
 1. Define your own annotation for the Lib config.
@@ -267,8 +271,8 @@ fun MyComposable(){
 
 3. Include your annotation info in the Preview
 ```kotlin
-object ComposablePreviewProvider : TestParameter.TestParameterValuesProvider {
-    override fun provideValues(): List<ComposablePreview<AndroidPreviewInfo>> =
+object ComposablePreviewProvider : TestParameterValuesProvider() {
+    override fun provideValues(context: Context?): List<ComposablePreview<AndroidPreviewInfo>> =
         AndroidComposablePreviewScanner()
             .scanPackageTrees("my.package", "my.package2")
             .includeAnnotationInfoForAllOf(PaparazziConfig::class.java)
@@ -279,43 +283,61 @@ object ComposablePreviewProvider : TestParameter.TestParameterValuesProvider {
 
 4. Map the PreviewInfo and PaparazziConfig values. For instance, you can use a custom class for that.
 ```kotlin
+class Dimensions(
+   val screenWidthInPx: Int,
+   val screenHeightInPx: Int
+)
 
-// The DevicePreviewInfoParser used in this method is available since ComposablePreviewScanner 0.4.0
+object ScreenDimensions {
+   fun dimensions(
+      parsedDevice: Device,
+      widthDp: Int,
+      heightDp: Int
+   ): Dimensions {
+      val conversionFactor = parsedDevice.densityDpi / 160f
+      val previewWidthInPx = ceil(widthDp * conversionFactor).toInt()
+      val previewHeightInPx = ceil(heightDp * conversionFactor).toInt()
+      return Dimensions(
+         screenHeightInPx = when (heightDp > 0) {
+            true -> previewHeightInPx
+            false -> parsedDevice.dimensions.height.toInt()
+         },
+         screenWidthInPx = when (widthDp > 0) {
+            true -> previewWidthInPx
+            false -> parsedDevice.dimensions.width.toInt()
+         }
+      )
+   }
+}
+
 object DeviceConfigBuilder {
-    fun build(preview: AndroidPreviewInfo): DeviceConfig {
-        val parsedDevice =
-            DevicePreviewInfoParser.parse(preview.device)?.inPx() ?: return DeviceConfig()
-        val conversionFactor = parsedDevice.densityDpi / 160f
-        val previewWidthInPx = ceil(preview.widthDp * conversionFactor).toInt()
-        val previewHeightInPx = ceil(preview.heightDp * conversionFactor).toInt()
+   fun build(preview: AndroidPreviewInfo): DeviceConfig {
+      val parsedDevice =
+         DevicePreviewInfoParser.parse(preview.device)?.inPx() ?: return DeviceConfig()
 
-        return DeviceConfig(
-            screenHeight = when (preview.heightDp > 0) {
-                true -> previewHeightInPx
-                false -> parsedDevice.dimensions.height.toInt()
-            },
-            screenWidth = when (preview.widthDp > 0) {
-                true -> previewWidthInPx
-                false -> parsedDevice.dimensions.width.toInt()
-            },
-            density = Density(parsedDevice.densityDpi),
-            xdpi = parsedDevice.densityDpi, // not 100% precise
-            ydpi = parsedDevice.densityDpi, // not 100% precise
-            size = ScreenSize.valueOf(parsedDevice.screenSize.name),
-            ratio = ScreenRatio.valueOf(parsedDevice.screenRatio.name),
-            screenRound = ScreenRound.valueOf(parsedDevice.shape.name),
-            orientation = when (parsedDevice.orientation) {
-                Orientation.PORTRAIT -> ScreenOrientation.PORTRAIT
-                Orientation.LANDSCAPE -> ScreenOrientation.LANDSCAPE
-            },
-            locale = preview.locale.ifBlank { "en" },
-            nightMode =
-            when (preview.uiMode and UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES) {
-                true -> NightMode.NIGHT
-                false -> NightMode.NOTNIGHT
-            },
-        )
-    }
+      val dimensions = ScreenDimensions.dimensions(
+         parsedDevice = parsedDevice,
+         widthDp = preview.widthDp,
+         heightDp = preview.heightDp
+      )
+
+      return DeviceConfig(
+         screenHeight = dimensions.screenHeightInPx,
+         screenWidth = dimensions.screenWidthInPx,
+         density = Density(parsedDevice.densityDpi),
+         xdpi = parsedDevice.densityDpi, // not 100% precise
+         ydpi = parsedDevice.densityDpi, // not 100% precise
+         size = ScreenSize.valueOf(parsedDevice.screenSize.name),
+         ratio = ScreenRatio.valueOf(parsedDevice.screenRatio.name),
+         screenRound = ScreenRound.valueOf(parsedDevice.shape.name),
+         orientation = ScreenOrientation.valueOf(parsedDevice.orientation.name),
+         locale = preview.locale.ifBlank { "en" },
+         nightMode = when (preview.uiMode and UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES) {
+            true -> NightMode.NIGHT
+            false -> NightMode.NOTNIGHT
+         }
+      )
+   }
 }
 
 object PaparazziPreviewRule {
@@ -326,6 +348,7 @@ object PaparazziPreviewRule {
             supportsRtl = true,
             showSystemUi = previewInfo.showSystemUi,
             renderingMode = when {
+                previewInfo.showSystemUi -> SessionParams.RenderingMode.NORMAL
                 previewInfo.widthDp > 0 && previewInfo.heightDp > 0 -> SessionParams.RenderingMode.FULL_EXPAND
                 previewInfo.heightDp > 0 -> SessionParams.RenderingMode.V_SCROLL
                 else -> SessionParams.RenderingMode.SHRINK
@@ -334,6 +357,31 @@ object PaparazziPreviewRule {
             maxPercentDifference = preview.getAnnotation<PaparazziConfig>()?.maxPercentDifference ?: 0F
         )
     }
+}
+
+/**
+ * A composable function that wraps content inside a Box with a specified size
+ * This is used to simulate what previews render when showSystemUi is true:
+ * - The Preview takes up the entire screen
+ * - The Composable still keeps its original size,
+ * - Background color of the Device is white,
+ *   but the @Composable background color is the one defined in the Preview
+ */
+@Composable
+fun SystemUiSize(
+   widthInDp: Int,
+   heightInDp: Int,
+   content: @Composable () -> Unit
+) {
+   Box(Modifier
+      .size(
+         width = widthInDp.dp,
+         height = heightInDp.dp
+      )
+      .background(Color.White)
+   ) {
+      content()
+   }
 }
 
 // Additional to support @Preview's 'showBackground' and 'backgroundColor' properties
@@ -373,15 +421,38 @@ class PreviewTestParameterTests(
     @Test
     fun snapshot() {
         // Recommended for more meaningful screenshot file names. See #Advanced Usage
-        val screenshotId = AndroidPreviewScreenshotIdBuilder(preview).ignoreClassName().build()
-        paparazzi.snapshot(name = screenshotId) {
-            PreviewBackground(
-               showBackground = preview.previewInfo.showBackground,
-               backgroundColor = preview.previewInfo.backgroundColor,
-            ) {
-               preview()
-            }
-        }
+        val screenshotId = AndroidPreviewScreenshotIdBuilder(preview)
+            .ignoreClassName()
+            .ignoreMethodName()
+            .build()
+       
+       paparazzi.snapshot(name = screenshotId) {
+          when (preview.previewInfo.showSystemUi) {
+             false -> PreviewBackground(
+                showBackground = preview.previewInfo.showBackground,
+                backgroundColor = preview.previewInfo.backgroundColor,
+             ) {
+                preview()
+             }
+
+             true -> {
+                val parsedDevice = 
+                    DevicePreviewInfoParser.parse(preview.previewInfo.device)!!.inDp()
+                
+                SystemUiSize(
+                   widthInDp = parsedDevice.dimensions.width.toInt(),
+                   heightInDp = parsedDevice.dimensions.height.toInt()
+                ) {
+                   PreviewBackground(
+                      showBackground = true,
+                      backgroundColor = preview.previewInfo.backgroundColor,
+                   ) {
+                      preview()
+                   }
+                }
+             }
+          }
+       }
     }
 }
 ```
