@@ -11,7 +11,7 @@ This approach is similar in spirit to what Roborazzi provides, but tailored spec
 That said, please note that this plugin is intended primarily as a showcase.
 It is not designed to support use cases specific to individual projects.
 
-The author does not plan to provide support or accept feature request for project-specific adaptations.
+The author does not plan to provide support or accept feature requests for project-specific adaptations.
 However, customizing the plugin to fit your needs should be straightforward: simply modify the implementation of the `GenerateComposablePreviewPaparazziTestTask` class to suit your requirements.
 
 ## Features
@@ -44,7 +44,7 @@ into your project `settings.gradle.kts` file
 ```kotlin
 plugins {
     id("app.cash.paparazzi")
-    id("io.github.sergio-sastre.composable-preview-scanner.paparazzi-plugin") version "1.0.0"
+    id("io.github.sergio-sastre.composable-preview-scanner.paparazzi-plugin")
 }
 ```
 
@@ -105,7 +105,7 @@ included in your test source set.
 
 ## Verifying changes
 In case you want to adjust the plugin to your specific requirements, this project contains a module that
-allows to easily verify your changes.
+allows you to easily verify your changes.
 
 Feel free to clone this project and adjust the `GenerateComposablePreviewPaparazziTestTask` class.
 
