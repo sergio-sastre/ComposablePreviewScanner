@@ -33,13 +33,14 @@ However, customizing the plugin to fit your needs should be straightforward: sim
 
 ## Usage
 
-Copy-paste this gradle plugin folder into your project, and add
+Copy-paste this gradle plugin folder into your project, and add the following into your project `settings.gradle.kts` file
 ```gradle
 includeBuild("paparazzi-plugin")
 ```
-into your project `settings.gradle.kts` file
 
 ### Apply the Plugin
+
+Add this to the gradle file of the module you want to apply this plugin
 
 ```kotlin
 plugins {
@@ -107,7 +108,7 @@ included in your test source set.
 In case you want to adjust the plugin to your specific requirements, this project contains a module that
 allows you to easily verify your changes.
 
-Feel free to clone this project and adjust the `GenerateComposablePreviewPaparazziTestTask` class.
+Clone this project and adjust the `GenerateComposablePreviewPaparazziTestTask` class.
 
 Then verify your changes by executing:
 
