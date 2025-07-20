@@ -41,7 +41,7 @@ Help shape its future by taking [this quick survey](https://forms.gle/jcvggBxv14
 </br></br></br>
 ComposablePreviewScanner also works with:
 - `@PreviewParameters` (for Compose Multiplatform since 0.6.0+)
-- Multi-Previews, including  `@PreviewScreenSizes`, `@PreviewFontScales`, `@PreviewLightDark`, and `@PreviewDynamicColors`.
+- Multi-Previews, including  `@PreviewScreenSizes`, `@PreviewFontScales`, `@PreviewLightDark`, and `@PreviewDynamicColors` as well as custom multi-previews.
 - private `@Previews` (from version 0.1.3+)
 - `@Previews` inside public classes<sup>1</sup> (from version 0.3.0+), not nested classes though
 - `@Previews` located in any source set, like "main", "screenshotTest" and "androidTest" (from version 0.5.0+)
