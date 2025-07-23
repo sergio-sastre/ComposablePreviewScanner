@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.9.24"
+    kotlin("jvm") version "2.0.0"
     id("maven-publish")
 }
 
@@ -10,8 +10,8 @@ java {
 
 dependencies {
     api(project(":core"))
-    implementation (libs.classgraph)
-    implementation(libs.kotlin.reflect)
+    implementation("io.github.classgraph:classgraph:4.8.179")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.0")
 }
 
 //https://www.talentica.com/blogs/publish-your-android-library-on-jitpack-for-better-reachability/
