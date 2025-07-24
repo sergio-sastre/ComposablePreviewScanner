@@ -24,12 +24,13 @@ class CommonComposablePreviewInvokeTests(
 
     companion object {
         @OptIn(RequiresShowStandardStreams::class)
-        private val cachedBuildTimePreviews: List<ComposablePreview<CommonPreviewInfo>> =
+        private val cachedBuildTimePreviews: List<ComposablePreview<CommonPreviewInfo>> by lazy {
             CommonComposablePreviewScanner()
                 .enableScanningLogs()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .includePrivatePreviews()
                 .getPreviews()
+        }
 
         @JvmStatic
         @ParameterizedRobolectricTestRunner.Parameters
