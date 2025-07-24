@@ -1,15 +1,15 @@
-package sergio.sastre.composable.preview.scanner.tests.api.main
+package sergio.sastre.composable.preview.scanner.tests.api.main.scanninglogger
 
-import org.junit.Test
-import org.junit.Assert.*
+import org.junit.Assert
 import org.junit.Assume
 import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
+import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.core.scanner.ComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
-import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
 import sergio.sastre.composable.preview.scanner.jvm.common.CommonComposablePreviewScanner
@@ -65,7 +65,7 @@ class ComposablePreviewScanningLoggerTest<T>(
         // THEN
         val output = systemOutputTestRule.systemOutput
 
-        assertTrue(
+        Assert.assertTrue(
             "Output does not contain logs",
             output.isEmpty()
         )
@@ -87,37 +87,37 @@ class ComposablePreviewScanningLoggerTest<T>(
         val output = systemOutputTestRule.systemOutput
 
         // DOES NOT CONTAIN
-        assertFalse(
+        Assert.assertFalse(
             "Output does not contain source set",
             output.contains("Source set (compiled classes path)")
         )
 
         // DOES CONTAIN
-        assertTrue(
+        Assert.assertTrue(
             "Output contains the header",
             output.contains("Composable Preview Scanner")
         )
-        assertTrue(
+        Assert.assertTrue(
             "Output contains annotation name",
             output.contains("@Preview annotation: ${scanner.annotation}")
         )
-        assertTrue(
+        Assert.assertTrue(
             "Output contains amount of @Previews found",
             "Amount of @Previews found: $regexAnyNumberBut0".toRegex().containsMatchIn(output)
         )
-        assertTrue(
+        Assert.assertTrue(
             "Output contains package trees",
             output.contains("Package trees: sergio.sastre.composable.preview.scanner.included, sergio.sastre.composable.preview.scanner.jvmcommon")
         )
-        assertTrue(
+        Assert.assertTrue(
             "Output contains time to scan files in ms",
             "Time to scan target files: $regexAnyNumberBut0 ms".toRegex().containsMatchIn(output)
         )
-        assertTrue(
+        Assert.assertTrue(
             "Output contains time to find @Previews in ms",
             "Time to find @Previews: \\d+ ms".toRegex().containsMatchIn(output)
         )
-        assertTrue(
+        Assert.assertTrue(
             "Output contains total time in ms",
             "Total time: $regexAnyNumberBut0 ms".toRegex().containsMatchIn(output)
         )
@@ -139,41 +139,41 @@ class ComposablePreviewScanningLoggerTest<T>(
         val output = systemOutputTestRule.systemOutput
 
         // DOES NOT CONTAIN
-        assertFalse(
+        Assert.assertFalse(
             "Output does not contain source set",
             output.contains("Source set (compiled classes path)")
         )
 
         // DOES CONTAIN
-        assertTrue(
+        Assert.assertTrue(
             "Output contains the header",
             output.contains("Composable Preview Scanner")
         )
-        assertTrue(
+        Assert.assertTrue(
             "Output contains annotation name",
             output.contains("@Preview annotation: ${scanner.annotation}")
         )
-        assertTrue(
+        Assert.assertTrue(
             "Output contains amount of @Previews found",
             "Amount of @Previews found: $regexAnyNumberBut0".toRegex().containsMatchIn(output)
         )
-        assertTrue(
+        Assert.assertTrue(
             "Output contains included package trees",
             output.contains("Included package trees: sergio.sastre.composable.preview.scanner")
         )
-        assertTrue(
+        Assert.assertTrue(
             "Output contains excluded package trees",
             output.contains("Excluded package trees: sergio.sastre.composable.preview.scanner.duplicates")
         )
-        assertTrue(
+        Assert.assertTrue(
             "Output contains time to scan files in ms",
             "Time to scan target files: $regexAnyNumberBut0 ms".toRegex().containsMatchIn(output)
         )
-        assertTrue(
+        Assert.assertTrue(
             "Output contains time to find @Previews in ms",
             "Time to find @Previews: \\d+ ms".toRegex().containsMatchIn(output)
         )
-        assertTrue(
+        Assert.assertTrue(
             "Output contains total time in ms",
             "Total time: $regexAnyNumberBut0 ms".toRegex().containsMatchIn(output)
         )
@@ -191,37 +191,37 @@ class ComposablePreviewScanningLoggerTest<T>(
         val output = systemOutputTestRule.systemOutput
 
         // DOES NOT CONTAIN
-        assertFalse(
+        Assert.assertFalse(
             "Output does not contain source set",
             output.contains("Source set (compiled classes path)")
         )
 
         // DOES CONTAIN
-        assertTrue(
+        Assert.assertTrue(
             "Output contains the header",
             output.contains("Composable Preview Scanner")
         )
-        assertTrue(
+        Assert.assertTrue(
             "Output contains annotation name",
             output.contains("@Preview annotation: ${scanner.annotation}")
         )
-        assertTrue(
+        Assert.assertTrue(
             "Output contains amount of @Previews found",
             "Amount of @Previews found: $regexAnyNumberBut0".toRegex().containsMatchIn(output)
         )
-        assertTrue(
+        Assert.assertTrue(
             "Output contains all packages",
             output.contains("Scans all packages")
         )
-        assertTrue(
+        Assert.assertTrue(
             "Output contains time to scan files in ms",
             "Time to scan target files: $regexAnyNumberBut0 ms".toRegex().containsMatchIn(output)
         )
-        assertTrue(
+        Assert.assertTrue(
             "Output contains time to find @Previews in ms",
             "Time to find @Previews: \\d+ ms".toRegex().containsMatchIn(output)
         )
-        assertTrue(
+        Assert.assertTrue(
             "Output contains total time in ms",
             "Total time: $regexAnyNumberBut0 ms".toRegex().containsMatchIn(output)
         )
@@ -252,38 +252,38 @@ class ComposablePreviewScanningLoggerTest<T>(
             val output = systemOutputTestRule.systemOutput
 
             // DOES NOT CONTAIN
-            assertFalse(
+            Assert.assertFalse(
                 "Output does not contain source set",
                 output.contains("Source set (compiled classes path)")
             )
 
             // DOES CONTAIN
-            assertTrue(
+            Assert.assertTrue(
                 "Output contains the header",
                 output.contains("Composable Preview Scanner")
             )
-            assertTrue(
+            Assert.assertTrue(
                 "Output contains annotation name",
                 output.contains("@Preview annotation: ${scanner.annotation}")
             )
-            assertTrue(
+            Assert.assertTrue(
                 "Output contains amount of @Previews found",
                 "Amount of @Previews found: $regexAnyNumberBut0".toRegex().containsMatchIn(output)
             )
-            assertTrue(
+            Assert.assertTrue(
                 "Output contains from file",
                 output.contains("Scans from file: scan_result.json")
             )
-            assertTrue(
+            Assert.assertTrue(
                 "Output contains time to scan files in ms",
                 "Time to scan target files: $regexAnyNumberBut0 ms".toRegex()
                     .containsMatchIn(output)
             )
-            assertTrue(
+            Assert.assertTrue(
                 "Output contains time to find @Previews in ms",
                 "Time to find @Previews: \\d+ ms".toRegex().containsMatchIn(output)
             )
-            assertTrue(
+            Assert.assertTrue(
                 "Output contains total time in ms",
                 "Total time: $regexAnyNumberBut0 ms".toRegex().containsMatchIn(output)
             )

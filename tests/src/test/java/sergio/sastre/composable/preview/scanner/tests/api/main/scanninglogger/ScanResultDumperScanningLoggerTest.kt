@@ -1,12 +1,11 @@
-package sergio.sastre.composable.preview.scanner.tests.api.main
+package sergio.sastre.composable.preview.scanner.tests.api.main.scanninglogger
 
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert
 import org.junit.Assume
 import org.junit.Rule
 import org.junit.Test
-import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
+import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper
 import sergio.sastre.composable.preview.scanner.core.utils.assetsFilePath
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
@@ -36,7 +35,7 @@ class ScanResultDumperScanningLoggerTest {
             // THEN
             val output = systemOutputTestRule.systemOutput
 
-            assertTrue(
+            Assert.assertTrue(
                 "Output does not contain logs",
                 output.isEmpty()
             )
@@ -65,25 +64,25 @@ class ScanResultDumperScanningLoggerTest {
             val output = systemOutputTestRule.systemOutput
 
             // DOES NOT CONTAIN
-            assertFalse(
+            Assert.assertFalse(
                 "Output does not contain source set",
                 output.contains("Source set (compiled classes path)")
             )
 
             // DOES CONTAIN
-            assertTrue(
+            Assert.assertTrue(
                 "Output contains the header",
                 output.contains("Scan Result Dumper")
             )
-            assertTrue(
+            Assert.assertTrue(
                 "Output contains package trees",
                 output.contains("Package trees: sergio.sastre.composable.preview.scanner.included, sergio.sastre.composable.preview.scanner.multiplepreviews")
             )
-            assertTrue(
+            Assert.assertTrue(
                 "Output contains name of file to dump scan result",
                 output.contains("File to dump Scan Result: ${scanResultFile.absolutePath}")
             )
-            assertTrue(
+            Assert.assertTrue(
                 "Output contains time to scan files in ms",
                 "Time to dump scan result: $regexAnyNumberBut0 ms".toRegex().containsMatchIn(output)
             )
@@ -110,25 +109,25 @@ class ScanResultDumperScanningLoggerTest {
             val output = systemOutputTestRule.systemOutput
 
             // DOES NOT CONTAIN
-            assertFalse(
+            Assert.assertFalse(
                 "Output does not contain source set",
                 output.contains("Source set (compiled classes path)")
             )
 
             // DOES CONTAIN
-            assertTrue(
+            Assert.assertTrue(
                 "Output contains the header",
                 output.contains("Scan Result Dumper")
             )
-            assertTrue(
+            Assert.assertTrue(
                 "Output contains all packages",
                 output.contains("Scans all packages")
             )
-            assertTrue(
+            Assert.assertTrue(
                 "Output contains name of file to dump scan result",
                 output.contains("File to dump Scan Result: ${scanResultFile.absolutePath}")
             )
-            assertTrue(
+            Assert.assertTrue(
                 "Output contains time to scan files in ms",
                 "Time to dump scan result: $regexAnyNumberBut0 ms".toRegex().containsMatchIn(output)
             )
@@ -166,25 +165,25 @@ class ScanResultDumperScanningLoggerTest {
             val output = systemOutputTestRule.systemOutput
 
             // DOES NOT CONTAIN
-            assertFalse(
+            Assert.assertFalse(
                 "Output does not contain source set",
                 output.contains("Source set (compiled classes path)")
             )
 
             // DOES CONTAIN
-            assertTrue(
+            Assert.assertTrue(
                 "Output contains the header",
                 output.contains("Scan Result Dumper")
             )
-            assertTrue(
+            Assert.assertTrue(
                 "Output contains name of file to dump scan result",
                 output.contains("File to dump Scan Result: ${scanResultFile.absolutePath}")
             )
-            assertTrue(
+            Assert.assertTrue(
                 "Output contains name of file to dump custom previews",
                 output.contains("File to dump Custom Previews: ${customPreviewsFile.absolutePath}")
             )
-            assertTrue(
+            Assert.assertTrue(
                 "Output contains time to scan files in ms",
                 "Time to dump scan result: $regexAnyNumberBut0 ms".toRegex().containsMatchIn(output)
             )

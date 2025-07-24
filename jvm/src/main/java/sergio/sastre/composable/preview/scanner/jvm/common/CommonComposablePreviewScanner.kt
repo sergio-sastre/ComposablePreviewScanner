@@ -39,7 +39,19 @@ class CommonComposablePreviewScanner : ComposablePreviewScanner<CommonPreviewInf
             ComposablePreviewInfoMapper<CommonPreviewInfo> {
             override fun mapToComposablePreviewInfo(
                 parameters: AnnotationParameterValueList
-            ): CommonPreviewInfo = CommonPreviewInfo
+            ): CommonPreviewInfo = CommonPreviewInfo(
+                name = parameters.valueForKey("name") ?: "",
+                group = parameters.valueForKey("group") ?: "",
+                widthDp = parameters.valueForKey("widthDp") ?: -1,
+                heightDp = parameters.valueForKey("heightDp") ?: -1,
+                locale = parameters.valueForKey("locale") ?: "",
+                showBackground = parameters.valueForKey("showBackground") ?: false,
+                backgroundColor = parameters.valueForKey("backgroundColor") ?: 0L,
+            )
+
+            @Suppress("UNCHECKED_CAST")
+            private fun <T> AnnotationParameterValueList.valueForKey(key: String): T? =
+                this[key]?.value as T?
         }
 
         private class CommonPreviewMapperCreator :
@@ -65,11 +77,12 @@ class CommonComposablePreviewScanner : ComposablePreviewScanner<CommonPreviewInf
             private val provideComposablePreview = ProvideComposablePreview<T>()
 
             private fun Method.findPreviewParameterAnnotation(): Any? {
-                val previewParameterClass = try {
-                    Class.forName("org.jetbrains.compose.ui.tooling.preview.PreviewParameter")
-                } catch (e: ClassNotFoundException) {
-                    return null
-                }
+                val previewParameterClass =
+                    try {
+                        Class.forName("org.jetbrains.compose.ui.tooling.preview.PreviewParameter")
+                    } catch (e: ClassNotFoundException) {
+                        return null
+                    }
 
                 return this.parameterAnnotations
                     .flatMap { it.toList() }
@@ -81,8 +94,11 @@ class CommonComposablePreviewScanner : ComposablePreviewScanner<CommonPreviewInf
              */
             private fun createProviderInstance(providerClass: Class<*>): Any? {
                 val providerKClass = providerClass.kotlin
-                val noArgsConstructor = providerKClass.constructors.find { it.parameters.all(
-                    KParameter::isOptional) }
+                val noArgsConstructor = providerKClass.constructors.find {
+                    it.parameters.all(
+                        KParameter::isOptional
+                    )
+                }
                 noArgsConstructor?.isAccessible = true
                 return noArgsConstructor?.call()
             }
@@ -99,8 +115,9 @@ class CommonComposablePreviewScanner : ComposablePreviewScanner<CommonPreviewInf
                 val previewParameterAnnotation = previewMethod.findPreviewParameterAnnotation()
                     ?: return sequenceOf(provideComposablePreview(this))
 
-                val providerClass = getPropertyValue(previewParameterAnnotation, "provider") as? Class<*>
-                    ?: return sequenceOf(provideComposablePreview(this))
+                val providerClass =
+                    getPropertyValue(previewParameterAnnotation, "provider") as? Class<*>
+                        ?: return sequenceOf(provideComposablePreview(this))
 
                 val providerInstance = createProviderInstance(providerClass)
                     ?: return sequenceOf(provideComposablePreview(this))
@@ -108,7 +125,7 @@ class CommonComposablePreviewScanner : ComposablePreviewScanner<CommonPreviewInf
                 val values = getPropertyValue(providerInstance, "values") as? Sequence<Any>
                     ?: return sequenceOf(provideComposablePreview(this))
 
-                val limit = getPropertyValue(previewParameterAnnotation, "limit") as? Int 
+                val limit = getPropertyValue(previewParameterAnnotation, "limit") as? Int
                     ?: Int.MAX_VALUE
 
                 return values

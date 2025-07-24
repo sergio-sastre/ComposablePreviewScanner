@@ -1,8 +1,7 @@
-package sergio.sastre.composable.preview.scanner.tests.api.main
+package sergio.sastre.composable.preview.scanner.tests.api.main.screenshotid
 
-import org.junit.Assume.assumeTrue
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Assert
+import org.junit.Assume
 import org.junit.Test
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.jvm.common.CommonComposablePreviewScanner
@@ -54,8 +53,8 @@ class ComposablePreviewToStringTest {
             preview.toString().substringAfterLast('_').all { it.isDigit() }
         }
 
-        assertTrue(startWithClassAndMethodPattern)
-        assertTrue(endWithDigits)
+        Assert.assertTrue(startWithClassAndMethodPattern)
+        Assert.assertTrue(endWithDigits)
     }
 
     @Test
@@ -67,7 +66,7 @@ class ComposablePreviewToStringTest {
                 )
                 .getPreviews()
 
-        assumeTrue(commonPreviews.size > 1)
+        Assume.assumeTrue(commonPreviews.size > 1)
 
         val startWithClassAndMethodPattern = commonPreviews.all { preview ->
             val previewString = preview.toString()
@@ -79,8 +78,8 @@ class ComposablePreviewToStringTest {
             preview.toString().substringAfterLast('_').all { it.isDigit() }
         }
 
-        assertTrue(startWithClassAndMethodPattern)
-        assertTrue(endWithDigits)
+        Assert.assertTrue(startWithClassAndMethodPattern)
+        Assert.assertTrue(endWithDigits)
     }
 
     @Test
@@ -94,6 +93,6 @@ class ComposablePreviewToStringTest {
         val previewToString = commonPreview.toString()
         val expectedPreviewString = "${commonPreview.declaringClass}_${commonPreview.methodName}"
 
-        assertEquals(expectedPreviewString, previewToString)
+        Assert.assertEquals(expectedPreviewString, previewToString)
     }
 }
