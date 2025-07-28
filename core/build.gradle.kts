@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm") version "2.0.0"
-    id("org.jetbrains.compose") // required to resolve compose runtime
-    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0" // needed for Kotlin 2.0 Compose Multiplatform
+    alias(libs.plugins.jetbrains.compose)
+    alias(libs.plugins.jetbrains.kotlin.plugin.compose)
     id("maven-publish")
 }
 

@@ -8,7 +8,7 @@ import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.google.testing.junit.testparameterinjector.TestParameterValuesProvider
 import io.github.classgraph.AnnotationInfoList
-import junit.framework.Assert
+import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
@@ -262,7 +262,7 @@ class AndroidComposablePreviewScreenshotIdTest {
                 device = Devices.DEFAULT
             )
         )
-        Assert.assertEquals(
+        assertEquals(
             AndroidPreviewScreenshotIdBuilder(preview).build(), ""
         )
     }
@@ -278,15 +278,15 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
         val screenshotId = AndroidPreviewScreenshotIdBuilder(preview).build()
-        Assert.assertTrue(
+        assertTrue(
             "screenshot id must only contain uppercase alphanumeric symbols or underscore '_'",
             validPattern.matches(screenshotId)
         )
-        Assert.assertTrue(
+        assertTrue(
             "screenshot id must not contain underscore '_' as first character",
             screenshotId.first().toString() != "_"
         )
-        Assert.assertTrue(
+        assertTrue(
             "screenshot id must not contain underscore '_' as last character",
             screenshotId.last().toString() != "_"
         )
@@ -303,15 +303,15 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
         val screenshotId = AndroidPreviewScreenshotIdBuilder(preview).build()
-        Assert.assertTrue(
+        assertTrue(
             "screenshot id must only contains uppercase alphanumeric symbols or underscore '_'",
             validPattern.matches(screenshotId)
         )
-        Assert.assertTrue(
+        assertTrue(
             "screenshot id must not contain underscore '_' as first character",
             screenshotId.first().toString() != "_"
         )
-        Assert.assertTrue(
+        assertTrue(
             "screenshot id must not contain underscore '_' as last character",
             screenshotId.last().toString() != "_"
         )
@@ -367,7 +367,7 @@ class AndroidComposablePreviewScreenshotIdTest {
                 device = device.deviceId
             )
         )
-        Assert.assertEquals(
+        assertEquals(
             AndroidPreviewScreenshotIdBuilder(preview).build(), device.expectedId
         )
     }
@@ -392,7 +392,7 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        Assert.assertEquals(
+        assertEquals(
             AndroidPreviewScreenshotIdBuilder(preview).build(), wallpaperColorDominated.screenshotId
         )
     }
@@ -405,7 +405,7 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        Assert.assertEquals(
+        assertEquals(
             AndroidPreviewScreenshotIdBuilder(preview).build(), ""
         )
     }

@@ -1,7 +1,7 @@
 package sergio.sastre.composable.preview.scanner.jvm.common.screenshotid
 
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
-import sergio.sastre.composable.preview.scanner.core.preview.screenshotid.GenericPreviewInfoParameterToStringConverter
+import sergio.sastre.composable.preview.scanner.core.preview.screenshotid.DefaultPreviewInfoParameterToStringConverter
 import sergio.sastre.composable.preview.scanner.core.preview.screenshotid.PreviewScreenshotIdBuilder
 import sergio.sastre.composable.preview.scanner.jvm.common.CommonPreviewInfo
 
@@ -10,7 +10,7 @@ class CommonPreviewScreenshotIdBuilder(
 ): PreviewScreenshotIdBuilder<CommonPreviewInfo>(
     composablePreview = composablePreview,
     defaultPreviewInfoIdProvider = {
-        val genericPreviewInfoConverter = GenericPreviewInfoParameterToStringConverter()
+        val genericPreviewInfoConverter = DefaultPreviewInfoParameterToStringConverter()
         val commonPreviewInfo = composablePreview.previewInfo
         linkedMapOf(
             "name" to genericPreviewInfoConverter.name(commonPreviewInfo.name),

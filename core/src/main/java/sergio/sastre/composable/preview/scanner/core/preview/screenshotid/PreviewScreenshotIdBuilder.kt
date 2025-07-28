@@ -2,6 +2,9 @@ package sergio.sastre.composable.preview.scanner.core.preview.screenshotid
 
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 
+/**
+ * Provides a base class to generate unique screenshot ids based on [ComposablePreview]
+ */
 open class PreviewScreenshotIdBuilder<T>(
     private val composablePreview: ComposablePreview<T>,
     private val defaultPreviewInfoIdProvider: () -> LinkedHashMap<String, String?>

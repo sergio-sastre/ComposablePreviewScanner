@@ -1,6 +1,11 @@
 package sergio.sastre.composable.preview.scanner.tests.roborazzi
 
+import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
+import com.github.takahirom.roborazzi.RoborazziComposeOptions
+import com.github.takahirom.roborazzi.background
 import com.github.takahirom.roborazzi.captureRoboImage
+import com.github.takahirom.roborazzi.locale
+import com.github.takahirom.roborazzi.size
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
@@ -27,18 +32,20 @@ class BuildTimeRoborazziComposablePreviewInvokeTests(
 
     companion object {
         @OptIn(RequiresShowStandardStreams::class)
-        private val cachedBuildTimePreviews: List<ComposablePreview<AndroidPreviewInfo>> =
+        private val cachedBuildTimePreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
             AndroidComposablePreviewScanner()
                 .enableScanningLogs()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .includePrivatePreviews()
                 .getPreviews()
+        }
 
         @JvmStatic
         @ParameterizedRobolectricTestRunner.Parameters
         fun values(): List<ComposablePreview<AndroidPreviewInfo>> = cachedBuildTimePreviews
     }
 
+    @OptIn(ExperimentalRoborazziApi::class)
     @GraphicsMode(GraphicsMode.Mode.NATIVE)
     @Config(sdk = [30])
     @Test
@@ -50,7 +57,20 @@ class BuildTimeRoborazziComposablePreviewInvokeTests(
         val name = AndroidPreviewScreenshotIdBuilder(preview)
             .doNotIgnoreMethodParametersType()
             .build()
-        captureRoboImage(filePath = "${name}.png") {
+        captureRoboImage(
+            filePath = "${name}.png",
+            roborazziComposeOptions = RoborazziComposeOptions {
+                size(
+                    widthDp = preview.previewInfo.widthDp,
+                    heightDp = preview.previewInfo.heightDp
+                )
+                background(
+                    showBackground = preview.previewInfo.showBackground,
+                    backgroundColor = preview.previewInfo.backgroundColor
+                )
+                locale(preview.previewInfo.locale)
+            },
+        ) {
             preview()
         }
     }

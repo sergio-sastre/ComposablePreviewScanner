@@ -3,20 +3,20 @@ package sergio.sastre.composable.preview.scanner.tests.api.main.scanner
 import android.content.res.Configuration
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
-import sergio.sastre.composable.preview.scanner.StringProvider
-import sergio.sastre.composable.preview.scanner.customextraannotation.Device
-import sergio.sastre.composable.preview.scanner.customextraannotation.ScreenshotTestConfig
-import sergio.sastre.composable.preview.scanner.excluded.ExcludeScreenshot
+import sergio.sastre.composable.preview.scanner.AndroidStringProvider
 import org.junit.Assume.assumeFalse
 import org.junit.Assume.assumeTrue
 import org.junit.Test
 import sergio.sastre.composable.preview.scanner.ListProvider
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
+import sergio.sastre.composable.preview.scanner.android.customextraannotation.Device
+import sergio.sastre.composable.preview.scanner.android.customextraannotation.ScreenshotTestConfig
+import sergio.sastre.composable.preview.scanner.android.excluded.ExcludeScreenshot
+import sergio.sastre.composable.preview.scanner.android.included.IncludeScreenshot
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.preview.getAnnotation
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.exceptions.RepeatableAnnotationNotSupportedException
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
-import sergio.sastre.composable.preview.scanner.included.IncludeScreenshot
 import java.io.FileNotFoundException
 
 class AndroidComposablePreviewScannerTest {
@@ -26,15 +26,15 @@ class AndroidComposablePreviewScannerTest {
         val includedPlusMultiplePreviews =
             AndroidComposablePreviewScanner()
                 .scanPackageTrees(
-                    "sergio.sastre.composable.preview.scanner.included",
-                    "sergio.sastre.composable.preview.scanner.multiplepreviews"
+                    "sergio.sastre.composable.preview.scanner.android.included",
+                    "sergio.sastre.composable.preview.scanner.android.multiplepreviews"
                 )
                 .getPreviews()
                 .map { it.previewInfo.toString() }
 
         val includedPreviews =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.included")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.included")
                 .getPreviews()
                 .map { it.previewInfo.toString() }
 
@@ -42,7 +42,7 @@ class AndroidComposablePreviewScannerTest {
 
         val multiplePreviews =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.multiplepreviews")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.multiplepreviews")
                 .getPreviews()
                 .map { it.previewInfo.toString() }
 
@@ -57,14 +57,14 @@ class AndroidComposablePreviewScannerTest {
     fun `GIVEN same composable with different absolute path THEN their screenshot names are different`() {
         val sameComposable1Preview =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.samecomposable1")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.samecomposable1")
                 .getPreviews()
                 .first()
                 .toString()
 
         val sameComposable2Preview =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.samecomposable2")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.samecomposable2")
                 .getPreviews()
                 .first()
                 .toString()
@@ -96,7 +96,7 @@ class AndroidComposablePreviewScannerTest {
     fun `GIVEN 'included nested' package THEN previews in 'included' contain previews in 'nested'`() {
         val includedPreviews =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.included")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.included")
                 .getPreviews()
                 .map { it.toString() }
 
@@ -116,15 +116,15 @@ class AndroidComposablePreviewScannerTest {
         val includedPreviewsWithoutNested =
             AndroidComposablePreviewScanner()
                 .scanPackageTrees(
-                    include = listOf("sergio.sastre.composable.preview.scanner.included"),
-                    exclude = listOf("sergio.sastre.composable.preview.scanner.included.nested"),
+                    include = listOf("sergio.sastre.composable.preview.scanner.android.included"),
+                    exclude = listOf("sergio.sastre.composable.preview.scanner.android.included.nested"),
                 )
                 .getPreviews()
                 .map { it.toString() }
 
         val nestedPreviews =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.included.nested")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.included.nested")
                 .getPreviews()
                 .map { it.toString() }
 
@@ -157,7 +157,7 @@ class AndroidComposablePreviewScannerTest {
     fun `GIVEN multiple previews THEN more than 1 preview is included`() {
         val multiplePreviews =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.multiplepreviews")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.multiplepreviews")
                 .getPreviews()
 
         assert(multiplePreviews.size > 1)
@@ -167,13 +167,13 @@ class AndroidComposablePreviewScannerTest {
     fun `GIVEN all previews in 'excluded' package contain ExcludeScreenshot annotation WHEN I exclude previews with ExcludeScreenshot THEN no preview is included`() {
         val previewsInExcludedPackage =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.excluded")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.excluded")
                 .includeAnnotationInfoForAllOf(ExcludeScreenshot::class.java)
                 .getPreviews()
 
         val previewsWithoutExcludeScreenshotAnnotation =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.excluded")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.excluded")
                 .excludeIfAnnotatedWithAnyOf(ExcludeScreenshot::class.java)
                 .getPreviews()
 
@@ -191,13 +191,13 @@ class AndroidComposablePreviewScannerTest {
     fun `GIVEN some previews in 'included' package contain IncludeScreenshot annotation WHEN I include previews with IncludeScreenshot THEN some are included`() {
         val previewsInIncludedPackage =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.included")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.included")
                 .includeAnnotationInfoForAllOf(IncludeScreenshot::class.java)
                 .getPreviews()
 
         val previewsWithIncludedScreenshotAnnotation =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.included")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.included")
                 .includeIfAnnotatedWithAnyOf(IncludeScreenshot::class.java)
                 .getPreviews()
 
@@ -215,7 +215,7 @@ class AndroidComposablePreviewScannerTest {
     fun `WHEN use a custom annotation for previews with night mode THEN those previews are included with night mode`() {
         val customPreviews =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.custompreviewannotation")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.custompreviewannotation")
                 .getPreviews()
 
         val customPreviewParams = customPreviews.map { it.previewInfo }
@@ -227,7 +227,7 @@ class AndroidComposablePreviewScannerTest {
     fun `GIVEN private previews WHEN including them, THEN those previews are included`() {
         val privatePreviews =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.privatepreviews")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.privatepreviews")
                 .includePrivatePreviews()
                 .getPreviews()
 
@@ -238,7 +238,7 @@ class AndroidComposablePreviewScannerTest {
     fun `GIVEN private previews WHEN not implicitly including them THEN those previews are excluded`() {
         val privatePreviews =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.privatepreviews")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.privatepreviews")
                 .getPreviews()
 
         assert(privatePreviews.isEmpty())
@@ -248,7 +248,7 @@ class AndroidComposablePreviewScannerTest {
     fun `GIVEN internal previews THEN those previews are included`() {
         val internalPreviews =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.internalpreviews")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.internalpreviews")
                 .getPreviews()
 
         assert(internalPreviews.isNotEmpty())
@@ -258,7 +258,7 @@ class AndroidComposablePreviewScannerTest {
     fun `GIVEN previews are inside a class THEN those previews are included`() {
         val previewsInsideClass =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.previewsinsideclass")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.previewsinsideclass")
                 .getPreviews()
 
         assert(previewsInsideClass.isNotEmpty())
@@ -268,7 +268,7 @@ class AndroidComposablePreviewScannerTest {
     fun `GIVEN 1 duplicated preview THEN only one is included`() {
         val duplicatedPreviews =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.duplicates")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.duplicates")
                 .getPreviews()
 
         assert(duplicatedPreviews.size == 1)
@@ -278,7 +278,7 @@ class AndroidComposablePreviewScannerTest {
     fun `GIVEN 1 preview without preview parameters THEN only one is included`() {
         val preview =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.duplicates") // could take any other without previews
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.duplicates") // could take any other without previews
                 .getPreviews()
 
         assumeTrue(preview.size == 1)
@@ -297,12 +297,12 @@ class AndroidComposablePreviewScannerTest {
 
     @Test
     fun `GIVEN preview parameters with StringProvider but limit 1 THEN it creates only 1 preview with index 0`() {
-        val stringProviderValues = StringProvider().values.toList()
+        val stringProviderValues = AndroidStringProvider().values.toList()
         assumeTrue(stringProviderValues.size > 1)
 
         val previewsWithParameterLimit1 =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.previewparameters")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.previewparameters")
                 .filterPreviews { it.group == "preview-parameter-limit=1" }
                 .getPreviews()
 
@@ -312,14 +312,14 @@ class AndroidComposablePreviewScannerTest {
 
     @Test
     fun `GIVEN 2 previews with same method Name but different params are considered different`() {
-        val stringProviderValues = StringProvider().values.toList()
+        val stringProviderValues = AndroidStringProvider().values.toList()
         val listProviderValues = ListProvider().values.toList()
         assumeTrue(stringProviderValues.size == 2)
         assumeTrue(listProviderValues.size == 1)
 
         val previewsWithSameMethodName =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.samemethodname")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.samemethodname")
                 .getPreviews()
 
         val previewsAsStrings =
@@ -334,11 +334,11 @@ class AndroidComposablePreviewScannerTest {
 
     @Test
     fun `GIVEN preview parameters with StringProvider THEN it creates one preview for every parameter with the index at the end of its name`() {
-        val stringProviderValues = StringProvider().values.toList()
+        val stringProviderValues = AndroidStringProvider().values.toList()
 
         val previewsWithParameterNoLimit =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.previewparameters")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.previewparameters")
                 .filterPreviews { it.group == "no-preview-parameter-limit" }
                 .getPreviews()
 
@@ -350,7 +350,7 @@ class AndroidComposablePreviewScannerTest {
 
     @Test
     fun `GIVEN preview parameters with StringProvider and MultiplePreviews THEN it creates one preview for every combination`() {
-        val stringProviderValuesSize = StringProvider().values.toList().size
+        val stringProviderValuesSize = AndroidStringProvider().values.toList().size
         /*
         @Preview                 // 1 Preview
         @MyCustomDarkModePreview // 2 Previews
@@ -363,7 +363,7 @@ class AndroidComposablePreviewScannerTest {
 
         val previews =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.multiplepreviewswithpreviewparameters")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.multiplepreviewswithpreviewparameters")
                 .getPreviews()
 
         assertEquals(previews.size, expectedAmountOfPreviews)
@@ -373,7 +373,7 @@ class AndroidComposablePreviewScannerTest {
     fun `GIVEN preview annotated with extra custom annotation with params THEN resulting previewParam contains annotation params`() {
         val previewWithExtraAnnotation =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.customextraannotation")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.customextraannotation")
                 .includeAnnotationInfoForAllOf(ScreenshotTestConfig::class.java)
                 .getPreviews()
 
@@ -396,7 +396,7 @@ class AndroidComposablePreviewScannerTest {
     fun `GIVEN includeAnnotationInfoForAllOf contains any Repeatable annotation THEN it throws RepeatableAnnotationNotSupportedException`() {
         val exception = assertThrows(RepeatableAnnotationNotSupportedException::class.java) {
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.customextraannotation")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.customextraannotation")
                 .includeAnnotationInfoForAllOf(RepeatableAnnotation::class.java)
                 .getPreviews()
         }
@@ -408,7 +408,7 @@ class AndroidComposablePreviewScannerTest {
     fun `GIVEN excludeIfAnnotatedWithAnyOf contains any Repeatable annotation THEN it throws RepeatableAnnotationNotSupportedException`() {
         val exception = assertThrows(RepeatableAnnotationNotSupportedException::class.java) {
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.customextraannotation")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.customextraannotation")
                 .excludeIfAnnotatedWithAnyOf(RepeatableAnnotation::class.java)
                 .getPreviews()
         }
@@ -420,7 +420,7 @@ class AndroidComposablePreviewScannerTest {
     fun `GIVEN includeIfAnnotatedWithAnyOf contains any Repeatable annotation THEN it throws RepeatableAnnotationNotSupportedException`() {
         val exception = assertThrows(RepeatableAnnotationNotSupportedException::class.java) {
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.customextraannotation")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.customextraannotation")
                 .includeIfAnnotatedWithAnyOf(RepeatableAnnotation::class.java)
                 .getPreviews()
         }

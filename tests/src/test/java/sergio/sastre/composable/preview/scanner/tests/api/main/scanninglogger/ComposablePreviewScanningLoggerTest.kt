@@ -57,8 +57,7 @@ class ComposablePreviewScanningLoggerTest<T>(
         val scanner = scannerFactory()
         scanner.previewScanner
             .scanPackageTrees(
-                "sergio.sastre.composable.preview.scanner.included",
-                "sergio.sastre.composable.preview.scanner.multiplepreviews"
+                "sergio.sastre.composable.preview.scanner",
             )
             .getPreviews()
 
@@ -79,8 +78,7 @@ class ComposablePreviewScanningLoggerTest<T>(
         scanner.previewScanner
             .enableScanningLogs()
             .scanPackageTrees(
-                "sergio.sastre.composable.preview.scanner.included",  // contains AndroidPreviews
-                "sergio.sastre.composable.preview.scanner.jvmcommon", // contains CommonPreviews
+                "sergio.sastre.composable.preview.scanner",
             ).getPreviews()
 
         // THEN
@@ -107,7 +105,7 @@ class ComposablePreviewScanningLoggerTest<T>(
         )
         Assert.assertTrue(
             "Output contains package trees",
-            output.contains("Package trees: sergio.sastre.composable.preview.scanner.included, sergio.sastre.composable.preview.scanner.jvmcommon")
+            output.contains("Package trees: sergio.sastre.composable.preview.scanner")
         )
         Assert.assertTrue(
             "Output contains time to scan files in ms",
@@ -132,7 +130,7 @@ class ComposablePreviewScanningLoggerTest<T>(
             .enableScanningLogs()
             .scanPackageTrees(
                 include = listOf("sergio.sastre.composable.preview.scanner"),
-                exclude = listOf("sergio.sastre.composable.preview.scanner.duplicates")
+                exclude = listOf("sergio.sastre.composable.preview.scanner.android.duplicates")
             ).getPreviews()
 
         // THEN
@@ -163,7 +161,7 @@ class ComposablePreviewScanningLoggerTest<T>(
         )
         Assert.assertTrue(
             "Output contains excluded package trees",
-            output.contains("Excluded package trees: sergio.sastre.composable.preview.scanner.duplicates")
+            output.contains("Excluded package trees: sergio.sastre.composable.preview.scanner.android.duplicates")
         )
         Assert.assertTrue(
             "Output contains time to scan files in ms",

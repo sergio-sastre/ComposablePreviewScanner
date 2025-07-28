@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
+    alias(libs.plugins.jetbrains.kotlin.plugin.compose)
 
     // These 2 are needed for screenshot testing
     alias(libs.plugins.paparazzi)
@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "sergio.sastre.composable.preview.scanner.paparazzi.plugin"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 28
