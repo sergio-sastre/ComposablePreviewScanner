@@ -13,7 +13,7 @@
 <img width="400" src="https://github.com/sergio-sastre/ComposablePreviewScanner/assets/6097181/63d9676d-22c4-4bd1-8680-3fcf1a72e001">
 </p>
 
-A library to help auto-generate screenshot tests from Composable Previews (e.g. Android & Compose Multiplatform) with any screenshot testing library:
+A library to help auto-generate screenshot tests from Composable Previews (e.g. **Android** & **Compose Multiplatform**) with any screenshot testing library:
 JVM-based (i.e. Paparazzi, Roborazzi) as well as Instrumentation-based (i.e. Shot, Dropshots, Android-Testify, etc.)
 
 #### Provide anonymous feedback
@@ -787,6 +787,8 @@ annotation class Preview
 ```
 
 ### Compose Multiplatform Support
+You can find [executable examples with Roborazzi here](https://github.com/takahirom/roborazzi/tree/main/sample-generate-preview-tests-multiplatform).
+
 Since Compose Multiplatform 1.6.0, Jetbrains has added support for `@Preview`s in `common`. ComposablePreviewScanner can also
 scan such Previews when running on any jvm-target, like
 - Android
@@ -797,50 +799,22 @@ ComposablePreviewScanner provides a `CommonComposablePreviewScanner` for that pu
 
 Assuming that you have:
 - some Compose Multiplatform `@Previews` defined in `common`
-- some Android screenshot tests in place
+- some JVM (i.e. Android or Desktop) screenshot tests in place
 
 Here is how you could also run screenshot tests for those Compose Multiplatform `@Previews` together, for instance, with Roborazzi (would also work with Paparazzi or any Instrumentation-based library).
 
 1. Add `:jvm` dependency for ComposablePreviewScanner 0.2.0+
    `testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")`
 
-2. Add an additional Parameterized screenshot test for these Compose Multiplatform `@Previews`
+2. Add an additional Parameterized screenshot test for these Compose Multiplatform `@Previews`. For this follow the corresponding [Paparazzi](#paparazzi), [Roborazzi](#roborazzi) or [Instrumentation screenshot tests](#instrumentation-screenshot-tests) sections, and used `CommonComposablePreviewScanner()` instead of `AndroidComposablePreviewScanner()`.
 ```kotlin
-@RunWith(ParameterizedRobolectricTestRunner::class)
-class PreviewParameterizedTests(
-    private val preview: ComposablePreview<CommonPreviewInfo>,
-) {
-
-    companion object {
-        // Optimization: This avoids scanning for every test
-        private val cachedPreviews: List<ComposablePreview<CommonPreviewInfo>> by lazy {
-            CommonComposablePreviewScanner()
-                .scanPackageTrees("your.package", "your.package2") // those where your common @Previews are located
-                .includeAnnotationInfoForAllOf(RoborazziConfig::class.java)
-                .getPreviews()
-        }
-
-        @JvmStatic
-        @ParameterizedRobolectricTestRunner.Parameters
-        fun values(): List<ComposablePreview<CommonPreviewInfo>> = cachedPreviews
-    }
-
-    @GraphicsMode(GraphicsMode.Mode.NATIVE)
-    @Config(sdk = [30]) // same as the previews we've filtered
-    @Test
-    fun snapshot() {
-        captureRoboImage(
-           roborazziOptions = RoborazziOptionsMapper.createFor(preview)
-        ) {
-            preview()
-        }
-    }
-}
 ```
 
 3. Run these screenshot tests together with the existing ones by executing the corresponding command e.g. `./gradlew yourModule:recordRoborazziDebug`
 
 ### Compose-Desktop Support
+You can find [executable examples with Roborazzi here](https://github.com/sergio-sastre/roborazzi/tree/demo/kug_munich_presentation/sample-compose-desktop-multiplatform).
+
 As we've seen in the previous section [How it works](#how-it-works), Compose-Desktop previews are still not visible to ClassGraph since they use `AnnotationRetention.SOURCE`.
 There is [already an open issue](https://youtrack.jetbrains.com/issue/CMP-5675) to change it to `AnnotationRetention.BINARY`, which would allow ClassGraph to find them.
 
@@ -856,13 +830,13 @@ In the meanwhile, it is also possible to workaround this limitation with Composa
    package my.package.path
       
    @Target(AnnotationTarget.FUNCTION)
-   annotation class VisibleForScreenshotTesting
+   annotation class DesktopScreenshot
    ```
 4. Annotate the Desktop Composables you want to generate screenshot tests for with this annotation, e.g.
 ```kotlin
    class MyClass {
 
-        @VisibleForScreenshotTesting
+        @DesktopScreenshot
         @Preview // It'd also work without this annotation
         @Composable
         fun MyDesktopComposable() { 
@@ -871,36 +845,43 @@ In the meanwhile, it is also possible to workaround this limitation with Composa
    }
 ```
 
-5. Create the test. Unfortunately, `kotlin.test` doesn't provide any means for parameterized tests, so we'll need to iterate through all previews. That has the disadvantage that, if it fails to record/verify one of the preview screenshots, subsequent screenshots won't be recorded/verified (hard asserts).
-
+5. Create the parameter provider for the Parameterized test. We can use [TestParameterInjector](https://github.com/google/TestParameterInjector) for that
 ```kotlin
-class DesktopPreviewScreenshotTests {
+class DesktopPreviewProvider : TestParameterValuesProvider() {
+  @OptIn(RequiresShowStandardStreams::class)
+  override fun provideValues(context: Context?): List<ComposablePreview<JvmAnnotationInfo>> =
+    JvmAnnotationScanner("my.package.path.DesktopScreenshot")
+      .enableScanningLogs()
+      .scanPackageTrees("previews")
+      .getPreviews()
+}
+```
 
+6. Write the Parameterized test itself
+```kotlin
+fun screenshotNameFor(preview: ComposablePreview<JvmAnnotationInfo>): String =
+   "$DEFAULT_ROBORAZZI_OUTPUT_DIR_PATH/${preview.declaringClass}.${preview.methodName}.png"
+
+@RunWith(TestParameterInjector::class)
+class DesktopPreviewTest(
+   @TestParameter(valuesProvider = DesktopPreviewProvider::class)
+   val preview: ComposablePreview<JvmAnnotationInfo>
+) {
    @OptIn(ExperimentalTestApi::class)
    @Test
-   fun desktopPreviews() {
+   fun test() {
       ROBORAZZI_DEBUG = true
-      val listComposables = JvmAnnotationScanner(
-         annotationToScanClassName = "my.package.path.VisibleForScreenshotTesting"
-      )
-         .scanPackageTrees("my.package.tree1", "my.package.tree2")
-         .getPreviews()
-
-      listComposables.forEach { composablePreview ->
-         runDesktopComposeUiTest {
-            setContent {
-               composablePreview()
-            }
-            onRoot().captureRoboImage(
-               filePath = "$composablePreview.png", // optional, works without it too
-            )
-         }
+      runDesktopComposeUiTest {
+         setContent { preview() }
+         onRoot().captureRoboImage(
+            filePath = screenshotNameFor(preview),
+         )
       }
    }
 }
 ```
 
-6. Run these Roborazzi tests by executing the corresponding command e.g. `./gradlew yourModule:recordRoborazziJvm` (if using the Kotlin Jvm Plugin)
+7. Run these Roborazzi tests by executing the corresponding command e.g. `./gradlew yourModule:recordRoborazziJvm` (if using the Kotlin Jvm Plugin)
 
 # Tech talks
 In these tech-talks have also been mentioned the benefits of using ComposablePreviewScanner:

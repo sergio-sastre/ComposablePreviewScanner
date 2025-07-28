@@ -62,7 +62,7 @@ class ComposablePreviewToStringTest {
         val commonPreviews =
             CommonComposablePreviewScanner()
                 .scanPackageTrees(
-                    "sergio.sastre.composable.preview.scanner.jvmcommonwithpreviewparameters",
+                    "sergio.sastre.composable.preview.scanner.common.withpreviewparameters",
                 )
                 .getPreviews()
 
@@ -86,7 +86,7 @@ class ComposablePreviewToStringTest {
     fun `GIVEN Common preview WHEN toString THEN those preview names contain class name and method name`() {
         val commonPreview =
             CommonComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.common")
                 .getPreviews()
                 .first()
 

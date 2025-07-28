@@ -3,8 +3,8 @@ package sergio.sastre.composable.preview.scanner.tests.api.main.scanner
 import org.junit.Assert.assertEquals
 import org.junit.Assume.assumeTrue
 import org.junit.Test
+import sergio.sastre.composable.preview.scanner.CommonStringProvider
 import sergio.sastre.composable.preview.scanner.jvm.common.CommonComposablePreviewScanner
-import sergio.sastre.composable.preview.scanner.jvmcommonwithpreviewparameters.CommonStringProvider
 
 class CommonComposablePreviewScannerTest {
 
@@ -12,7 +12,7 @@ class CommonComposablePreviewScannerTest {
     fun `GIVEN Composable with common @Preview, WHEN Scanning a package tree with such composables, THEN it returns previews`() {
         val commonPreviews =
             CommonComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.jvmcommon")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.common")
                 .getPreviews()
 
         assert(commonPreviews.isNotEmpty())
@@ -34,7 +34,7 @@ class CommonComposablePreviewScannerTest {
 
         val commonPreviews =
             CommonComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.jvmcommonwithpreviewparameters")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.common.withpreviewparameters")
                 .getPreviews()
                 .filter { it.methodName.contains("WithoutLimit") }
 
@@ -48,11 +48,44 @@ class CommonComposablePreviewScannerTest {
 
         val previewsWithParameterLimit1 =
             CommonComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.jvmcommonwithpreviewparameters")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.common.withpreviewparameters")
                 .getPreviews()
                 .filter { it.methodName.contains("WithLimit1") }
 
         assert(previewsWithParameterLimit1.size == 1)
         assert(previewsWithParameterLimit1.first().previewIndex == 0)
+    }
+
+    @Test
+    fun `GIVEN preview parameters with StringProvider and MultiplePreviews THEN it creates one preview for every combination`() {
+        val stringProviderValuesSize = CommonStringProvider().values.toList().size
+        /*
+        @Preview                        // 1 Preview
+        @Preview(showBackground = true) // 1 Preview
+        --------------------------------------
+                                TOTAL = // 2 Previews
+         */
+        val multiplePreviewsAmount = 2
+        val expectedAmountOfPreviews = stringProviderValuesSize * multiplePreviewsAmount
+
+        val previews =
+            CommonComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.common.multiplepreviewswithpreviewparameters")
+                .getPreviews()
+
+        assertEquals(previews.size, expectedAmountOfPreviews)
+    }
+
+    @Test
+    fun `WHEN use a custom annotation for previews with width THEN those previews are included with width`() {
+        val customPreviews =
+            CommonComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.common.custompreviewannotation")
+                .getPreviews()
+
+        val customPreviewParams = customPreviews.map { it.previewInfo }
+
+        assert(customPreviewParams.size > 1)
+        assert(customPreviewParams.all { it.widthDp != -1 })
     }
 }

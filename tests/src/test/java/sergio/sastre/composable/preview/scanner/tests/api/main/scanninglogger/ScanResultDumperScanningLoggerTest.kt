@@ -26,10 +26,7 @@ class ScanResultDumperScanningLoggerTest {
 
         try {
             ScanResultDumper()
-                .scanPackageTrees(
-                    "sergio.sastre.composable.preview.scanner.included",
-                    "sergio.sastre.composable.preview.scanner.multiplepreviews"
-                )
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .dumpScanResultToFile(scanResultFile)
 
             // THEN
@@ -54,10 +51,7 @@ class ScanResultDumperScanningLoggerTest {
         try {
             ScanResultDumper()
                 .enableScanningLogs()
-                .scanPackageTrees(
-                    "sergio.sastre.composable.preview.scanner.included",
-                    "sergio.sastre.composable.preview.scanner.multiplepreviews"
-                )
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .dumpScanResultToFile(scanResultFile)
 
             // THEN
@@ -76,7 +70,7 @@ class ScanResultDumperScanningLoggerTest {
             )
             Assert.assertTrue(
                 "Output contains package trees",
-                output.contains("Package trees: sergio.sastre.composable.preview.scanner.included, sergio.sastre.composable.preview.scanner.multiplepreviews")
+                output.contains("Package trees: sergio.sastre.composable.preview.scanner")
             )
             Assert.assertTrue(
                 "Output contains name of file to dump scan result",

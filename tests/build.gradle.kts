@@ -1,8 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
-    alias(libs.plugins.screenshot)
+    alias(libs.plugins.jetbrains.kotlin.plugin.compose)
     alias(libs.plugins.testify)
 }
 
@@ -20,12 +19,11 @@ apply(from = "custom-roborazzi-tests.gradle.kts")
 
 android {
     namespace = "sergio.sastre.composable.preview.scanner"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "composable.preview.scanner"
         minSdk = 23
-        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
