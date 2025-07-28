@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
     alias(libs.plugins.screenshot)
     alias(libs.plugins.testify)
 }
@@ -56,10 +57,6 @@ android {
     buildFeatures {
         // Enables Jetpack Compose for this module
         compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
     }
 
     compileOptions {

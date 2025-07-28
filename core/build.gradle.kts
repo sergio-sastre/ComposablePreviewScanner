@@ -1,6 +1,7 @@
 plugins {
-    kotlin("jvm") version "1.9.24"
+    kotlin("jvm") version "2.0.0"
     id("org.jetbrains.compose") // required to resolve compose runtime
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0" // needed for Kotlin 2.0 Compose Multiplatform
     id("maven-publish")
 }
 
@@ -12,7 +13,7 @@ java {
 dependencies {
     implementation(libs.androidx.compose.runtime)
     implementation(libs.kotlin.reflect)
-    implementation (libs.classgraph)
+    implementation(libs.classgraph)
 }
 
 //https://www.talentica.com/blogs/publish-your-android-library-on-jitpack-for-better-reachability/

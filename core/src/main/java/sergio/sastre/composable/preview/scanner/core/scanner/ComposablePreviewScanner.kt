@@ -31,7 +31,6 @@ abstract class ComposablePreviewScanner<T>(
             .enableClassInfo()
             .enableMethodInfo()
             .enableAnnotationInfo()
-            .enableMemoryMapping()
 
     private var classpath: Classpath? = null
     private var isLoggingEnabled = false
