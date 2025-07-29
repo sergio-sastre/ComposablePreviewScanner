@@ -85,6 +85,7 @@ testify {
 dependencies {
     implementation(project(":android"))
     implementation(project(":jvm"))
+    implementation(project(":common"))
     implementation(project(":custompreviews"))
     implementation(platform(libs.androidx.compose.bom))
     implementation("androidx.compose.runtime:runtime")

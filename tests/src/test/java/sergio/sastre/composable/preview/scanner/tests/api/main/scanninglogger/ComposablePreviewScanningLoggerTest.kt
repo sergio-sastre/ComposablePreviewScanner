@@ -12,7 +12,7 @@ import sergio.sastre.composable.preview.scanner.core.scanner.ComposablePreviewSc
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
-import sergio.sastre.composable.preview.scanner.jvm.common.CommonComposablePreviewScanner
+import sergio.sastre.composable.preview.scanner.common.CommonComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.utils.SystemOutputTestRule
 
 @RunWith(Parameterized::class)
