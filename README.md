@@ -36,7 +36,7 @@ Help shape its future by taking [this quick survey](https://forms.gle/jcvggBxv14
 <sup>3</sup> Showkase components only hold information about the Composable, but not about the Preview Info (i.e. ApiLevel, Locale, UiMode, FontScale...).</br></br>
 <sup>4</sup> ComposablePreviewScanner supports adding extra lib-config (e.g. Paparazzi's Rendering Mode or Roborazzi's compare options) in the form of annotations that are additionally added to the preview. You can check how in the examples below in [Jvm Screenshot Tests](#jvm-screenshot-tests) and [Instrumentation Screenshot Tests](#instrumentation-screenshot-tests) respectively.</br></br>
 <sup>5</sup> Compose Preview Screenshot Testing supports *only general tolerance* via gradle plugin from version [0.0.1-alpha06](https://developer.android.com/studio/preview/compose-screenshot-testing#001-alpha06)</br></br>
-<sup>6</sup> ComposablePreviewScanner provides some Compose Multiplatform support: It can scan `@Preview`s in `common`, as described in the [Compose-Multiplatform](#compose-multiplatform-support) section. Compose-Desktop `@Preview`s are still not supported out of the box because of [this issue](https://youtrack.jetbrains.com/issue/CMP-5675), but you can check the [Compose-Desktop support](#compose-desktop-support) section for a workaround.</br></br>
+<sup>6</sup> ComposablePreviewScanner provides some Compose Multiplatform Previews support: It can scan `@Preview`s in `common`, as described in the [Common previews](#common-previews) section. Compose-Desktop `@Preview`s are still not supported out of the box because of [this issue](https://youtrack.jetbrains.com/issue/CMP-5675), but you can check the [Desktop previews](#desktop-previews) section for a workaround.</br></br>
 <sup>7</sup> [Showkase: Compose Multiplatform Support](https://github.com/airbnb/Showkase/issues/364)
 </br></br></br>
 ComposablePreviewScanner also works with:
@@ -56,14 +56,15 @@ ComposablePreviewScanner also works with:
 > *Jitpack* -> **com.github**</br>
 ## Maven central (since 0.3.2)
 ```kotlin
+// all of them are supported in jvm-targets only
 dependencies {
-   // jvm tests (e.g. with Roborazzi & Paparazzi)
+   // android previews
    testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:android:<version>")
 
-   // instrumentation tests (e.g. with Shot, Dropshots & Android-Testify)
-   debugImplementation("io.github.sergio-sastre.ComposablePreviewScanner:android:<version>")
-   
-   // compose multiplatform (jvm-targets)
+   // commmon previews (compose multiplatform)
+   testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:common:<version>")
+
+   // define annotation to scan. Use this for desktop previews (compose multiplatform)
    testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")
 }
 ```
@@ -79,14 +80,15 @@ allprojects {
 ```
 
 ```kotlin
+// all of them are supported in jvm-targets only
 dependencies {
-   // jvm tests (e.g. with Roborazzi & Paparazzi)
+   // android previews
    testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:android:<version>")
 
-   // instrumentation tests (e.g. with Shot, Dropshots & Android-Testify)
-   debugImplementation("com.github.sergio-sastre.ComposablePreviewScanner:android:<version>")
-   
-   // compose multiplatform (jvm-targets), from 0.2.0
+   // commmon previews (compose multiplatform)
+   testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:common:<version>")
+
+   // define annotation to scan. Use this for desktop previews (compose multiplatform)
    testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")
 }
 ```
@@ -97,13 +99,14 @@ dependencies {
    1.1  [Paparazzi](#paparazzi)</br>
    1.2  [Roborazzi](#roborazzi)</br>
 2. [Instrumentation Screenshot Tests](#instrumentation-screenshot-tests)
-3. [Compose Multiplatform Support](#compose-multiplatform-support)
+3. [Compose Multiplatform Previews Support](#compose-multiplatform-previews-support)
 
 > [!NOTE]
 > [Roborazzi](https://github.com/takahirom/roborazzi) has integrated ComposablePreviewScanner in its plugin since [version 1.22](https://github.com/takahirom/roborazzi/releases/tag/1.22.0)
 
 
 ## API   
+`AndroidComposablePreviewScanner`, `CommonComposablePreviewScanner` and `JvmAnnotationScanner`have the same API.
 The API is pretty simple:
 
 ```kotlin
@@ -692,8 +695,9 @@ Let's say we want to enable some custom Dropshots Config for some Previews, for 
 
 ## Advanced Usage
 ### Screenshot File Names
-ComposablePreviewScanner also provides a class to customize the name of the generated screenshots based on its Preview Info.
-By default, it does not include the Preview Info in the screenshot file name if it is the same as its default value, but it can be configured to behave differently.
+ComposablePreviewScanner also provides classes to customize the name of the generated screenshots based on its Preview Info.
+These are `AndroidPreviewScreenshotIdBuilder` and `CommonPreviewScreenshotIdBuilder` respectively, and they both share the same API.
+By default, these classes do not include the Preview Info in the screenshot file name if it is the same as its default value, but it can be configured to behave differently.
 That means, for @Preview(showBackground = false), showBackground would not be included in the screenshot file name since it is the default.
 
 ```kotlin
@@ -745,7 +749,7 @@ class MyClass {
 ```
 createScreenshotIdFor(preview) will generate the following id: `"MyClass.MyComposable.FONT_1_5f_WITHOUT_BACKGROUND"`
 
-### Parsing Preview Device String
+### Parsing Preview Device String (Android Previews)
 Since 0.4.0, ComposablePreviewScanner also provides `DevicePreviewInfoParser.parse(device: String)`
 which returns a `Device` object containing all the necessary information to support different devices in your Roborazzi & Paparazzi screenshot tests!
 
@@ -761,7 +765,6 @@ It can parse ALL possible combinations of "device strings" up to Android Studio 
 @Preview(device = "spec:id=reference_desktop,shape=Normal,width=1920,height=1080,unit=px,dpi=160") // in pixels
 @Preview(device = "spec:id=reference_desktop,shape=Normal,width=1920,height=1080,unit=dp,dpi=160") // in dp
 ```
-
 For further info on how to use them, see [Roborazzi](#roborazzi) and [Paparazzi](#paparazzi) sections respectively.
 
 ## How It works
@@ -786,7 +789,8 @@ package androidx.compose.desktop.ui.tooling.preview
 annotation class Preview
 ```
 
-### Compose Multiplatform Support
+## Compose Multiplatform Previews Support
+### Common Previews
 You can find [executable examples with Roborazzi here](https://github.com/takahirom/roborazzi/tree/main/sample-generate-preview-tests-multiplatform).
 
 Since Compose Multiplatform 1.6.0, Jetbrains has added support for `@Preview`s in `common`. ComposablePreviewScanner can also
@@ -803,16 +807,14 @@ Assuming that you have:
 
 Here is how you could also run screenshot tests for those Compose Multiplatform `@Previews` together, for instance, with Roborazzi (would also work with Paparazzi or any Instrumentation-based library).
 
-1. Add `:jvm` dependency for ComposablePreviewScanner 0.2.0+
-   `testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")`
+1. Add `:common` dependency for ComposablePreviewScanner 0.2.0+
+   `testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:common:<version>")`
 
-2. Add an additional Parameterized screenshot test for these Compose Multiplatform `@Previews`. For this follow the corresponding [Paparazzi](#paparazzi), [Roborazzi](#roborazzi) or [Instrumentation screenshot tests](#instrumentation-screenshot-tests) sections, and used `CommonComposablePreviewScanner()` instead of `AndroidComposablePreviewScanner()`.
-```kotlin
-```
+2. Add an additional Parameterized screenshot test for these Compose Multiplatform `@Previews`. This is the basically the same as in the corresponding [Paparazzi](#paparazzi), [Roborazzi](#roborazzi) or [Instrumentation screenshot tests](#instrumentation-screenshot-tests) sections, but use `CommonComposablePreviewScanner`, `CommonPreviewInfo` and `CommonPreviewScreenshotIdBuilder`.
 
 3. Run these screenshot tests together with the existing ones by executing the corresponding command e.g. `./gradlew yourModule:recordRoborazziDebug`
 
-### Compose-Desktop Support
+### Desktop Previews
 You can find [executable examples with Roborazzi here](https://github.com/sergio-sastre/roborazzi/tree/demo/kug_munich_presentation/sample-compose-desktop-multiplatform).
 
 As we've seen in the previous section [How it works](#how-it-works), Compose-Desktop previews are still not visible to ClassGraph since they use `AnnotationRetention.SOURCE`.
