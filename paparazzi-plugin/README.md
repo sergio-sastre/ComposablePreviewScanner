@@ -93,6 +93,9 @@ By running any of the following gradle tasks, the tests will be generated AND th
 ./gradlew your_module:verifyPaparazziDebug
 ```
 
+> [!NOTE]  
+> You can try it out it in this project by replacing `your_module` with `paparazzi-plugin-tests`
+
 ### Generate Tests
 
 In case you only want to generate the tests without running them, execute the generation task:
@@ -113,7 +116,7 @@ Clone this project and adjust the `GenerateComposablePreviewPaparazziTestTask` c
 Then verify your changes by executing:
 
 ```bash
-./gradlew paparazzi-plugin-tests:recordPaparazziDebug
+./gradlew your_module:recordPaparazziDebug
 ```
 
 Finally, take a look at the generated test class and screenshots to verify if the outputs are as expected.
