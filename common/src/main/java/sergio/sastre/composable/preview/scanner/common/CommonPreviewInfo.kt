@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.jvm.common
+package sergio.sastre.composable.preview.scanner.common
 
 data class CommonPreviewInfo(
     val name: String = "",

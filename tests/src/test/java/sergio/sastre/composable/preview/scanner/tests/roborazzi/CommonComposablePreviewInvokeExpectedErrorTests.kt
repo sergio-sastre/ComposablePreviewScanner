@@ -9,9 +9,9 @@ import org.robolectric.annotation.GraphicsMode
 import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.preview.exception.PreviewParameterIsNotFirstArgumentException
-import sergio.sastre.composable.preview.scanner.jvm.common.CommonComposablePreviewScanner
-import sergio.sastre.composable.preview.scanner.jvm.common.CommonPreviewInfo
-import sergio.sastre.composable.preview.scanner.jvm.common.screenshotid.CommonPreviewScreenshotIdBuilder
+import sergio.sastre.composable.preview.scanner.common.CommonComposablePreviewScanner
+import sergio.sastre.composable.preview.scanner.common.CommonPreviewInfo
+import sergio.sastre.composable.preview.scanner.common.screenshotid.CommonPreviewScreenshotIdBuilder
 
 /**
  * These tests ensure that the invoke() function of a ComposablePreview works as expected

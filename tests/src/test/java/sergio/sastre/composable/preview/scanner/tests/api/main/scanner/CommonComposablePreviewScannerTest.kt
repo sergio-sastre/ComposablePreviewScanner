@@ -4,7 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assume.assumeTrue
 import org.junit.Test
 import sergio.sastre.composable.preview.scanner.CommonStringProvider
-import sergio.sastre.composable.preview.scanner.jvm.common.CommonComposablePreviewScanner
+import sergio.sastre.composable.preview.scanner.common.CommonComposablePreviewScanner
 
 class CommonComposablePreviewScannerTest {
 

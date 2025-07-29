@@ -4,7 +4,7 @@ import org.junit.Assert
 import org.junit.Assume
 import org.junit.Test
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
-import sergio.sastre.composable.preview.scanner.jvm.common.CommonComposablePreviewScanner
+import sergio.sastre.composable.preview.scanner.common.CommonComposablePreviewScanner
 
 class ComposablePreviewToStringTest {
 

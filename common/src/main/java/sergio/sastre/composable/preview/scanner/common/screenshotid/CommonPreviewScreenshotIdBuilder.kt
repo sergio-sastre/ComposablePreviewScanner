@@ -1,9 +1,9 @@
-package sergio.sastre.composable.preview.scanner.jvm.common.screenshotid
+package sergio.sastre.composable.preview.scanner.common.screenshotid
 
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.preview.screenshotid.DefaultPreviewInfoParameterToStringConverter
 import sergio.sastre.composable.preview.scanner.core.preview.screenshotid.PreviewScreenshotIdBuilder
-import sergio.sastre.composable.preview.scanner.jvm.common.CommonPreviewInfo
+import sergio.sastre.composable.preview.scanner.common.CommonPreviewInfo
 
 class CommonPreviewScreenshotIdBuilder(
     private val composablePreview: ComposablePreview<CommonPreviewInfo>

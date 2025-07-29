@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.jvm.common
+package sergio.sastre.composable.preview.scanner.common
 
 import io.github.classgraph.AnnotationInfoList
 import io.github.classgraph.AnnotationParameterValueList

@@ -13,9 +13,9 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
-import sergio.sastre.composable.preview.scanner.jvm.common.CommonComposablePreviewScanner
-import sergio.sastre.composable.preview.scanner.jvm.common.CommonPreviewInfo
-import sergio.sastre.composable.preview.scanner.jvm.common.screenshotid.CommonPreviewScreenshotIdBuilder
+import sergio.sastre.composable.preview.scanner.common.CommonComposablePreviewScanner
+import sergio.sastre.composable.preview.scanner.common.CommonPreviewInfo
+import sergio.sastre.composable.preview.scanner.common.screenshotid.CommonPreviewScreenshotIdBuilder
 
 /**
  * These tests ensure that the invoke() function of a ComposablePreview works as expected
@@ -33,7 +33,7 @@ class CommonComposablePreviewInvokeTests(
         private val cachedBuildTimePreviews: List<ComposablePreview<CommonPreviewInfo>> by lazy {
             CommonComposablePreviewScanner()
                 .enableScanningLogs()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.common")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .includePrivatePreviews()
                 .getPreviews()
         }

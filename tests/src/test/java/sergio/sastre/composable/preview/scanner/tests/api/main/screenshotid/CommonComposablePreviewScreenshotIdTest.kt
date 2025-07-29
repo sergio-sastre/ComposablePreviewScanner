@@ -7,8 +7,8 @@ import io.github.classgraph.AnnotationInfoList
 import org.junit.Test
 import org.junit.runner.RunWith
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
-import sergio.sastre.composable.preview.scanner.jvm.common.CommonPreviewInfo
-import sergio.sastre.composable.preview.scanner.jvm.common.screenshotid.CommonPreviewScreenshotIdBuilder
+import sergio.sastre.composable.preview.scanner.common.CommonPreviewInfo
+import sergio.sastre.composable.preview.scanner.common.screenshotid.CommonPreviewScreenshotIdBuilder
 
 @RunWith(TestParameterInjector::class)
 class CommonComposablePreviewScreenshotIdTest {
