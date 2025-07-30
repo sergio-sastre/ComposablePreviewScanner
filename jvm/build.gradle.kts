@@ -10,8 +10,8 @@ java {
 
 dependencies {
     api(project(":core"))
-    implementation("io.github.classgraph:classgraph:4.8.179")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.0")
+    implementation(libs.classgraph)
+    implementation(libs.kotlin.reflect)
 }
 
 //https://www.talentica.com/blogs/publish-your-android-library-on-jitpack-for-better-reachability/

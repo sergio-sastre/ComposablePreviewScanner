@@ -42,7 +42,9 @@ class ProvideComposablePreview<T> {
                     if (methodParametersType.isNotBlank()){
                         add(methodParametersType)
                     }
-                    if (previewIndex != null) add(previewIndex.toString())
+                    if (previewIndex != null) {
+                        add(previewIndex.toString())
+                    }
                 }.joinToString("_")
             }
 

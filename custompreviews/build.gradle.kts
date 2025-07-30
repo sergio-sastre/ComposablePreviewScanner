@@ -1,12 +1,12 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
+    alias(libs.plugins.jetbrains.kotlin.plugin.compose)
 }
 
 android {
     namespace = "sergio.sastre.composable.preview.custompreviews"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 23
