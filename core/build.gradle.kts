@@ -1,6 +1,5 @@
 plugins {
     kotlin("jvm") version "2.0.0"
-    alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.jetbrains.kotlin.plugin.compose)
     id("maven-publish")
 }

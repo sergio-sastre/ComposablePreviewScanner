@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.jetbrains.kotlin.android) apply false
     alias(libs.plugins.jetbrains.kotlin.jvm) apply false
-    alias(libs.plugins.jetbrains.compose) apply false
     alias(libs.plugins.jetbrains.kotlin.plugin.compose) apply false
     alias(libs.plugins.roborazzi) apply false
     alias(libs.plugins.paparazzi) apply false
