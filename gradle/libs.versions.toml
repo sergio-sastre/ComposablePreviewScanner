@@ -1,5 +1,5 @@
 [versions]
-agp = "8.7.0"
+agp = "8.11.1"
 androidTestify = "2.7.0"
 classgraph = "4.8.181"
 coreKtx = "1.12.0"
