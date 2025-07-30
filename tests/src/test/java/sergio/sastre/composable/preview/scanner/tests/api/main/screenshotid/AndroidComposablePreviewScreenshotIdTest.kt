@@ -64,7 +64,7 @@ class AndroidComposablePreviewScreenshotIdTest {
     }
 
     @Test
-    fun `GIVEN preview with only , THEN show group with underscores`() {
+    fun `GIVEN preview with only group, THEN show group with underscores`() {
         val preview = previewBuilder(
             previewInfo = AndroidPreviewInfo(
                 group = "My preview group"
