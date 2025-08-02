@@ -11,7 +11,7 @@ import java.io.File
 
 class AndroidComposablePreviewScannerSourceSetMissingTest {
     @Test
-    fun `GIVEN 'screenshotTest' compiled classes do not exist WHEN target Source Set THEN throw CompiledClassesNotFound error`() {
+    fun `GIVEN 'screenshotTest' compiled classes do not exist WHEN target Source Set THEN throw CompiledClassesNotFound error with AGP warning`() {
         val classpath = Classpath(SourceSet.SCREENSHOT_TEST)
         val file = File(classpath.rootDir, classpath.packagePath)
         Assume.assumeFalse(file.exists())
@@ -30,7 +30,8 @@ class AndroidComposablePreviewScannerSourceSetMissingTest {
                     "> Alternatively, you can configure gradle to always run that command before running JVM-screenshot tests like this:\n" +
                     "> tasks.withType<Test> {\n" +
                     ">   dependsOn(\"compile<Variant>ScreenshotTestKotlin\")\n" +
-                    ">}",
+                    ">}\n" +
+                    "WARNING: If using AGP 8.6.x or prior, configure ComposablePreviewScanner with .setTargetSourceSet(LegacySourceSetClasspath.SCREENSHOT_TEST)",
             exception.message
         )
     }
