@@ -2,12 +2,11 @@ package sergio.sastre.composable.preview.scanner.tests.roborazzi
 
 import android.app.Application
 import android.content.ComponentName
-import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.dp
+import android.view.ViewGroup
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
-import com.github.takahirom.roborazzi.RoborazziOptions
+import com.github.takahirom.roborazzi.RoborazziTransparentActivity
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule
 import org.junit.Test
@@ -15,6 +14,7 @@ import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
@@ -22,7 +22,6 @@ import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowSta
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.glance.GlanceComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.glance.GlancePreviewInfo
-import sergio.sastre.uitesting.utils.utils.waitForActivity
 import kotlin.intArrayOf
 
 @RunWith(ParameterizedRobolectricTestRunner::class)
@@ -52,7 +51,7 @@ class GlanceBuildTimeRoborazziComposablePreviewInvokeTests(
             Shadows.shadowOf(appContext.packageManager).addActivityIfNotPresent(
                 ComponentName(
                     appContext.packageName,
-                    GlanceScreenshotTestActivity::class.java.name,
+                    RoborazziTransparentActivity::class.java.name,
                 )
             )
         }
@@ -60,28 +59,34 @@ class GlanceBuildTimeRoborazziComposablePreviewInvokeTests(
 
     @get:Rule(order = 1)
     val activityScenarioRule =
-        ActivityScenarioRule(GlanceScreenshotTestActivity::class.java)
+        createAndroidComposeRule<RoborazziTransparentActivity>()
 
     @OptIn(ExperimentalRoborazziApi::class)
     @GraphicsMode(GraphicsMode.Mode.NATIVE)
     @Config(sdk = [33])
     @Test
     fun snapshot() {
-        activityScenarioRule
-            .scenario
-            .waitForActivity().renderComposable(
-                size = DpSize(
-                    width = preview.previewInfo.widthDp.dp,
-                    height = preview.previewInfo.heightDp.dp
-                )
-            ) { preview() }
+        // Necessary for Roborazzi
+        RuntimeEnvironment.setQualifiers("land")
+        val width = preview.previewInfo.widthDp
+        if (width > 0) {
+            RuntimeEnvironment.setQualifiers("+w${width}dp")
+        }
+        val height = preview.previewInfo.heightDp
+        if (height > 0) {
+            RuntimeEnvironment.setQualifiers("+h${height}dp")
+        }
+
+        val activity = activityScenarioRule.activity
+
+        GlanceWrapper(activity.window.decorView as ViewGroup)
+            .setSizeDp(
+                widthDp = preview.previewInfo.widthDp,
+                heightDp = preview.previewInfo.heightDp
+            )
+            .renderComposable { preview() }
             .captureRoboImage(
-                filePath = "${preview}.png",
-                roborazziOptions = RoborazziOptions(
-                    compareOptions = RoborazziOptions.CompareOptions(
-                        changeThreshold = 0F
-                    )
-                )
+                filePath = "${preview.previewInfo.widthDp}_${preview.previewInfo.heightDp}.png",
             )
     }
 }
