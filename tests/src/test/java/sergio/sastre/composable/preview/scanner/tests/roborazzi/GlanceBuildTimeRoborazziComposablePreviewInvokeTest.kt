@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
-import com.github.takahirom.roborazzi.RoborazziTransparentActivity
+import com.github.takahirom.roborazzi.RoborazziActivity
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule
 import org.junit.Test
@@ -22,6 +22,7 @@ import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowSta
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.glance.GlanceComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.glance.GlancePreviewInfo
+import sergio.sastre.composable.preview.scanner.glance.GlanceWrapper
 import kotlin.intArrayOf
 
 @RunWith(ParameterizedRobolectricTestRunner::class)
@@ -33,7 +34,7 @@ class GlanceBuildTimeRoborazziComposablePreviewInvokeTests(
         private val glanceCachedBuildTimePreviews by lazy {
             GlanceComposablePreviewScanner()
                 .enableScanningLogs()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.glance")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .includePrivatePreviews()
                 .getPreviews()
         }
@@ -51,7 +52,7 @@ class GlanceBuildTimeRoborazziComposablePreviewInvokeTests(
             Shadows.shadowOf(appContext.packageManager).addActivityIfNotPresent(
                 ComponentName(
                     appContext.packageName,
-                    RoborazziTransparentActivity::class.java.name,
+                    RoborazziActivity::class.java.name,
                 )
             )
         }
@@ -59,7 +60,7 @@ class GlanceBuildTimeRoborazziComposablePreviewInvokeTests(
 
     @get:Rule(order = 1)
     val activityScenarioRule =
-        createAndroidComposeRule<RoborazziTransparentActivity>()
+        createAndroidComposeRule<RoborazziActivity>()
 
     @OptIn(ExperimentalRoborazziApi::class)
     @GraphicsMode(GraphicsMode.Mode.NATIVE)

@@ -24,6 +24,7 @@ android {
     defaultConfig {
         applicationId = "composable.preview.scanner"
         minSdk = 23
+        targetSdk = 35  // Needs to use any targetSdk for glance to correctly render Previews without "widthDp"
         versionCode = 1
         versionName = "1.0"
 
@@ -87,6 +88,7 @@ dependencies {
     implementation(project(":jvm"))
     implementation(project(":common"))
     implementation(project(":custompreviews"))
+    implementation(project(":glance"))
     implementation(platform(libs.androidx.compose.bom))
     implementation("androidx.compose.runtime:runtime")
     implementation("androidx.compose.ui:ui")
