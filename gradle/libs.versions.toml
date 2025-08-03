@@ -7,12 +7,12 @@ glancePreview = "1.1.1"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 androidJunitVersion = "1.5.2"
-appcompat = "1.7.1"
+appcompat = "1.6.1"
 kotlinxCollectionsImmutable = "0.3.8"
-material = "1.12.0"
+material = "1.11.0"
 navigationCompose = "2.9.2"
-composeBom = "2025.07.00"
-composeRuntime = "1.8.3"
+composeBom = "2024.04.01"
+composeRuntime = "1.6.6"
 kotlin = "2.0.0"
 robolectric = "4.15.1"
 roborazzi = "1.46.1"
@@ -31,6 +31,10 @@ junitKtx = "1.2.1"
 android-testify = { module = "com.github.sergio-sastre.AndroidUiTestingUtils:android-testify", version.ref = "androidTestify" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-glance = { module = "androidx.glance:glance", version.ref = "glancePreview" }
+androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glancePreview" }
+androidx-glance-appwidget-preview = { module = "androidx.glance:glance-appwidget-preview", version.ref = "glancePreview" }
+androidx-glance-appwidget-testing = { module = "androidx.glance:glance-appwidget-testing", version.ref = "glancePreview" }
 androidx-glance-preview = { module = "androidx.glance:glance-preview", version.ref = "glancePreview" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "composeRuntime" }

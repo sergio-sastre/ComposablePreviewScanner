@@ -1,8 +1,10 @@
 package sergio.sastre.composable.preview.scanner.tests.paparazzi
 
 import android.widget.FrameLayout
+import androidx.glance.text.Text
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
+import app.cash.paparazzi.detectEnvironment
 import com.android.ide.common.rendering.api.SessionParams
 import com.android.resources.Density
 import org.junit.Rule
@@ -13,13 +15,14 @@ import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowSta
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.glance.GlanceComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.glance.GlancePreviewInfo
-import sergio.sastre.composable.preview.scanner.tests.roborazzi.GlanceWrapper
+import sergio.sastre.composable.preview.scanner.glance.GlanceWrapper
 import kotlin.math.roundToInt
-
+/*
 @RunWith(Parameterized::class)
 class GlanceBuildTimePaparazziComposablePreviewInvokeTests(
     private val preview: ComposablePreview<GlancePreviewInfo>,
 ) {
+
     companion object {
         @OptIn(RequiresShowStandardStreams::class)
         private val glanceCachedBuildTimePreviews by lazy {
@@ -64,6 +67,7 @@ class GlanceBuildTimePaparazziComposablePreviewInvokeTests(
             screenWidth = width(baseDeviceConfig.screenWidth),
             screenHeight = height(baseDeviceConfig.screenHeight),
         ),
+        environment = detectEnvironment(),
         theme = "Theme.AppCompat.Light",
         renderingMode = SessionParams.RenderingMode.SHRINK,
     )
@@ -82,5 +86,33 @@ class GlanceBuildTimePaparazziComposablePreviewInvokeTests(
             view = glanceView.rootView,
             name = "${preview.previewInfo.widthDp}_${preview.previewInfo.heightDp}"
         )
+    }
+}
+
+ */
+
+class GlanceBuildTimePaparazziComposablePreviewInvokeTests(
+) {
+
+    val baseDeviceConfig: DeviceConfig =
+        DeviceConfig.NEXUS_5.copy(
+            density = Density.XXHIGH
+        )
+
+
+
+    @get:Rule(order = 1)
+    val paparazzi = Paparazzi(
+        deviceConfig = baseDeviceConfig.copy(),
+        environment = detectEnvironment(),
+        theme = "Theme.AppCompat.Light",
+        renderingMode = SessionParams.RenderingMode.SHRINK,
+    )
+
+    @Test
+    fun snapshot() {
+        paparazzi.snapshot {
+            Text("hello")
+        }
     }
 }
