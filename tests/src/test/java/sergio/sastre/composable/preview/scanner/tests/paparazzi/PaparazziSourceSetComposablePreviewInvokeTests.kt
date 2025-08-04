@@ -2,6 +2,7 @@ package sergio.sastre.composable.preview.scanner.tests.paparazzi
 
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
+import app.cash.paparazzi.detectEnvironment
 import com.android.ide.common.rendering.api.SessionParams
 import com.android.resources.Density
 import com.android.resources.ScreenRatio
@@ -24,10 +25,10 @@ import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.So
  * These tests ensure that the invoke() function of a ComposablePreview works as expected
  * for all the @Composable's in the 'main' and 'screenshotTest' sources based on their respective compiled classes.
  *
- * ./gradlew :tests:recordPaparazziDebug --tests 'SourceSetPaparazziComposablePreviewInvokeTests' -Plibrary=paparazzi
+ * ./gradlew :tests:recordPaparazziDebug --tests 'PaparazziSourceSetComposablePreviewInvokeTests' -Plibrary=paparazzi
  */
 @RunWith(Parameterized::class)
-class SourceSetPaparazziComposablePreviewInvokeTests(
+class PaparazziSourceSetComposablePreviewInvokeTests(
     private val preview: ComposablePreview<AndroidPreviewInfo>,
 ) {
 
@@ -75,6 +76,7 @@ class SourceSetPaparazziComposablePreviewInvokeTests(
 
     @get:Rule
     val paparazzi = Paparazzi(
+        environment = detectEnvironment().copy(compileSdkVersion = 34),
         deviceConfig = DeviceConfigBuilder.build(preview.previewInfo.device),
         renderingMode = SessionParams.RenderingMode.SHRINK
     )

@@ -23,7 +23,6 @@ import sergio.sastre.composable.preview.scanner.common.screenshotid.CommonPrevie
 class CommonComposablePreviewInvokeExpectedErrorTests(
     private val preview: ComposablePreview<CommonPreviewInfo>,
 ) {
-    
     companion object {
         @OptIn(RequiresShowStandardStreams::class)
         private val cachedBuildTimePreviews: List<ComposablePreview<CommonPreviewInfo>> by lazy {
@@ -42,7 +41,6 @@ class CommonComposablePreviewInvokeExpectedErrorTests(
     @Config(sdk = [30])
     @Test(expected = PreviewParameterIsNotFirstArgumentException::class)
     fun snapshot() {
-
         val name = CommonPreviewScreenshotIdBuilder(preview)
             .doNotIgnoreMethodParametersType()
             .build()

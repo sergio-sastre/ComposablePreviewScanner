@@ -1,6 +1,7 @@
 package sergio.sastre.composable.preview.scanner.tests.paparazzi
 
 import app.cash.paparazzi.Paparazzi
+import app.cash.paparazzi.detectEnvironment
 import com.android.ide.common.rendering.api.SessionParams
 import org.junit.Rule
 import org.junit.Test
@@ -16,10 +17,10 @@ import sergio.sastre.composable.preview.scanner.common.screenshotid.CommonPrevie
  * These tests ensure that the invoke() function of a ComposablePreview works as expected
  * for all the @Composable's in the main source at build time.
  *
- * ./gradlew :tests:recordPaparazziDebug --tests 'CommonComposablePreviewInvokeTests' -Plibrary=paparazzi
+ * ./gradlew :tests:recordPaparazziDebug --tests 'PaparazziCommonComposablePreviewInvokeTests' -Plibrary=paparazzi
  */
 @RunWith(Parameterized::class)
-class CommonComposablePreviewInvokeTests(
+class PaparazziCommonComposablePreviewInvokeTests(
     private val preview: ComposablePreview<CommonPreviewInfo>,
 ) {
 
@@ -40,6 +41,7 @@ class CommonComposablePreviewInvokeTests(
 
     @get:Rule
     val paparazzi = Paparazzi(
+        environment = detectEnvironment().copy(compileSdkVersion = 34),
         renderingMode = SessionParams.RenderingMode.SHRINK
     )
 
