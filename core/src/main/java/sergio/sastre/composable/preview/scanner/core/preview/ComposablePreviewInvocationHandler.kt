@@ -24,19 +24,7 @@ internal class ComposablePreviewInvocationHandler(
     object NoParameter
 
     override fun invoke(proxy: Any?, method: Method?, args: Array<out Any>?): Any? {
-        val safeArgs = args ?: emptyArray()
-        val safeArgsWithParam =
-            when (parameter != NoParameter) {
-                true -> arrayOf(parameter, *safeArgs)
-                false -> safeArgs
-            }
-        //throw IllegalArgumentException("${composableMethod}, safeArgsWithParam: ${safeArgsWithParam.map { it?.javaClass }}")
-        return composableMethod.invoke(null, *safeArgsWithParam)
-    }
-
-    /*
-    override fun invoke(proxy: Any?, method: Method?, args: Array<out Any>?): Any? {
-        val safeArgs: Array<out Any?> = args as Array<out Any?>//fillMissingComposeArgs(args)
+        val safeArgs: Array<out Any?> = fillMissingComposeArgs(args)
         val safeArgsWithParam =
             when (parameter != NoParameter) {
                 true -> arrayOf(parameter, *safeArgs)
@@ -53,8 +41,6 @@ internal class ComposablePreviewInvocationHandler(
             )
         }
     }
-
-     */
 
     private fun fillMissingComposeArgs(passedComposeArgs: Array<out Any>?): Array<out Any?> {
         val safeArgs = passedComposeArgs ?: emptyArray()
