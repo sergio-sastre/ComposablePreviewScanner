@@ -16,7 +16,7 @@ import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Cl
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.MAIN
 import sergio.sastre.composable.preview.scanner.glance.GlanceComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.glance.GlancePreviewInfo
-import sergio.sastre.composable.preview.scanner.glance.GlanceWrapper
+import sergio.sastre.composable.preview.scanner.glance.configuration.GlanceViewConfigurator
 import sergio.sastre.uitesting.android_testify.screenshotscenario.assertSame
 import sergio.sastre.uitesting.android_testify.screenshotscenario.generateDiffs
 import sergio.sastre.uitesting.utils.activityscenario.activityScenarioForActivityRule
@@ -73,12 +73,12 @@ class TestifyGlanceComposablePreviewScannerInstrumentationInvokeTest(
                     .activityScenario
                     .onActivity {
                         val view =
-                            GlanceWrapper(it.window.decorView as ViewGroup)
+                            GlanceViewConfigurator(it.window.decorView as ViewGroup)
                                 .setSizeDp(
                                     widthDp = preview.previewInfo.widthDp,
                                     heightDp = preview.previewInfo.heightDp
                                 )
-                                .renderComposable { preview() }
+                                .composableToView { preview() }
                         (view.parent as ViewGroup).removeView(view)
                         it.setContentView(view)
                     }

@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.glance
+package sergio.sastre.composable.preview.scanner.glance.configuration
 
 import android.graphics.Color
 import android.util.DisplayMetrics
@@ -15,12 +15,22 @@ import androidx.glance.appwidget.ExperimentalGlanceRemoteViewsApi
 import androidx.glance.appwidget.GlanceRemoteViews
 import kotlinx.coroutines.runBlocking
 
-class GlanceWrapper(
+/**
+ * Helps configure a Glance Composable for screenshot testing.
+ *
+ * Glance has its own api, for instance, it uses GlanceModifiers instead of Modifiers, which
+ * are not available in the standard Jetpack Compose API.
+ * There snapshotting Glance Composables directly might lead to problems.
+ *
+ * Therefore, the best way to snapshotting Glance Composables is to convert them into Views.
+ * This class aims at facilitating that.
+ */
+class GlanceViewConfigurator(
     val rootView: ViewGroup
 ) {
     private var state: Any? = null
-    private var size: DpSize = DpSize(Dp.Unspecified, Dp.Unspecified)
-    private lateinit var containerView: FrameLayout
+    private var size: DpSize = DpSize(Dp.Companion.Unspecified, Dp.Companion.Unspecified)
+    private val containerView = FrameLayout(rootView.context)
 
     fun setSizeDp(
         widthDp: Int,
@@ -28,11 +38,11 @@ class GlanceWrapper(
     ) = apply {
         val width = when (widthDp > 0) {
             true -> widthDp.dp
-            false -> Dp.Unspecified
+            false -> Dp.Companion.Unspecified
         }
         val height = when (heightDp > 0) {
             true -> heightDp.dp
-            false -> Dp.Unspecified
+            false -> Dp.Companion.Unspecified
         }
         this.size = DpSize(width = width, height = height)
     }
@@ -42,18 +52,18 @@ class GlanceWrapper(
     }
 
     @OptIn(ExperimentalGlanceRemoteViewsApi::class)
-    fun renderComposable(
+    fun composableToView(
         composable: @Composable () -> Unit
     ): View {
         return runBlocking {
-            val remoteViews = GlanceRemoteViews().compose(
-                context = rootView.context,
-                size = size,
-                state = state,
-                content = composable
-            ).remoteViews
+            val remoteViews =
+                GlanceRemoteViews().compose(
+                    context = rootView.context,
+                    size = size,
+                    state = state,
+                    content = composable
+                ).remoteViews
 
-            containerView = FrameLayout(rootView.context)
             containerView.setBackgroundColor(Color.WHITE)
             rootView.addView(containerView)
 
@@ -67,11 +77,11 @@ class GlanceWrapper(
     private fun adjustContainerViewSize(): View {
         val displayMetrics = rootView.context.resources.displayMetrics
 
-        val width = when (size.width == Dp.Unspecified) {
+        val width = when (size.width == Dp.Companion.Unspecified) {
             true -> FrameLayout.LayoutParams.WRAP_CONTENT
             false -> size.width.toPixels(displayMetrics)
         }
-        val height = when (size.height == Dp.Unspecified) {
+        val height = when (size.height == Dp.Companion.Unspecified) {
             true -> FrameLayout.LayoutParams.WRAP_CONTENT
             false -> size.height.toPixels(displayMetrics)
         }

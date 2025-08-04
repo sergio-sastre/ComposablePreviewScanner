@@ -22,11 +22,19 @@ import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowSta
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.glance.GlanceComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.glance.GlancePreviewInfo
-import sergio.sastre.composable.preview.scanner.glance.GlanceWrapper
+import sergio.sastre.composable.preview.scanner.glance.configuration.GlanceViewConfigurator
 import kotlin.intArrayOf
 
+/**
+ * These tests ensure that the invoke() function of a ComposablePreview works as expected
+ * for all the @Composable's in the main source at build time.
+ *
+ * These tests also ensure that the GlanceViewConfigurator configures the GlanceView as expected
+ *
+ * ./gradlew :tests:recordRoborazziDebug --tests 'RoborazziGlanceComposablePreviewInvokeTests' -Plibrary=roborazzi
+ */
 @RunWith(ParameterizedRobolectricTestRunner::class)
-class GlanceBuildTimeRoborazziComposablePreviewInvokeTests(
+class RoborazziGlanceComposablePreviewInvokeTests(
     private val preview: ComposablePreview<GlancePreviewInfo>,
 ) {
     companion object {
@@ -80,12 +88,12 @@ class GlanceBuildTimeRoborazziComposablePreviewInvokeTests(
 
         val activity = activityScenarioRule.activity
 
-        GlanceWrapper(activity.window.decorView as ViewGroup)
+        GlanceViewConfigurator(activity.window.decorView as ViewGroup)
             .setSizeDp(
                 widthDp = preview.previewInfo.widthDp,
                 heightDp = preview.previewInfo.heightDp
             )
-            .renderComposable { preview() }
+            .composableToView { preview() }
             .captureRoboImage(
                 filePath = "${preview.previewInfo.widthDp}_${preview.previewInfo.heightDp}.png",
             )

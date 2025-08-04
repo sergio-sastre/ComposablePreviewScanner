@@ -9,29 +9,30 @@ import com.github.takahirom.roborazzi.size
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
+import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
+import sergio.sastre.composable.preview.scanner.android.device.domain.RobolectricDeviceQualifierBuilder
+import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
 import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
-import sergio.sastre.composable.preview.scanner.common.CommonComposablePreviewScanner
-import sergio.sastre.composable.preview.scanner.common.CommonPreviewInfo
-import sergio.sastre.composable.preview.scanner.common.screenshotid.CommonPreviewScreenshotIdBuilder
 
 /**
  * These tests ensure that the invoke() function of a ComposablePreview works as expected
  * for all the @Composable's in the main source at build time.
  *
- * ./gradlew :tests:recordRoborazziDebug --tests 'CommonComposablePreviewInvokeTests' -Plibrary=roborazzi
+ * ./gradlew :tests:recordRoborazziDebug --tests 'RoborazziBuildTimeComposablePreviewInvokeTests' -Plibrary=roborazzi
  */
 @RunWith(ParameterizedRobolectricTestRunner::class)
-class CommonComposablePreviewInvokeTests(
-    private val preview: ComposablePreview<CommonPreviewInfo>,
+class RoborazziComposablePreviewInvokeTests(
+    private val preview: ComposablePreview<AndroidPreviewInfo>,
 ) {
-
     companion object {
         @OptIn(RequiresShowStandardStreams::class)
-        private val cachedBuildTimePreviews: List<ComposablePreview<CommonPreviewInfo>> by lazy {
-            CommonComposablePreviewScanner()
+        private val cachedBuildTimePreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
+            AndroidComposablePreviewScanner()
                 .enableScanningLogs()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .includePrivatePreviews()
@@ -40,7 +41,7 @@ class CommonComposablePreviewInvokeTests(
 
         @JvmStatic
         @ParameterizedRobolectricTestRunner.Parameters
-        fun values(): List<ComposablePreview<CommonPreviewInfo>> = cachedBuildTimePreviews
+        fun values(): List<ComposablePreview<AndroidPreviewInfo>> = cachedBuildTimePreviews
     }
 
     @OptIn(ExperimentalRoborazziApi::class)
@@ -48,7 +49,13 @@ class CommonComposablePreviewInvokeTests(
     @Config(sdk = [30])
     @Test
     fun snapshot() {
-        val name = CommonPreviewScreenshotIdBuilder(preview).build()
+        RobolectricDeviceQualifierBuilder.build(preview.previewInfo.device)?.run {
+            RuntimeEnvironment.setQualifiers(this)
+        }
+
+        val name = AndroidPreviewScreenshotIdBuilder(preview)
+            .doNotIgnoreMethodParametersType()
+            .build()
         captureRoboImage(
             filePath = "${name}.png",
             roborazziComposeOptions = RoborazziComposeOptions {
