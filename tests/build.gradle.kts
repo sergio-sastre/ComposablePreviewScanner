@@ -24,7 +24,10 @@ android {
     defaultConfig {
         applicationId = "composable.preview.scanner"
         minSdk = 23
-        targetSdk = 35  // Needs to use any targetSdk for glance to correctly render Previews without "widthDp"
+        // Needs to use any targetSdk for glance to correctly render Previews without "widthDp"
+        // when using Roborazzi or instrumentation testing libs
+        // Paparazzi cannot handle this
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -47,8 +50,8 @@ android {
     if (includeScreenshotTests) {
         sourceSets {
             getByName("androidTest") {
-                java.srcDir("src/screenshotTest/java")//, "src/androidTest/java")
-                res.srcDir("src/screenshotTest/res")//"src/androidTest/res")
+                java.srcDir("src/screenshotTest/java") // "src/androidTest/java")
+                res.srcDir("src/screenshotTest/res")   // "src/androidTest/res")
             }
         }
     }
