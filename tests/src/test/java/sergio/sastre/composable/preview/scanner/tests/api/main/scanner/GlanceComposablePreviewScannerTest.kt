@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.tests.api.main
+package sergio.sastre.composable.preview.scanner.tests.api.main.scanner
 
 import org.junit.Test
 import sergio.sastre.composable.preview.scanner.glance.GlanceComposablePreviewScanner
@@ -6,7 +6,7 @@ import sergio.sastre.composable.preview.scanner.glance.GlanceComposablePreviewSc
 class GlanceComposablePreviewScannerTest {
 
     @Test
-    fun `GIVEN glance composable`() {
+    fun `GIVEN Composable with glance @Previews, WHEN Scanning a package tree with such composables, THEN it returns previews`() {
         val composablePreviews =
             GlanceComposablePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")

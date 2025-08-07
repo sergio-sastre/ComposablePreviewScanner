@@ -15,6 +15,7 @@ import sergio.sastre.composable.preview.scanner.glance.GlanceComposablePreviewSc
 import sergio.sastre.composable.preview.scanner.glance.GlancePreviewInfo
 import sergio.sastre.composable.preview.scanner.glance.configuration.GlanceDeviceConfigDimensions
 import sergio.sastre.composable.preview.scanner.glance.configuration.GlanceSnapshotConfigurator
+import sergio.sastre.composable.preview.scanner.glance.screenshotid.GlancePreviewScreenshotIdBuilder
 
 /**
  * These tests ensure that the invoke() function of a ComposablePreview works as expected
@@ -78,7 +79,9 @@ class PaparazziGlanceComposablePreviewInvokeTests(
 
         paparazzi.snapshot(
             view = glanceView,
-            name = "${preview.previewInfo.widthDp}_${preview.previewInfo.heightDp}"
+            name = GlancePreviewScreenshotIdBuilder(preview)
+                .ignoreClassName()
+                .build()
         )
     }
 }

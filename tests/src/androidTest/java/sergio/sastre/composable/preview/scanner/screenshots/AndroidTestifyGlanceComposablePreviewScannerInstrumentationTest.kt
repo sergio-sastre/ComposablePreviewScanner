@@ -17,6 +17,7 @@ import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.So
 import sergio.sastre.composable.preview.scanner.glance.GlanceComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.glance.GlancePreviewInfo
 import sergio.sastre.composable.preview.scanner.glance.configuration.GlanceSnapshotConfigurator
+import sergio.sastre.composable.preview.scanner.glance.screenshotid.GlancePreviewScreenshotIdBuilder
 import sergio.sastre.uitesting.android_testify.screenshotscenario.assertSame
 import sergio.sastre.uitesting.android_testify.screenshotscenario.generateDiffs
 import sergio.sastre.uitesting.utils.activityscenario.activityScenarioForActivityRule
@@ -85,7 +86,7 @@ class TestifyGlanceComposablePreviewScannerInstrumentationInvokeTest(
             .configure { captureMethod = ::pixelCopyCapture }
             .generateDiffs(true)
             .assertSame(
-                name = "${preview.previewInfo.widthDp}_${preview.previewInfo.heightDp}"
+                name = GlancePreviewScreenshotIdBuilder(preview).build()
             )
     }
 }
