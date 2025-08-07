@@ -16,11 +16,11 @@ import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Cl
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.MAIN
 import sergio.sastre.composable.preview.scanner.glance.GlanceComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.glance.GlancePreviewInfo
-import sergio.sastre.composable.preview.scanner.glance.configuration.GlanceViewConfigurator
+import sergio.sastre.composable.preview.scanner.glance.configuration.GlanceSnapshotConfigurator
 import sergio.sastre.uitesting.android_testify.screenshotscenario.assertSame
 import sergio.sastre.uitesting.android_testify.screenshotscenario.generateDiffs
 import sergio.sastre.uitesting.utils.activityscenario.activityScenarioForActivityRule
-import sergio.sastre.uitesting.utils.utils.waitForActivity
+import sergio.sastre.uitesting.utils.utils.waitForView
 
 /**
  * ./gradlew :tests:screenshotRecord -PincludeSourceSetScreenshotTest
@@ -69,24 +69,18 @@ class TestifyGlanceComposablePreviewScannerInstrumentationInvokeTest(
         screenshotRule
             .withScenario(composableRule.activityScenario)
             .setScreenshotViewProvider {
-                composableRule
-                    .activityScenario
-                    .onActivity {
-                        val view =
-                            GlanceViewConfigurator(it.window.decorView as ViewGroup)
-                                .setSizeDp(
-                                    widthDp = preview.previewInfo.widthDp,
-                                    heightDp = preview.previewInfo.heightDp
-                                )
-                                .composableToView { preview() }
-                        (view.parent as ViewGroup).removeView(view)
-                        it.setContentView(view)
-                    }
-                    .waitForActivity()
-                    .window
-                    .decorView
-                    .findViewById<ViewGroup>(android.R.id.content)
-                    .getChildAt(0)
+                val activity = composableRule.activity
+                waitForView {
+                    val glanceView =
+                        GlanceSnapshotConfigurator(activity)
+                            .setSizeDp(
+                                widthDp = preview.previewInfo.widthDp,
+                                heightDp = preview.previewInfo.heightDp
+                            )
+                            .composableToView { preview() }
+                    activity.setContentView(glanceView)
+                    (glanceView as ViewGroup).getChildAt(0)
+                }
             }
             .configure { captureMethod = ::pixelCopyCapture }
             .generateDiffs(true)
