@@ -23,10 +23,10 @@ import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
  * These tests ensure that the invoke() function of a ComposablePreview works as expected
  * for all the @Composable's in the main source at build time.
  *
- * ./gradlew :tests:recordRoborazziDebug --tests 'RoborazziBuildTimeComposablePreviewInvokeTests' -Plibrary=roborazzi
+ * ./gradlew :tests:recordRoborazziDebug --tests 'RoborazziAndroidComposablePreviewInvokeTests' -Plibrary=roborazzi
  */
 @RunWith(ParameterizedRobolectricTestRunner::class)
-class RoborazziComposablePreviewInvokeTests(
+class RoborazziAndroidComposablePreviewInvokeTests(
     private val preview: ComposablePreview<AndroidPreviewInfo>,
 ) {
     companion object {

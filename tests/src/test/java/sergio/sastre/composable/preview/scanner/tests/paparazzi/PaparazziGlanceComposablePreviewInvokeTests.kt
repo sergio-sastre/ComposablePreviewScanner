@@ -1,6 +1,5 @@
 package sergio.sastre.composable.preview.scanner.tests.paparazzi
 
-import android.widget.FrameLayout
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
 import app.cash.paparazzi.detectEnvironment
@@ -14,8 +13,8 @@ import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowSta
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.glance.GlanceComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.glance.GlancePreviewInfo
-import sergio.sastre.composable.preview.scanner.glance.configuration.GlanceViewConfigurator
-import kotlin.math.roundToInt
+import sergio.sastre.composable.preview.scanner.glance.configuration.GlanceDeviceConfigDimensions
+import sergio.sastre.composable.preview.scanner.glance.configuration.GlanceSnapshotConfigurator
 
 /**
  * These tests ensure that the invoke() function of a ComposablePreview works as expected
@@ -46,34 +45,20 @@ class PaparazziGlanceComposablePreviewInvokeTests(
     }
 
     val baseDeviceConfig: DeviceConfig =
-        DeviceConfig.NEXUS_5.copy(
-            density = Density.XXHIGH
-        )
+        DeviceConfig.NEXUS_7.copy(density = Density.XXHIGH)
 
-    val scale = baseDeviceConfig.density.dpiValue.toFloat()
-
-    fun width(original: Int): Int {
-        val widthDp = (preview.previewInfo.widthDp * scale).roundToInt()
-        return when (widthDp > 0) {
-            true -> widthDp
-            false -> original
-        }
-    }
-
-    fun height(original: Int): Int {
-        val heightDp = (preview.previewInfo.heightDp * scale).roundToInt()
-        return when (heightDp > 0) {
-            true -> heightDp
-            false -> original
-        }
-    }
+    val glanceDeviceConfig = GlanceDeviceConfigDimensions(
+        densityDpi = baseDeviceConfig.density.dpiValue.toFloat(),
+        previewWidthDp = preview.previewInfo.widthDp,
+        previewHeightDp = preview.previewInfo.heightDp
+    )
 
     @get:Rule(order = 1)
     val paparazzi = Paparazzi(
         environment = detectEnvironment().copy(compileSdkVersion = 34),
         deviceConfig = baseDeviceConfig.copy(
-            screenWidth = width(baseDeviceConfig.screenWidth),
-            screenHeight = height(baseDeviceConfig.screenHeight),
+            screenWidth = glanceDeviceConfig.width(baseDeviceConfig.screenWidth),
+            screenHeight = glanceDeviceConfig.height(baseDeviceConfig.screenHeight),
         ),
         theme = "Theme.AppCompat.Light",
         renderingMode = SessionParams.RenderingMode.SHRINK,
@@ -82,15 +67,17 @@ class PaparazziGlanceComposablePreviewInvokeTests(
     @Test
     fun snapshot() {
         val glanceView =
-            GlanceViewConfigurator(rootView = FrameLayout(paparazzi.context))
+            GlanceSnapshotConfigurator(paparazzi.context)
                 .setSizeDp(
                     widthDp = preview.previewInfo.widthDp,
                     heightDp = preview.previewInfo.heightDp
                 )
-                .composableToView { preview() }
+                .composableToView {
+                    preview()
+                }
 
         paparazzi.snapshot(
-            view = glanceView.rootView,
+            view = glanceView,
             name = "${preview.previewInfo.widthDp}_${preview.previewInfo.heightDp}"
         )
     }

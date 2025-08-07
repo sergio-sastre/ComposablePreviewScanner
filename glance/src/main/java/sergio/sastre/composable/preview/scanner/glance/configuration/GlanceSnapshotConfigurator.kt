@@ -1,5 +1,6 @@
 package sergio.sastre.composable.preview.scanner.glance.configuration
 
+import android.content.Context
 import android.graphics.Color
 import android.util.DisplayMetrics
 import android.util.TypedValue
@@ -7,6 +8,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.RemoteViews
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
@@ -24,13 +26,22 @@ import kotlinx.coroutines.runBlocking
  *
  * Therefore, the best way to snapshotting Glance Composables is to convert them into Views.
  * This class aims at facilitating that.
+ *
+ * @param context: When possible (e.g. in Roborazzi or Instrumentation tests), an activity.
+ * If not (e.g. Paparazzi), the View might not render exactly like in the Preview.
+ *
+ * WARNING: Make sure to define "targetSdk" in your gradle file. If missing, the View might not render
+ * exactly like in the Preview.
  */
-class GlanceViewConfigurator(
-    val rootView: ViewGroup
+class GlanceSnapshotConfigurator(
+    val context: Context
 ) {
     private var state: Any? = null
     private var size: DpSize = DpSize(Dp.Companion.Unspecified, Dp.Companion.Unspecified)
+    private val rootView = FrameLayout(context)
     private val containerView = FrameLayout(rootView.context)
+
+    lateinit var remoteViews2: RemoteViews
 
     fun setSizeDp(
         widthDp: Int,
@@ -64,13 +75,15 @@ class GlanceViewConfigurator(
                     content = composable
                 ).remoteViews
 
+            remoteViews2 = remoteViews
+
             containerView.setBackgroundColor(Color.WHITE)
             rootView.addView(containerView)
 
             val view = remoteViews.apply(rootView.context, containerView)
             containerView.addView(view)
 
-            adjustContainerViewSize()
+            adjustContainerViewSize().rootView
         }
     }
 

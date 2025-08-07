@@ -3,9 +3,11 @@ package sergio.sastre.composable.preview.scanner.tests.roborazzi
 import android.app.Application
 import android.content.ComponentName
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
+import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.RoborazziActivity
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule
@@ -22,7 +24,8 @@ import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowSta
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.glance.GlanceComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.glance.GlancePreviewInfo
-import sergio.sastre.composable.preview.scanner.glance.configuration.GlanceViewConfigurator
+import sergio.sastre.composable.preview.scanner.glance.configuration.GlanceSnapshotConfigurator
+import sergio.sastre.composable.preview.scanner.glance.configuration.RobolectricDeviceQualifierBuilder
 import kotlin.intArrayOf
 
 /**
@@ -72,23 +75,15 @@ class RoborazziGlanceComposablePreviewInvokeTests(
 
     @OptIn(ExperimentalRoborazziApi::class)
     @GraphicsMode(GraphicsMode.Mode.NATIVE)
-    @Config(sdk = [33])
+    @Config(sdk = [33], qualifiers = RobolectricDeviceQualifiers.Nexus7)
     @Test
     fun snapshot() {
-        // Necessary for Roborazzi
-        RuntimeEnvironment.setQualifiers("land")
-        val width = preview.previewInfo.widthDp
-        if (width > 0) {
-            RuntimeEnvironment.setQualifiers("+w${width}dp")
-        }
-        val height = preview.previewInfo.heightDp
-        if (height > 0) {
-            RuntimeEnvironment.setQualifiers("+h${height}dp")
-        }
+        // Apply cumulative qualifier
+        RuntimeEnvironment.setQualifiers(
+            "+${RobolectricDeviceQualifierBuilder.build(preview.previewInfo)}"
+        )
 
-        val activity = activityScenarioRule.activity
-
-        GlanceViewConfigurator(activity.window.decorView as ViewGroup)
+        GlanceSnapshotConfigurator(activityScenarioRule.activity)
             .setSizeDp(
                 widthDp = preview.previewInfo.widthDp,
                 heightDp = preview.previewInfo.heightDp
