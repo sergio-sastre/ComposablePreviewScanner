@@ -26,6 +26,7 @@ import sergio.sastre.composable.preview.scanner.glance.GlanceComposablePreviewSc
 import sergio.sastre.composable.preview.scanner.glance.GlancePreviewInfo
 import sergio.sastre.composable.preview.scanner.glance.configuration.GlanceSnapshotConfigurator
 import sergio.sastre.composable.preview.scanner.glance.configuration.RobolectricDeviceQualifierBuilder
+import sergio.sastre.composable.preview.scanner.glance.screenshotid.GlancePreviewScreenshotIdBuilder
 import kotlin.intArrayOf
 
 /**
@@ -83,14 +84,13 @@ class RoborazziGlanceComposablePreviewInvokeTests(
             "+${RobolectricDeviceQualifierBuilder.build(preview.previewInfo)}"
         )
 
+        val name = GlancePreviewScreenshotIdBuilder(preview).build()
         GlanceSnapshotConfigurator(activityScenarioRule.activity)
             .setSizeDp(
                 widthDp = preview.previewInfo.widthDp,
                 heightDp = preview.previewInfo.heightDp
             )
             .composableToView { preview() }
-            .captureRoboImage(
-                filePath = "${preview.previewInfo.widthDp}_${preview.previewInfo.heightDp}.png",
-            )
+            .captureRoboImage(filePath = "$name.png")
     }
 }
