@@ -25,7 +25,6 @@ import sergio.sastre.composable.preview.scanner.glance.GlancePreviewInfo
 import sergio.sastre.composable.preview.scanner.glance.configuration.GlanceSnapshotConfigurator
 import sergio.sastre.composable.preview.scanner.glance.configuration.RobolectricDeviceQualifierBuilder
 import sergio.sastre.composable.preview.scanner.glance.screenshotid.GlancePreviewScreenshotIdBuilder
-import kotlin.intArrayOf
 
 /**
  * These tests ensure that the invoke() function of a ComposablePreview works as expected
@@ -54,6 +53,8 @@ class RoborazziGlanceComposablePreviewInvokeTests(
         fun values(): List<ComposablePreview<GlancePreviewInfo>> = glanceCachedBuildTimePreviews
     }
 
+    // Workaround to ensure RoborazziActivity is registered with Robolectric's shadow package manager
+    // This is necessary because Robolectric may not automatically register activities from external libraries
     @get:Rule(order = 0)
     val addActivityToRobolectricRule = object : TestWatcher() {
         override fun starting(description: Description?) {

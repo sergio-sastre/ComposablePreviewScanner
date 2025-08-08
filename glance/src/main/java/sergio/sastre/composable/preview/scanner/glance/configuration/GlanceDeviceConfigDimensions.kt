@@ -12,7 +12,7 @@ class GlanceDeviceConfigDimensions(
     private val previewHeightDp: Int,
 ) {
     fun width(originalDeviceConfigWidthPx: Int): Int {
-        val widthPx = (previewWidthDp * densityDpi).roundToInt()
+        val widthPx = (previewWidthDp * densityDpi / 160).roundToInt()
         return when (widthPx > 0) {
             true -> widthPx
             false -> originalDeviceConfigWidthPx
@@ -20,7 +20,7 @@ class GlanceDeviceConfigDimensions(
     }
 
     fun height(originalDeviceConfigHeightPx: Int): Int {
-        val heightPx = (previewHeightDp * densityDpi).roundToInt()
+        val heightPx = (previewHeightDp * densityDpi / 160).roundToInt()
         return when (heightPx > 0) {
             true -> heightPx
             false -> originalDeviceConfigHeightPx

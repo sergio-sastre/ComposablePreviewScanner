@@ -98,10 +98,10 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui-tooling")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.glance:glance:1.1.1")
-    implementation("androidx.glance:glance-appwidget:1.1.1")
-    implementation("androidx.glance:glance-preview:1.1.1")
-    implementation("androidx.glance:glance-appwidget-preview:1.1.1")
+    implementation(libs.androidx.glance)
+    implementation(libs.androidx.glance.appwidget)
+    implementation(libs.androidx.glance.preview)
+    implementation(libs.androidx.glance.appwidget.preview)
     implementation(libs.androidx.junit.ktx)
 
     screenshotTestImplementation(libs.kotlinx.collections.immutable)
@@ -120,7 +120,6 @@ dependencies {
     testImplementation(libs.roborazzi)
     testImplementation(libs.robolectric)
     testImplementation(libs.paparazzi)
-    testImplementation("androidx.glance:glance-appwidget-testing:1.1.1")
 
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
