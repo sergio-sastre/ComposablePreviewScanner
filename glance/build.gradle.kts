@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "sergio.sastre.composable.preview.scanner.glance"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 21
@@ -22,12 +22,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 
     buildFeatures {
@@ -46,25 +46,17 @@ android {
 dependencies {
     api(project(":core"))
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.glance.preview)
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.kotlin.reflect)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.junit)
     implementation(libs.androidx.appcompat)
+    compileOnly(libs.androidx.glance)
+    compileOnly(libs.androidx.glance.appwidget)
+    compileOnly(libs.androidx.glance.preview)
+    compileOnly(libs.androidx.glance.appwidget.preview)
     implementation(libs.classgraph)
-    implementation(libs.androidx.glance)
-    implementation(libs.androidx.glance.appwidget)
-    implementation(libs.androidx.glance.preview)
-    implementation(libs.androidx.glance.appwidget.preview)
-    
-    // Test dependencies
-    testImplementation(libs.junit)
-    testImplementation(libs.roborazzi.compose)
-    testImplementation(libs.roborazzi)
-    testImplementation(libs.robolectric)
-    testImplementation(libs.androidx.glance.appwidget.testing)
+    implementation(libs.kotlin.reflect)
 }
 
 //https://www.talentica.com/blogs/publish-your-android-library-on-jitpack-for-better-reachability/

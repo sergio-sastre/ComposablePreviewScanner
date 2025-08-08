@@ -25,7 +25,6 @@ fun Example () {
     }
 }
 
-// TODO - Previews with none or only one of both
 @OptIn(ExperimentalGlancePreviewApi::class)
 @Composable
 @Preview
@@ -35,6 +34,6 @@ fun Example () {
 @Preview(widthDp = 50, heightDp = 50)
 @Preview(widthDp = 200, heightDp = 150)
 @Preview(widthDp = 2000, heightDp = 1500)
-fun examplePreview() {
+fun ExamplePreview() {
     Example()
 }

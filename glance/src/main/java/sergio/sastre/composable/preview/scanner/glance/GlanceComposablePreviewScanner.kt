@@ -12,8 +12,8 @@ import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.pr
 import java.lang.reflect.Method
 
 /**
- * Scans the target package trees for @androidx.compose.ui.tooling.preview.Preview and can returns their Composable,
- * which can be invoked, along with other infos that might be relevant, like the Preview values (i.e. AndroidPreviewInfo)
+ * Scans the target package trees for @androidx.glance.preview.Preview and can returns their Composable,
+ * which can be invoked, along with other infos that might be relevant, like the Preview values (i.e. GlancePreviewInfo)
  * and other annotations applied to the @Preview
  */
 class GlanceComposablePreviewScanner : ComposablePreviewScanner<GlancePreviewInfo>(
