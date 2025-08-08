@@ -6,7 +6,6 @@ import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
-import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.RemoteViews
 import androidx.compose.runtime.Composable
@@ -41,7 +40,7 @@ class GlanceSnapshotConfigurator(
     private val rootView = FrameLayout(context)
     private val containerView = FrameLayout(rootView.context)
 
-    lateinit var remoteViews2: RemoteViews
+    private lateinit var glanceRemoteViews: RemoteViews
 
     fun setSizeDp(
         widthDp: Int,
@@ -75,7 +74,7 @@ class GlanceSnapshotConfigurator(
                     content = composable
                 ).remoteViews
 
-            remoteViews2 = remoteViews
+            glanceRemoteViews = remoteViews
 
             containerView.setBackgroundColor(Color.WHITE)
             rootView.addView(containerView)
@@ -83,7 +82,8 @@ class GlanceSnapshotConfigurator(
             val view = remoteViews.apply(rootView.context, containerView)
             containerView.addView(view)
 
-            adjustContainerViewSize().rootView
+            adjustContainerViewSize()
+            rootView
         }
     }
 

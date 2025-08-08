@@ -2,8 +2,6 @@ package sergio.sastre.composable.preview.scanner.tests.roborazzi
 
 import android.app.Application
 import android.content.ComponentName
-import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
