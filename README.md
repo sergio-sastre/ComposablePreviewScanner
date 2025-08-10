@@ -812,7 +812,12 @@ To write such screenshot tests you have to:
 
 ## Compose Multiplatform Previews Support
 ### Common Previews
-You can find [executable examples with Roborazzi here](https://github.com/sergio-sastre/roborazzi/tree/droidcon/preview_tests/sample-generate-preview-tests-multiplatform), but it also works with Paparazzi and instrumentation-based screenshot testing libraries.
+You can find executable examples here:
+- [Roborazzi](https://github.com/sergio-sastre/ComposablePreviewScanner/blob/master/tests/src/test/java/sergio/sastre/composable/preview/scanner/tests/roborazzi/RoborazziCommonComposablePreviewInvokeTests.kt)
+- [Roborazi via its gradle plugin](https://github.com/sergio-sastre/roborazzi/tree/droidcon/preview_tests/sample-generate-preview-tests-multiplatform).
+- [Paparazzi](https://github.com/sergio-sastre/ComposablePreviewScanner/blob/master/tests/src/test/java/sergio/sastre/composable/preview/scanner/tests/paparazzi/PaparazziCommonComposablePreviewInvokeTests.kt).</br></br>
+
+Instrumentation-based screenshot testing libraries are also supported and examples are coming soon.</br></br>
 
 Since Compose Multiplatform 1.6.0, Jetbrains has added support for `@Preview`s in `common`. ComposablePreviewScanner can also
 scan such Previews when running on any jvm-target, like
