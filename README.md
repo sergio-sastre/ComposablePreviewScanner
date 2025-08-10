@@ -16,7 +16,9 @@
 A library to help auto-generate screenshot tests from Composable Previews (e.g. **Android** & **Compose Multiplatform**) with any screenshot testing library:
 JVM-based (i.e. Paparazzi, Roborazzi) as well as Instrumentation-based (i.e. Shot, Dropshots, Android-Testify, etc.)
 
-![composable_preview_scanner_overview.png](composable_preview_scanner_overview.png)
+![composable_preview_scanner_overview.png](composable_preview_scanner_overview2.png)
+> [!NOTE]
+> Support for Wear OS Tile `@Previews` is in evaluation
 
 #### Provide anonymous feedback
 Already using ComposablePreviewScanner?</br>
@@ -814,10 +816,9 @@ To write such screenshot tests you have to:
 ### Common Previews
 You can find executable examples here:
 - [Roborazzi](https://github.com/sergio-sastre/ComposablePreviewScanner/blob/master/tests/src/test/java/sergio/sastre/composable/preview/scanner/tests/roborazzi/RoborazziCommonComposablePreviewInvokeTests.kt)
-- [Roborazi via its gradle plugin](https://github.com/sergio-sastre/roborazzi/tree/droidcon/preview_tests/sample-generate-preview-tests-multiplatform).
-- [Paparazzi](https://github.com/sergio-sastre/ComposablePreviewScanner/blob/master/tests/src/test/java/sergio/sastre/composable/preview/scanner/tests/paparazzi/PaparazziCommonComposablePreviewInvokeTests.kt).</br></br>
+- [Roborazi via its gradle plugin](https://github.com/sergio-sastre/roborazzi/tree/droidcon/preview_tests/sample-generate-preview-tests-multiplatform)
 
-Instrumentation-based screenshot testing libraries are also supported and examples are coming soon.</br></br>
+Executable examples  with Paparazzi & Instrumentation-based screenshot testing libraries are coming soon.</br></br>
 
 Since Compose Multiplatform 1.6.0, Jetbrains has added support for `@Preview`s in `common`. ComposablePreviewScanner can also
 scan such Previews when running on any jvm-target, like
