@@ -16,7 +16,7 @@
 A library to help auto-generate screenshot tests from Composable Previews (e.g. **Android** & **Compose Multiplatform**) with any screenshot testing library:
 JVM-based (i.e. Paparazzi, Roborazzi) as well as Instrumentation-based (i.e. Shot, Dropshots, Android-Testify, etc.)
 
-![composable_preview_scanner_overview.png](composable_preview_scanner_overview2.png)
+![composable_preview_scanner_overview.png](composable_preview_scanner_overview.png)
 > [!NOTE]
 > Support for Wear OS Tile `@Previews` is in evaluation
 
