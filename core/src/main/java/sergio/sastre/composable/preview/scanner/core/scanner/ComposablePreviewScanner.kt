@@ -1,6 +1,7 @@
 package sergio.sastre.composable.preview.scanner.core.scanner
 
 import io.github.classgraph.ClassGraph
+import nonapi.io.github.classgraph.utils.VersionFinder
 import sergio.sastre.composable.preview.scanner.core.scanner.config.ClassGraphSourceScanner
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.ClasspathPreviewsFinder
@@ -31,7 +32,13 @@ abstract class ComposablePreviewScanner<T>(
             .enableClassInfo()
             .enableMethodInfo()
             .enableAnnotationInfo()
-            .enableMemoryMapping()
+            .apply {
+                // Otherwise Classgraph throws exception
+                if (VersionFinder.JAVA_MAJOR_VERSION < 24){
+                   enableMemoryMapping()
+                }
+            }
+
 
     private var classpath: Classpath? = null
     private var isLoggingEnabled = false

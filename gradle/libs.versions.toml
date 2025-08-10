@@ -1,45 +1,50 @@
 [versions]
-agp = "8.5.2"
-androidTestify = "2.5.0"
-classgraph = "4.8.179"
+agp = "8.11.1"
+androidTestify = "2.7.0"
+classgraph = "4.8.181"
 coreKtx = "1.12.0"
+glancePreview = "1.1.1"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 androidJunitVersion = "1.5.2"
 appcompat = "1.6.1"
 kotlinxCollectionsImmutable = "0.3.8"
 material = "1.11.0"
-navigationCompose = "2.7.7"
+navigationCompose = "2.9.2"
 composeBom = "2024.04.01"
 composeRuntime = "1.6.6"
-jetbrainsCompose = "1.6.11"
-kotlin = "1.9.24"
-kotlinReflect = "1.9.24"
-jetbrainsKotlinJvm = "1.9.24"
-robolectric = "4.13"
-roborazzi = "1.22.0"
-roborazziCompose = "1.22.0"
+kotlin = "2.0.0"
+robolectric = "4.15.1"
+roborazzi = "1.46.1"
+roborazziCompose = "1.46.1"
+
+# version 1.3.5 makes troubles due to issue #66
 paparazzi = "1.3.4"
-testParameterInjector = "1.16"
-screenshot = "0.0.1-alpha07"
-utils = "2.5.0"
-testify = "3.2.0"
+
+testParameterInjector = "1.18"
+utils = "2.7.0"
+testify = "3.2.2"
 espressoCore = "3.6.1"
+junitKtx = "1.2.1"
 
 [libraries]
 android-testify = { module = "com.github.sergio-sastre.AndroidUiTestingUtils:android-testify", version.ref = "androidTestify" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-glance = { module = "androidx.glance:glance", version.ref = "glancePreview" }
+androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glancePreview" }
+androidx-glance-appwidget-preview = { module = "androidx.glance:glance-appwidget-preview", version.ref = "glancePreview" }
+androidx-glance-appwidget-testing = { module = "androidx.glance:glance-appwidget-testing", version.ref = "glancePreview" }
+androidx-glance-preview = { module = "androidx.glance:glance-preview", version.ref = "glancePreview" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "composeRuntime" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
-jetbrains-compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeRuntime" }
 classgraph = { module = "io.github.classgraph:classgraph", version.ref = "classgraph" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidJunitVersion" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinReflect" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
@@ -49,14 +54,14 @@ paparazzi = { module = "app.cash.paparazzi:paparazzi", version.ref = "paparazzi"
 test-parameter-injector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
 android-ui-testing-utils = { module = "com.github.sergio-sastre.AndroidUiTestingUtils:utils", version.ref = "utils" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
-jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "jetbrainsCompose" }
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
-screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot"}
 testify = { id = "dev.testify" , version.ref = "testify"}
+jetbrains-kotlin-plugin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.jetbrains.kotlin.plugin.compose)
 
     // These 2 are needed for screenshot testing
     alias(libs.plugins.paparazzi)
@@ -9,7 +10,7 @@ plugins {
 
 android {
     namespace = "sergio.sastre.composable.preview.scanner.paparazzi.plugin"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 28
@@ -20,10 +21,6 @@ android {
     buildFeatures {
         // Enables Jetpack Compose for this module
         compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
     }
 
     compileOptions {

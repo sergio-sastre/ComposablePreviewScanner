@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.9.24"
+    kotlin("jvm") version "2.0.0"
     id("maven-publish")
 }
 
@@ -10,7 +10,7 @@ java {
 
 dependencies {
     api(project(":core"))
-    implementation (libs.classgraph)
+    implementation(libs.classgraph)
     implementation(libs.kotlin.reflect)
 }
 
@@ -23,7 +23,7 @@ publishing {
             }
             groupId = "sergio.sastre.composable.preview.scanner"
             artifactId = "jvm"
-            version = "0.6.1"
+            version = "0.7.0"
         }
     }
 }

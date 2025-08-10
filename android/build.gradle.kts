@@ -1,12 +1,13 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.jetbrains.kotlin.plugin.compose)
     id("maven-publish")
 }
 
 android {
     namespace = "sergio.sastre.composable.preview.scanner.android"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 21
@@ -21,21 +22,17 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 
     buildFeatures {
         // Enables Jetpack Compose for this module
         compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
     }
 
     publishing {
@@ -49,6 +46,7 @@ android {
 dependencies {
     api(project(":core"))
     implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.glance.preview)
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.kotlin.reflect)
@@ -67,7 +65,7 @@ publishing {
             }
             groupId = "sergio.sastre.composable.preview.scanner"
             artifactId = "android"
-            version = "0.6.1"
+            version = "0.7.0"
         }
     }
 }

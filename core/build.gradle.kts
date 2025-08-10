@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version "1.9.24"
-    id("org.jetbrains.compose") // required to resolve compose runtime
+    kotlin("jvm") version "2.0.0"
+    alias(libs.plugins.jetbrains.kotlin.plugin.compose)
     id("maven-publish")
 }
 
@@ -12,7 +12,7 @@ java {
 dependencies {
     implementation(libs.androidx.compose.runtime)
     implementation(libs.kotlin.reflect)
-    implementation (libs.classgraph)
+    implementation(libs.classgraph)
 }
 
 //https://www.talentica.com/blogs/publish-your-android-library-on-jitpack-for-better-reachability/
@@ -24,7 +24,7 @@ publishing {
             }
             groupId = "sergio.sastre.composable.preview.scanner"
             artifactId = "core"
-            version = "0.6.1"
+            version = "0.7.0"
         }
     }
 }

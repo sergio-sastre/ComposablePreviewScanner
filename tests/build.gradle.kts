@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.screenshot)
+    alias(libs.plugins.jetbrains.kotlin.plugin.compose)
     alias(libs.plugins.testify)
 }
 
@@ -19,12 +19,15 @@ apply(from = "custom-roborazzi-tests.gradle.kts")
 
 android {
     namespace = "sergio.sastre.composable.preview.scanner"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "composable.preview.scanner"
         minSdk = 23
-        targetSdk = 34
+        // Needs to use any targetSdk for glance to correctly render Previews without "widthDp"
+        // when using Roborazzi or instrumentation testing libs
+        // Paparazzi cannot handle this
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -47,8 +50,8 @@ android {
     if (includeScreenshotTests) {
         sourceSets {
             getByName("androidTest") {
-                java.srcDir("src/screenshotTest/java")//, "src/androidTest/java")
-                res.srcDir("src/screenshotTest/res")//"src/androidTest/res")
+                java.srcDir("src/screenshotTest/java") // "src/androidTest/java")
+                res.srcDir("src/screenshotTest/res")   // "src/androidTest/res")
             }
         }
     }
@@ -56,10 +59,6 @@ android {
     buildFeatures {
         // Enables Jetpack Compose for this module
         compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
     }
 
     compileOptions {
@@ -90,13 +89,20 @@ testify {
 dependencies {
     implementation(project(":android"))
     implementation(project(":jvm"))
+    implementation(project(":common"))
     implementation(project(":custompreviews"))
+    implementation(project(":glance"))
     implementation(platform(libs.androidx.compose.bom))
     implementation("androidx.compose.runtime:runtime")
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui-tooling")
     implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation(libs.androidx.glance)
+    implementation(libs.androidx.glance.appwidget)
+    implementation(libs.androidx.glance.preview)
+    implementation(libs.androidx.glance.appwidget.preview)
+    implementation(libs.androidx.junit.ktx)
 
     screenshotTestImplementation(libs.kotlinx.collections.immutable)
     debugImplementation(libs.kotlinx.collections.immutable) {
@@ -118,7 +124,7 @@ dependencies {
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.test.runner)
-    androidTestImplementation(libs.android.ui.testing.utils)
+    debugImplementation(libs.android.ui.testing.utils)
     androidTestImplementation(libs.androidx.navigation.compose)
     androidTestImplementation(libs.android.testify)
 }
