@@ -806,11 +806,11 @@ You can find executable examples in this repo with different screenshot librarie
 
 To write such screenshot tests you have to:
 
-1. Add `:glance` dependency for ComposablePreviewScanner e.g. `io.github.sergio-sastre.ComposablePreviewScanner:glance:<version>`. This contains some utils to correctly set the size of the Composable as well as the size of the device. The latter is only necessary with Paparazzi and Roborazzi.
-2. Ensure `targetSdk` is set to any value in the gradle file<sup>1</sup>. Otherwise you can see some discrepancies between the Preview and the generated screenshot file for `@Preview`s without `widthDp`.
+1. Add `:glance` dependency for ComposablePreviewScanner e.g. `io.github.sergio-sastre.ComposablePreviewScanner:glance:<version>`. This contains some utils to correctly set the size of the Composable as well as the size of the device. Take a look at the executable examples above to see how they are used.
+2. Ensure `targetSdk` is set to any value in the gradle file<sup>1</sup>. Otherwise you can see some discrepancies between the Preview and the generated screenshot file for Glance `@Preview`s without `widthDp`.
 3. Write the Parameterized screenshot test like in the examples above.
 
-<sup>1</sup> Unfortunately, Paparazzi is not able to always render screenshots accurately for `@Preview`s without `widthDp`.
+<sup>1</sup> Unfortunately, Paparazzi is not able to always render screenshots accurately for Glance `@Preview`s without `widthDp`.
 
 ## Compose Multiplatform Previews Support
 ### Common Previews
