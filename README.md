@@ -817,8 +817,9 @@ To write such screenshot tests you have to:
 You can find executable examples here:
 - [Roborazzi](https://github.com/sergio-sastre/ComposablePreviewScanner/blob/master/tests/src/test/java/sergio/sastre/composable/preview/scanner/tests/roborazzi/RoborazziCommonComposablePreviewInvokeTests.kt)
 - [Roborazzi via its Gradle plugin](https://github.com/sergio-sastre/roborazzi/tree/droidcon/preview_tests/sample-generate-preview-tests-multiplatform)
+- [Paparazzi](https://github.com/sergio-sastre/ComposablePreviewScanner/blob/master/tests/src/test/java/sergio/sastre/composable/preview/scanner/tests/paparazzi/PaparazziCommonComposablePreviewInvokeTests.kt)
 
-Executable examples  with Paparazzi & Instrumentation-based screenshot testing libraries are coming soon.</br></br>
+Executable examples with Instrumentation-based screenshot testing libraries are coming soon.</br></br>
 
 Since Compose Multiplatform 1.6.0, JetBrains has added support for `@Preview`s in `common`. ComposablePreviewScanner can also
 scan such Previews when running on any jvm-target, like
@@ -847,7 +848,7 @@ There is [already an open issue](https://youtrack.jetbrains.com/issue/CMP-5675) 
 In the meanwhile, it is also possible to workaround this limitation with ComposablePreviewScanner as follows.
 
 1. Add `:jvm` dependency from ComposablePreviewScanner 0.2.0+ and use Roborazzi, since it is the only Screenshot Testing Library that supports Compose-Desktop
-   `testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")`
+   `testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")`
 
 2. Configure Roborazzi as described [in the corresponding "Multiplatform support" section](https://github.com/takahirom/roborazzi?tab=readme-ov-file#multiplatform-support)
 
@@ -906,11 +907,21 @@ class DesktopPreviewTest(
 
 7. Run these Roborazzi tests by executing the corresponding command e.g. `./gradlew yourModule:recordRoborazziJvm` (if using the Kotlin Jvm Plugin)
 
-# Tech talks
+# Resources 
+## Tech talks
 In these tech-talks have also been mentioned the benefits of using ComposablePreviewScanner:
 - DroidKaigi 2024 [in JA 🇯🇵 with EN 🇬🇧 slides]:</br>
-[Understand the mechanism! Let's do screenshots testing of Compose Previews with various variations](https://www.youtube.com/watch?app=desktop&v=c4AxUXTQgw4) by [Sumio Toyama](https://x.com/sumio_tym)</br>
-- [“Fast Feedback loops & Composable Preview Scanner”](https://www.youtube.com/watch?v=SphQelcGdHk) with the Skool Android Community</br>
+  [Understand the mechanism! Let's do screenshots testing of Compose Previews with various variations](https://www.youtube.com/watch?app=desktop&v=c4AxUXTQgw4) by [Sumio Toyama](https://x.com/sumio_tym)</br>
+- Droidcon Lisbon 2024:</br>
+  [Composable Preview Driven Development: TDD-fying your UI with ease!](https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.youtube.com/watch%3Fv%3DcDqdosrS83k&ved=2ahUKEwjprPGKqaiPAxWxSvEDHdSRBKkQwqsBegQIFRAG&usg=AOvVaw2ZfX6fYQbNI4Op6KN0d5i5) by Sergio Sastre</br>
+- [“Fast Feedback loops & Composable Preview Scanner”](https://www.youtube.com/watch?v=SphQelcGdHk) with the Skool Android Community by Sergio Sastre</br>
+
+Coming Soon:
+- Droidcon Lisbon & Berlin 2025: Let's @Preview the future: Automating Screenshot Testing in Compose Multiplatform by Sergio Sastre
+
+## Blog posts
+- [Automating screens verification with Roborazzi and GitHub Actions](https://medium.com/@matiasdelbel/automating-screens-verification-with-roborazzi-and-github-actions-473b3301a5c0) by Matías del Bel
+- [Implementing Screenshot Testing in the Unlimited Android App Was Tougher Than Expected](https://blog.kinto-technologies.com/posts/2024-12-13-Introducing-Screenshot-Testing-in-UnlimitedApp-en/) by KINTO Technologies
 
 # Testing
 The core of ComposablePreviewScanner has been (and it's being) developed using Test-Driven Development (TDD).</br>
