@@ -7,7 +7,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
     AnnotationTarget.ANNOTATION_CLASS,
     AnnotationTarget.FUNCTION
 )
-@Preview(widthDp = 100, heightDp = 300)
-@Preview(widthDp = 300)
-@Preview(widthDp = 300, heightDp = 300)
-annotation class MyCustomWidthPreview
+@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFF000080)
+@Preview(backgroundColor = 0xFF000080)
+annotation class MyCustomBackgroundPreview

@@ -8,7 +8,8 @@ fun Example() {
     Text("Example 2")
 }
 
-@MyCustomWidthPreview
+@MyCustomBackgroundPreview
+@MyCustomSizePreview
 @Composable
 fun ExamplePreview() {
     Example()

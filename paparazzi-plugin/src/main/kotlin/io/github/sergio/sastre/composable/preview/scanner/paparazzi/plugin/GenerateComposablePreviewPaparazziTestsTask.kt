@@ -154,7 +154,6 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                         renderingMode = when {
                             previewInfo.showSystemUi -> SessionParams.RenderingMode.NORMAL
                             previewInfo.widthDp > 0 && previewInfo.heightDp > 0 -> SessionParams.RenderingMode.FULL_EXPAND
-                            previewInfo.heightDp > 0 -> SessionParams.RenderingMode.V_SCROLL
                             else -> SessionParams.RenderingMode.SHRINK
                         },
                         // maxPercentDifference can be configured here if needed
