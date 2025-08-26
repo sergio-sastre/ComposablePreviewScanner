@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.ComponentName
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
+import com.github.takahirom.roborazzi.DEFAULT_ROBORAZZI_OUTPUT_DIR_PATH
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.RoborazziActivity
@@ -73,6 +74,11 @@ class RoborazziGlanceComposablePreviewInvokeTests(
     val activityScenarioRule =
         createAndroidComposeRule<RoborazziActivity>()
 
+    fun screenshotName(preview: ComposablePreview<GlancePreviewInfo>): String =
+        "$DEFAULT_ROBORAZZI_OUTPUT_DIR_PATH/${
+            GlancePreviewScreenshotIdBuilder(preview).build()
+        }.png"
+
     @OptIn(ExperimentalRoborazziApi::class)
     @GraphicsMode(GraphicsMode.Mode.NATIVE)
     @Config(sdk = [33], qualifiers = RobolectricDeviceQualifiers.Nexus7)
@@ -83,13 +89,12 @@ class RoborazziGlanceComposablePreviewInvokeTests(
             "+${RobolectricDeviceQualifierBuilder.build(preview.previewInfo)}"
         )
 
-        val name = GlancePreviewScreenshotIdBuilder(preview).build()
         GlanceSnapshotConfigurator(activityScenarioRule.activity)
             .setSizeDp(
                 widthDp = preview.previewInfo.widthDp,
                 heightDp = preview.previewInfo.heightDp
             )
             .composableToView { preview() }
-            .captureRoboImage(filePath = "$name.png")
+            .captureRoboImage(filePath = screenshotName(preview))
     }
 }

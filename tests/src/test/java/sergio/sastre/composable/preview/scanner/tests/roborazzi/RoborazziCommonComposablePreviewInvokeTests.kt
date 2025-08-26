@@ -1,5 +1,6 @@
 package sergio.sastre.composable.preview.scanner.tests.roborazzi
 
+import com.github.takahirom.roborazzi.DEFAULT_ROBORAZZI_OUTPUT_DIR_PATH
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RoborazziComposeOptions
 import com.github.takahirom.roborazzi.background
@@ -42,14 +43,20 @@ class RoborazziCommonComposablePreviewInvokeTests(
         fun values(): List<ComposablePreview<CommonPreviewInfo>> = cachedBuildTimePreviews
     }
 
+    fun screenshotName(preview: ComposablePreview<CommonPreviewInfo>): String =
+        "$DEFAULT_ROBORAZZI_OUTPUT_DIR_PATH/${
+            CommonPreviewScreenshotIdBuilder(preview)
+                .doNotIgnoreMethodParametersType()
+                .build()
+        }.png"
+
     @OptIn(ExperimentalRoborazziApi::class)
     @GraphicsMode(GraphicsMode.Mode.NATIVE)
     @Config(sdk = [30])
     @Test
     fun snapshot() {
-        val name = CommonPreviewScreenshotIdBuilder(preview).build()
         captureRoboImage(
-            filePath = "${name}.png",
+            filePath = screenshotName(preview),
             roborazziComposeOptions = RoborazziComposeOptions {
                 size(
                     widthDp = preview.previewInfo.widthDp,

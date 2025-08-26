@@ -1,5 +1,6 @@
 package sergio.sastre.composable.preview.scanner.tests.roborazzi
 
+import com.github.takahirom.roborazzi.DEFAULT_ROBORAZZI_OUTPUT_DIR_PATH
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -70,6 +71,13 @@ class RoborazziSourceSetComposablePreviewInvokeTests(
             cachedMainPreviews + cachedScreenshotTestPreviews + cachedAndroidTestPreviews
     }
 
+    fun screenshotName(preview: ComposablePreview<AndroidPreviewInfo>): String =
+        "$DEFAULT_ROBORAZZI_OUTPUT_DIR_PATH/${
+            AndroidPreviewScreenshotIdBuilder(preview)
+                .doNotIgnoreMethodParametersType()
+                .build()
+        }.png"
+
     @GraphicsMode(GraphicsMode.Mode.NATIVE)
     @Config(sdk = [30])
     @Test
@@ -77,10 +85,7 @@ class RoborazziSourceSetComposablePreviewInvokeTests(
         RobolectricDeviceQualifierBuilder.build(preview.previewInfo.device)?.run {
             RuntimeEnvironment.setQualifiers(this)
         }
-        val screenshotName = AndroidPreviewScreenshotIdBuilder(preview)
-            .doNotIgnoreMethodParametersType()
-            .build()
-        captureRoboImage(filePath = "${screenshotName}.png") {
+        captureRoboImage(filePath = screenshotName(preview)) {
             preview()
         }
     }
