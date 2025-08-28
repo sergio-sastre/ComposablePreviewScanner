@@ -367,7 +367,7 @@ object PaparazziPreviewRule {
                 else -> SessionParams.RenderingMode.SHRINK
             },
             // other configurations...
-            maxPercentDifference = preview.getAnnotation<PaparazziConfig>()?.maxPercentDifference ?: 0d
+            maxPercentDifference = preview.getAnnotation<PaparazziConfig>()?.maxPercentDifference ?: 0.0
         )
     }
 }
@@ -439,31 +439,29 @@ class PreviewTestParameterTests(
             .ignoreMethodName()
             .build()
        
-       paparazzi.snapshot(name = screenshotId) {
-          val info = preview.previewInfo
+        paparazzi.snapshot(name = screenshotId) {
+            val info = preview.previewInfo
             val content: @Composable () -> Unit = {
                 PreviewBackground(
-                    showBackground = if (info.showSystemUi) true else info.showBackground,
+                    showBackground = info.showSystemUi || info.showBackground,
                     backgroundColor = info.backgroundColor
                 ) {
                     preview()
                 }
             }
-            when (info.showSystemUi) {
-                true -> {
-                    DevicePreviewInfoParser.parse(info.device)?.inDp()?.let { parsedDevice ->
-                        SystemUiSize(
-                            widthInDp = parsedDevice.dimensions.width.toInt(),
-                            heightInDp = parsedDevice.dimensions.height.toInt()
-                        ) {
-                            content()
-                        }
-                    } ?: content()
-                }
-
-                false -> content()
+            if (info.showSystemUi) {
+                DevicePreviewInfoParser.parse(info.device)?.inDp()?.let { parsedDevice ->
+                    SystemUiSize(
+                        widthInDp = parsedDevice.dimensions.width.roundToInt(),
+                        heightInDp = parsedDevice.dimensions.height.roundToInt()
+                    ) {
+                        content()
+                    }
+                } ?: content()
+            } else {
+                content()
             }
-       }
+        }
     }
 }
 ```
@@ -968,7 +966,7 @@ This might be due to the `AndroidPreviewScreenshotIdBuilder`, try commenting it 
 
 ## Cannot inline bytecode built with JVM target 17
 
-```
+```text
 Task compileDebugUnitTestKotlin FAILED
 e: file:... Cannot inline bytecode built with JVM target 17 into bytecode that is being built with JVM target 11. Specify proper '-jvm-target' option.
 ```
@@ -989,7 +987,7 @@ kotlin {
 com.google.android.gms.common.GooglePlayServicesMissingManifestValueException: A required meta-data tag in your app's AndroidManifest.xml does not exist.  You must have the following declaration within the <application> element:     <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
 ```
 
-If you are using 'GoogleMap' composable, then you will need to wrap you composable preview content with `CompositionLocalProvider(LocalInspectionMode provides true)`
+If you are using 'GoogleMap' composable, then you will need to wrap your composable preview content with `CompositionLocalProvider(LocalInspectionMode provides true)`
 
 ```kotlin
 @Preview
