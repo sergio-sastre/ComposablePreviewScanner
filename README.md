@@ -367,7 +367,7 @@ object PaparazziPreviewRule {
                 else -> SessionParams.RenderingMode.SHRINK
             },
             // other configurations...
-            maxPercentDifference = preview.getAnnotation<PaparazziConfig>()?.maxPercentDifference ?: 0F
+            maxPercentDifference = preview.getAnnotation<PaparazziConfig>()?.maxPercentDifference ?: 0d
         )
     }
 }
