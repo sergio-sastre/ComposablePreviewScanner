@@ -951,7 +951,20 @@ Custom gradle tasks for Android-testify integration tests (i.e. instrumentation 
 
 `java.io.FileNotFoundException: ... (File name too long)`
 
-This might be due to the `AndroidPreviewScreenshotIdBuilder`, try commenting it out and trying again.
+This might be due to the `AndroidPreviewScreenshotIdBuilder`, try commenting it out or removing and trying again.
+
+```kotlin
+@Test
+    fun snapshot() {
+        // Recommended for more meaningful screenshot file names. See #Advanced Usage
+        //val screenshotId = AndroidPreviewScreenshotIdBuilder(preview)
+        //    .ignoreClassName()
+        //    .ignoreMethodName()
+        //    .build()
+       
+       //paparazzi.snapshot(name = screenshotId) {
+       paparazzi.snapshot {
+```
 
 ## Cannot inline bytecode built with JVM target 17
 
@@ -962,7 +975,7 @@ e: file:... Cannot inline bytecode built with JVM target 17 into bytecode that i
 
 The easiest solution would be to update your 'jvmTarget' in you gradle build file or specifiy '-jvm-target' when executing the command
 
-```
+```kotlin
 kotlin {
     compilerOptions {
         jvmTarget = JvmTarget.JVM_17 // or higher
@@ -972,13 +985,13 @@ kotlin {
 
 ## GooglePlayServicesMissingManifestValueException
 
-```
+```text
 com.google.android.gms.common.GooglePlayServicesMissingManifestValueException: A required meta-data tag in your app's AndroidManifest.xml does not exist.  You must have the following declaration within the <application> element:     <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
 ```
 
 If you are using 'GoogleMap' composable, then you will need to wrap you composable preview content with `CompositionLocalProvider(LocalInspectionMode provides true)`
 
-```
+```kotlin
 @Preview
 @Composable
 internal fun MapScreenPreview() {
