@@ -440,31 +440,29 @@ class PreviewTestParameterTests(
             .build()
        
        paparazzi.snapshot(name = screenshotId) {
-          when (preview.previewInfo.showSystemUi) {
-             false -> PreviewBackground(
-                showBackground = preview.previewInfo.showBackground,
-                backgroundColor = preview.previewInfo.backgroundColor,
-             ) {
-                preview()
-             }
-
-             true -> {
-                val parsedDevice = 
-                    DevicePreviewInfoParser.parse(preview.previewInfo.device)!!.inDp()
-                
-                SystemUiSize(
-                   widthInDp = parsedDevice.dimensions.width.toInt(),
-                   heightInDp = parsedDevice.dimensions.height.toInt()
+          val info = preview.previewInfo
+            val content: @Composable () -> Unit = {
+                PreviewBackground(
+                    showBackground = if (info.showSystemUi) true else info.showBackground,
+                    backgroundColor = info.backgroundColor
                 ) {
-                   PreviewBackground(
-                      showBackground = true,
-                      backgroundColor = preview.previewInfo.backgroundColor,
-                   ) {
-                      preview()
-                   }
+                    preview()
                 }
-             }
-          }
+            }
+            when (info.showSystemUi) {
+                true -> {
+                    DevicePreviewInfoParser.parse(info.device)?.inDp()?.let { parsedDevice ->
+                        SystemUiSize(
+                            widthInDp = parsedDevice.dimensions.width.toInt(),
+                            heightInDp = parsedDevice.dimensions.height.toInt()
+                        ) {
+                            content()
+                        }
+                    } ?: content()
+                }
+
+                false -> content()
+            }
        }
     }
 }
@@ -946,6 +944,49 @@ These custom gradle tasks are the following:</br>
 4. Roborazzi integration tests: `./gradlew :tests:roborazziPreviews` and `./gradlew :tests:roborazziPreviews -Pverify=true`
 
 Custom gradle tasks for Android-testify integration tests (i.e. instrumentation screenshot testing libraries) coming soon
+
+# Troubleshooting
+
+## java.io.FileNotFoundException (File name too long)
+
+`java.io.FileNotFoundException: ... (File name too long)`
+
+This might be due to the `AndroidPreviewScreenshotIdBuilder`, try commenting it out and trying again.
+
+## Cannot inline bytecode built with JVM target 17
+
+```
+Task compileDebugUnitTestKotlin FAILED
+e: file:... Cannot inline bytecode built with JVM target 17 into bytecode that is being built with JVM target 11. Specify proper '-jvm-target' option.
+```
+
+The easiest solution would be to update your 'jvmTarget' in you gradle build file or specifiy '-jvm-target' when executing the command
+
+```
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_17 // or higher
+    }
+}
+```
+
+## GooglePlayServicesMissingManifestValueException
+
+```
+com.google.android.gms.common.GooglePlayServicesMissingManifestValueException: A required meta-data tag in your app's AndroidManifest.xml does not exist.  You must have the following declaration within the <application> element:     <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
+```
+
+If you are using 'GoogleMap' composable, then you will need to wrap you composable preview content with `CompositionLocalProvider(LocalInspectionMode provides true)`
+
+```
+@Preview
+@Composable
+internal fun MapScreenPreview() {
+    CompositionLocalProvider(LocalInspectionMode provides true) {
+        MapScreen()
+    }
+}
+```
 
 </br></br>
 <a href="https://www.flaticon.com/free-icons/magnify" title="magnify icons">Composable Preview Scanner logo modified from one by Freepik - Flaticon</a>
