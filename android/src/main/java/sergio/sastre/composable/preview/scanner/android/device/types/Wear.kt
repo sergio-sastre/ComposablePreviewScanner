@@ -5,7 +5,6 @@ import sergio.sastre.composable.preview.scanner.android.device.domain.Dimensions
 import sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceByIdentifier
 import sergio.sastre.composable.preview.scanner.android.device.domain.Identifier
 import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation.PORTRAIT
-import sergio.sastre.composable.preview.scanner.android.device.domain.ScreenRatio
 import sergio.sastre.composable.preview.scanner.android.device.domain.ScreenRatio.LONG
 import sergio.sastre.composable.preview.scanner.android.device.domain.Shape.NOTROUND
 import sergio.sastre.composable.preview.scanner.android.device.domain.Shape.ROUND
@@ -67,6 +66,25 @@ enum class Wear(
         )
     ),
 
+    WEAR_OS_RECT(
+        Device(
+            identifier = Identifier.WEAR_OS_RECT,
+            dimensions = Dimensions(
+                width = 402f,
+                height = 476f,
+                unit = PX
+            ),
+            densityDpi = 320,
+            orientation = PORTRAIT,
+            screenRatio = LONG,
+            shape = NOTROUND,
+            chinSize = 0,
+            type = WEAR
+        )
+    ),
+
+    // The Id was changed in more recent versions. New one reflects WEAR_OS_RECT
+    // This is kept for compatibility with older versions of Android studio
     WEAR_OS_RECTANGULAR(
         Device(
             identifier = Identifier.WEAR_OS_RECTANGULAR,

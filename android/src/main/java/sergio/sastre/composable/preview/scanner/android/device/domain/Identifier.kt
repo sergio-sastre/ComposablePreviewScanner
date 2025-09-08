@@ -51,6 +51,9 @@ data class Identifier(val id: String? = null, val name: String? = null) {
 
         // Wear
         val WEAR_OS_SQUARE = Identifier(id = "wearos_square", name = "Wear OS Square")
+
+        val WEAR_OS_RECT = // This is the updated Identifier of WEAR_OS_RECTANGULAR
+            Identifier(id = "wearos_rect", name = "Wear OS Rectangular")
         val WEAR_OS_RECTANGULAR =
             Identifier(id = "wearos_rectangular", name = "Wear OS Rectangular")
         val WEAR_OS_SMALL_ROUND =
@@ -96,6 +99,8 @@ data class Identifier(val id: String? = null, val name: String? = null) {
 
         // XR Devices
         val XR_DEVICE = Identifier(id = "xr_device", name = "XR Device")
+        val XR_HEADSET = // This is the updated Identifier of XR_DEVICE
+            Identifier(id = "xr_headset_device", name = "XR Headset")
 
         // Generic Devices
         val MEDIUM_TABLET = Identifier(id = "medium_tablet", name = "Medium Tablet")

@@ -15,9 +15,27 @@ enum class XR(
     override val device: Device
 ) : GetDeviceByIdentifier<XR> {
 
+    // The Id was changed in more recent versions. New one reflects XR_HEADSET
+    // This is kept for compatibility with older versions of Android studio
     XR_DEVICE(
         Device(
             identifier = Identifier.XR_DEVICE,
+            dimensions = Dimensions(
+                width = 2560f,
+                height = 2558f,
+                unit = PX
+            ),
+            densityDpi = 320,
+            orientation = LANDSCAPE,
+            shape = NOTROUND,
+            chinSize = 0,
+            type = XR
+        )
+    ),
+
+    XR_HEADSET(
+        Device(
+            identifier = Identifier.XR_HEADSET,
             dimensions = Dimensions(
                 width = 2560f,
                 height = 2558f,
