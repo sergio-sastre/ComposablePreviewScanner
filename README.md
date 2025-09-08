@@ -366,7 +366,6 @@ object PaparazziPreviewRule {
             renderingMode = when {
                 previewInfo.showSystemUi -> SessionParams.RenderingMode.NORMAL
                 previewInfo.widthDp > 0 && previewInfo.heightDp > 0 -> SessionParams.RenderingMode.FULL_EXPAND
-                previewInfo.heightDp > 0 -> SessionParams.RenderingMode.V_SCROLL
                 else -> SessionParams.RenderingMode.SHRINK
             },
             // other configurations...
@@ -443,26 +442,30 @@ class PreviewTestParameterTests(
             .build()
        
         paparazzi.snapshot(name = screenshotId) {
-            val info = preview.previewInfo
-            val content: @Composable () -> Unit = {
-                PreviewBackground(
-                    showBackground = info.showSystemUi || info.showBackground,
-                    backgroundColor = info.backgroundColor
+            val previewInfo = preview.previewInfo
+            when (previewInfo.showSystemUi) {
+                false -> PreviewBackground(
+                    showBackground = previewInfo.showBackground,
+                    backgroundColor = previewInfo.backgroundColor
                 ) {
                     preview()
                 }
-            }
-            if (info.showSystemUi) {
-                DevicePreviewInfoParser.parse(info.device)?.inDp()?.let { parsedDevice ->
+
+                true -> {
+                    val parsedDevice = (DevicePreviewInfoParser.parse(preview.previewInfo.device)
+                        ?: DEFAULT).inDp()?
                     SystemUiSize(
-                        widthInDp = parsedDevice.dimensions.width.roundToInt(),
-                        heightInDp = parsedDevice.dimensions.height.roundToInt()
+                        widthInDp = parsedDevice.dimensions.width.toInt(),
+                        heightInDp = parsedDevice.dimensions.height.toInt()
                     ) {
-                        content()
+                        PreviewBackground(
+                            showBackground = true,
+                            backgroundColor = previewInfo.backgroundColor,
+                        ) {
+                            preview()
+                        }
                     }
-                } ?: content()
-            } else {
-                content()
+                }
             }
         }
     }
@@ -722,8 +725,8 @@ AndroidPreviewScreenshotIdBuilder(preview)
     .ignoreForId("widthDp")
     .overrideDefaultIdFor(
        previewInfoName = "showBackground",
-       applyInfoValue = {
-           when (it.showBackground) {
+       applyInfoValue = { info ->
+           when (info.showBackground) {
                true -> "WITH_BACKGROUND"
                false -> "WITHOUT_BACKGROUND"
            }
