@@ -452,8 +452,7 @@ class PreviewTestParameterTests(
                 }
 
                 true -> {
-                    val parsedDevice = (DevicePreviewInfoParser.parse(preview.previewInfo.device)
-                        ?: DEFAULT).inDp()?
+                    val parsedDevice = (DevicePreviewInfoParser.parse(preview.previewInfo.device) ?: DEFAULT).inDp()
                     SystemUiSize(
                         widthInDp = parsedDevice.dimensions.width.toInt(),
                         heightInDp = parsedDevice.dimensions.height.toInt()
@@ -955,7 +954,7 @@ Custom gradle tasks for Android-testify integration tests (i.e. instrumentation 
 
 `java.io.FileNotFoundException: ... (File name too long)`
 This is more likely to happen when using Paparazzi. Unfortunately, Paparazzi also modifies internally the name
-of the screenshot we pass to it, sometimes making it more longer than allowed.
+of the screenshot we pass to it, sometimes making it even longer than allowed.
 
 If you're experiencing such issues, consider:
 1. Using `AndroidPreviewScreenshotIdBuilder` methods like `ignoreIdFor()` or `overrideDefaultIdFor()` to shorten the given name.
