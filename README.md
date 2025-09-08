@@ -103,17 +103,20 @@ dependencies {
 ```
 
 # How to use
-## Libraries
+## Screenshot Testing Libraries
 1. [Jvm Screenshot Tests](#jvm-screenshot-tests)</br>
    1.1  [Paparazzi](#paparazzi)</br>
    1.2  [Roborazzi](#roborazzi)</br>
 2. [Instrumentation Screenshot Tests](#instrumentation-screenshot-tests)
-3. [Glance Previews Support](#glance-previews-support)
-4. [Compose Multiplatform Previews Support](#compose-multiplatform-previews-support)
+
+If you encounter any issues when executing the screenshot tests, take a look at the [troubleshooting](#troubleshooting) section.
 
 > [!NOTE]
 > [Roborazzi](https://github.com/takahirom/roborazzi) has integrated ComposablePreviewScanner in its plugin since [version 1.22](https://github.com/takahirom/roborazzi/releases/tag/1.22.0)
 
+## Non-Android Previews
+1. [Glance Previews Support](#glance-previews-support)
+2. [Compose Multiplatform Previews Support](#compose-multiplatform-previews-support)
 
 ## API   
 `AndroidComposablePreviewScanner`, `GlanceComposablePreviewScanner`, `CommonComposablePreviewScanner`, and `JvmAnnotationScanner` have the same API.
@@ -948,21 +951,12 @@ Custom gradle tasks for Android-testify integration tests (i.e. instrumentation 
 ## java.io.FileNotFoundException (File name too long)
 
 `java.io.FileNotFoundException: ... (File name too long)`
+This is more likely to happen when using Paparazzi. Unfortunately, Paparazzi also modifies internally the name
+of the screenshot we pass to it, sometimes making it more longer than allowed.
 
-This might be due to the `AndroidPreviewScreenshotIdBuilder`, try commenting it out or removing and trying again.
-
-```kotlin
-@Test
-    fun snapshot() {
-        // Recommended for more meaningful screenshot file names. See #Advanced Usage
-        //val screenshotId = AndroidPreviewScreenshotIdBuilder(preview)
-        //    .ignoreClassName()
-        //    .ignoreMethodName()
-        //    .build()
-       
-       //paparazzi.snapshot(name = screenshotId) {
-       paparazzi.snapshot {
-```
+If you're experiencing such issues, consider:
+1. Using `AndroidPreviewScreenshotIdBuilder` methods like `ignoreIdFor()` or `overrideDefaultIdFor()` to shorten the given name.
+2. Avoid `AndroidPreviewScreenshotIdBuilder` and use `paparazzi.snapshot {}` instead of `paparazzi.snapshot(name = screenshotId)`
 
 ## Cannot inline bytecode built with JVM target 17
 
@@ -971,8 +965,7 @@ Task compileDebugUnitTestKotlin FAILED
 e: file:... Cannot inline bytecode built with JVM target 17 into bytecode that is being built with JVM target 11. Specify proper '-jvm-target' option.
 ```
 
-The easiest solution would be to update your 'jvmTarget' in you gradle build file or specifiy '-jvm-target' when executing the command
-
+You need to upgrade the 'jvmTarget' in the gradle build file of the module where it is failing like this:
 ```kotlin
 kotlin {
     compilerOptions {
