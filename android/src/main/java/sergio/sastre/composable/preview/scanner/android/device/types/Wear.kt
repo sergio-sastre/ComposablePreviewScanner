@@ -11,6 +11,22 @@ import sergio.sastre.composable.preview.scanner.android.device.domain.Shape.ROUN
 import sergio.sastre.composable.preview.scanner.android.device.domain.Type.WEAR
 import sergio.sastre.composable.preview.scanner.android.device.domain.Unit.PX
 
+private val WEAR_OS_RECT_DEFAULT =
+    Device(
+        identifier = null,
+        dimensions = Dimensions(
+            width = 402f,
+            height = 476f,
+            unit = PX
+        ),
+        densityDpi = 320,
+        orientation = PORTRAIT,
+        screenRatio = LONG,
+        shape = NOTROUND,
+        chinSize = 0,
+        type = WEAR
+    )
+
 enum class Wear(
     override val device: Device
 ) : GetDeviceByIdentifier<Wear> {
@@ -67,38 +83,12 @@ enum class Wear(
     ),
 
     WEAR_OS_RECT(
-        Device(
-            identifier = Identifier.WEAR_OS_RECT,
-            dimensions = Dimensions(
-                width = 402f,
-                height = 476f,
-                unit = PX
-            ),
-            densityDpi = 320,
-            orientation = PORTRAIT,
-            screenRatio = LONG,
-            shape = NOTROUND,
-            chinSize = 0,
-            type = WEAR
-        )
+        WEAR_OS_RECT_DEFAULT.copy(identifier = Identifier.WEAR_OS_RECT)
     ),
 
     // The Id was changed in more recent versions. New one reflects WEAR_OS_RECT
     // This is kept for compatibility with older versions of Android studio
     WEAR_OS_RECTANGULAR(
-        Device(
-            identifier = Identifier.WEAR_OS_RECTANGULAR,
-            dimensions = Dimensions(
-                width = 402f,
-                height = 476f,
-                unit = PX
-            ),
-            densityDpi = 320,
-            orientation = PORTRAIT,
-            screenRatio = LONG,
-            shape = NOTROUND,
-            chinSize = 0,
-            type = WEAR
-        )
+        WEAR_OS_RECT_DEFAULT.copy(identifier = Identifier.WEAR_OS_RECTANGULAR)
     ),
 }
