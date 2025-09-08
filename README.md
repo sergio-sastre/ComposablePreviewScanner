@@ -721,8 +721,8 @@ AndroidPreviewScreenshotIdBuilder(preview)
     .ignoreMethodName()
     // use this if you have previews in the same file with the same method name but different signature
     .doNotIgnoreMethodParametersType() 
-    .ignoreForId("heightDp")
-    .ignoreForId("widthDp")
+    .ignoreIdFor("heightDp")
+    .ignoreIdFor("widthDp")
     .overrideDefaultIdFor(
        previewInfoName = "showBackground",
        applyInfoValue = { info ->
