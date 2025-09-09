@@ -109,7 +109,7 @@ dependencies {
    1.2  [Roborazzi](#roborazzi)</br>
 2. [Instrumentation Screenshot Tests](#instrumentation-screenshot-tests)
 
-If you encounter any issues when executing the screenshot tests, take a look at the [troubleshooting](#troubleshooting) section.
+If you encounter any issues when executing the screenshot tests, take a look at the [Troubleshooting](#troubleshooting) section.
 
 > [!NOTE]
 > [Roborazzi](https://github.com/takahirom/roborazzi) has integrated ComposablePreviewScanner in its plugin since [version 1.22](https://github.com/takahirom/roborazzi/releases/tag/1.22.0)
@@ -452,7 +452,7 @@ class PreviewTestParameterTests(
                 }
 
                 true -> {
-                    val parsedDevice = (DevicePreviewInfoParser.parse(preview.previewInfo.device) ?: DEFAULT).inDp()
+                    val parsedDevice = (DevicePreviewInfoParser.parse(previewInfo.device) ?: DEFAULT).inDp()
                     SystemUiSize(
                         widthInDp = parsedDevice.dimensions.width.toInt(),
                         heightInDp = parsedDevice.dimensions.height.toInt()
