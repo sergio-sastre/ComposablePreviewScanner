@@ -103,17 +103,20 @@ dependencies {
 ```
 
 # How to use
-## Libraries
+## Screenshot Testing Libraries
 1. [Jvm Screenshot Tests](#jvm-screenshot-tests)</br>
    1.1  [Paparazzi](#paparazzi)</br>
    1.2  [Roborazzi](#roborazzi)</br>
 2. [Instrumentation Screenshot Tests](#instrumentation-screenshot-tests)
-3. [Glance Previews Support](#glance-previews-support)
-4. [Compose Multiplatform Previews Support](#compose-multiplatform-previews-support)
+
+If you encounter any issues when executing the screenshot tests, take a look at the [Troubleshooting](#troubleshooting) section.
 
 > [!NOTE]
 > [Roborazzi](https://github.com/takahirom/roborazzi) has integrated ComposablePreviewScanner in its plugin since [version 1.22](https://github.com/takahirom/roborazzi/releases/tag/1.22.0)
 
+## Non-Android Previews
+1. [Glance Previews Support](#glance-previews-support)
+2. [Compose Multiplatform Previews Support](#compose-multiplatform-previews-support)
 
 ## API   
 `AndroidComposablePreviewScanner`, `GlanceComposablePreviewScanner`, `CommonComposablePreviewScanner`, and `JvmAnnotationScanner` have the same API.
@@ -363,11 +366,10 @@ object PaparazziPreviewRule {
             renderingMode = when {
                 previewInfo.showSystemUi -> SessionParams.RenderingMode.NORMAL
                 previewInfo.widthDp > 0 && previewInfo.heightDp > 0 -> SessionParams.RenderingMode.FULL_EXPAND
-                previewInfo.heightDp > 0 -> SessionParams.RenderingMode.V_SCROLL
                 else -> SessionParams.RenderingMode.SHRINK
             },
             // other configurations...
-            maxPercentDifference = preview.getAnnotation<PaparazziConfig>()?.maxPercentDifference ?: 0F
+            maxPercentDifference = preview.getAnnotation<PaparazziConfig>()?.maxPercentDifference ?: 0.0
         )
     }
 }
@@ -439,33 +441,32 @@ class PreviewTestParameterTests(
             .ignoreMethodName()
             .build()
        
-       paparazzi.snapshot(name = screenshotId) {
-          when (preview.previewInfo.showSystemUi) {
-             false -> PreviewBackground(
-                showBackground = preview.previewInfo.showBackground,
-                backgroundColor = preview.previewInfo.backgroundColor,
-             ) {
-                preview()
-             }
-
-             true -> {
-                val parsedDevice = 
-                    DevicePreviewInfoParser.parse(preview.previewInfo.device)!!.inDp()
-                
-                SystemUiSize(
-                   widthInDp = parsedDevice.dimensions.width.toInt(),
-                   heightInDp = parsedDevice.dimensions.height.toInt()
+        paparazzi.snapshot(name = screenshotId) {
+            val previewInfo = preview.previewInfo
+            when (previewInfo.showSystemUi) {
+                false -> PreviewBackground(
+                    showBackground = previewInfo.showBackground,
+                    backgroundColor = previewInfo.backgroundColor
                 ) {
-                   PreviewBackground(
-                      showBackground = true,
-                      backgroundColor = preview.previewInfo.backgroundColor,
-                   ) {
-                      preview()
-                   }
+                    preview()
                 }
-             }
-          }
-       }
+
+                true -> {
+                    val parsedDevice = (DevicePreviewInfoParser.parse(previewInfo.device) ?: DEFAULT).inDp()
+                    SystemUiSize(
+                        widthInDp = parsedDevice.dimensions.width.toInt(),
+                        heightInDp = parsedDevice.dimensions.height.toInt()
+                    ) {
+                        PreviewBackground(
+                            showBackground = true,
+                            backgroundColor = previewInfo.backgroundColor,
+                        ) {
+                            preview()
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 ```
@@ -719,12 +720,12 @@ AndroidPreviewScreenshotIdBuilder(preview)
     .ignoreMethodName()
     // use this if you have previews in the same file with the same method name but different signature
     .doNotIgnoreMethodParametersType() 
-    .ignoreForId("heightDp")
-    .ignoreForId("widthDp")
+    .ignoreIdFor("heightDp")
+    .ignoreIdFor("widthDp")
     .overrideDefaultIdFor(
        previewInfoName = "showBackground",
-       applyInfoValue = {
-           when (it.showBackground) {
+       applyInfoValue = { info ->
+           when (info.showBackground) {
                true -> "WITH_BACKGROUND"
                false -> "WITHOUT_BACKGROUND"
            }
@@ -946,6 +947,52 @@ These custom gradle tasks are the following:</br>
 4. Roborazzi integration tests: `./gradlew :tests:roborazziPreviews` and `./gradlew :tests:roborazziPreviews -Pverify=true`
 
 Custom gradle tasks for Android-testify integration tests (i.e. instrumentation screenshot testing libraries) coming soon
+
+# Troubleshooting
+
+## java.io.FileNotFoundException (File name too long)
+
+`java.io.FileNotFoundException: ... (File name too long)`
+This is more likely to happen when using Paparazzi. Unfortunately, Paparazzi also modifies internally the name
+of the screenshot we pass to it, sometimes making it even longer than allowed.
+
+If you're experiencing such issues, consider:
+1. Using `AndroidPreviewScreenshotIdBuilder` methods like `ignoreIdFor()` or `overrideDefaultIdFor()` to shorten the given name.
+2. Avoid `AndroidPreviewScreenshotIdBuilder` and use `paparazzi.snapshot {}` instead of `paparazzi.snapshot(name = screenshotId)`
+
+## Cannot inline bytecode built with JVM target 17
+
+```text
+Task compileDebugUnitTestKotlin FAILED
+e: file:... Cannot inline bytecode built with JVM target 17 into bytecode that is being built with JVM target 11. Specify proper '-jvm-target' option.
+```
+
+You need to upgrade the 'jvmTarget' in the gradle build file of the module where it is failing like this:
+```kotlin
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_17 // or higher
+    }
+}
+```
+
+## GooglePlayServicesMissingManifestValueException
+
+```text
+com.google.android.gms.common.GooglePlayServicesMissingManifestValueException: A required meta-data tag in your app's AndroidManifest.xml does not exist.  You must have the following declaration within the <application> element:     <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
+```
+
+If you are using 'GoogleMap' composable, then you will need to wrap your composable preview content with `CompositionLocalProvider(LocalInspectionMode provides true)`
+
+```kotlin
+@Preview
+@Composable
+internal fun MapScreenPreview() {
+    CompositionLocalProvider(LocalInspectionMode provides true) {
+        MapScreen()
+    }
+}
+```
 
 </br></br>
 <a href="https://www.flaticon.com/free-icons/magnify" title="magnify icons">Composable Preview Scanner logo modified from one by Freepik - Flaticon</a>

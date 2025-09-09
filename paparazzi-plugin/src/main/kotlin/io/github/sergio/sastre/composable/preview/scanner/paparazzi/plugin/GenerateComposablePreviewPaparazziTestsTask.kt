@@ -79,6 +79,7 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
             import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
             import sergio.sastre.composable.preview.scanner.android.device.DevicePreviewInfoParser
             import sergio.sastre.composable.preview.scanner.android.device.domain.Device
+            import sergio.sastre.composable.preview.scanner.android.device.types.DEFAULT
             import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
             import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
             import kotlin.math.ceil
@@ -224,23 +225,24 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                     .build()
                     
                     paparazzi.snapshot(name = screenshotId) {
-                        when (preview.previewInfo.showSystemUi) {
+                        val previewInfo = preview.previewInfo
+                        when (previewInfo.showSystemUi) {
                             false -> PreviewBackground(
-                                showBackground = preview.previewInfo.showBackground,
-                                backgroundColor = preview.previewInfo.backgroundColor,
+                                showBackground = previewInfo.showBackground,
+                                backgroundColor = previewInfo.backgroundColor,
                             ) {
                                 preview()
                             }
                 
                             true -> {
-                                val parsedDevice = DevicePreviewInfoParser.parse(preview.previewInfo.device)!!.inDp()
+                                val parsedDevice = (DevicePreviewInfoParser.parse(previewInfo.device) ?: DEFAULT).inDp()
                                 SystemUiSize(
                                     widthInDp = parsedDevice.dimensions.width.toInt(),
                                     heightInDp = parsedDevice.dimensions.height.toInt()
                                 ) {
                                     PreviewBackground(
                                         showBackground = true,
-                                        backgroundColor = preview.previewInfo.backgroundColor,
+                                        backgroundColor = previewInfo.backgroundColor,
                                     ) {
                                         preview()
                                     }
