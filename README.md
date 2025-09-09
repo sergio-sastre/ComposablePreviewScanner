@@ -952,9 +952,8 @@ Custom gradle tasks for Android-testify integration tests (i.e. instrumentation 
 
 ## java.io.FileNotFoundException (File name too long)
 
-`java.io.FileNotFoundException: ... (File name too long)`
-This is more likely to happen when using Paparazzi. Unfortunately, Paparazzi also modifies internally the name
-of the screenshot we pass to it, sometimes making it even longer than allowed.
+`java.io.FileNotFoundException: ... (File name too long)`</br>
+This is more likely to happen when using Paparazzi. Unfortunately, Paparazzi creates internally the screenshot file named based on the `name` we pass to its `snapshot()` method, sometimes resulting in the final screenshot file name even longer than allowed.
 
 If you're experiencing such issues, consider:
 1. Using `AndroidPreviewScreenshotIdBuilder` methods like `ignoreIdFor()` or `overrideDefaultIdFor()` to shorten the given name.
