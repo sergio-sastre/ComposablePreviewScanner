@@ -358,8 +358,12 @@ object DeviceConfigBuilder {
 
 object PaparazziPreviewRule {
     fun createFor(preview: ComposablePreview<AndroidPreviewInfo>): Paparazzi {
-        val previewInfo = preview.previewInfo
-        return Paparazzi(
+       val previewApiLevel = when(previewInfo.apiLevel == -1) {
+          true -> 36
+          false -> previewInfo.apiLevel
+       }
+       return Paparazzi(
+            environment = detectEnvironment().copy(compileSdkVersion = previewApiLevel),
             deviceConfig = DeviceConfigBuilder.build(preview.previewInfo),
             supportsRtl = true,
             showSystemUi = previewInfo.showSystemUi,

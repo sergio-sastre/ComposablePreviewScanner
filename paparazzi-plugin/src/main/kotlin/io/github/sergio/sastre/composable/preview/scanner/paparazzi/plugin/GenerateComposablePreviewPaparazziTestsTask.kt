@@ -65,6 +65,7 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
             import androidx.compose.runtime.Composable
             import androidx.compose.ui.Modifier
             import androidx.compose.ui.graphics.Color
+            import app.cash.paparazzi.detectEnvironment
             import app.cash.paparazzi.DeviceConfig
             import app.cash.paparazzi.Paparazzi
             import com.android.ide.common.rendering.api.SessionParams
@@ -148,7 +149,12 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
             object PaparazziPreviewRule {
                 fun createFor(preview: ComposablePreview<AndroidPreviewInfo>): Paparazzi {
                     val previewInfo = preview.previewInfo
+                    val previewApiLevel = when(previewInfo.apiLevel == -1) {
+                        true -> 36
+                        false -> previewInfo.apiLevel
+                    }
                     return Paparazzi(
+                        environment = detectEnvironment().copy(compileSdkVersion = previewApiLevel),
                         deviceConfig = DeviceConfigBuilder.build(preview.previewInfo),
                         supportsRtl = true,
                         showSystemUi = previewInfo.showSystemUi,

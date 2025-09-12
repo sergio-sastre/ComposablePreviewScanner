@@ -1,5 +1,6 @@
 package sergio.sastre.composable.preview.scanner.paparazzi.plugin
 
+import android.os.Build
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Devices.PIXEL_C
@@ -7,8 +8,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 
 @Composable
-fun Example() {
-    Text("Example")
+fun Example(apiLevel: String) {
+    Text(apiLevel)
 }
 
 @Preview(device = "id:pixel")
@@ -19,8 +20,9 @@ fun Example() {
     backgroundColor = 0xFF000080
 )
 @PreviewScreenSizes
+@Preview(apiLevel = 31)
 @Preview
 @Composable
 fun ScreenSizesExamplePreview() {
-    Example()
+    Example("API ${Build.VERSION.SDK_INT}")
 }

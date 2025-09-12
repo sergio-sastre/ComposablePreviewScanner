@@ -29,6 +29,7 @@ However, customizing the plugin to fit your needs should be straightforward: sim
     - `showBackground`
     - `backgroundColor`
     - `showSystemUi`
+    - `apiLevel`
 - 🔒 **Private Preview Support**: Option to include private `@Preview`
 
 ## Usage
