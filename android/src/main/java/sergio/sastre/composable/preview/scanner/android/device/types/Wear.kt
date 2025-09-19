@@ -86,8 +86,10 @@ enum class Wear(
         WEAR_OS_RECT_DEFAULT.copy(identifier = Identifier.WEAR_OS_RECT)
     ),
 
-    // The Id was changed in more recent versions. New one reflects WEAR_OS_RECT
-    // This is kept for compatibility with older versions of Android studio
+    @Deprecated(
+        message = "Replaced by WEAR_OS_RECT in newer Android Studio versions",
+        replaceWith = ReplaceWith("Wear.WEAR_OS_RECT")
+    )
     WEAR_OS_RECTANGULAR(
         WEAR_OS_RECT_DEFAULT.copy(identifier = Identifier.WEAR_OS_RECTANGULAR)
     ),

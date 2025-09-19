@@ -51,9 +51,12 @@ data class Identifier(val id: String? = null, val name: String? = null) {
 
         // Wear
         val WEAR_OS_SQUARE = Identifier(id = "wearos_square", name = "Wear OS Square")
-
         val WEAR_OS_RECT = // This is the updated Identifier of WEAR_OS_RECTANGULAR
             Identifier(id = "wearos_rect", name = "Wear OS Rectangular")
+        @Deprecated(
+            message = "Replaced by WEAR_OS_RECT in newer Android Studio versions",
+            replaceWith = ReplaceWith("Identifier.WEAR_OS_RECT")
+        )
         val WEAR_OS_RECTANGULAR =
             Identifier(id = "wearos_rectangular", name = "Wear OS Rectangular")
         val WEAR_OS_SMALL_ROUND =
@@ -98,6 +101,10 @@ data class Identifier(val id: String? = null, val name: String? = null) {
         val TV_1080p = Identifier(id = "tv_1080p", name = "Television (1080p)")
 
         // XR Devices
+        @Deprecated(
+            message = "Replaced by XR_HEADSET in newer Android Studio versions",
+            replaceWith = ReplaceWith("Identifier.XR_HEADSET")
+        )
         val XR_DEVICE = Identifier(id = "xr_device", name = "XR Device")
         val XR_HEADSET = // This is the updated Identifier of XR_DEVICE
             Identifier(id = "xr_headset_device", name = "XR Headset")

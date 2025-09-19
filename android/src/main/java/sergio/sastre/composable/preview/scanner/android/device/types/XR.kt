@@ -27,8 +27,10 @@ enum class XR(
     override val device: Device
 ) : GetDeviceByIdentifier<XR> {
 
-    // The Id was changed in more recent versions. New one reflects XR_HEADSET
-    // This is kept for compatibility with older versions of Android studio
+    @Deprecated(
+        message = "Replaced by XR_HEADSET in newer Android Studio versions",
+        replaceWith = ReplaceWith("XR.XR_HEADSET")
+    )
     XR_DEVICE(
         XR_DEFAULT.copy(identifier = Identifier.XR_DEVICE)
     ),
