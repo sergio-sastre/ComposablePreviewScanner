@@ -10,6 +10,7 @@ import org.junit.runner.RunWith
 import sergio.sastre.composable.preview.scanner.android.device.DevicePreviewInfoParser
 import sergio.sastre.composable.preview.scanner.android.device.domain.Cutout
 import sergio.sastre.composable.preview.scanner.android.device.domain.Dimensions
+import sergio.sastre.composable.preview.scanner.android.device.domain.Identifier
 import sergio.sastre.composable.preview.scanner.android.device.domain.Navigation
 import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation
 import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation.LANDSCAPE
@@ -25,6 +26,7 @@ import sergio.sastre.composable.preview.scanner.android.device.domain.Type.TABLE
 import sergio.sastre.composable.preview.scanner.android.device.domain.Unit.DP
 import sergio.sastre.composable.preview.scanner.android.device.domain.Unit.PX
 import sergio.sastre.composable.preview.scanner.android.device.types.Phone
+import sergio.sastre.composable.preview.scanner.android.device.types.XR
 
 @RunWith(TestParameterInjector::class)
 class DevicePreviewInfoParserTest {
@@ -283,6 +285,7 @@ class DevicePreviewInfoParserTest {
         WearOSSmallRound("id:wearos_small_round", RobolectricDeviceQualifiers.WearOSSmallRound),
         WearOSSquare("id:wearos_square", RobolectricDeviceQualifiers.WearOSSquare),
         WearOSRectangular("id:wearos_rectangular", RobolectricDeviceQualifiers.WearOSRectangular),
+        WearOSRect("id:wearos_rect", RobolectricDeviceQualifiers.WearOSRectangular),
 
         SmallDesktop("id:desktop_small", RobolectricDeviceQualifiers.SmallDesktop),
         MediumDesktop("id:desktop_medium", RobolectricDeviceQualifiers.MediumDesktop),
@@ -444,29 +447,36 @@ class DevicePreviewInfoParserTest {
         )
     }
 
-    enum class XR_DEVICE(val identifier: String) {
-        ID("id:xr_device"),
-        NAME("name:XR Device")
+    enum class XR_DEVICE(val identifier: Identifier) {
+        XR_DEVICE(requireNotNull(XR.XR_DEVICE.device.identifier)),
+        XR_HEADSET(requireNotNull(XR.XR_HEADSET.device.identifier)),
     }
 
     @Test
-    fun `GIVEN XR Device, has expected dimensions, density and orientation`(
+    fun `GIVEN XR Device or XR Headset, has expected dimensions, density and orientation`(
         @TestParameter xrDevice: XR_DEVICE
     ) {
-        val expectedDevice =
-            DevicePreviewInfoParser.parse(xrDevice.identifier)!!
+        val expectedDeviceFromId =
+            DevicePreviewInfoParser.parse("id:${xrDevice.identifier.id}")!!
+
+        val expectedDeviceFromName =
+            DevicePreviewInfoParser.parse("name:${xrDevice.identifier.name}")!!
 
         assertEquals(
-            expectedDevice.dimensions.width, 2560f
+            expectedDeviceFromId, expectedDeviceFromName
+        )
+
+        assertEquals(
+            expectedDeviceFromId.dimensions.width, 2560f
         )
         assertEquals(
-            expectedDevice.dimensions.height, 2558f
+            expectedDeviceFromId.dimensions.height, 2558f
         )
         assertEquals(
-            expectedDevice.densityDpi, 320
+            expectedDeviceFromId.densityDpi, 320
         )
         assertEquals(
-            expectedDevice.orientation, LANDSCAPE
+            expectedDeviceFromId.orientation, LANDSCAPE
         )
     }
 

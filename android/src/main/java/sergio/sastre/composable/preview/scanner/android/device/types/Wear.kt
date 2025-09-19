@@ -5,12 +5,27 @@ import sergio.sastre.composable.preview.scanner.android.device.domain.Dimensions
 import sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceByIdentifier
 import sergio.sastre.composable.preview.scanner.android.device.domain.Identifier
 import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation.PORTRAIT
-import sergio.sastre.composable.preview.scanner.android.device.domain.ScreenRatio
 import sergio.sastre.composable.preview.scanner.android.device.domain.ScreenRatio.LONG
 import sergio.sastre.composable.preview.scanner.android.device.domain.Shape.NOTROUND
 import sergio.sastre.composable.preview.scanner.android.device.domain.Shape.ROUND
 import sergio.sastre.composable.preview.scanner.android.device.domain.Type.WEAR
 import sergio.sastre.composable.preview.scanner.android.device.domain.Unit.PX
+
+private val WEAR_OS_RECT_DEFAULT =
+    Device(
+        identifier = null,
+        dimensions = Dimensions(
+            width = 402f,
+            height = 476f,
+            unit = PX
+        ),
+        densityDpi = 320,
+        orientation = PORTRAIT,
+        screenRatio = LONG,
+        shape = NOTROUND,
+        chinSize = 0,
+        type = WEAR
+    )
 
 enum class Wear(
     override val device: Device
@@ -67,20 +82,15 @@ enum class Wear(
         )
     ),
 
+    WEAR_OS_RECT(
+        WEAR_OS_RECT_DEFAULT.copy(identifier = Identifier.WEAR_OS_RECT)
+    ),
+
+    @Deprecated(
+        message = "Replaced by WEAR_OS_RECT in newer Android Studio versions",
+        replaceWith = ReplaceWith("Wear.WEAR_OS_RECT")
+    )
     WEAR_OS_RECTANGULAR(
-        Device(
-            identifier = Identifier.WEAR_OS_RECTANGULAR,
-            dimensions = Dimensions(
-                width = 402f,
-                height = 476f,
-                unit = PX
-            ),
-            densityDpi = 320,
-            orientation = PORTRAIT,
-            screenRatio = LONG,
-            shape = NOTROUND,
-            chinSize = 0,
-            type = WEAR
-        )
+        WEAR_OS_RECT_DEFAULT.copy(identifier = Identifier.WEAR_OS_RECTANGULAR)
     ),
 }
