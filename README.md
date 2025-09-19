@@ -357,10 +357,18 @@ object DeviceConfigBuilder {
 }
 
 object PaparazziPreviewRule {
+    const val UNDEFINED_API_LEVEL = -1
+    const val MAX_API_LEVEL = 36
+    
     fun createFor(preview: ComposablePreview<AndroidPreviewInfo>): Paparazzi {
-        val previewInfo = preview.previewInfo
-        return Paparazzi(
-            deviceConfig = DeviceConfigBuilder.build(preview.previewInfo),
+       val previewInfo = preview.previewInfo
+       val previewApiLevel = when(previewInfo.apiLevel == UNDEFINED_API_LEVEL) {
+          true -> MAX_API_LEVEL
+          false -> previewInfo.apiLevel
+       }
+       return Paparazzi(
+            environment = detectEnvironment().copy(compileSdkVersion = previewApiLevel),
+            deviceConfig = DeviceConfigBuilder.build(previewInfo),
             supportsRtl = true,
             showSystemUi = previewInfo.showSystemUi,
             renderingMode = when {
