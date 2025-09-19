@@ -368,7 +368,7 @@ object PaparazziPreviewRule {
        }
        return Paparazzi(
             environment = detectEnvironment().copy(compileSdkVersion = previewApiLevel),
-            deviceConfig = DeviceConfigBuilder.build(preview.previewInfo),
+            deviceConfig = DeviceConfigBuilder.build(previewInfo),
             supportsRtl = true,
             showSystemUi = previewInfo.showSystemUi,
             renderingMode = when {
