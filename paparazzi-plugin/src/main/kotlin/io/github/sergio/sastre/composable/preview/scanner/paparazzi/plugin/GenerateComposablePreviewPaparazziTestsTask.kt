@@ -147,10 +147,13 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
             }
 
             object PaparazziPreviewRule {
+                const val UNDEFINED_API_LEVEL = -1
+                const val MAX_API_LEVEL = 36
+                
                 fun createFor(preview: ComposablePreview<AndroidPreviewInfo>): Paparazzi {
                     val previewInfo = preview.previewInfo
-                    val previewApiLevel = when(previewInfo.apiLevel == -1) {
-                        true -> 36
+                    val previewApiLevel = when(previewInfo.apiLevel == UNDEFINED_API_LEVEL) {
+                        true -> MAX_API_LEVEL
                         false -> previewInfo.apiLevel
                     }
                     return Paparazzi(

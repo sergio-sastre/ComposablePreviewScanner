@@ -67,8 +67,8 @@ composablePreviewPaparazzi {
 These are necessary, because the generated test file requires imports from them:
 ```gradle
 dependencies {
-  testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:android:0.6.1")
-  testImplementation("com.google.testparameterinjector:test-parameter-injector:1.16")
+  testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:android:0.7.0")
+  testImplementation("com.google.testparameterinjector:test-parameter-injector:1.19")
   testImplementation("junit:junit:4.13.2")
 }
 ```
