@@ -46,7 +46,6 @@ dependencies {
     // Composable preview scanner
     testImplementation(project(":android"))
     testImplementation(project(":jvm"))
-    testImplementation(libs.test.parameter.injector)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation("androidx.compose.runtime:runtime")

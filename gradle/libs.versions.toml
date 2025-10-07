@@ -19,7 +19,7 @@ roborazzi = "1.46.1"
 roborazziCompose = "1.46.1"
 
 # version 1.3.5 makes troubles due to issue #66
-paparazzi = "1.3.4"
+paparazzi = "1.3.5"
 
 testParameterInjector = "1.18"
 utils = "2.7.0"
