@@ -103,7 +103,8 @@ dependencies {
 ```
 
 # How to use
-## Screenshot Testing Libraries
+## Android Previews
+### Screenshot Testing Libraries
 1. [Jvm Screenshot Tests](#jvm-screenshot-tests)</br>
    1.1  [Paparazzi](#paparazzi)</br>
    1.2  [Roborazzi](#roborazzi)</br>
@@ -285,19 +286,7 @@ fun MyComposable(){
 }
 ```
 
-3. Include your annotation info in the Preview
-```kotlin
-object ComposablePreviewProvider : TestParameterValuesProvider() {
-    override fun provideValues(context: Context?): List<ComposablePreview<AndroidPreviewInfo>> =
-        AndroidComposablePreviewScanner()
-            .scanPackageTrees("my.package", "my.package2")
-            .includeAnnotationInfoForAllOf(PaparazziConfig::class.java)
-            // any other filtering option ...
-            .getPreviews()
-}
-```
-
-4. Map the PreviewInfo and PaparazziConfig values. For instance, you can use a custom class for that.
+3. Map the PreviewInfo and PaparazziConfig values. For instance, you can use a custom class for that.
 ```kotlin
 class Dimensions(
    val screenWidthInPx: Int,
@@ -427,16 +416,28 @@ fun PreviewBackground(
         }
     }
 }
-
 ```
 
-5. Create the corresponding Parameterized Test:
+4. Create the corresponding Parameterized Test:
 ```kotlin
-@RunWith(TestParameterInjector::class)
+@RunWith(Parameterized::class)
 class PreviewTestParameterTests(
-    @TestParameter(valuesProvider = ComposablePreviewProvider::class)
     val preview: ComposablePreview<AndroidPreviewInfo>,
 ) {
+
+   companion object {
+      // Optimization: This avoids scanning for every test
+      private val cachedPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
+         AndroidComposablePreviewScanner()
+            .scanPackageTrees("your.package", "your.package2")
+            .includeAnnotationInfoForAllOf(PaparazziConfig::class.java)
+            .getPreviews()
+      }
+
+      @JvmStatic
+      @Parameterized.Parameters
+      fun values(): List<ComposablePreview<AndroidPreviewInfo>> = cachedPreviews
+   }
 
     @get:Rule
     val paparazzi: Paparazzi = PaparazziPreviewRule.createFor(preview)
@@ -479,7 +480,7 @@ class PreviewTestParameterTests(
 }
 ```
 
-6. Run these Paparazzi tests together with the existing ones by executing the corresponding command e.g. `./gradlew yourModule:recordPaparazziDebug`
+5. Run these Paparazzi tests together with the existing ones by executing the corresponding command e.g. `./gradlew yourModule:recordPaparazziDebug`
 
 ### Roborazzi
 You can find [executable examples here](https://github.com/sergio-sastre/Android-screenshot-testing-playground/tree/master/lazycolumnscreen-previews/roborazzi/src)
