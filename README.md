@@ -970,7 +970,7 @@ If you're experiencing such issues, consider:
 
 ## java.lang.IllegalArgumentException: Generated method name contains invalid characters
 
-Some libraries restrict the characters allowed in filenames and may alter the provided screenshot name (e.g., Paparazzi 1.3.5+).
+Some libraries restrict the characters allowed in filenames and may alter the provided screenshot name (e.g., Paparazzi 1.3.5+ like reported in this issue [here](https://github.com/cashapp/paparazzi/issues/1963)).
 This is especially problematic when the `TestParameterInjector` test runner is used.</br>
 To avoid issues, `ComposablePreviewScanner`s ScreenshotIdBuilders should be used with the standard JUnit4 `Parameterized` test runner, and invalid characters should be encoded manually if needed, for example:
 ```kotlin
