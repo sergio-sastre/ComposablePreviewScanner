@@ -968,6 +968,23 @@ If you're experiencing such issues, consider:
 1. Using `AndroidPreviewScreenshotIdBuilder` methods like `ignoreIdFor()` or `overrideDefaultIdFor()` to shorten the given name.
 2. Avoid `AndroidPreviewScreenshotIdBuilder` and use `paparazzi.snapshot {}` instead of `paparazzi.snapshot(name = screenshotId)`
 
+## java.lang.IllegalArgumentException: Generated method name contains invalid characters
+
+Some libraries restrict the characters allowed in filenames and may alter the provided screenshot name (e.g., Paparazzi 1.3.5+).
+This is especially problematic when the `TestParameterInjector` test runner is used.</br>
+To avoid issues, `ComposablePreviewScanner`s ScreenshotIdBuilders should be used with the standard JUnit4 `Parameterized` test runner, and invalid characters should be encoded manually if needed, for example:
+```kotlin
+AndroidPreviewScreenshotIdBuilder(preview)
+    ...
+    .build()
+    .replace("<", "%3C")
+    .replace(">", "%3E")
+    .replace("?", "%3F")
+```
+> [!NOTE]
+> When using `TestParameterInjector` invalid characters may persist.
+> Use the JUnit4 `Parameterized` test runner for valid results.
+
 ## Cannot inline bytecode built with JVM target 17
 
 ```text
