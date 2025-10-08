@@ -70,12 +70,10 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
             import app.cash.paparazzi.Paparazzi
             import com.android.ide.common.rendering.api.SessionParams
             import com.android.resources.*
-            import com.google.testing.junit.testparameterinjector.TestParameter
-            import com.google.testing.junit.testparameterinjector.TestParameterInjector
-            import com.google.testing.junit.testparameterinjector.TestParameterValuesProvider
             import org.junit.Rule
             import org.junit.Test
             import org.junit.runner.RunWith
+            import org.junit.runners.Parameterized
             import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
             import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
             import sergio.sastre.composable.preview.scanner.android.device.DevicePreviewInfoParser
@@ -217,11 +215,23 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                 }
             }
             
-            @RunWith(TestParameterInjector::class)
+            @RunWith(Parameterized::class)
             class $className(
-                @TestParameter(valuesProvider = ComposablePreviewProvider::class)
                 val preview: ComposablePreview<AndroidPreviewInfo>,
             ) {
+            
+                companion object {
+                    private val cachedPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
+                        AndroidComposablePreviewScanner()
+                            .scanPackageTrees($packagesExpr)
+                            ${if (includePrivatePreviewsExpr) ".includePrivatePreviews()" else ""}
+                            .getPreviews()
+                    }
+
+                    @JvmStatic
+                    @Parameterized.Parameters
+                    fun values(): List<ComposablePreview<AndroidPreviewInfo>> = cachedPreviews
+                }
             
                 @get:Rule
                 val paparazzi: Paparazzi = PaparazziPreviewRule.createFor(preview)
@@ -231,7 +241,12 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                     val screenshotId = AndroidPreviewScreenshotIdBuilder(preview)
                     .ignoreClassName()
                     .ignoreMethodName()
+                    .doNotIgnoreMethodParametersType()
                     .build()
+                    // Replace invalid characters for file names with its encoded values
+                    .replace("<", "%3C")
+                    .replace(">", "%3E")
+                    .replace("?", "%3F")
                     
                     paparazzi.snapshot(name = screenshotId) {
                         val previewInfo = preview.previewInfo
@@ -259,15 +274,6 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                             }
                         }
                     }
-                }
-            }
-            
-            class ComposablePreviewProvider : TestParameterValuesProvider() {
-                override fun provideValues(context: Context?): List<ComposablePreview<AndroidPreviewInfo>> {
-                    return AndroidComposablePreviewScanner()
-                        .scanPackageTrees($packagesExpr)
-                        ${if (includePrivatePreviewsExpr) ".includePrivatePreviews()" else ""}
-                        .getPreviews()
                 }
             }
             """.trimIndent()

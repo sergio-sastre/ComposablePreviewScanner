@@ -85,8 +85,13 @@ class PaparazziSourceSetComposablePreviewInvokeTests(
     fun snapshot() {
         val screenshotId = AndroidPreviewScreenshotIdBuilder(preview)
             .ignoreClassName()
+            .ignoreMethodName()
             .doNotIgnoreMethodParametersType()
             .build()
+            .replace("<", "%3C")
+            .replace(">", "%3E")
+            .replace("?", "%3F")
+
         paparazzi.snapshot(name = screenshotId) {
             preview()
         }
