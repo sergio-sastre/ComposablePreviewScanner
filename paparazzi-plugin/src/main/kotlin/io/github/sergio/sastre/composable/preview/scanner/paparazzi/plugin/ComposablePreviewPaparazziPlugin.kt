@@ -18,6 +18,7 @@ class ComposablePreviewPaparazziPlugin : Plugin<Project> {
         extension.includePrivatePreviews.convention(false)
         extension.testClassName.convention("GeneratedComposablePreviewPaparazziTests")
         extension.testPackageName.convention("generated.paparazzi.tests")
+        extension.numOfShards.convention(1)
 
         // Configure the task after project evaluation
         project.afterEvaluate {
