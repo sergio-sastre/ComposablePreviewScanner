@@ -26,6 +26,9 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
     @get:Input
     abstract val testPackageName: Property<String>
 
+    @get:Input
+    abstract val numOfShards: Property<Int>
+
     @TaskAction
     fun generateTests() {
         val testDir = outputDir.get().asFile
@@ -35,29 +38,78 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
         val includePrivatePreviewsExpr = includePrivatePreviews.get()
         val className = testClassName.get()
         val packageName = testPackageName.get()
+        val shards = numOfShards.get()
 
         val directory = File(testDir, packageName.replace(".", "/"))
         directory.mkdirs()
 
-        File(directory, "$className.kt").writeText(
-            generateTestFileContent(
-                packageName,
-                className,
-                packagesExpr,
-                includePrivatePreviewsExpr
+        if (shards < 1) {
+            logger.info("Number of shards must be at least 1")
+        } else if (shards == 1) {
+            File(directory, "$className.kt").writeText(
+                generateTestFileContent(
+                    packageName,
+                    className,
+                    packagesExpr,
+                    includePrivatePreviewsExpr,
+                    shardIndex = null,
+                    numShards = 1,
+                    includeHeader = true
+                )
             )
-        )
-
-        logger.info("Generated Paparazzi test file: ${directory.absolutePath}/$className.kt")
+            logger.info("Generated Paparazzi test file: ${directory.absolutePath}/$className.kt")
+        } else {
+            val targetFile = File(directory, "$className.kt")
+            val content = buildString {
+                // First shard with header and shared code
+                append(
+                    generateTestFileContent(
+                        packageName,
+                        "${className}Shard1",
+                        packagesExpr,
+                        includePrivatePreviewsExpr,
+                        shardIndex = 0,
+                        numShards = shards,
+                        includeHeader = true
+                    )
+                )
+                // Remaining shards: only class declarations
+                for (index in 1 until shards) {
+                    append("\n\n")
+                    append(
+                        generateTestFileContent(
+                            packageName,
+                            "${className}Shard${index + 1}",
+                            packagesExpr,
+                            includePrivatePreviewsExpr,
+                            shardIndex = index,
+                            numShards = shards,
+                            includeHeader = false
+                        )
+                    )
+                }
+            }
+            targetFile.writeText(content)
+            logger.info("Generated Paparazzi test file: ${directory.absolutePath}/$className.kt")
+        }
     }
 
     private fun generateTestFileContent(
         packageName: String,
         className: String,
         packagesExpr: String,
-        includePrivatePreviewsExpr: Boolean
+        includePrivatePreviewsExpr: Boolean,
+        shardIndex: Int?,
+        numShards: Int,
+        includeHeader: Boolean
     ): String {
-        return """
+        val valuesExpr = if (shardIndex == null || numShards <= 1) {
+            "cachedPreviews"
+        } else {
+            "cachedPreviews.filterIndexed { index, _ -> index % $numShards == $shardIndex }"
+        }
+
+        val header = """
             package $packageName
             
             import androidx.compose.foundation.background
@@ -214,23 +266,26 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                     }
                 }
             }
-            
+
+            // Expensive scan cached once per file to be shared by all shard classes
+            private val cachedPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
+                AndroidComposablePreviewScanner()
+                    .scanPackageTrees($packagesExpr)
+                    ${if (includePrivatePreviewsExpr) ".includePrivatePreviews()" else ""}
+                    .getPreviews()
+            }
+        """.trimIndent()
+
+        val classSection = """
             @RunWith(Parameterized::class)
             class $className(
                 val preview: ComposablePreview<AndroidPreviewInfo>,
             ) {
             
                 companion object {
-                    private val cachedPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
-                        AndroidComposablePreviewScanner()
-                            .scanPackageTrees($packagesExpr)
-                            ${if (includePrivatePreviewsExpr) ".includePrivatePreviews()" else ""}
-                            .getPreviews()
-                    }
-
                     @JvmStatic
                     @Parameterized.Parameters
-                    fun values(): List<ComposablePreview<AndroidPreviewInfo>> = cachedPreviews
+                    fun values(): List<ComposablePreview<AndroidPreviewInfo>> = $valuesExpr
                 }
             
                 @get:Rule
@@ -276,6 +331,8 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                     }
                 }
             }
-            """.trimIndent()
+        """.trimIndent()
+
+        return if (includeHeader) "$header\n\n$classSection" else classSection
     }
 }

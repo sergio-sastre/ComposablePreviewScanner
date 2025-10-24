@@ -40,6 +40,7 @@ composablePreviewPaparazzi {
     includePrivatePreviews = true
     testClassName = "GeneratedPaparazziTests"
     testPackageName = "preview.generated"
+    numOfShards = 2
 }
 
 dependencies {

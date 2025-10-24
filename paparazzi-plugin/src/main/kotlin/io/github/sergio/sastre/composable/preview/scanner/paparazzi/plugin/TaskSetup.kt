@@ -30,6 +30,7 @@ fun setupGenerateComposablePreviewPaparazziTestsTask(
         task.includePrivatePreviews.set(extension.includePrivatePreviews)
         task.testClassName.set(extension.testClassName)
         task.testPackageName.set(extension.testPackageName)
+        task.numOfShards.set(extension.numOfShards)
     }
 
     // The tests are now generated directly in src/test/kotlin, so no need to add source directories
