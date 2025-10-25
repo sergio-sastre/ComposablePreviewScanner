@@ -285,8 +285,72 @@ fun MyComposable(){
    // Composable code here
 }
 ```
+3. Create custom record and verify `SnapshotHandler`s for better control over the screenshot file names.</br> By default, Paparazzi prefixes all generated screenshot files using its internal SnapshotHolder. While this works for most cases, it causes issues in parameterized tests: the default SnapshotHolder includes the test [index] in the filename. If the order of your previews changes, filenames no longer match, which can break snapshot verification.</br></br>
+   To solve this, we can create custom `SnapshotHandler`s that use a fixed prefix, like "Paparazzi_Preview_Test", instead of a test-index-dependent name. This ensures filenames remain stable regardless of test order.
+```kotlin
+// Define the prefix = <packageName>_<className>_<methodName>
+private val paparazziTestName =
+   TestName(packageName = "Paparazzi", className = "Preview", methodName = "Test")
 
-3. Map the PreviewInfo and PaparazziConfig values. For instance, you can use a custom class for that.
+private class PreviewSnapshotVerifier(
+   maxPercentDifference: Double
+): SnapshotHandler {
+   private val snapshotHandler = SnapshotVerifier(
+      maxPercentDifference = maxPercentDifference
+   )
+   override fun newFrameHandler(
+      snapshot: Snapshot,
+      frameCount: Int,
+      fps: Int
+   ): SnapshotHandler.FrameHandler {
+      val newSnapshot = Snapshot(
+         name = snapshot.name,
+         testName = paparazziTestName,
+         timestamp = snapshot.timestamp,
+         tags = snapshot.tags,
+         file = snapshot.file,
+      )
+      return snapshotHandler.newFrameHandler(
+         snapshot = newSnapshot,
+         frameCount = frameCount,
+         fps = fps
+      )
+   }
+
+   override fun close() {
+      snapshotHandler.close()
+   }
+}
+
+private class PreviewHtmlReportWriter: SnapshotHandler {
+   private val snapshotHandler = HtmlReportWriter()
+   override fun newFrameHandler(
+      snapshot: Snapshot,
+      frameCount: Int,
+      fps: Int
+   ): SnapshotHandler.FrameHandler {
+      val newSnapshot = Snapshot(
+         name = snapshot.name,
+         testName = paparazziTestName,
+         timestamp = snapshot.timestamp,
+         tags = snapshot.tags,
+         file = snapshot.file,
+      )
+      return snapshotHandler.newFrameHandler(
+         snapshot = newSnapshot,
+         frameCount = frameCount,
+         fps = fps
+      )
+   }
+
+   override fun close() {
+      snapshotHandler.close()
+   }
+}
+```
+In the next step, we’ll show how to pass these custom SnapshotHandlers to the Paparazzi TestRule to take full control of screenshot filenames.
+
+4. Map the PreviewInfo and PaparazziConfig values.
 ```kotlin
 class Dimensions(
    val screenWidthInPx: Int,
@@ -355,6 +419,8 @@ object PaparazziPreviewRule {
           true -> MAX_API_LEVEL
           false -> previewInfo.apiLevel
        }
+       // other library configurations...
+       val tolerance = preview.getAnnotation<PaparazziConfig>()?.maxPercentDifference ?: 0.0
        return Paparazzi(
             environment = detectEnvironment().copy(compileSdkVersion = previewApiLevel),
             deviceConfig = DeviceConfigBuilder.build(previewInfo),
@@ -365,8 +431,11 @@ object PaparazziPreviewRule {
                 previewInfo.widthDp > 0 && previewInfo.heightDp > 0 -> SessionParams.RenderingMode.FULL_EXPAND
                 else -> SessionParams.RenderingMode.SHRINK
             },
-            // other configurations...
-            maxPercentDifference = preview.getAnnotation<PaparazziConfig>()?.maxPercentDifference ?: 0.0
+            snapshotHandler = when(System.getProperty("paparazzi.test.verify")?.toBoolean() == true) {
+               true -> PreviewSnapshotVerifier(tolerance)
+               false -> PreviewHtmlReportWriter()
+            },
+            maxPercentDifference = tolerance
         )
     }
 }
@@ -418,7 +487,7 @@ fun PreviewBackground(
 }
 ```
 
-4. Create the corresponding Parameterized Test:
+5. Create the corresponding Parameterized Test:
 ```kotlin
 @RunWith(Parameterized::class)
 class PreviewTestParameterTests(
@@ -444,11 +513,7 @@ class PreviewTestParameterTests(
 
     @Test
     fun snapshot() {
-        // Recommended for more meaningful screenshot file names. See #Advanced Usage
-        val screenshotId = AndroidPreviewScreenshotIdBuilder(preview)
-            .ignoreClassName()
-            .ignoreMethodName()
-            .build()
+        val screenshotId = AndroidPreviewScreenshotIdBuilder(preview).build()
        
         paparazzi.snapshot(name = screenshotId) {
             val previewInfo = preview.previewInfo
@@ -480,7 +545,7 @@ class PreviewTestParameterTests(
 }
 ```
 
-5. Run these Paparazzi tests together with the existing ones by executing the corresponding command e.g. `./gradlew yourModule:recordPaparazziDebug`
+6. Run these Paparazzi tests together with the existing ones by executing the corresponding command e.g. `./gradlew yourModule:recordPaparazziDebug`
 
 ### Roborazzi
 You can find [executable examples here](https://github.com/sergio-sastre/Android-screenshot-testing-playground/tree/master/lazycolumnscreen-previews/roborazzi/src)
@@ -722,9 +787,6 @@ That means, for @Preview(showBackground = false), showBackground would not be in
 
 ```kotlin 
 AndroidPreviewScreenshotIdBuilder(preview)
-    // Paparazzi screenshot names already include className and methodName
-    // so ignore them to avoid them duplicated what might throw a FileNotFoundException
-    // due to the longName
     .ignoreClassName()
     .ignoreMethodName()
     // use this if you have previews in the same file with the same method name but different signature
@@ -925,9 +987,8 @@ In these tech-talks have also been mentioned the benefits of using ComposablePre
 - Droidcon Lisbon 2024:</br>
   [Composable Preview Driven Development: TDD-fying your UI with ease!](https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.youtube.com/watch%3Fv%3DcDqdosrS83k&ved=2ahUKEwjprPGKqaiPAxWxSvEDHdSRBKkQwqsBegQIFRAG&usg=AOvVaw2ZfX6fYQbNI4Op6KN0d5i5) by Sergio Sastre</br>
 - [“Fast Feedback loops & Composable Preview Scanner”](https://www.youtube.com/watch?v=SphQelcGdHk) with the Skool Android Community by Sergio Sastre</br>
-
-Coming Soon:
-- Droidcon Lisbon & Berlin 2025: Let's @Preview the future: Automating Screenshot Testing in Compose Multiplatform by Sergio Sastre
+- Droidcon Lisbon & Berlin 2025:</br>
+  [Let's @Preview the future: Automating Screenshot Testing in Compose Multiplatform](https://www.youtube.com/watch?v=zYsNXrf2-Lo) by Sergio Sastre
 
 ## Blog posts
 - [Automating screens verification with Roborazzi and GitHub Actions](https://medium.com/@matiasdelbel/automating-screens-verification-with-roborazzi-and-github-actions-473b3301a5c0) by Matías del Bel
@@ -962,9 +1023,10 @@ Custom gradle tasks for Android-testify integration tests (i.e. instrumentation 
 ## java.io.FileNotFoundException (File name too long)
 
 `java.io.FileNotFoundException: ... (File name too long)`</br>
-This is more likely to happen when using Paparazzi. Unfortunately, Paparazzi creates internally the screenshot file named based on the `name` we pass to its `snapshot()` method, sometimes resulting in the final screenshot file name even longer than allowed.
+This is more likely to happen when using Paparazzi. By default, Paparazzi additionally prefixes the screenshot file named internally instead of just using the `name` we pass to its `snapshot()` method, and this results sometimes in the final screenshot file name being longer than allowed.</br></br>
+That is why it is recommended to [set a custom SnapshotHandler](#paparazzi) in the Paparazzi Test Rule.
 
-If you're experiencing such issues, consider:
+But if you're still experiencing such issues, consider:
 1. Using `AndroidPreviewScreenshotIdBuilder` methods like `ignoreIdFor()` or `overrideDefaultIdFor()` to shorten the given name.
 2. Avoid `AndroidPreviewScreenshotIdBuilder` and use `paparazzi.snapshot {}` instead of `paparazzi.snapshot(name = screenshotId)`
 

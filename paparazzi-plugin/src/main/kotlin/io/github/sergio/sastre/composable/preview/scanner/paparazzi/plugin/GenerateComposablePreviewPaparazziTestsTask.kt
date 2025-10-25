@@ -60,16 +60,26 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
         return """
             package $packageName
             
+            import android.content.res.Configuration.UI_MODE_NIGHT_MASK
+            import android.content.res.Configuration.UI_MODE_NIGHT_YES
+            import androidx.compose.ui.graphics.Color
+            import androidx.compose.ui.unit.dp
+            import androidx.compose.ui.Modifier
             import androidx.compose.foundation.background
+            import androidx.compose.foundation.layout.size
             import androidx.compose.foundation.layout.Box
             import androidx.compose.runtime.Composable
-            import androidx.compose.ui.Modifier
-            import androidx.compose.ui.graphics.Color
             import app.cash.paparazzi.detectEnvironment
             import app.cash.paparazzi.DeviceConfig
+            import app.cash.paparazzi.HtmlReportWriter
             import app.cash.paparazzi.Paparazzi
+            import app.cash.paparazzi.Snapshot
+            import app.cash.paparazzi.SnapshotHandler
+            import app.cash.paparazzi.SnapshotVerifier
+            import app.cash.paparazzi.TestName
             import com.android.ide.common.rendering.api.SessionParams
             import com.android.resources.*
+            import kotlin.math.ceil
             import org.junit.Rule
             import org.junit.Test
             import org.junit.runner.RunWith
@@ -81,11 +91,6 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
             import sergio.sastre.composable.preview.scanner.android.device.types.DEFAULT
             import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
             import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
-            import kotlin.math.ceil
-            import android.content.res.Configuration.UI_MODE_NIGHT_MASK
-            import android.content.res.Configuration.UI_MODE_NIGHT_YES
-            import androidx.compose.foundation.layout.size
-            import androidx.compose.ui.unit.dp
             
             class Dimensions(
                 val screenWidthInPx: Int,
@@ -143,6 +148,67 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                     )
                 }
             }
+            
+            // In order to have full control over the screenshot file names
+            // we need to pass our own SnapshotHandler to the Paparazzi TestRule
+            private val paparazziTestName =
+                TestName(packageName = "Paparazzi", className = "Preview", methodName = "Test")
+            
+            private class PreviewSnapshotVerifier(
+                maxPercentDifference: Double
+            ): SnapshotHandler {
+                private val snapshotHandler = SnapshotVerifier(
+                    maxPercentDifference = maxPercentDifference
+                )
+                override fun newFrameHandler(
+                    snapshot: Snapshot,
+                    frameCount: Int,
+                    fps: Int
+                ): SnapshotHandler.FrameHandler {
+                    val newSnapshot = Snapshot(
+                        name = snapshot.name,
+                        testName = paparazziTestName,
+                        timestamp = snapshot.timestamp,
+                        tags = snapshot.tags,
+                        file = snapshot.file,
+                    )
+                    return snapshotHandler.newFrameHandler(
+                        snapshot = newSnapshot,
+                        frameCount = frameCount,
+                        fps = fps
+                    )
+                }
+
+                override fun close() {
+                    snapshotHandler.close()
+                }
+            }
+
+            private class PreviewHtmlReportWriter: SnapshotHandler {
+                private val snapshotHandler = HtmlReportWriter()
+                override fun newFrameHandler(
+                    snapshot: Snapshot,
+                    frameCount: Int,
+                    fps: Int
+                ): SnapshotHandler.FrameHandler {
+                    val newSnapshot = Snapshot(
+                        name = snapshot.name,
+                        testName = paparazziTestName,
+                        timestamp = snapshot.timestamp,
+                        tags = snapshot.tags,
+                        file = snapshot.file,
+                    )
+                    return snapshotHandler.newFrameHandler(
+                        snapshot = newSnapshot,
+                        frameCount = frameCount,
+                        fps = fps
+                    )
+                }
+
+                override fun close() {
+                    snapshotHandler.close()
+                }
+            }
 
             object PaparazziPreviewRule {
                 const val UNDEFINED_API_LEVEL = -1
@@ -154,6 +220,7 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                         true -> MAX_API_LEVEL
                         false -> previewInfo.apiLevel
                     }
+                    val tolerance = 0.0
                     return Paparazzi(
                         environment = detectEnvironment().copy(compileSdkVersion = previewApiLevel),
                         deviceConfig = DeviceConfigBuilder.build(preview.previewInfo),
@@ -164,8 +231,12 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                             previewInfo.widthDp > 0 && previewInfo.heightDp > 0 -> SessionParams.RenderingMode.FULL_EXPAND
                             else -> SessionParams.RenderingMode.SHRINK
                         },
+                        snapshotHandler = when(System.getProperty("paparazzi.test.verify")?.toBoolean() == true) {
+                            true -> PreviewSnapshotVerifier(tolerance)
+                            false -> PreviewHtmlReportWriter()
+                        },
                         // maxPercentDifference can be configured here if needed
-                        maxPercentDifference = 0.0
+                        maxPercentDifference = tolerance
                     )
                 }
             }
@@ -239,8 +310,6 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                 @Test
                 fun snapshot() {
                     val screenshotId = AndroidPreviewScreenshotIdBuilder(preview)
-                    .ignoreClassName()
-                    .ignoreMethodName()
                     .doNotIgnoreMethodParametersType()
                     .build()
                     // Replace invalid characters for file names with its encoded values
