@@ -144,6 +144,65 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
             import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
             import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
             
+            private val paparazziTestName =
+                TestName(packageName = "Paparazzi", className = "Preview", methodName = "Test")
+            
+            private class SnapshotVerifierPaparazzi(
+                maxPercentDifference: Double
+            ): SnapshotHandler {
+                private val snapshotHandler = SnapshotVerifier(
+                    maxPercentDifference = maxPercentDifference
+                )
+                override fun newFrameHandler(
+                    snapshot: Snapshot,
+                    frameCount: Int,
+                    fps: Int
+                ): SnapshotHandler.FrameHandler {
+                    val newSnapshot = Snapshot(
+                        name = snapshot.name,
+                        testName = paparazziTestName,
+                        timestamp = snapshot.timestamp,
+                        tags = snapshot.tags,
+                        file = snapshot.file,
+                    )
+                    return snapshotHandler.newFrameHandler(
+                        snapshot = newSnapshot,
+                        frameCount = frameCount,
+                        fps = fps
+                    )
+                }
+
+                override fun close() {
+                    snapshotHandler.close()
+                }
+            }
+
+            private class HtmlReportWriterPaparazzi: SnapshotHandler {
+                private val snapshotHandler = HtmlReportWriter()
+                override fun newFrameHandler(
+                    snapshot: Snapshot,
+                    frameCount: Int,
+                    fps: Int
+                ): SnapshotHandler.FrameHandler {
+                    val newSnapshot = Snapshot(
+                        name = snapshot.name,
+                        testName = paparazziTestName,
+                        timestamp = snapshot.timestamp,
+                        tags = snapshot.tags,
+                        file = snapshot.file,
+                    )
+                    return snapshotHandler.newFrameHandler(
+                        snapshot = newSnapshot,
+                        frameCount = frameCount,
+                        fps = fps
+                    )
+                }
+
+                override fun close() {
+                    snapshotHandler.close()
+                }
+            }
+            
             class Dimensions(
                 val screenWidthInPx: Int,
                 val screenHeightInPx: Int
