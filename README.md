@@ -987,9 +987,8 @@ In these tech-talks have also been mentioned the benefits of using ComposablePre
 - Droidcon Lisbon 2024:</br>
   [Composable Preview Driven Development: TDD-fying your UI with ease!](https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.youtube.com/watch%3Fv%3DcDqdosrS83k&ved=2ahUKEwjprPGKqaiPAxWxSvEDHdSRBKkQwqsBegQIFRAG&usg=AOvVaw2ZfX6fYQbNI4Op6KN0d5i5) by Sergio Sastre</br>
 - [“Fast Feedback loops & Composable Preview Scanner”](https://www.youtube.com/watch?v=SphQelcGdHk) with the Skool Android Community by Sergio Sastre</br>
-
-Coming Soon:
-- Droidcon Lisbon & Berlin 2025: Let's @Preview the future: Automating Screenshot Testing in Compose Multiplatform by Sergio Sastre
+- Droidcon Lisbon & Berlin 2025:</br>
+  [Let's @Preview the future: Automating Screenshot Testing in Compose Multiplatform](https://www.youtube.com/watch?v=zYsNXrf2-Lo) by Sergio Sastre
 
 ## Blog posts
 - [Automating screens verification with Roborazzi and GitHub Actions](https://medium.com/@matiasdelbel/automating-screens-verification-with-roborazzi-and-github-actions-473b3301a5c0) by Matías del Bel
