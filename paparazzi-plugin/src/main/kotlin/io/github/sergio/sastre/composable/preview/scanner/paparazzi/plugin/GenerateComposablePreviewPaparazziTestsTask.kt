@@ -106,7 +106,7 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
         val valuesExpr = if (shardIndex == null || numShards <= 1) {
             "cachedPreviews"
         } else {
-            "cachedPreviews.filterIndexed { index, _ -> index % $numShards == $shardIndex }"
+            "shardedCachedPreviews[$shardIndex]?:emptyList()"
         }
 
         val header = """
@@ -404,6 +404,12 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                     .scanPackageTrees($packagesExpr)
                     ${if (includePrivatePreviewsExpr) ".includePrivatePreviews()" else ""}
                     .getPreviews()
+            }
+            
+            private val shardedCachedPreviews: Map<Int, List<ComposablePreview<AndroidPreviewInfo>>> by lazy {
+                cachedPreviews
+                    .mapIndexed { index, preview -> index % $numShards to preview }
+                    .groupBy({ it.first }, { it.second })
             }
         """.trimIndent()
 
