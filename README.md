@@ -285,7 +285,7 @@ fun MyComposable(){
    // Composable code here
 }
 ```
-3. Create custom record and verify `SnapshotHandler`s for better control over the screenshot file names.</br> By default, Paparazzi prefixes all generated screenshot files using its internal SnapshotHolder. While this works for most cases, it causes issues in parameterized tests: the default SnapshotHolder includes the test [index] in the filename. If the order of your previews changes, filenames no longer match, which can break snapshot verification.</br></br>
+3. Create custom record and verify `SnapshotHandler`s for better control over the screenshot file names.</br> By default, Paparazzi prefixes all generated screenshot files using its internal `SnapshotHandler`. While this works for most cases, it causes issues in parameterized tests: the default `SnapshotHandler` includes the test [index] in the filename. If the order of your previews changes, filenames no longer match, which can break snapshot verification.</br></br>
    To solve this, we can create custom `SnapshotHandler`s that use a fixed prefix, like "Paparazzi_Preview_Test", instead of a test-index-dependent name. This ensures filenames remain stable regardless of test order.
 ```kotlin
 // Define the prefix = <packageName>_<className>_<methodName>
