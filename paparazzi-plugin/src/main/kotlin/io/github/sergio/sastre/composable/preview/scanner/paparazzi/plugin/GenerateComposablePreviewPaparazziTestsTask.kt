@@ -119,7 +119,12 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
             import androidx.compose.ui.graphics.Color
             import app.cash.paparazzi.detectEnvironment
             import app.cash.paparazzi.DeviceConfig
+            import app.cash.paparazzi.HtmlReportWriter
             import app.cash.paparazzi.Paparazzi
+            import app.cash.paparazzi.Snapshot
+            import app.cash.paparazzi.SnapshotHandler
+            import app.cash.paparazzi.SnapshotVerifier
+            import app.cash.paparazzi.TestName
             import com.android.ide.common.rendering.api.SessionParams
             import com.android.resources.*
             import org.junit.Rule
@@ -138,6 +143,65 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
             import android.content.res.Configuration.UI_MODE_NIGHT_YES
             import androidx.compose.foundation.layout.size
             import androidx.compose.ui.unit.dp
+            
+            private val paparazziTestName =
+                TestName(packageName = "Paparazzi", className = "Preview", methodName = "Test")
+            
+            private class SnapshotVerifierPaparazzi(
+                maxPercentDifference: Double
+            ): SnapshotHandler {
+                private val snapshotHandler = SnapshotVerifier(
+                    maxPercentDifference = maxPercentDifference
+                )
+                override fun newFrameHandler(
+                    snapshot: Snapshot,
+                    frameCount: Int,
+                    fps: Int
+                ): SnapshotHandler.FrameHandler {
+                    val newSnapshot = Snapshot(
+                        name = snapshot.name,
+                        testName = paparazziTestName,
+                        timestamp = snapshot.timestamp,
+                        tags = snapshot.tags,
+                        file = snapshot.file,
+                    )
+                    return snapshotHandler.newFrameHandler(
+                        snapshot = newSnapshot,
+                        frameCount = frameCount,
+                        fps = fps
+                    )
+                }
+
+                override fun close() {
+                    snapshotHandler.close()
+                }
+            }
+
+            private class HtmlReportWriterPaparazzi: SnapshotHandler {
+                private val snapshotHandler = HtmlReportWriter()
+                override fun newFrameHandler(
+                    snapshot: Snapshot,
+                    frameCount: Int,
+                    fps: Int
+                ): SnapshotHandler.FrameHandler {
+                    val newSnapshot = Snapshot(
+                        name = snapshot.name,
+                        testName = paparazziTestName,
+                        timestamp = snapshot.timestamp,
+                        tags = snapshot.tags,
+                        file = snapshot.file,
+                    )
+                    return snapshotHandler.newFrameHandler(
+                        snapshot = newSnapshot,
+                        frameCount = frameCount,
+                        fps = fps
+                    )
+                }
+
+                override fun close() {
+                    snapshotHandler.close()
+                }
+            }
             
             class Dimensions(
                 val screenWidthInPx: Int,
@@ -215,6 +279,10 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                             previewInfo.showSystemUi -> SessionParams.RenderingMode.NORMAL
                             previewInfo.widthDp > 0 && previewInfo.heightDp > 0 -> SessionParams.RenderingMode.FULL_EXPAND
                             else -> SessionParams.RenderingMode.SHRINK
+                        },
+                        snapshotHandler = when(System.getProperty("paparazzi.test.verify")?.toBoolean() == true) {
+                            true -> SnapshotVerifierPaparazzi(0.0)
+                            false -> HtmlReportWriterPaparazzi()
                         },
                         // maxPercentDifference can be configured here if needed
                         maxPercentDifference = 0.0
@@ -294,8 +362,6 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                 @Test
                 fun snapshot() {
                     val screenshotId = AndroidPreviewScreenshotIdBuilder(preview)
-                    .ignoreClassName()
-                    .ignoreMethodName()
                     .doNotIgnoreMethodParametersType()
                     .build()
                     // Replace invalid characters for file names with its encoded values
