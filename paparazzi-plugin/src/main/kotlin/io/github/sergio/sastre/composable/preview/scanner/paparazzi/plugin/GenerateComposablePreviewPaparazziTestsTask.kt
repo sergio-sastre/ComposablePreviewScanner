@@ -48,10 +48,10 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
         } else if (shards == 1) {
             File(directory, "$className.kt").writeText(
                 generateTestFileContent(
-                    packageName,
-                    className,
-                    packagesExpr,
-                    includePrivatePreviewsExpr,
+                    packageName = packageName,
+                    className = className,
+                    packagesExpr = packagesExpr,
+                    includePrivatePreviewsExpr = includePrivatePreviewsExpr,
                     shardIndex = null,
                     numShards = 1,
                     includeHeader = true
@@ -64,10 +64,10 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                 // First shard with header and shared code
                 append(
                     generateTestFileContent(
-                        packageName,
-                        "${className}Shard1",
-                        packagesExpr,
-                        includePrivatePreviewsExpr,
+                        packageName = packageName,
+                        className = "${className}Shard1",
+                        packagesExpr = packagesExpr,
+                        includePrivatePreviewsExpr = includePrivatePreviewsExpr,
                         shardIndex = 0,
                         numShards = shards,
                         includeHeader = true
@@ -78,10 +78,10 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                     append("\n\n")
                     append(
                         generateTestFileContent(
-                            packageName,
-                            "${className}Shard${index + 1}",
-                            packagesExpr,
-                            includePrivatePreviewsExpr,
+                            packageName = packageName,
+                            className = "${className}Shard${index + 1}",
+                            packagesExpr = packagesExpr,
+                            includePrivatePreviewsExpr = includePrivatePreviewsExpr,
                             shardIndex = index,
                             numShards = shards,
                             includeHeader = false
@@ -147,7 +147,7 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
             private val paparazziTestName =
                 TestName(packageName = "Paparazzi", className = "Preview", methodName = "Test")
             
-            private class SnapshotVerifierPaparazzi(
+            private class PreviewSnapshotVerifier(
                 maxPercentDifference: Double
             ): SnapshotHandler {
                 private val snapshotHandler = SnapshotVerifier(
@@ -177,7 +177,7 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                 }
             }
 
-            private class HtmlReportWriterPaparazzi: SnapshotHandler {
+            private class PreviewHtmlReportWriter: SnapshotHandler {
                 private val snapshotHandler = HtmlReportWriter()
                 override fun newFrameHandler(
                     snapshot: Snapshot,
