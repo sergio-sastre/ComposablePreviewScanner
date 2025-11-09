@@ -22,6 +22,7 @@ fun FontScaleExamplePreview(){
 @Preview(device = Devices.AUTOMOTIVE_1024p)
 @Preview(device = "name:Nexus 10")
 @Preview(device = "id:pixel")
+@Preview(device = "spec:width=114.3dp,height=114.3dp,isRound=true,chinSize=9.7dp")
 @PreviewScreenSizes
 @Composable
 fun ScreenSizesExamplePreview(){

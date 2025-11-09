@@ -11,7 +11,7 @@ data class Device(
     val densityDpi: Int,
     val orientation: Orientation,
     val shape: Shape,
-    val chinSize: Int = 0,
+    val chinSize: ChinSize = ChinSize(0F, dimensions.unit),
     val type: Type? = null,
     val screenRatio: ScreenRatio = ScreenRatioCalculator.calculateFor(dimensions),
     val screenSize: ScreenSize = ScreenSizeCalculator.calculateFor(dimensions, densityDpi),
@@ -19,9 +19,15 @@ data class Device(
     val navigation: Navigation = GESTURE,
 ) {
 
-    fun inDp(): Device = this.copy(dimensions = dimensions.inDp(densityDpi))
+    fun inDp(): Device = this.copy(
+        dimensions = dimensions.inDp(densityDpi),
+        chinSize = chinSize.inDp(densityDpi)
+    )
 
-    fun inPx(): Device = this.copy(dimensions = dimensions.inPx(densityDpi))
+    fun inPx(): Device = this.copy(
+        dimensions = dimensions.inPx(densityDpi),
+        chinSize = chinSize.inPx(densityDpi)
+    )
 }
 
 class Dimensions(
@@ -58,6 +64,34 @@ class Dimensions(
 enum class Unit(val value: String) {
     DP("dp"),
     PX("px")
+}
+
+class ChinSize(
+    val value: Float,
+    val unit: Unit,
+) {
+    fun inDp(densityDpi: Int): ChinSize {
+        val conversionFactor: Float = densityDpi / 160f
+        return when (unit) {
+            Unit.DP -> this
+            Unit.PX -> ChinSize(
+                value = floor(value / conversionFactor),
+                unit = Unit.DP
+            )
+        }
+    }
+
+    fun inPx(densityDpi: Int): ChinSize {
+        val conversionFactor: Float = densityDpi / 160f
+        return when (unit) {
+            Unit.PX -> this
+            Unit.DP ->
+                ChinSize(
+                    value = ceil(value * conversionFactor),
+                    unit = Unit.PX
+                )
+        }
+    }
 }
 
 enum class Shape { ROUND, NOTROUND }
