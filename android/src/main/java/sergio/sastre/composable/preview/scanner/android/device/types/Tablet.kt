@@ -1,5 +1,6 @@
 package sergio.sastre.composable.preview.scanner.android.device.types
 
+import sergio.sastre.composable.preview.scanner.android.device.domain.ChinSize
 import sergio.sastre.composable.preview.scanner.android.device.domain.Device
 import sergio.sastre.composable.preview.scanner.android.device.domain.Dimensions
 import sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceByIdentifier
@@ -25,7 +26,7 @@ enum class Tablet(
             densityDpi = 320,
             orientation = LANDSCAPE,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = TABLET
         )
     ),
@@ -41,7 +42,7 @@ enum class Tablet(
             densityDpi = 320,
             orientation = LANDSCAPE,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = TABLET
         )
     ),
@@ -57,7 +58,7 @@ enum class Tablet(
             densityDpi = 420,
             orientation = LANDSCAPE,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = TABLET
         )
     ),
@@ -73,7 +74,7 @@ enum class Tablet(
             densityDpi = 220,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = TABLET
         )
     ),
@@ -89,7 +90,7 @@ enum class Tablet(
             densityDpi = 320,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = TABLET
         )
     ),
@@ -105,7 +106,7 @@ enum class Tablet(
             densityDpi = 320,
             orientation = LANDSCAPE,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = TABLET
         )
     ),
@@ -121,7 +122,7 @@ enum class Tablet(
             densityDpi = 320,
             orientation = LANDSCAPE,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = TABLET
         )
     );
