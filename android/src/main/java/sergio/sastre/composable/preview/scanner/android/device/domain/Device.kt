@@ -30,7 +30,7 @@ data class Device(
     )
 }
 
-class Dimensions(
+data class Dimensions(
     val height: Float,
     val width: Float,
     val unit: Unit,
@@ -66,7 +66,7 @@ enum class Unit(val value: String) {
     PX("px")
 }
 
-class ChinSize(
+data class ChinSize(
     val value: Float,
     val unit: Unit,
 ) {

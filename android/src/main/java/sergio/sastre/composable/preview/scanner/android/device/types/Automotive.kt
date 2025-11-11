@@ -10,7 +10,6 @@ import sergio.sastre.composable.preview.scanner.android.device.domain.Orientatio
 import sergio.sastre.composable.preview.scanner.android.device.domain.ScreenSize.NORMAL
 import sergio.sastre.composable.preview.scanner.android.device.domain.Shape.NOTROUND
 import sergio.sastre.composable.preview.scanner.android.device.domain.Type.CAR
-import sergio.sastre.composable.preview.scanner.android.device.domain.Unit
 import sergio.sastre.composable.preview.scanner.android.device.domain.Unit.PX
 
 enum class Automotive(
@@ -29,7 +28,7 @@ enum class Automotive(
             orientation = LANDSCAPE,
             screenSize = NORMAL,
             shape = NOTROUND,
-            chinSize = ChinSize(0F, Unit.DP),
+            chinSize = ChinSize(0F, PX),
             type = CAR
         )
     ),
