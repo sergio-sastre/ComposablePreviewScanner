@@ -1,5 +1,6 @@
 package sergio.sastre.composable.preview.scanner.android.device.types
 
+import sergio.sastre.composable.preview.scanner.android.device.domain.ChinSize
 import sergio.sastre.composable.preview.scanner.android.device.domain.Device
 import sergio.sastre.composable.preview.scanner.android.device.domain.Dimensions
 import sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceByIdentifier
@@ -27,7 +28,7 @@ enum class Automotive(
             orientation = LANDSCAPE,
             screenSize = NORMAL,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = CAR
         )
     ),
@@ -44,7 +45,7 @@ enum class Automotive(
             orientation = LANDSCAPE,
             screenSize = NORMAL,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = CAR
         )
     ),
@@ -61,7 +62,7 @@ enum class Automotive(
             orientation = LANDSCAPE,
             screenSize = NORMAL,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = CAR
         )
     ),
@@ -78,7 +79,7 @@ enum class Automotive(
             orientation = LANDSCAPE,
             screenSize = NORMAL,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = CAR
         )
     ),
@@ -95,7 +96,7 @@ enum class Automotive(
             orientation = LANDSCAPE,
             screenSize = NORMAL,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = CAR
         )
     ),
@@ -112,7 +113,7 @@ enum class Automotive(
             orientation = LANDSCAPE,
             screenSize = NORMAL,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = CAR
         )
     ),
@@ -129,7 +130,7 @@ enum class Automotive(
             orientation = PORTRAIT,
             screenSize = NORMAL,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = CAR
         )
     ),
@@ -146,7 +147,7 @@ enum class Automotive(
             orientation = PORTRAIT,
             screenSize = NORMAL,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = CAR
         )
     ),
@@ -163,7 +164,7 @@ enum class Automotive(
             orientation = LANDSCAPE,
             screenSize = NORMAL,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = CAR
         )
     ),

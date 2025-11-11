@@ -1,5 +1,6 @@
 package sergio.sastre.composable.preview.scanner.android.device
 
+import sergio.sastre.composable.preview.scanner.android.device.domain.ChinSize
 import sergio.sastre.composable.preview.scanner.android.device.domain.Cutout
 import sergio.sastre.composable.preview.scanner.android.device.domain.Cutout.NONE
 import sergio.sastre.composable.preview.scanner.android.device.domain.Device
@@ -114,7 +115,20 @@ private object GetCustomDevice {
             orientation?.let { Orientation.entries.find { it.value == orientation } }
                 ?: if (dimensions.height >= dimensions.width) PORTRAIT else LANDSCAPE
 
-        val chinSize = spec["chinSize"]?.removeSuffix("dp")?.toIntOrNull() ?: 0
+        val chinString = spec["chinSize"]
+        val chinSize: ChinSize = when {
+            chinString == null -> ChinSize(0f, dimensions.unit)
+            chinString.endsWith(Unit.PX.value) -> {
+                val value = chinString.removeSuffix(Unit.PX.value).toFloatOrNull() ?: 0f
+                ChinSize(value, Unit.PX)
+            }
+            chinString.endsWith(Unit.DP.value) -> {
+                val value = chinString.removeSuffix(Unit.DP.value).toFloatOrNull() ?: 0f
+                ChinSize(value, Unit.DP)
+            }
+            // the dimensions in ChinSize must be the same as in the device
+            else -> ChinSize(0f, dimensions.unit)
+        }
 
         val navigation = spec["navigation"]
         val navigationValue =

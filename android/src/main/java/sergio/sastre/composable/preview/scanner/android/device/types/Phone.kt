@@ -1,5 +1,6 @@
 package sergio.sastre.composable.preview.scanner.android.device.types
 
+import sergio.sastre.composable.preview.scanner.android.device.domain.ChinSize
 import sergio.sastre.composable.preview.scanner.android.device.domain.Cutout.PUNCH_HOLE
 import sergio.sastre.composable.preview.scanner.android.device.domain.Device
 import sergio.sastre.composable.preview.scanner.android.device.domain.Dimensions
@@ -29,7 +30,7 @@ enum class Phone(
             densityDpi = 320,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
 
             type = PHONE
         )
@@ -47,7 +48,7 @@ enum class Phone(
             orientation = PORTRAIT,
             screenRatio = LONG,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -63,7 +64,7 @@ enum class Phone(
             densityDpi = 240,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -80,7 +81,7 @@ enum class Phone(
             orientation = PORTRAIT,
             screenSize = NORMAL,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -97,7 +98,7 @@ enum class Phone(
             orientation = PORTRAIT,
             screenRatio = NOTLONG,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -112,7 +113,7 @@ enum class Phone(
             densityDpi = 420,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -127,7 +128,7 @@ enum class Phone(
             densityDpi = 560,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -142,7 +143,7 @@ enum class Phone(
             densityDpi = 560,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -158,7 +159,7 @@ enum class Phone(
             orientation = PORTRAIT,
             screenRatio = NOTLONG,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -174,7 +175,7 @@ enum class Phone(
             orientation = PORTRAIT,
             screenRatio = NOTLONG,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -190,7 +191,7 @@ enum class Phone(
             orientation = PORTRAIT,
             screenRatio = NOTLONG,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -205,7 +206,7 @@ enum class Phone(
             densityDpi = 560,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -220,7 +221,7 @@ enum class Phone(
             densityDpi = 440,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -236,7 +237,7 @@ enum class Phone(
             densityDpi = 440,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -253,7 +254,7 @@ enum class Phone(
             densityDpi = 560,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -268,7 +269,7 @@ enum class Phone(
             densityDpi = 420,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -283,7 +284,7 @@ enum class Phone(
             densityDpi = 440,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -298,7 +299,7 @@ enum class Phone(
             densityDpi = 440,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             cutout = PUNCH_HOLE,
             type = PHONE
         )
@@ -314,7 +315,7 @@ enum class Phone(
             densityDpi = 560,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -329,7 +330,7 @@ enum class Phone(
             densityDpi = 440,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             cutout = PUNCH_HOLE,
             type = PHONE
         )
@@ -347,7 +348,7 @@ enum class Phone(
             densityDpi = 420,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -364,7 +365,7 @@ enum class Phone(
             densityDpi = 420,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -381,7 +382,7 @@ enum class Phone(
             densityDpi = 560,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -398,7 +399,7 @@ enum class Phone(
             densityDpi = 420,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -415,7 +416,7 @@ enum class Phone(
             densityDpi = 420,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -432,7 +433,7 @@ enum class Phone(
             densityDpi = 560,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -449,7 +450,7 @@ enum class Phone(
             densityDpi = 420,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -464,7 +465,7 @@ enum class Phone(
             densityDpi = 420,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -481,7 +482,7 @@ enum class Phone(
             densityDpi = 480,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -496,7 +497,7 @@ enum class Phone(
             densityDpi = 420,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -511,7 +512,7 @@ enum class Phone(
             densityDpi = 420,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -526,7 +527,7 @@ enum class Phone(
             densityDpi = 480,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -541,7 +542,7 @@ enum class Phone(
             densityDpi = 480,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -556,7 +557,7 @@ enum class Phone(
             densityDpi = 420,
             orientation = LANDSCAPE,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     );

@@ -1,5 +1,6 @@
 package sergio.sastre.composable.preview.scanner.android.device.types
 
+import sergio.sastre.composable.preview.scanner.android.device.domain.ChinSize
 import sergio.sastre.composable.preview.scanner.android.device.domain.Device
 import sergio.sastre.composable.preview.scanner.android.device.domain.Dimensions
 import sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceByIdentifier
@@ -23,7 +24,7 @@ private val WEAR_OS_RECT_DEFAULT =
         orientation = PORTRAIT,
         screenRatio = LONG,
         shape = NOTROUND,
-        chinSize = 0,
+        chinSize = ChinSize(0F, PX),
         type = WEAR
     )
 
@@ -43,7 +44,7 @@ enum class Wear(
             orientation = PORTRAIT,
             screenRatio = LONG,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = WEAR
         )
     ),
@@ -60,7 +61,7 @@ enum class Wear(
             orientation = PORTRAIT,
             screenRatio = LONG,
             shape = ROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = WEAR
         )
     ),
@@ -77,7 +78,7 @@ enum class Wear(
             orientation = PORTRAIT,
             screenRatio = LONG,
             shape = ROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = WEAR
         )
     ),

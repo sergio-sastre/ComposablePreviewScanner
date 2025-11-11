@@ -129,7 +129,7 @@ class AndroidComposablePreviewScreenshotIdTest {
     }
 
     @Test
-    fun `GIVEN preview with only fontScale 1,555f , THEN show only fontScale 1_555F`() {
+    fun `GIVEN preview with only fontScale 1,55f , THEN show only fontScale 1_55F`() {
         val preview = previewBuilder(
             previewInfo = AndroidPreviewInfo(
                 fontScale = 1.55F
@@ -345,6 +345,14 @@ class AndroidComposablePreviewScreenshotIdTest {
             "spec:parent=Nexus 7, orientation=landscape",
             "PARENT_NEXUS_7_ORIENTATION_LANDSCAPE"
         ),
+        CUSTOM_DIMENSIONS_DP(
+            "spec:width=114.3dp,height=114.3dp,chinSize=9.7dp",
+            "WIDTH_114_3fDP_HEIGHT_114_3fDP_CHINSIZE_9_7fDP"
+        ),
+        CUSTOM_DIMENSIONS_PX(
+            "spec:width=114.3px,height=114.3px,chinSize=9.7px",
+            "WIDTH_114_3fPX_HEIGHT_114_3fPX_CHINSIZE_9_7fPX"
+        ),
         CUSTOM_PARENT_REVERSED(
             "spec: orientation=landscape, cutout= none,parent=Nexus 7",
             "ORIENTATION_LANDSCAPE_CUTOUT_NONE_PARENT_NEXUS_7"
@@ -368,7 +376,8 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
         assertEquals(
-            AndroidPreviewScreenshotIdBuilder(preview).build(), device.expectedId
+            device.expectedId,
+            AndroidPreviewScreenshotIdBuilder(preview).build(),
         )
     }
 

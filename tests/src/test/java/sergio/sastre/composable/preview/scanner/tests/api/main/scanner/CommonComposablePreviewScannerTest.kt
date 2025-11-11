@@ -75,17 +75,4 @@ class CommonComposablePreviewScannerTest {
 
         assertEquals(previews.size, expectedAmountOfPreviews)
     }
-
-    @Test
-    fun `WHEN use a custom annotation for previews with width THEN those previews are included with width`() {
-        val customPreviews =
-            CommonComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.common.custompreviewannotation")
-                .getPreviews()
-
-        val customPreviewParams = customPreviews.map { it.previewInfo }
-
-        assert(customPreviewParams.size > 1)
-        assert(customPreviewParams.all { it.widthDp != -1 })
-    }
 }

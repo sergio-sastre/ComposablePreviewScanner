@@ -8,6 +8,7 @@ import junit.framework.TestCase.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import sergio.sastre.composable.preview.scanner.android.device.DevicePreviewInfoParser
+import sergio.sastre.composable.preview.scanner.android.device.domain.ChinSize
 import sergio.sastre.composable.preview.scanner.android.device.domain.Cutout
 import sergio.sastre.composable.preview.scanner.android.device.domain.Dimensions
 import sergio.sastre.composable.preview.scanner.android.device.domain.Identifier
@@ -32,7 +33,8 @@ import sergio.sastre.composable.preview.scanner.android.device.types.XR
 class DevicePreviewInfoParserTest {
 
     companion object {
-        const val DIMENS = ",height=100dp,width=200dp"
+        const val DIMENS_DP = ",height=100dp,width=200dp"
+        const val DIMENS_PX = ",height=100px,width=200px"
     }
 
     enum class CustomDimensions(
@@ -70,7 +72,7 @@ class DevicePreviewInfoParserTest {
         val expectedDpi: Int
     ) {
         NoDpi("spec:height=100dp,width=200dp", 420),
-        WithDpi("spec:dpi=320$DIMENS", 320),
+        WithDpi("spec:dpi=320$DIMENS_DP", 320),
     }
 
     @Test
@@ -91,10 +93,10 @@ class DevicePreviewInfoParserTest {
     ) {
         // Shape can only be defined one way
         NoShapeDefaultsNormal("spec:height=100dp,width=200dp", NOTROUND),
-        IsRoundTrue("spec:isRound=true$DIMENS", ROUND),
-        IsRoundFalse("spec:isRound=false$DIMENS", NOTROUND),
-        ShapeNormal("spec:shape=Normal$DIMENS", NOTROUND),
-        ShapeRound("spec:shape=Round$DIMENS", ROUND),
+        IsRoundTrue("spec:isRound=true$DIMENS_DP", ROUND),
+        IsRoundFalse("spec:isRound=false$DIMENS_DP", NOTROUND),
+        ShapeNormal("spec:shape=Normal$DIMENS_DP", NOTROUND),
+        ShapeRound("spec:shape=Round$DIMENS_DP", ROUND),
     }
 
     @Test
@@ -113,10 +115,10 @@ class DevicePreviewInfoParserTest {
         val deviceSpec: String,
         val expectedTypeValue: Type?
     ) {
-        TypeDesktop("spec:id=reference_desktop$DIMENS", DESKTOP),
-        TypeFoldable("spec:id=reference_foldable$DIMENS", FOLDABLE),
-        TypePhone("spec:id=reference_phone$DIMENS", PHONE),
-        TypeTablet("spec:id=reference_tablet$DIMENS", TABLET),
+        TypeDesktop("spec:id=reference_desktop$DIMENS_DP", DESKTOP),
+        TypeFoldable("spec:id=reference_foldable$DIMENS_DP", FOLDABLE),
+        TypePhone("spec:id=reference_phone$DIMENS_DP", PHONE),
+        TypeTablet("spec:id=reference_tablet$DIMENS_DP", TABLET),
     }
 
     @Test
@@ -137,8 +139,8 @@ class DevicePreviewInfoParserTest {
     ) {
         NoOrientationDefaultsPortrait("spec:height=200dp,width=100dp", PORTRAIT),
         NoOrientationDefaultsLandscape("spec:height=100dp,width=200dp", LANDSCAPE),
-        Portrait("spec:orientation=portrait$DIMENS", PORTRAIT),
-        Landscape("spec:orientation=landscape$DIMENS", LANDSCAPE),
+        Portrait("spec:orientation=portrait$DIMENS_DP", PORTRAIT),
+        Landscape("spec:orientation=landscape$DIMENS_DP", LANDSCAPE),
     }
 
     @Test
@@ -158,11 +160,11 @@ class DevicePreviewInfoParserTest {
         val expectedCutoutValue: Cutout
     ) {
         NoCutout("spec:height=200dp,width=100dp", Cutout.NONE),
-        None("spec:cutout=none$DIMENS", Cutout.NONE),
-        Corner("spec:cutout=corner$DIMENS", Cutout.CORNER),
-        Double("spec:cutout=double$DIMENS", Cutout.DOUBLE),
-        PunchHole("spec:cutout=punch_hole$DIMENS", Cutout.PUNCH_HOLE),
-        Tall("spec:cutout=tall$DIMENS", Cutout.TALL),
+        None("spec:cutout=none$DIMENS_DP", Cutout.NONE),
+        Corner("spec:cutout=corner$DIMENS_DP", Cutout.CORNER),
+        Double("spec:cutout=double$DIMENS_DP", Cutout.DOUBLE),
+        PunchHole("spec:cutout=punch_hole$DIMENS_DP", Cutout.PUNCH_HOLE),
+        Tall("spec:cutout=tall$DIMENS_DP", Cutout.TALL),
     }
 
     @Test
@@ -179,10 +181,13 @@ class DevicePreviewInfoParserTest {
 
     enum class CustomChinSize(
         val deviceSpec: String,
-        val expectedChinSizeValue: Int
+        val expectedChinSize: ChinSize
     ) {
-        NoChinSizeDefaults0("spec:height=200dp,width=100dp", 0),
-        ChinSize("spec:chinSize=8dp$DIMENS", 8),
+        DpNoChinSizeDefaults0("spec:height=200dp,width=100dp", ChinSize(0F, DP)),
+        PxNoChinSizeDefaults0("spec:width=200px,height=2341px", ChinSize(0F, PX)),
+        ChinSizeDp("spec:chinSize=8dp$DIMENS_DP", ChinSize(8F, DP)),
+        ChinSizeFloat("spec:chinSize=8.1dp$DIMENS_DP", ChinSize(8.1F, DP)),
+        ChinSizePx("spec:chinSize=8px$DIMENS_PX", ChinSize(8F, PX))
     }
 
     @Test
@@ -193,7 +198,10 @@ class DevicePreviewInfoParserTest {
             DevicePreviewInfoParser.parse(customChinSize.deviceSpec)!!
 
         assert(
-            expectedDevice.chinSize == customChinSize.expectedChinSizeValue
+            expectedDevice.chinSize.value == customChinSize.expectedChinSize.value
+        )
+        assert(
+            expectedDevice.chinSize.unit == customChinSize.expectedChinSize.unit
         )
     }
 
@@ -202,8 +210,8 @@ class DevicePreviewInfoParserTest {
         val expectedNavigationValue: Navigation
     ) {
         NoNavigationDefaultsGesture("spec:height=200dp,width=100dp", Navigation.GESTURE),
-        NavigationGesture("spec:navigation=gesture$DIMENS", Navigation.GESTURE),
-        NavigationButtons("spec:navigation=buttons$DIMENS", Navigation.BUTTONS),
+        NavigationGesture("spec:navigation=gesture$DIMENS_DP", Navigation.GESTURE),
+        NavigationButtons("spec:navigation=buttons$DIMENS_DP", Navigation.BUTTONS),
     }
 
     @Test
@@ -365,11 +373,11 @@ class DevicePreviewInfoParserTest {
     }
 
     @Test
-    fun `GIVEN device WHEN converted to Dp AND back to Px twice THEN returns original device with error margin up to 2f`(
-        @TestParameter deviceMapping: DeviceIdMapping
-    ) {
+    fun `GIVEN device in Px WHEN converted to Dp AND back to Px twice THEN returns original device with error margin up to 2f`() {
+        val marginError = 2f
+        val deviceString = "spec:width=300px,height=300px,chinSize=25.5px"
         val originalDeviceInPx =
-            DevicePreviewInfoParser.parse(deviceMapping.deviceId)
+            DevicePreviewInfoParser.parse(deviceString)
 
         val deviceInDp =
             originalDeviceInPx!!.inDp()
@@ -378,17 +386,63 @@ class DevicePreviewInfoParserTest {
 
         val deviceBackInDp = deviceBackInPx.inDp()
 
+        // original
         assertEquals(
-            originalDeviceInPx.dimensions.height, deviceBackInPx.dimensions.height, 2f
+            originalDeviceInPx.dimensions.height, deviceBackInPx.dimensions.height, marginError
         )
         assertEquals(
-            originalDeviceInPx.dimensions.width, deviceBackInPx.dimensions.width, 2f
+            originalDeviceInPx.dimensions.width, deviceBackInPx.dimensions.width, marginError
         )
         assertEquals(
-            deviceInDp.dimensions.height, deviceBackInDp.dimensions.height, 2f
+            originalDeviceInPx.chinSize.value, deviceBackInPx.chinSize.value, marginError
+        )
+
+        // in dp
+        assertEquals(
+            deviceInDp.dimensions.height, deviceBackInDp.dimensions.height, marginError
         )
         assertEquals(
-            deviceInDp.dimensions.width, deviceBackInDp.dimensions.width, 2f
+            deviceInDp.dimensions.width, deviceBackInDp.dimensions.width, marginError
+        )
+        assertEquals(
+            deviceInDp.chinSize.value, deviceBackInDp.chinSize.value, marginError
+        )
+    }
+
+    @Test
+    fun `GIVEN device in Dp WHEN converted to Px AND back to Dp twice THEN returns original device with error margin up to 2f`() {
+        val marginError = 2f
+        val deviceString = "spec:width=114.3dp,height=114.3dp,isRound=true,chinSize=9.7dp"
+        val originalDeviceInDp =
+            DevicePreviewInfoParser.parse(deviceString)
+
+        val deviceInPx =
+            originalDeviceInDp!!.inPx()
+
+        val deviceBackInDp = deviceInPx.inDp()
+
+        val deviceBackInPx = deviceBackInDp.inPx()
+
+        // original
+        assertEquals(
+            originalDeviceInDp.dimensions.height, deviceBackInDp.dimensions.height, marginError
+        )
+        assertEquals(
+            originalDeviceInDp.dimensions.width, deviceBackInDp.dimensions.width, marginError
+        )
+        assertEquals(
+            originalDeviceInDp.chinSize.value, deviceBackInDp.chinSize.value, marginError
+        )
+
+        // in px
+        assertEquals(
+            deviceInPx.dimensions.height, deviceBackInPx.dimensions.height, marginError
+        )
+        assertEquals(
+            deviceInPx.dimensions.width, deviceBackInPx.dimensions.width, marginError
+        )
+        assertEquals(
+            deviceInPx.chinSize.value, deviceBackInPx.chinSize.value, marginError
         )
     }
 

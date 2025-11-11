@@ -68,4 +68,6 @@ object GetDeviceScreenshotId {
             }
             .joinToString("_")
             .uppercase()
+            // Replace float values like 1.55 with 1_55f
+            .replace(Regex("(\\d+)\\.(\\d+)"), "$1_$2f")
 }

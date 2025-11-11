@@ -1,5 +1,6 @@
 package sergio.sastre.composable.preview.scanner.android.device.types
 
+import sergio.sastre.composable.preview.scanner.android.device.domain.ChinSize
 import sergio.sastre.composable.preview.scanner.android.device.domain.Device
 import sergio.sastre.composable.preview.scanner.android.device.domain.Dimensions
 import sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceByIdentifier
@@ -19,7 +20,7 @@ private val XR_DEFAULT = Device(
     densityDpi = 320,
     orientation = LANDSCAPE,
     shape = NOTROUND,
-    chinSize = 0,
+    chinSize = ChinSize(0F, PX),
     type = XR
 )
 

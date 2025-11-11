@@ -1,5 +1,6 @@
 package sergio.sastre.composable.preview.scanner.android.device.types
 
+import sergio.sastre.composable.preview.scanner.android.device.domain.ChinSize
 import sergio.sastre.composable.preview.scanner.android.device.domain.Device
 import sergio.sastre.composable.preview.scanner.android.device.domain.Dimensions
 import sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceByIdentifier
@@ -29,7 +30,7 @@ enum class GenericDevices(
             densityDpi = 320,
             orientation = LANDSCAPE,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = TABLET
         )
     ),
@@ -45,7 +46,7 @@ enum class GenericDevices(
             densityDpi = 320,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -61,7 +62,7 @@ enum class GenericDevices(
             densityDpi = 420,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -77,7 +78,7 @@ enum class GenericDevices(
             densityDpi = 420,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = FOLDABLE
         )
     ),
@@ -93,7 +94,7 @@ enum class GenericDevices(
             densityDpi = 240,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -109,7 +110,7 @@ enum class GenericDevices(
             densityDpi = 160,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -125,7 +126,7 @@ enum class GenericDevices(
             densityDpi = 120,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -141,7 +142,7 @@ enum class GenericDevices(
             densityDpi = 160,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -157,7 +158,7 @@ enum class GenericDevices(
             densityDpi = 120,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -173,7 +174,7 @@ enum class GenericDevices(
             densityDpi = 160,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -189,7 +190,7 @@ enum class GenericDevices(
             densityDpi = 120,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -205,7 +206,7 @@ enum class GenericDevices(
             densityDpi = 120,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -221,7 +222,7 @@ enum class GenericDevices(
             densityDpi = 160,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = TABLET
         )
     ),
@@ -238,7 +239,7 @@ enum class GenericDevices(
             orientation = PORTRAIT,
             screenRatio = LONG,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -254,7 +255,7 @@ enum class GenericDevices(
             densityDpi = 160,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -270,7 +271,7 @@ enum class GenericDevices(
             densityDpi = 320,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -286,7 +287,7 @@ enum class GenericDevices(
             densityDpi = 160,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = TABLET
         )
     ),
@@ -302,7 +303,7 @@ enum class GenericDevices(
             densityDpi = 240,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -318,7 +319,7 @@ enum class GenericDevices(
             densityDpi = 320,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = PHONE
         )
     ),
@@ -334,7 +335,7 @@ enum class GenericDevices(
             densityDpi = 240,
             orientation = LANDSCAPE,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = FOLDABLE
         )
     ),
@@ -350,7 +351,7 @@ enum class GenericDevices(
             densityDpi = 420,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = FOLDABLE
         )
     ),
@@ -366,7 +367,7 @@ enum class GenericDevices(
             densityDpi = 420,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = FOLDABLE
         )
     ),
@@ -382,7 +383,7 @@ enum class GenericDevices(
             densityDpi = 480,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = FOLDABLE
         )
     ),
@@ -398,7 +399,7 @@ enum class GenericDevices(
             densityDpi = 420,
             orientation = PORTRAIT,
             shape = NOTROUND,
-            chinSize = 0,
+            chinSize = ChinSize(0F, PX),
             type = FOLDABLE
         )
     ),
