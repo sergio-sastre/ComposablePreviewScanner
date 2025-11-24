@@ -1,10 +1,8 @@
-import com.vanniktech.maven.publish.SonatypeHost
-
 plugins {
     kotlin("jvm") version "2.0.0"
     alias(libs.plugins.jetbrains.kotlin.plugin.compose)
-    id("com.vanniktech.maven.publish") version "0.29.0"
-    id("com.gradleup.nmcp") version "0.0.8"
+    id("com.vanniktech.maven.publish") version "0.35.0"
+    id("com.gradleup.nmcp") version "1.3.0"
     id("maven-publish")
 }
 
@@ -47,7 +45,7 @@ mavenPublishing {
             developerConnection = "scm:git:ssh://git@github.com/sergio-sastre/ComposablePreviewScanner.git"
         }
     }
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    publishToMavenCentral()
     signAllPublications()
 }
 
