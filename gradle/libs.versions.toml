@@ -7,7 +7,6 @@ glancePreview = "1.1.1"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 androidJunitVersion = "1.5.2"
-appcompat = "1.6.1"
 kotlinxCollectionsImmutable = "0.3.8"
 material = "1.11.0"
 navigationCompose = "2.9.2"
@@ -41,7 +40,6 @@ classgraph = { module = "io.github.classgraph:classgraph", version.ref = "classg
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidJunitVersion" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }

@@ -10,7 +10,7 @@ java {
 }
 
 dependencies {
-    implementation(libs.androidx.compose.runtime)
+    compileOnly(libs.androidx.compose.runtime)
     implementation(libs.kotlin.reflect)
     implementation(libs.classgraph)
 }

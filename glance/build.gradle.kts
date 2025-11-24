@@ -45,16 +45,7 @@ android {
 
 dependencies {
     api(project(":core"))
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.runtime)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.junit)
-    implementation(libs.androidx.appcompat)
-    compileOnly(libs.androidx.glance)
-    compileOnly(libs.androidx.glance.appwidget)
-    compileOnly(libs.androidx.glance.preview)
-    compileOnly(libs.androidx.glance.appwidget.preview)
+    api(libs.androidx.glance.appwidget)
     implementation(libs.classgraph)
     implementation(libs.kotlin.reflect)
 }
