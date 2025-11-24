@@ -101,7 +101,7 @@ dependencies {
     implementation(project(":custompreviews"))
     implementation(project(":glance"))
     implementation(platform(libs.androidx.compose.bom))
-    implementation("androidx.compose.runtime:runtime")
+    implementation(libs.androidx.compose.runtime)
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui-tooling")

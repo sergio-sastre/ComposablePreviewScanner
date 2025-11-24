@@ -30,9 +30,8 @@ android {
 
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
-    implementation("androidx.compose.runtime:runtime")
-    implementation("androidx.compose.ui:ui-tooling")
-    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.ui.tooling.preview)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.material)
