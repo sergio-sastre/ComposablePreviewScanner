@@ -46,13 +46,8 @@ android {
 dependencies {
     api(project(":core"))
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.glance.preview)
-    implementation(libs.androidx.compose.runtime)
-    implementation(libs.androidx.ui.tooling.preview)
+    compileOnly(libs.androidx.ui.tooling.preview)
     implementation(libs.kotlin.reflect)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.junit)
-    implementation(libs.androidx.appcompat)
     implementation (libs.classgraph)
 }
 
@@ -65,7 +60,7 @@ publishing {
             }
             groupId = "sergio.sastre.composable.preview.scanner"
             artifactId = "android"
-            version = "0.7.1"
+            version = "0.7.2"
         }
     }
 }

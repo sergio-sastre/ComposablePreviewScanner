@@ -10,7 +10,7 @@ java {
 }
 
 dependencies {
-    implementation(libs.androidx.compose.runtime)
+    compileOnly(libs.androidx.compose.runtime)
     implementation(libs.kotlin.reflect)
     implementation(libs.classgraph)
 }
@@ -24,7 +24,7 @@ publishing {
             }
             groupId = "sergio.sastre.composable.preview.scanner"
             artifactId = "core"
-            version = "0.7.1"
+            version = "0.7.2"
         }
     }
 }
