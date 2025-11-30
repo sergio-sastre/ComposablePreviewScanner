@@ -1020,6 +1020,19 @@ Custom gradle tasks for Android-testify integration tests (i.e. instrumentation 
 
 # Troubleshooting
 
+## Slow JVM Screenshot tests
+JVM Screenshot tests can consume significant memory, and ComposablePreviewScanner may require even more RAM when scanning large sets of subpackages.
+To improve performance, you can increase the RAM allocated to your unit tests by configuring your Gradle file as follows:
+```kotlin
+testOptions.unitTests {
+    all { test ->
+        // allocate 4GB RAM
+        test.jvmArgs("-Xmx4g")
+    }
+}
+```
+This adjustment helps reduce test execution time during large scans.
+
 ## java.io.FileNotFoundException (File name too long)
 
 `java.io.FileNotFoundException: ... (File name too long)`</br>
