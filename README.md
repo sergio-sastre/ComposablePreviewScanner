@@ -885,6 +885,16 @@ To write such screenshot tests you have to:
 <sup>1</sup> Unfortunately, Paparazzi is not able to always render screenshots accurately for Glance `@Preview`s without `widthDp`.
 
 ## Compose Multiplatform Previews Support
+Starting with Compose Multiplatform 1.10.0-beta02, Common and Desktop @Preview annotations are deprecated. Instead, Android `@Preview` can now be used across `common` and `desktop` platforms.
+In this setup, you can continue using `AndroidComposablePreviewScanner` in the `androidUnitTest` source set, while also scanning package trees in common, for example:
+
+```kotlin
+AndroidComposablePreviewScanner()
+    .scanPackageTrees("package.tree.android", "package.tree.common")
+```
+
+If you are still using the deprecated Common or Desktop `@Preview` annotations, see the sections below for guidance.
+
 ### Common Previews
 You can find executable examples here:
 - [Roborazzi](https://github.com/sergio-sastre/ComposablePreviewScanner/blob/master/tests/src/test/java/sergio/sastre/composable/preview/scanner/tests/roborazzi/RoborazziCommonComposablePreviewInvokeTests.kt)
