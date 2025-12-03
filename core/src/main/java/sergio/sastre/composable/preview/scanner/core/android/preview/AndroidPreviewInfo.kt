@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.core.preview.android
+package sergio.sastre.composable.preview.scanner.core.android.preview
 
 /**
  * The values passed to the @Preview

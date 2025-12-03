@@ -1,7 +1,7 @@
-package sergio.sastre.composable.preview.scanner.android.screenshotid
+package sergio.sastre.composable.preview.scanner.core.android.preview.screenshotid
 
-import sergio.sastre.composable.preview.scanner.android.device.DevicePreviewInfoParser
-import sergio.sastre.composable.preview.scanner.android.device.domain.Device
+import sergio.sastre.composable.preview.scanner.core.android.preview.device.DevicePreviewInfoParser
+import sergio.sastre.composable.preview.scanner.core.android.preview.device.domain.Device
 
 private const val DEFAULT_DEVICE = ""
 

@@ -10,7 +10,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import sergio.sastre.composable.preview.scanner.ListProvider
-import sergio.sastre.composable.preview.scanner.core.preview.android.AndroidPreviewInfo
+import sergio.sastre.composable.preview.scanner.core.android.preview.AndroidPreviewInfo
 import sergio.sastre.composable.preview.scanner.android.customextraannotation.Device
 import sergio.sastre.composable.preview.scanner.android.customextraannotation.ScreenshotTestConfig
 import sergio.sastre.composable.preview.scanner.android.excluded.ExcludeScreenshot
