@@ -366,6 +366,7 @@ class AndroidComposablePreviewScreenshotIdTest {
             "WIDTH_411DP_HEIGHT_891DP"
         )
     }
+
     @Test
     fun `GIVEN preview with custom device, THEN only show its properties as expectedId separated by underscores`(
         @TestParameter device: CustomDeviceTestParam,
@@ -570,16 +571,16 @@ class AndroidComposablePreviewScreenshotIdTest {
 
     private class IdentifierValueProvider : TestParameterValuesProvider() {
         public override fun provideValues(context: Context?): List<Identifier> {
-            return listOf(
-                Phone.entries,
-                Tablet.entries,
-                Desktop.entries,
-                Automotive.entries,
-                Television.entries,
-                Wear.entries,
-                GenericDevices.entries,
-                XR.entries,
-            ).flatMap { entry -> entry.mapNotNull { it.device.identifier } }
+            return buildList {
+                addAll(Phone.entries.mapNotNull { it.device.identifier })
+                addAll(Tablet.entries.mapNotNull { it.device.identifier })
+                addAll(Desktop.entries.mapNotNull { it.device.identifier })
+                addAll(Automotive.entries.mapNotNull { it.device.identifier })
+                addAll(Television.entries.mapNotNull { it.device.identifier })
+                addAll(Wear.entries.mapNotNull { it.device.identifier })
+                addAll(GenericDevices.entries.mapNotNull { it.device.identifier })
+                addAll(XR.entries.mapNotNull { it.device.identifier })
+            }
         }
     }
 

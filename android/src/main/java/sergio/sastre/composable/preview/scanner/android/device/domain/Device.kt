@@ -1,121 +1,29 @@
 package sergio.sastre.composable.preview.scanner.android.device.domain
 
-import sergio.sastre.composable.preview.scanner.android.device.domain.Cutout.NONE
-import sergio.sastre.composable.preview.scanner.android.device.domain.Navigation.GESTURE
-import kotlin.math.ceil
-import kotlin.math.floor
+import sergio.sastre.composable.preview.scanner.core.android.preview.device.domain.Device as CoreDevice
+import sergio.sastre.composable.preview.scanner.core.android.preview.device.domain.Cutout as CoreCutout
+import sergio.sastre.composable.preview.scanner.core.android.preview.device.domain.ChinSize as CoreChinSize
+import sergio.sastre.composable.preview.scanner.core.android.preview.device.domain.Dimensions as CoreDimensions
+import sergio.sastre.composable.preview.scanner.core.android.preview.device.domain.Navigation as CoreNavigation
+import sergio.sastre.composable.preview.scanner.core.android.preview.device.domain.Orientation as CoreOrientation
+import sergio.sastre.composable.preview.scanner.core.android.preview.device.domain.Shape as CoreShape
+import sergio.sastre.composable.preview.scanner.core.android.preview.device.domain.Type as CoreType
+import sergio.sastre.composable.preview.scanner.core.android.preview.device.domain.Unit as CoreUnit
 
-data class Device(
-    val identifier: Identifier?,
-    val dimensions: Dimensions,
-    val densityDpi: Int,
-    val orientation: Orientation,
-    val shape: Shape,
-    val chinSize: ChinSize = ChinSize(0F, dimensions.unit),
-    val type: Type? = null,
-    val screenRatio: ScreenRatio = ScreenRatioCalculator.calculateFor(dimensions),
-    val screenSize: ScreenSize = ScreenSizeCalculator.calculateFor(dimensions, densityDpi),
-    val cutout: Cutout = NONE,
-    val navigation: Navigation = GESTURE,
-) {
+typealias Device = CoreDevice
 
-    fun inDp(): Device = this.copy(
-        dimensions = dimensions.inDp(densityDpi),
-        chinSize = chinSize.inDp(densityDpi)
-    )
+typealias ChinSize = CoreChinSize
 
-    fun inPx(): Device = this.copy(
-        dimensions = dimensions.inPx(densityDpi),
-        chinSize = chinSize.inPx(densityDpi)
-    )
-}
+typealias Cutout = CoreCutout
 
-data class Dimensions(
-    val height: Float,
-    val width: Float,
-    val unit: Unit,
-) {
-    fun inDp(densityDpi: Int): Dimensions {
-        val conversionFactor: Float = densityDpi / 160f
-        return when (unit) {
-            Unit.DP -> this
-            Unit.PX -> Dimensions(
-                height = floor(height / conversionFactor),
-                width = floor(width / conversionFactor),
-                unit = Unit.DP
-            )
-        }
-    }
+typealias Dimensions = CoreDimensions
 
-    fun inPx(densityDpi: Int): Dimensions {
-        val conversionFactor: Float = densityDpi / 160f
-        return when (unit) {
-            Unit.PX -> this
-            Unit.DP ->
-                Dimensions(
-                    height = ceil(height * conversionFactor),
-                    width = ceil(width * conversionFactor),
-                    unit = Unit.PX
-                )
-        }
-    }
-}
+typealias Navigation = CoreNavigation
 
-enum class Unit(val value: String) {
-    DP("dp"),
-    PX("px")
-}
+typealias Orientation = CoreOrientation
 
-data class ChinSize(
-    val value: Float,
-    val unit: Unit,
-) {
-    fun inDp(densityDpi: Int): ChinSize {
-        val conversionFactor: Float = densityDpi / 160f
-        return when (unit) {
-            Unit.DP -> this
-            Unit.PX -> ChinSize(
-                value = floor(value / conversionFactor),
-                unit = Unit.DP
-            )
-        }
-    }
+typealias Shape = CoreShape
 
-    fun inPx(densityDpi: Int): ChinSize {
-        val conversionFactor: Float = densityDpi / 160f
-        return when (unit) {
-            Unit.PX -> this
-            Unit.DP ->
-                ChinSize(
-                    value = ceil(value * conversionFactor),
-                    unit = Unit.PX
-                )
-        }
-    }
-}
+typealias Type = CoreType
 
-enum class Shape { ROUND, NOTROUND }
-
-enum class ScreenRatio { LONG, NOTLONG }
-
-enum class ScreenSize { SMALL, NORMAL, LARGE, XLARGE }
-
-enum class Orientation(val value: String) {
-    PORTRAIT("portrait"),
-    LANDSCAPE("landscape")
-}
-
-enum class Cutout(val value: String) {
-    NONE("none"),
-    CORNER("corner"),
-    DOUBLE("double"),
-    PUNCH_HOLE("punch_hole"),
-    TALL("tall")
-}
-
-enum class Navigation(val value: String) {
-    GESTURE("gesture"),
-    BUTTONS("buttons")
-}
-
-enum class Type { PHONE, TABLET, DESKTOP, FOLDABLE, WEAR, CAR, TV, XR }
+typealias Unit = CoreUnit

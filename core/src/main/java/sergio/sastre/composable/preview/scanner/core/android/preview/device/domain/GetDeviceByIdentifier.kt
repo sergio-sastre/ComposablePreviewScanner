@@ -1,6 +1,6 @@
 package sergio.sastre.composable.preview.scanner.core.android.preview.device.domain
 
-interface GetDeviceByIdentifier<T : Enum<T>> {
+internal interface GetDeviceByIdentifier<T : Enum<T>> {
     val device: Device
 
     companion object {
