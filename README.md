@@ -20,7 +20,7 @@ JVM-based (i.e. Paparazzi, Roborazzi) as well as Instrumentation-based (i.e. Sho
 > [!NOTE]
 > 1. Support for Wear OS Tile `@Previews` is under evaluation</br>
 > 2. `common` and `desktop` previews are deprecated in favour of the `android` preview (`androidx.compose.ui.tooling.preview.Preview`), which can be used
-> in `common` and JVM-based source sets like `desktop` since Compose Multiplatform 1.10.0-betao02</br>
+> in `common` and JVM-based source sets like `desktop` since Compose Multiplatform 1.10.0-beta-02</br>
 
 
 #### Provide anonymous feedback
@@ -907,6 +907,10 @@ AndroidComposablePreviewScanner()
         "package.tree.common"
     )
 ```
+
+You can find executable examples with Roborazzi here:
+- [Android @Previews in common](https://github.com/sergio-sastre/roborazzi/blob/droidcon/preview_tests/sample-generate-preview-common/src/androidUnitTest/kotlin/com/github/takahirom/preview/tests/AndroidPreviewTest.kt)
+- [Android @Previews in desktop](https://github.com/sergio-sastre/roborazzi/blob/droidcon/preview_tests/sample-generate-preview-desktop/src/desktopTest/kotlin/AndroidPreviewTest.kt)
 
 If you are still using the deprecated Common or Desktop `@Preview` annotations, see the sections below for guidance.
 
