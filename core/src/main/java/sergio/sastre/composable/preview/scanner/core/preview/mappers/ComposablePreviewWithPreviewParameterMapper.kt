@@ -25,6 +25,7 @@ data class ComposablePreviewWithPreviewParameterMapper<T>(
         try {
             Class.forName(previewParameterClassName)
         } catch (e: ClassNotFoundException) {
+            // PreviewParameter not available on classpath (expected on pure JVM)
             null
         }
     }
@@ -51,15 +52,15 @@ data class ComposablePreviewWithPreviewParameterMapper<T>(
         return noArgsConstructor?.call()
     }
 
-    override fun mapToComposablePreviews(): Sequence<ComposablePreview<T>> {
-        fun getPropertyValue(target: Any, propertyName: String): Any? {
-            return target::class.memberProperties
-                .find { it.name == propertyName }
-                ?.apply { isAccessible = true }
-                ?.getter
-                ?.call(target)
-        }
+    private fun getPropertyValue(target: Any, propertyName: String): Any? {
+        return target::class.memberProperties
+            .find { it.name == propertyName }
+            ?.apply { isAccessible = true }
+            ?.getter
+            ?.call(target)
+    }
 
+    override fun mapToComposablePreviews(): Sequence<ComposablePreview<T>> {
         val previewParameterAnnotation = previewMethod.findPreviewParameterAnnotation()
             ?: return sequenceOf(provideComposablePreview(this))
 
