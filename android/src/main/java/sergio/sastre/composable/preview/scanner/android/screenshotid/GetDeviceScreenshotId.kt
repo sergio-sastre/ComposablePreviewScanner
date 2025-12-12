@@ -1,14 +1,14 @@
 package sergio.sastre.composable.preview.scanner.android.screenshotid
 
-import androidx.compose.ui.tooling.preview.Devices
 import sergio.sastre.composable.preview.scanner.android.device.DevicePreviewInfoParser
 import sergio.sastre.composable.preview.scanner.android.device.domain.Device
 
+private const val DEFAULT = ""
 object GetDeviceScreenshotId {
 
     fun getDeviceScreenshotId(device: String): String? =
         when {
-            device == Devices.DEFAULT -> null
+            device == DEFAULT -> null
             device.contains("parent") -> device.screenshotIdFromParent()
             // id:device_id or name:deviceName
             else -> {

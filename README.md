@@ -18,7 +18,10 @@ JVM-based (i.e. Paparazzi, Roborazzi) as well as Instrumentation-based (i.e. Sho
 
 ![composable_preview_scanner_overview.png](composable_preview_scanner_overview.png)
 > [!NOTE]
-> Support for Wear OS Tile `@Previews` is under evaluation
+> 1. Support for Wear OS Tile `@Previews` is under evaluation</br>
+> 2. `common` and `desktop` previews are deprecated in favour of the `android` preview (`androidx.compose.ui.tooling.preview.Preview`), which can be used
+> in `common` and JVM-based source sets like `desktop` since Compose Multiplatform 1.10.0-beta-02</br>
+
 
 #### Provide anonymous feedback
 Already using ComposablePreviewScanner?</br>
@@ -58,21 +61,25 @@ ComposablePreviewScanner also works with:
 > Beware the prefixes:</br>
 > *Maven Central* -> **io.github**</br>
 > *JitPack* -> **com.github**</br>
+
 ## Maven Central (since 0.3.2)
 ```kotlin
-// all of them are supported in jvm-targets only
 dependencies {
-   // android previews
-   testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:android:<version>")
+    // android previews (androidx.compose.ui.tooling.preview.Preview)
+    // supported in jvm targets e.g. android & desktop
+    testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:android:<version>")
 
-   // glance previews (since 0.7.0+)
-   testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:glance:<version>")
+    // glance previews (androidx.glance.preview.Preview)
+    // supported since 0.7.0+ in android target
+    testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:glance:<version>")
+    
+    // common previews (org.jetbrains.compose.ui.tooling.preview.Preview)
+    // supported in jvm targets e.g. android & desktop
+    testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:common:<version>")
 
-   // common previews (compose multiplatform)
-   testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:common:<version>")
-
-   // define annotation to scan. Use this for desktop previews (compose multiplatform)
-   testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")
+    // desktop previews (androidx.compose.desktop.ui.tooling.preview.Preview) via custom annotation
+    // supported in jvm targets e.g. android & desktop
+    testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")
 }
 ```
 
@@ -81,24 +88,28 @@ Add JitPack to your root build.gradle file:
 ```kotlin
 allprojects {
    repositories {
-      maven { url 'https://jitpack.io' }
+      maven { url = uri('https://jitpack.io') }
    }
 }
 ```
 
 ```kotlin
 dependencies {
-   // android previews
-   testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:android:<version>")
+    // android previews (androidx.compose.ui.tooling.preview.Preview)
+    // supported in jvm targets e.g. android & desktop
+    testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:android:<version>")
 
-   // glance previews (since 0.7.0+)
-   testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:glance:<version>")
+    // glance previews (androidx.glance.preview.Preview)
+    // supported since 0.7.0+ in android target
+    testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:glance:<version>")
 
-   // common previews (compose multiplatform)
-   testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:common:<version>")
+    // common previews (org.jetbrains.compose.ui.tooling.preview.Preview)
+    // supported in jvm targets e.g. android & desktop
+    testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:common:<version>")
 
-   // define annotation to scan. Use this for desktop previews (compose multiplatform)
-   testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")
+    // desktop previews (androidx.compose.desktop.ui.tooling.preview.Preview) via custom annotation
+    // supported in jvm targets e.g. android & desktop
+    testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")
 }
 ```
 
@@ -886,19 +897,26 @@ To write such screenshot tests you have to:
 
 ## Compose Multiplatform Previews Support
 Starting with Compose Multiplatform 1.10.0-beta02, Common and Desktop @Preview annotations are deprecated. Instead, Android `@Preview` can now be used across `common` and `desktop` platforms.
-In this setup, you can continue using `AndroidComposablePreviewScanner` in the `androidUnitTest` source set, while also scanning package trees in common, for example:
+ComposablePreviewScanner 0.8.0+ fully supports this modern setup. You can use the `AndroidComposablePreviewScanner` to scan for `@Preview` annotations across all relevant source sets, including commonMain.</br>
+For example, to scan previews located in both a platform-specific (androidMain or desktopMain) and a shared (commonMain) source set, you would configure the scanner like this:
 
 ```kotlin
 AndroidComposablePreviewScanner()
-    .scanPackageTrees("package.tree.android", "package.tree.common")
+    .scanPackageTrees(
+        "package.tree.android.or.desktop",
+        "package.tree.common"
+    )
 ```
+
+You can find executable examples with Roborazzi here:
+- [Android @Previews in common](https://github.com/sergio-sastre/roborazzi/blob/droidcon/preview_tests/sample-generate-preview-common/src/androidUnitTest/kotlin/com/github/takahirom/preview/tests/AndroidPreviewTest.kt)
+- [Android @Previews in desktop](https://github.com/sergio-sastre/roborazzi/blob/droidcon/preview_tests/sample-generate-preview-desktop/src/desktopTest/kotlin/AndroidPreviewTest.kt)
 
 If you are still using the deprecated Common or Desktop `@Preview` annotations, see the sections below for guidance.
 
 ### Common Previews
 You can find executable examples here:
-- [Roborazzi](https://github.com/sergio-sastre/ComposablePreviewScanner/blob/master/tests/src/test/java/sergio/sastre/composable/preview/scanner/tests/roborazzi/RoborazziCommonComposablePreviewInvokeTests.kt)
-- [Roborazzi via its Gradle plugin](https://github.com/sergio-sastre/roborazzi/tree/droidcon/preview_tests/sample-generate-preview-tests-multiplatform)
+- [Roborazzi](https://github.com/sergio-sastre/roborazzi/blob/droidcon/preview_tests/sample-generate-preview-common/src/androidUnitTest/kotlin/com/github/takahirom/preview/tests/CommonPreviewTest.kt)
 - [Paparazzi](https://github.com/sergio-sastre/ComposablePreviewScanner/blob/master/tests/src/test/java/sergio/sastre/composable/preview/scanner/tests/paparazzi/PaparazziCommonComposablePreviewInvokeTests.kt)
 
 And also [a video on how to set it with Roborazzi here](https://www.youtube.com/watch?v=zYsNXrf2-Lo&t=33m29s), and the [repo used in the video here](https://github.com/sergio-sastre/roborazzi/tree/droidcon/preview_tests).
