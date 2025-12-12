@@ -9,7 +9,7 @@ private const val YELLOW_DOMINATED_EXAMPLE = 3
 private const val UI_MODE_NIGHT_YES = 32
 private const val UI_MODE_NIGHT_MASK = 48
 
-internal class AndroidPreviewInfoParameterToStringConverter() {
+internal class AndroidPreviewInfoParameterToStringConverter {
     fun uiMode(uiMode: Int): String? =
         if (uiMode == 0) {
             null
