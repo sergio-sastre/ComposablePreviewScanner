@@ -81,7 +81,7 @@ Add JitPack to your root build.gradle file:
 ```kotlin
 allprojects {
    repositories {
-      maven { url = uri("https://jitpack.io") }
+      maven { url = uri('https://jitpack.io') }
    }
 }
 ```
