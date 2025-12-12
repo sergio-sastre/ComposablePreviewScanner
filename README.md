@@ -88,7 +88,7 @@ Add JitPack to your root build.gradle file:
 ```kotlin
 allprojects {
    repositories {
-      maven { url 'https://jitpack.io' }
+      maven { url = uri('https://jitpack.io') }
    }
 }
 ```
@@ -908,12 +908,15 @@ AndroidComposablePreviewScanner()
     )
 ```
 
+You can find executable examples with Roborazzi here:
+- [Android @Previews in common](https://github.com/sergio-sastre/roborazzi/blob/droidcon/preview_tests/sample-generate-preview-common/src/androidUnitTest/kotlin/com/github/takahirom/preview/tests/AndroidPreviewTest.kt)
+- [Android @Previews in desktop](https://github.com/sergio-sastre/roborazzi/blob/droidcon/preview_tests/sample-generate-preview-desktop/src/desktopTest/kotlin/AndroidPreviewTest.kt)
+
 If you are still using the deprecated Common or Desktop `@Preview` annotations, see the sections below for guidance.
 
 ### Common Previews
 You can find executable examples here:
-- [Roborazzi](https://github.com/sergio-sastre/ComposablePreviewScanner/blob/master/tests/src/test/java/sergio/sastre/composable/preview/scanner/tests/roborazzi/RoborazziCommonComposablePreviewInvokeTests.kt)
-- [Roborazzi via its Gradle plugin](https://github.com/sergio-sastre/roborazzi/tree/droidcon/preview_tests/sample-generate-preview-tests-multiplatform)
+- [Roborazzi](https://github.com/sergio-sastre/roborazzi/blob/droidcon/preview_tests/sample-generate-preview-common/src/androidUnitTest/kotlin/com/github/takahirom/preview/tests/CommonPreviewTest.kt)
 - [Paparazzi](https://github.com/sergio-sastre/ComposablePreviewScanner/blob/master/tests/src/test/java/sergio/sastre/composable/preview/scanner/tests/paparazzi/PaparazziCommonComposablePreviewInvokeTests.kt)
 
 And also [a video on how to set it with Roborazzi here](https://www.youtube.com/watch?v=zYsNXrf2-Lo&t=33m29s), and the [repo used in the video here](https://github.com/sergio-sastre/roborazzi/tree/droidcon/preview_tests).
