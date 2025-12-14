@@ -366,6 +366,7 @@ class AndroidComposablePreviewScreenshotIdTest {
             "WIDTH_411DP_HEIGHT_891DP"
         )
     }
+
     @Test
     fun `GIVEN preview with custom device, THEN only show its properties as expectedId separated by underscores`(
         @TestParameter device: CustomDeviceTestParam,
@@ -546,6 +547,43 @@ class AndroidComposablePreviewScreenshotIdTest {
                 .ignoreIdFor("heightDp")
                 .build() == "" // instead of "W33dp_H32dp" as the default
         )
+    }
+
+    private val allUnsafeChars = "<>:\\\"/\\\\|?*"
+    @Test
+    fun `GIVEN Preview with name is fully of unsafe chars WHEN escaped THEN each character matches URl encoding pattern`() {
+        val preview = previewBuilder(previewInfo = AndroidPreviewInfo(name = allUnsafeChars))
+        val previewScreenshotId =
+            AndroidPreviewScreenshotIdBuilder(preview)
+                .encodeUnsafeCharacters()
+                .build()
+
+        val unicodePattern = "%[0-9A-F]+"
+        val multipleUnicodePattern = "($unicodePattern)+"
+        val entireStringWithMultipleUnicodePattern = "^$multipleUnicodePattern$"
+        val unicodeRegex = Regex(entireStringWithMultipleUnicodePattern)
+        assertTrue(unicodeRegex.matches(previewScreenshotId))
+    }
+
+    @Test
+    fun `GIVEN Preview with name is fully of unsafe chars WHEN escaped THEN no unsafe chars contained`() {
+        val preview = previewBuilder(previewInfo = AndroidPreviewInfo(name = allUnsafeChars))
+        val previewScreenshotId =
+            AndroidPreviewScreenshotIdBuilder(preview)
+                .encodeUnsafeCharacters()
+                .build()
+
+        val unsafeCharsRegex = Regex("[$allUnsafeChars]")
+        assertFalse(unsafeCharsRegex.containsMatchIn(previewScreenshotId))
+    }
+
+    @Test
+    fun `GIVEN Preview with name full of unsafe chars WHEN not escaped THEN returns the full unsafe chars as name`() {
+        val preview = previewBuilder(previewInfo = AndroidPreviewInfo(name = allUnsafeChars))
+        val previewScreenshotId =
+            AndroidPreviewScreenshotIdBuilder(preview).build()
+
+        assertTrue(previewScreenshotId == allUnsafeChars)
     }
 
     private fun previewBuilder(

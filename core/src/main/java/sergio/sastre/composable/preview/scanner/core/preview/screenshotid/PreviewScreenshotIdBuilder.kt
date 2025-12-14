@@ -12,6 +12,8 @@ open class PreviewScreenshotIdBuilder<T>(
     private var ignoreClassName: Boolean = false
     private var ignoreMethodName: Boolean = false
     private var ignoreMethodParametersType: Boolean = true
+
+    private var encodeUnsafeCharactersIsEnabled: Boolean = false
     private val defaultPreviewInfoId = defaultPreviewInfoIdProvider()
 
     fun overrideDefaultIdFor(
@@ -46,8 +48,40 @@ open class PreviewScreenshotIdBuilder<T>(
         ignoreMethodParametersType = false
     }
 
-    fun build(): String =
-        buildList {
+    /**
+     * Encodes unsafe characters that could be problematic when using
+     * certain Screenshot testing libraries like Paparazzi or Android-Testify
+     *
+     * Any of the following are considered an unsafe character:
+     * <>:\"/\\|?*
+     */
+    fun encodeUnsafeCharacters() = apply {
+        encodeUnsafeCharactersIsEnabled = true
+    }
+    
+    private fun isSafeFilenameChar(ch: Char): Boolean =
+        !"<>:\\\"/\\\\|?*".contains(ch)
+
+    private fun String.toSafeFilename(): String {
+        val dotIndex = lastIndexOf('.')
+        val namePart = if (dotIndex >= 0) substring(0, dotIndex) else this
+        val extensionPart = if (dotIndex >= 0) substring(dotIndex) else ""
+
+        val escaped = buildString {
+            for (ch in namePart) {
+                if (isSafeFilenameChar(ch)) {
+                    append(ch)
+                } else {
+                    append("%${ch.code.toString(16).uppercase()}")
+                }
+            }
+        }
+
+        return escaped + extensionPart
+    }
+
+    fun build(): String {
+        val fileName = buildList {
             val previewInfoId =
                 defaultPreviewInfoId.values.filterNot { it.isNullOrBlank() }.joinToString("_")
             val declaringClass = when (ignoreClassName) {
@@ -73,4 +107,10 @@ open class PreviewScreenshotIdBuilder<T>(
                 add(composablePreview.previewIndex)
             }
         }.joinToString("")
+
+        return when (encodeUnsafeCharactersIsEnabled) {
+            true -> fileName.toSafeFilename()
+            false -> fileName
+        }
+    }
 }
