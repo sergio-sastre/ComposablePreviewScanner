@@ -311,11 +311,8 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                 fun snapshot() {
                     val screenshotId = AndroidPreviewScreenshotIdBuilder(preview)
                     .doNotIgnoreMethodParametersType()
+                    .encodeUnsafeCharacters()
                     .build()
-                    // Replace invalid characters for file names with its encoded values
-                    .replace("<", "%3C")
-                    .replace(">", "%3E")
-                    .replace("?", "%3F")
                     
                     paparazzi.snapshot(name = screenshotId) {
                         val previewInfo = preview.previewInfo

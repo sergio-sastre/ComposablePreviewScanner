@@ -4,8 +4,6 @@ import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
 import app.cash.paparazzi.detectEnvironment
 import com.android.ide.common.rendering.api.SessionParams
-import com.android.resources.Density
-import com.android.resources.ScreenOrientation
 import com.android.resources.ScreenOrientation.LANDSCAPE
 import org.junit.Rule
 import org.junit.Test

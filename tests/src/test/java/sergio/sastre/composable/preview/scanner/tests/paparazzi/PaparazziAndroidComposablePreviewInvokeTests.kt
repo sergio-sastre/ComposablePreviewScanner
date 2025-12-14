@@ -58,10 +58,8 @@ class PaparazziAndroidComposablePreviewInvokeTests(
             .ignoreClassName()
             .ignoreMethodName()
             .doNotIgnoreMethodParametersType()
+            .encodeUnsafeCharacters()
             .build()
-            .replace("<", "%3C")
-            .replace(">", "%3E")
-            .replace("?", "%3F")
 
         paparazzi.snapshot(name = screenshotId) {
             preview()

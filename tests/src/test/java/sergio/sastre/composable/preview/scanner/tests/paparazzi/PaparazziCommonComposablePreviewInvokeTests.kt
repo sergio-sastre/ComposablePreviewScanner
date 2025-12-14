@@ -59,10 +59,8 @@ class PaparazziCommonComposablePreviewInvokeTests(
             .ignoreClassName()
             .ignoreMethodName()
             .doNotIgnoreMethodParametersType()
+            .encodeUnsafeCharacters()
             .build()
-            .replace("<", "%3C")
-            .replace(">", "%3E")
-            .replace("?", "%3F")
 
         val previewInfo = preview.previewInfo
         paparazzi.snapshot(name = screenshotId) {
