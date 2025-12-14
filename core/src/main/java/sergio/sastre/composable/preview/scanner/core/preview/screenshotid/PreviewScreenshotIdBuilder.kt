@@ -58,27 +58,18 @@ open class PreviewScreenshotIdBuilder<T>(
     fun encodeUnsafeCharacters() = apply {
         encodeUnsafeCharactersIsEnabled = true
     }
-    
-    private fun isSafeFilenameChar(ch: Char): Boolean =
-        !"<>:\\\"/\\\\|?*".contains(ch)
 
-    private fun String.toSafeFilename(): String {
-        val dotIndex = lastIndexOf('.')
-        val namePart = if (dotIndex >= 0) substring(0, dotIndex) else this
-        val extensionPart = if (dotIndex >= 0) substring(dotIndex) else ""
+    private val unsafeFileNameChars = setOf('<', '>', ':', '"', '/', '\\', '|', '?', '*')
 
-        val escaped = buildString {
-            for (ch in namePart) {
-                if (isSafeFilenameChar(ch)) {
-                    append(ch)
-                } else {
-                    append("%${ch.code.toString(16).uppercase()}")
+    private fun encodeUnsafeCharactersIn(fileName: String): String =
+        buildString {
+            for (ch in fileName) {
+                when (ch in unsafeFileNameChars) {
+                    true -> append("%${ch.code.toString(16).uppercase()}")
+                    false -> append(ch)
                 }
             }
         }
-
-        return escaped + extensionPart
-    }
 
     fun build(): String {
         val fileName = buildList {
@@ -109,7 +100,7 @@ open class PreviewScreenshotIdBuilder<T>(
         }.joinToString("")
 
         return when (encodeUnsafeCharactersIsEnabled) {
-            true -> fileName.toSafeFilename()
+            true -> encodeUnsafeCharactersIn(fileName)
             false -> fileName
         }
     }
