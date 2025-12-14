@@ -1077,7 +1077,18 @@ But if you're still experiencing such issues, consider:
 
 Some libraries restrict the characters allowed in filenames and may alter the provided screenshot name (e.g., Paparazzi 1.3.5+ like reported in this issue [here](https://github.com/cashapp/paparazzi/issues/1963)).
 This is especially problematic when the `TestParameterInjector` test runner is used.</br>
-To avoid issues, `ComposablePreviewScanner`s ScreenshotIdBuilders should be used with the standard JUnit4 `Parameterized` test runner, and invalid characters should be encoded manually if needed, for example:
+To avoid issues, `ComposablePreviewScanner`s ScreenshotIdBuilders should be used with the standard JUnit4 `Parameterized` test runner, and invalid characters should be encoded if needed:</br>
+
+ComposablePreviewScanner 0.8.0+
+```kotlin
+AndroidPreviewScreenshotIdBuilder(preview)
+    ...
+    .encodeUnsafeCharacters()
+    .build()
+```
+
+ComposablePreviewScanner < 0.8.0:
+You have to encode them manually
 ```kotlin
 AndroidPreviewScreenshotIdBuilder(preview)
     ...
