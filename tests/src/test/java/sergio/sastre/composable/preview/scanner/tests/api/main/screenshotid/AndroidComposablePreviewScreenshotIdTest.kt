@@ -1,13 +1,11 @@
 package sergio.sastre.composable.preview.scanner.tests.api.main.screenshotid
 
 import android.content.res.Configuration
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Wallpapers
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.google.testing.junit.testparameterinjector.TestParameterValuesProvider
-import io.github.classgraph.AnnotationInfoList
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,14 +20,15 @@ import sergio.sastre.composable.preview.scanner.android.device.types.Television
 import sergio.sastre.composable.preview.scanner.android.device.types.Wear
 import sergio.sastre.composable.preview.scanner.android.device.types.XR
 import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
-import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
+import sergio.sastre.composable.preview.scanner.utils.androidPreviewBuilder
+import sergio.sastre.composable.preview.scanner.utils.previewBuilder
 
 @RunWith(TestParameterInjector::class)
 class AndroidComposablePreviewScreenshotIdTest {
 
     @Test
     fun `GIVEN preview className and methodName, THEN show them only but separated by a dot`() {
-        val preview = previewBuilder(
+        val preview = androidPreviewBuilder(
             declaringClass = "MyClass",
             methodName = "PreviewName",
         )
@@ -41,7 +40,7 @@ class AndroidComposablePreviewScreenshotIdTest {
 
     @Test
     fun `GIVEN preview with only previewIndex, THEN show only index`() {
-        val preview = previewBuilder(
+        val preview = androidPreviewBuilder(
             previewIndex = 1,
         )
 
@@ -422,7 +421,7 @@ class AndroidComposablePreviewScreenshotIdTest {
 
     @Test
     fun `GIVEN className ignored, THEN declaringClass is not included`() {
-        val preview = previewBuilder(
+        val preview = androidPreviewBuilder(
             declaringClass = "MyClass",
         )
 
@@ -436,7 +435,7 @@ class AndroidComposablePreviewScreenshotIdTest {
 
     @Test
     fun `GIVEN methodParameters not ignored, THEN declaringClass is included`() {
-        val preview = previewBuilder(
+        val preview = androidPreviewBuilder(
             methodParameters = "name_String",
         )
 
@@ -450,10 +449,10 @@ class AndroidComposablePreviewScreenshotIdTest {
 
     @Test
     fun `GIVEN 2 previews differ only in the methodParametersType WHEN these are not ignored, THEN the screenshotIds differ`() {
-        val preview1 = previewBuilder(
+        val preview1 = androidPreviewBuilder(
             methodParameters = "name_String",
         )
-        val preview2 = previewBuilder(
+        val preview2 = androidPreviewBuilder(
             methodParameters = "name_Int",
         )
 
@@ -470,10 +469,10 @@ class AndroidComposablePreviewScreenshotIdTest {
 
     @Test
     fun `GIVEN 2 previews differ only in the methodParametersType WHEN these are ignored, THEN the screenshotIds are the same`() {
-        val preview1 = previewBuilder(
+        val preview1 = androidPreviewBuilder(
             methodParameters = "name_String",
         )
-        val preview2 = previewBuilder(
+        val preview2 = androidPreviewBuilder(
             methodParameters = "name_Int",
         )
 
@@ -486,7 +485,7 @@ class AndroidComposablePreviewScreenshotIdTest {
 
     @Test
     fun `GIVEN methodName ignored, THEN methodName is not included`() {
-        val preview = previewBuilder(
+        val preview = androidPreviewBuilder(
             methodName = "PreviewName",
         )
 
@@ -547,63 +546,6 @@ class AndroidComposablePreviewScreenshotIdTest {
                 .ignoreIdFor("heightDp")
                 .build() == "" // instead of "W33dp_H32dp" as the default
         )
-    }
-
-    private val allUnsafeChars = "<>:\\\"/\\\\|?*"
-    @Test
-    fun `GIVEN Preview with name is fully of unsafe chars WHEN escaped THEN each character matches URl encoding pattern`() {
-        val preview = previewBuilder(previewInfo = AndroidPreviewInfo(name = allUnsafeChars))
-        val previewScreenshotId =
-            AndroidPreviewScreenshotIdBuilder(preview)
-                .encodeUnsafeCharacters()
-                .build()
-
-        val unicodePattern = "%[0-9A-F]+"
-        val multipleUnicodePattern = "($unicodePattern)+"
-        val entireStringWithMultipleUnicodePattern = "^$multipleUnicodePattern$"
-        val unicodeRegex = Regex(entireStringWithMultipleUnicodePattern)
-        assertTrue(unicodeRegex.matches(previewScreenshotId))
-    }
-
-    @Test
-    fun `GIVEN Preview with name is fully of unsafe chars WHEN escaped THEN no unsafe chars contained`() {
-        val preview = previewBuilder(previewInfo = AndroidPreviewInfo(name = allUnsafeChars))
-        val previewScreenshotId =
-            AndroidPreviewScreenshotIdBuilder(preview)
-                .encodeUnsafeCharacters()
-                .build()
-
-        val unsafeCharsRegex = Regex("[$allUnsafeChars]")
-        assertFalse(unsafeCharsRegex.containsMatchIn(previewScreenshotId))
-    }
-
-    @Test
-    fun `GIVEN Preview with name full of unsafe chars WHEN not escaped THEN returns the full unsafe chars as name`() {
-        val preview = previewBuilder(previewInfo = AndroidPreviewInfo(name = allUnsafeChars))
-        val previewScreenshotId =
-            AndroidPreviewScreenshotIdBuilder(preview).build()
-
-        assertTrue(previewScreenshotId == allUnsafeChars)
-    }
-
-    private fun previewBuilder(
-        previewInfo: AndroidPreviewInfo = AndroidPreviewInfo(),
-        previewIndex: Int? = null,
-        otherAnnotationsInfo: AnnotationInfoList? = null,
-        declaringClass: String = "",
-        methodName: String = "",
-        methodParameters: String = "",
-    ): ComposablePreview<AndroidPreviewInfo> = object : ComposablePreview<AndroidPreviewInfo> {
-        override val previewInfo: AndroidPreviewInfo = previewInfo
-        override val previewIndex: Int? = previewIndex
-        override val otherAnnotationsInfo: AnnotationInfoList? = otherAnnotationsInfo
-        override val declaringClass: String = declaringClass
-        override val methodName: String = methodName
-        override val methodParametersType: String = methodParameters
-
-        @Composable
-        override fun invoke() {
-        }
     }
 
     private class IdentifierValueProvider : TestParameterValuesProvider() {

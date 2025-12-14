@@ -1,20 +1,19 @@
 package sergio.sastre.composable.preview.scanner.tests.api.main.screenshotid
 
-import androidx.compose.runtime.Composable
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
-import io.github.classgraph.AnnotationInfoList
 import org.junit.Test
 import org.junit.runner.RunWith
-import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.common.CommonPreviewInfo
 import sergio.sastre.composable.preview.scanner.common.screenshotid.CommonPreviewScreenshotIdBuilder
+import sergio.sastre.composable.preview.scanner.utils.commonPreviewBuilder
+import sergio.sastre.composable.preview.scanner.utils.previewBuilder
 
 @RunWith(TestParameterInjector::class)
 class CommonComposablePreviewScreenshotIdTest {
     @Test
     fun `GIVEN preview className and methodName, THEN show them only but separated by a dot`() {
-        val preview = previewBuilder(
+        val preview = commonPreviewBuilder(
             declaringClass = "MyClass",
             methodName = "PreviewName",
         )
@@ -26,7 +25,7 @@ class CommonComposablePreviewScreenshotIdTest {
 
     @Test
     fun `GIVEN preview with only previewIndex, THEN show only index`() {
-        val preview = previewBuilder(
+        val preview = commonPreviewBuilder(
             previewIndex = 1,
         )
 
@@ -164,7 +163,7 @@ class CommonComposablePreviewScreenshotIdTest {
 
     @Test
     fun `GIVEN className ignored, THEN declaringClass is not included`() {
-        val preview = previewBuilder(
+        val preview = commonPreviewBuilder(
             declaringClass = "MyClass",
         )
 
@@ -178,7 +177,7 @@ class CommonComposablePreviewScreenshotIdTest {
 
     @Test
     fun `GIVEN methodParameters not ignored, THEN declaringClass is included`() {
-        val preview = previewBuilder(
+        val preview = commonPreviewBuilder(
             methodParameters = "name_String",
         )
 
@@ -192,10 +191,10 @@ class CommonComposablePreviewScreenshotIdTest {
 
     @Test
     fun `GIVEN 2 previews differ only in the methodParametersType WHEN these are not ignored, THEN the screenshotIds differ`() {
-        val preview1 = previewBuilder(
+        val preview1 = commonPreviewBuilder(
             methodParameters = "name_String",
         )
-        val preview2 = previewBuilder(
+        val preview2 = commonPreviewBuilder(
             methodParameters = "name_Int",
         )
 
@@ -212,10 +211,10 @@ class CommonComposablePreviewScreenshotIdTest {
 
     @Test
     fun `GIVEN 2 previews differ only in the methodParametersType WHEN these are ignored, THEN the screenshotIds are the same`() {
-        val preview1 = previewBuilder(
+        val preview1 = commonPreviewBuilder(
             methodParameters = "name_String",
         )
-        val preview2 = previewBuilder(
+        val preview2 = commonPreviewBuilder(
             methodParameters = "name_Int",
         )
 
@@ -228,7 +227,7 @@ class CommonComposablePreviewScreenshotIdTest {
 
     @Test
     fun `GIVEN methodName ignored, THEN methodName is not included`() {
-        val preview = previewBuilder(
+        val preview = commonPreviewBuilder(
             methodName = "PreviewName",
         )
 
@@ -284,23 +283,4 @@ class CommonComposablePreviewScreenshotIdTest {
         )
     }
 
-    private fun previewBuilder(
-        previewInfo: CommonPreviewInfo = CommonPreviewInfo(),
-        previewIndex: Int? = null,
-        otherAnnotationsInfo: AnnotationInfoList? = null,
-        declaringClass: String = "",
-        methodName: String = "",
-        methodParameters: String = "",
-    ): ComposablePreview<CommonPreviewInfo> = object : ComposablePreview<CommonPreviewInfo> {
-        override val previewInfo: CommonPreviewInfo = previewInfo
-        override val previewIndex: Int? = previewIndex
-        override val otherAnnotationsInfo: AnnotationInfoList? = otherAnnotationsInfo
-        override val declaringClass: String = declaringClass
-        override val methodName: String = methodName
-        override val methodParametersType: String = methodParameters
-
-        @Composable
-        override fun invoke() {
-        }
-    }
 }

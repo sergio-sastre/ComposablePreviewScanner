@@ -1,20 +1,20 @@
 package sergio.sastre.composable.preview.scanner.tests.api.main.screenshotid
 
-import androidx.compose.runtime.Composable
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import io.github.classgraph.AnnotationInfoList
 import org.junit.Test
 import org.junit.runner.RunWith
-import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.glance.GlancePreviewInfo
 import sergio.sastre.composable.preview.scanner.glance.screenshotid.GlancePreviewScreenshotIdBuilder
+import sergio.sastre.composable.preview.scanner.utils.glancePreviewBuilder
+import sergio.sastre.composable.preview.scanner.utils.previewBuilder
 
 @RunWith(TestParameterInjector::class)
 class GlanceComposablePreviewScreenshotIdTest {
     @Test
     fun `GIVEN preview className and methodName, THEN show them only but separated by a dot`() {
-        val preview = previewBuilder(
+        val preview = glancePreviewBuilder(
             declaringClass = "MyClass",
             methodName = "PreviewName",
         )
@@ -26,7 +26,7 @@ class GlanceComposablePreviewScreenshotIdTest {
 
     @Test
     fun `GIVEN preview with only previewIndex, THEN show only index`() {
-        val preview = previewBuilder(
+        val preview = glancePreviewBuilder(
             previewIndex = 1,
         )
 
@@ -86,7 +86,7 @@ class GlanceComposablePreviewScreenshotIdTest {
 
     @Test
     fun `GIVEN className ignored, THEN declaringClass is not included`() {
-        val preview = previewBuilder(
+        val preview = glancePreviewBuilder(
             declaringClass = "MyClass",
         )
 
@@ -100,7 +100,7 @@ class GlanceComposablePreviewScreenshotIdTest {
 
     @Test
     fun `GIVEN methodParameters not ignored, THEN declaringClass is included`() {
-        val preview = previewBuilder(
+        val preview = glancePreviewBuilder(
             methodParameters = "name_String",
         )
 
@@ -114,10 +114,10 @@ class GlanceComposablePreviewScreenshotIdTest {
 
     @Test
     fun `GIVEN 2 previews differ only in the methodParametersType WHEN these are not ignored, THEN the screenshotIds differ`() {
-        val preview1 = previewBuilder(
+        val preview1 = glancePreviewBuilder(
             methodParameters = "name_String",
         )
-        val preview2 = previewBuilder(
+        val preview2 = glancePreviewBuilder(
             methodParameters = "name_Int",
         )
 
@@ -134,10 +134,10 @@ class GlanceComposablePreviewScreenshotIdTest {
 
     @Test
     fun `GIVEN 2 previews differ only in the methodParametersType WHEN these are ignored, THEN the screenshotIds are the same`() {
-        val preview1 = previewBuilder(
+        val preview1 = glancePreviewBuilder(
             methodParameters = "name_String",
         )
-        val preview2 = previewBuilder(
+        val preview2 = glancePreviewBuilder(
             methodParameters = "name_Int",
         )
 
@@ -150,7 +150,7 @@ class GlanceComposablePreviewScreenshotIdTest {
 
     @Test
     fun `GIVEN methodName ignored, THEN methodName is not included`() {
-        val preview = previewBuilder(
+        val preview = glancePreviewBuilder(
             methodName = "PreviewName",
         )
 
@@ -199,25 +199,5 @@ class GlanceComposablePreviewScreenshotIdTest {
                 .ignoreIdFor("heightDp")
                 .build() == "" // instead of "W33dp_H32dp" as the default
         )
-    }
-
-    private fun previewBuilder(
-        previewInfo: GlancePreviewInfo = GlancePreviewInfo(),
-        previewIndex: Int? = null,
-        otherAnnotationsInfo: AnnotationInfoList? = null,
-        declaringClass: String = "",
-        methodName: String = "",
-        methodParameters: String = "",
-    ): ComposablePreview<GlancePreviewInfo> = object : ComposablePreview<GlancePreviewInfo> {
-        override val previewInfo: GlancePreviewInfo = previewInfo
-        override val previewIndex: Int? = previewIndex
-        override val otherAnnotationsInfo: AnnotationInfoList? = otherAnnotationsInfo
-        override val declaringClass: String = declaringClass
-        override val methodName: String = methodName
-        override val methodParametersType: String = methodParameters
-
-        @Composable
-        override fun invoke() {
-        }
     }
 }
