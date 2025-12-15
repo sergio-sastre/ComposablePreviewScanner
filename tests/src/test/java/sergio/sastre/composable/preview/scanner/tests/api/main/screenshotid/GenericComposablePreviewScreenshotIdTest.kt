@@ -31,6 +31,20 @@ class GenericComposablePreviewScreenshotIdTest(
     }
 
     @Test
+    fun `GIVEN preview with only previewIndex, THEN show only index`() {
+        val previewScreenshotId =
+            screenshotIdBuilder
+                .passPreviewWithInfo(
+                    previewIndex = 1,
+                )
+                .build()
+
+        assert(
+            previewScreenshotId == "1"
+        )
+    }
+
+    @Test
     fun `GIVEN preview className and methodName, THEN show them only but separated by a dot`() {
         val previewScreenshotId =
             screenshotIdBuilder

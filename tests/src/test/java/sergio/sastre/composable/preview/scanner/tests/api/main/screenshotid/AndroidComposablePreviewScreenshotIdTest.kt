@@ -27,17 +27,6 @@ import sergio.sastre.composable.preview.scanner.utils.previewBuilder
 class AndroidComposablePreviewScreenshotIdTest {
 
     @Test
-    fun `GIVEN preview with only previewIndex, THEN show only index`() {
-        val preview = androidPreviewBuilder(
-            previewIndex = 1,
-        )
-
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "1"
-        )
-    }
-
-    @Test
     fun `GIVEN preview with only name, THEN show only name with underscores`() {
         val preview = previewBuilder(
             previewInfo = AndroidPreviewInfo(
