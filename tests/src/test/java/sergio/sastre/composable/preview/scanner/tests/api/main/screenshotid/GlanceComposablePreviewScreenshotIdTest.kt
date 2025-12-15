@@ -14,19 +14,6 @@ import sergio.sastre.composable.preview.scanner.utils.previewBuilder
 class GlanceComposablePreviewScreenshotIdTest {
 
     @Test
-    fun `GIVEN preview with only width greater than -1, THEN show only W$value$dp`() {
-        val preview = previewBuilder(
-            previewInfo = GlancePreviewInfo(
-                widthDp = 33
-            )
-        )
-
-        assert(
-            GlancePreviewScreenshotIdBuilder(preview).build() == "W33dp"
-        )
-    }
-
-    @Test
     fun `GIVEN preview with only height greater than -1, THEN show only H$value$dp`() {
         val preview = previewBuilder(
             previewInfo = GlancePreviewInfo(

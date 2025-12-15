@@ -45,6 +45,20 @@ class GenericComposablePreviewScreenshotIdTest(
     }
 
     @Test
+    fun `GIVEN preview with only width greater than -1, THEN show only W$value$dp`() {
+        val previewScreenshotId =
+            screenshotIdBuilder
+                .passPreviewWithInfo(
+                    widthDp = 33,
+                )
+                .build()
+
+        assert(
+            previewScreenshotId == "W33dp"
+        )
+    }
+
+    @Test
     fun `GIVEN preview className and methodName, THEN show them only but separated by a dot`() {
         val previewScreenshotId =
             screenshotIdBuilder
