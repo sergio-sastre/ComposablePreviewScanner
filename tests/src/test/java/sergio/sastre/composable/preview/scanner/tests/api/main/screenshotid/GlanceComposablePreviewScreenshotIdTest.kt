@@ -57,21 +57,4 @@ class GlanceComposablePreviewScreenshotIdTest {
                 .build() == ""
         )
     }
-
-    @Test
-    fun `GIVEN preview with only widthDp and heightDp but both ignored, THEN show nothing`() {
-        val preview = previewBuilder(
-            previewInfo = GlancePreviewInfo(
-                widthDp = 33,
-                heightDp = 32,
-            )
-        )
-
-        assert(
-            GlancePreviewScreenshotIdBuilder(preview)
-                .ignoreIdFor("widthDp")
-                .ignoreIdFor("heightDp")
-                .build() == "" // instead of "W33dp_H32dp" as the default
-        )
-    }
 }

@@ -173,6 +173,23 @@ class GenericComposablePreviewScreenshotIdTest(
     }
 
     @Test
+    fun `GIVEN preview with only widthDp and heightDp but both ignored, THEN show nothing`() {
+        val previewScreenshotId =
+            screenshotIdBuilder
+                .passPreviewWithInfo(
+                    widthDp = 33,
+                    heightDp = 32,
+                )
+                .ignoreIdFor("widthDp")
+                .ignoreIdFor("heightDp")
+                .build()
+
+        assert(
+            previewScreenshotId == ""
+        )
+    }
+
+    @Test
     fun `GIVEN Preview with name is fully of unsafe chars WHEN escaped THEN each character matches URl encoding pattern`() {
         val previewScreenshotId =
             screenshotIdBuilder
