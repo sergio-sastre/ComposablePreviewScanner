@@ -12,6 +12,7 @@ sealed interface PreviewScreenshotIdBuilderProvider<T> {
     fun passPreviewWithInfo(
         previewIndex: Int? = null,
         widthDp: Int = -1,
+        heightDp: Int = -1,
         declaringClass: String = "",
         methodName: String = "",
         methodParameters: String = "",
@@ -23,6 +24,7 @@ class CommonScreenshotIdBuilderProvider :
     override fun passPreviewWithInfo(
         previewIndex: Int?,
         widthDp: Int,
+        heightDp: Int,
         declaringClass: String,
         methodName: String,
         methodParameters: String,
@@ -30,7 +32,7 @@ class CommonScreenshotIdBuilderProvider :
         return CommonPreviewScreenshotIdBuilder(
             previewBuilder(
                 previewIndex = previewIndex,
-                previewInfo = CommonPreviewInfo(widthDp = widthDp),
+                previewInfo = CommonPreviewInfo(widthDp = widthDp, heightDp = heightDp),
                 declaringClass = declaringClass,
                 methodName = methodName,
                 methodParameters = methodParameters
@@ -44,6 +46,7 @@ class AndroidScreenshotIdBuilderProvider() :
     override fun passPreviewWithInfo(
         previewIndex: Int?,
         widthDp: Int,
+        heightDp: Int,
         declaringClass: String,
         methodName: String,
         methodParameters: String,
@@ -51,7 +54,7 @@ class AndroidScreenshotIdBuilderProvider() :
         return AndroidPreviewScreenshotIdBuilder(
             previewBuilder(
                 previewIndex = previewIndex,
-                previewInfo = AndroidPreviewInfo(widthDp = widthDp),
+                previewInfo = AndroidPreviewInfo(widthDp = widthDp, heightDp = heightDp),
                 declaringClass = declaringClass,
                 methodName = methodName,
                 methodParameters = methodParameters
@@ -65,6 +68,7 @@ class GlanceScreenshotIdBuilderProvider() :
     override fun passPreviewWithInfo(
         previewIndex: Int?,
         widthDp: Int,
+        heightDp: Int,
         declaringClass: String,
         methodName: String,
         methodParameters: String,
@@ -72,7 +76,7 @@ class GlanceScreenshotIdBuilderProvider() :
         return GlancePreviewScreenshotIdBuilder(
             previewBuilder(
                 previewIndex = previewIndex,
-                previewInfo = GlancePreviewInfo(widthDp = widthDp),
+                previewInfo = GlancePreviewInfo(widthDp = widthDp, heightDp = heightDp),
                 declaringClass = declaringClass,
                 methodName = methodName,
                 methodParameters = methodParameters
