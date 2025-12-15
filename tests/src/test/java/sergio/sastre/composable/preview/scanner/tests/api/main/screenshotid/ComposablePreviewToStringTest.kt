@@ -6,7 +6,7 @@ import org.junit.Test
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.common.CommonComposablePreviewScanner
 
-class ComposablePreviewToStringTest {
+class ComposablePreviewToStringTest() {
 
     @Test
     fun `GIVEN Android previews WHEN toString THEN those preview names do not end with underscore`() {
