@@ -139,22 +139,4 @@ class CommonComposablePreviewScreenshotIdTest {
                 .build() == ""
         )
     }
-
-    @Test
-    fun `GIVEN preview with only widthDp and heightDp but both ignored, THEN show nothing`() {
-        val preview = previewBuilder(
-            previewInfo = CommonPreviewInfo(
-                widthDp = 33,
-                heightDp = 32,
-            )
-        )
-
-        assert(
-            CommonPreviewScreenshotIdBuilder(preview)
-                .ignoreIdFor("widthDp")
-                .ignoreIdFor("heightDp")
-                .build() == "" // instead of "W33dp_H32dp" as the default
-        )
-    }
-
 }

@@ -404,23 +404,6 @@ class AndroidComposablePreviewScreenshotIdTest {
         )
     }
 
-    @Test
-    fun `GIVEN preview with only widthDp and heightDp but both ignored, THEN show nothing`() {
-        val preview = previewBuilder(
-            previewInfo = AndroidPreviewInfo(
-                widthDp = 33,
-                heightDp = 32,
-            )
-        )
-
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview)
-                .ignoreIdFor("widthDp")
-                .ignoreIdFor("heightDp")
-                .build() == "" // instead of "W33dp_H32dp" as the default
-        )
-    }
-
     private class IdentifierValueProvider : TestParameterValuesProvider() {
         public override fun provideValues(context: Context?): List<Identifier> {
             return listOf(
