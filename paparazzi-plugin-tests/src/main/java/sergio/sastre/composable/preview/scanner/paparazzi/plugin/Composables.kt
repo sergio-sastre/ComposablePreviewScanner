@@ -30,6 +30,7 @@ fun Example(apiLevel: String) {
 )
 @PreviewScreenSizes
 @Preview(apiLevel = 31)
+@Preview(fontScale = 1.3f)
 @Preview
 @Composable
 fun ScreenSizesExamplePreview() {

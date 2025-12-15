@@ -397,12 +397,12 @@ object DeviceConfigBuilder {
          density = Density(parsedDevice.densityDpi),
          xdpi = parsedDevice.densityDpi, // not 100% precise
          ydpi = parsedDevice.densityDpi, // not 100% precise
-         fontScale = preview.fontScale,
          size = ScreenSize.valueOf(parsedDevice.screenSize.name),
          ratio = ScreenRatio.valueOf(parsedDevice.screenRatio.name),
          screenRound = ScreenRound.valueOf(parsedDevice.shape.name),
          orientation = ScreenOrientation.valueOf(parsedDevice.orientation.name),
          locale = preview.locale.ifBlank { "en" },
+          fontScale = preview.fontScale,
          nightMode = when (preview.uiMode and UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES) {
             true -> NightMode.NIGHT
             false -> NightMode.NOTNIGHT

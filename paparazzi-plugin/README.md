@@ -22,7 +22,7 @@ However, customizing the plugin to fit your needs should be straightforward: sim
 - 📱 **Configuration**: Proper configuration based on `@Preview` parameters. Supports:
     - `device`
     - `locale`
-    - `fontSize`
+    - `fontScale`
     - `uiMode`
     - `width`
     - `height`
