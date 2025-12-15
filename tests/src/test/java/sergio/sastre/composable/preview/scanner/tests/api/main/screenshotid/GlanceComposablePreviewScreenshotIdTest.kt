@@ -7,6 +7,7 @@ import org.junit.runner.RunWith
 import sergio.sastre.composable.preview.scanner.glance.GlancePreviewInfo
 import sergio.sastre.composable.preview.scanner.glance.screenshotid.GlancePreviewScreenshotIdBuilder
 import sergio.sastre.composable.preview.scanner.utils.previewBuilder
+import org.junit.Assert.*
 
 @RunWith(TestParameterInjector::class)
 class GlanceComposablePreviewScreenshotIdTest {
@@ -19,7 +20,8 @@ class GlanceComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
+        assertEquals(
+            "WRAPPED_WIDTH",
             GlancePreviewScreenshotIdBuilder(preview)
                 .overrideDefaultIdFor(
                     previewInfoName = "widthDp",
@@ -30,7 +32,7 @@ class GlanceComposablePreviewScreenshotIdTest {
                         }
                     }
                 )
-                .build() == "WRAPPED_WIDTH" // instead of "" as the default
+                .build()
         )
     }
 
@@ -49,10 +51,11 @@ class GlanceComposablePreviewScreenshotIdTest {
             previewInfo = previewKeyAndInfo.previewInfo
         )
 
-        assert(
+        assertEquals(
+            "",
             GlancePreviewScreenshotIdBuilder(preview)
                 .ignoreIdFor(previewKeyAndInfo.key)
-                .build() == ""
+                .build()
         )
     }
 }

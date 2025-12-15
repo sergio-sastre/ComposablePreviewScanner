@@ -1,6 +1,8 @@
 package sergio.sastre.composable.preview.scanner.tests.api.main.screenshotid
 
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -39,9 +41,7 @@ class GenericComposablePreviewScreenshotIdTest(
                 )
                 .build()
 
-        assert(
-            previewScreenshotId == "1"
-        )
+        assertEquals("1", previewScreenshotId)
     }
 
     @Test
@@ -53,9 +53,7 @@ class GenericComposablePreviewScreenshotIdTest(
                 )
                 .build()
 
-        assert(
-            previewScreenshotId == "W33dp"
-        )
+        assertEquals("W33dp", previewScreenshotId)
     }
 
     @Test
@@ -67,9 +65,7 @@ class GenericComposablePreviewScreenshotIdTest(
                 )
                 .build()
 
-        assert(
-            previewScreenshotId == "H33dp"
-        )
+        assertEquals("H33dp", previewScreenshotId)
     }
 
     @Test
@@ -82,9 +78,7 @@ class GenericComposablePreviewScreenshotIdTest(
                 )
                 .build()
 
-        assert(
-            previewScreenshotId == "MyClass.PreviewName"
-        )
+        assertEquals("MyClass.PreviewName", previewScreenshotId)
     }
 
     @Test
@@ -97,8 +91,8 @@ class GenericComposablePreviewScreenshotIdTest(
                 .ignoreMethodName()
                 .build()
 
-        assert(
-            !previewScreenshotId.contains("PreviewName")
+        assertFalse(
+            previewScreenshotId.contains("PreviewName")
         )
     }
 
@@ -112,8 +106,8 @@ class GenericComposablePreviewScreenshotIdTest(
                 .ignoreClassName()
                 .build()
 
-        assert(
-            !previewScreenshotId.contains("MyClass")
+        assertFalse(
+            previewScreenshotId.contains("MyClass")
         )
     }
 
@@ -127,7 +121,7 @@ class GenericComposablePreviewScreenshotIdTest(
                 .doNotIgnoreMethodParametersType()
                 .build()
 
-        assert(
+        assertTrue(
             previewScreenshotId.contains("name_String")
         )
     }
@@ -150,7 +144,7 @@ class GenericComposablePreviewScreenshotIdTest(
                 .doNotIgnoreMethodParametersType()
                 .build()
 
-        assert(screenshotIdPreview1 != screenshotIdPreview2)
+        assertNotEquals(screenshotIdPreview1, screenshotIdPreview2)
     }
 
     @Test
@@ -169,7 +163,7 @@ class GenericComposablePreviewScreenshotIdTest(
                 )
                 .build()
 
-        assert(screenshotIdPreview1 == screenshotIdPreview2)
+        assertEquals(screenshotIdPreview1,screenshotIdPreview2)
     }
 
     @Test
@@ -184,9 +178,7 @@ class GenericComposablePreviewScreenshotIdTest(
                 .ignoreIdFor("heightDp")
                 .build()
 
-        assert(
-            previewScreenshotId == ""
-        )
+        assertEquals("", previewScreenshotId)
     }
 
     @Test
@@ -219,7 +211,7 @@ class GenericComposablePreviewScreenshotIdTest(
                 .substring(1)
 
         val unsafeCharsRegex = Regex("[$ALL_UNSAFE_CHARS]")
-        assertFalse(unsafeCharsRegex.containsMatchIn(previewScreenshotId.substring(1)))
+        assertFalse(unsafeCharsRegex.containsMatchIn(previewScreenshotId))
     }
 
     @Test
@@ -232,6 +224,6 @@ class GenericComposablePreviewScreenshotIdTest(
                 // remove leading "_" due to doNotIgnoreMethodParametersType()
                 .substring(1)
 
-        assertTrue(previewScreenshotId == ALL_UNSAFE_CHARS)
+        assertEquals(ALL_UNSAFE_CHARS, previewScreenshotId)
     }
 }
