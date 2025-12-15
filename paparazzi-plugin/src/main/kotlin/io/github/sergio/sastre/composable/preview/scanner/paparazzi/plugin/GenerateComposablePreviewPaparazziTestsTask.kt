@@ -141,6 +141,7 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                         screenRound = ScreenRound.valueOf(parsedDevice.shape.name),
                         orientation = ScreenOrientation.valueOf(parsedDevice.orientation.name),
                         locale = preview.locale.ifBlank { "en" },
+                        fontScale = preview.fontScale,
                         nightMode = when (preview.uiMode and UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES) {
                             true -> NightMode.NIGHT
                             false -> NightMode.NOTNIGHT

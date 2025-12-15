@@ -359,6 +359,7 @@ private class PreviewHtmlReportWriter: SnapshotHandler {
    }
 }
 ```
+
 In the next step, we’ll show how to pass these custom SnapshotHandlers to the Paparazzi TestRule to take full control of screenshot filenames.
 
 4. Map the PreviewInfo and PaparazziConfig values.
@@ -412,6 +413,7 @@ object DeviceConfigBuilder {
          screenRound = ScreenRound.valueOf(parsedDevice.shape.name),
          orientation = ScreenOrientation.valueOf(parsedDevice.orientation.name),
          locale = preview.locale.ifBlank { "en" },
+          fontScale = preview.fontScale,
          nightMode = when (preview.uiMode and UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES) {
             true -> NightMode.NIGHT
             false -> NightMode.NOTNIGHT
