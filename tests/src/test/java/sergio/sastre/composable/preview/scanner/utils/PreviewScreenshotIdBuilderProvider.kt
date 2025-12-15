@@ -10,7 +10,7 @@ import sergio.sastre.composable.preview.scanner.glance.screenshotid.GlancePrevie
 
 sealed interface PreviewScreenshotIdBuilderProvider<T> {
     fun passPreviewWithInfo(
-        previewIndex: Int = -1,
+        previewIndex: Int? = null,
         widthDp: Int = -1,
         declaringClass: String = "",
         methodName: String = "",
@@ -21,7 +21,7 @@ sealed interface PreviewScreenshotIdBuilderProvider<T> {
 class CommonScreenshotIdBuilderProvider :
     PreviewScreenshotIdBuilderProvider<PreviewScreenshotIdBuilder<CommonPreviewInfo>> {
     override fun passPreviewWithInfo(
-        previewIndex: Int,
+        previewIndex: Int?,
         widthDp: Int,
         declaringClass: String,
         methodName: String,
@@ -42,7 +42,7 @@ class CommonScreenshotIdBuilderProvider :
 class AndroidScreenshotIdBuilderProvider() :
     PreviewScreenshotIdBuilderProvider<PreviewScreenshotIdBuilder<AndroidPreviewInfo>> {
     override fun passPreviewWithInfo(
-        previewIndex: Int,
+        previewIndex: Int?,
         widthDp: Int,
         declaringClass: String,
         methodName: String,
@@ -63,7 +63,7 @@ class AndroidScreenshotIdBuilderProvider() :
 class GlanceScreenshotIdBuilderProvider() :
     PreviewScreenshotIdBuilderProvider<PreviewScreenshotIdBuilder<GlancePreviewInfo>> {
     override fun passPreviewWithInfo(
-        previewIndex: Int,
+        previewIndex: Int?,
         widthDp: Int,
         declaringClass: String,
         methodName: String,
