@@ -37,21 +37,7 @@ class GlanceComposablePreviewScreenshotIdTest {
     }
 
     @Test
-    fun `GIVEN className ignored, THEN declaringClass is not included`() {
-        val preview = glancePreviewBuilder(
-            declaringClass = "MyClass",
-        )
-
-        assert(
-            !GlancePreviewScreenshotIdBuilder(preview)
-                .ignoreClassName()
-                .build()
-                .contains("MyClass")
-        )
-    }
-
-    @Test
-    fun `GIVEN methodParameters not ignored, THEN declaringClass is included`() {
+    fun `GIVEN methodParameters not ignored, THEN methodParameters are included`() {
         val preview = glancePreviewBuilder(
             methodParameters = "name_String",
         )

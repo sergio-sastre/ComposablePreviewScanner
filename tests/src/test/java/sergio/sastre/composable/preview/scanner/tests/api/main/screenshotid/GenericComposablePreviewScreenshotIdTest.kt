@@ -103,6 +103,21 @@ class GenericComposablePreviewScreenshotIdTest(
     }
 
     @Test
+    fun `GIVEN className ignored, THEN declaringClass is not included`() {
+        val previewScreenshotId =
+            screenshotIdBuilder
+                .passPreviewWithInfo(
+                    declaringClass = "MyClass",
+                )
+                .ignoreClassName()
+                .build()
+
+        assert(
+            !previewScreenshotId.contains("MyClass")
+        )
+    }
+
+    @Test
     fun `GIVEN Preview with name is fully of unsafe chars WHEN escaped THEN each character matches URl encoding pattern`() {
         val previewScreenshotId =
             screenshotIdBuilder
