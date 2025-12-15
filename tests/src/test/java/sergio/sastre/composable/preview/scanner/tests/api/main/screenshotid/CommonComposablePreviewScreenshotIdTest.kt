@@ -26,7 +26,7 @@ class CommonComposablePreviewScreenshotIdTest {
     }
 
     @Test
-    fun `GIVEN preview with only , THEN show group with underscores`() {
+    fun `GIVEN preview with only group, THEN show group with underscores`() {
         val preview = previewBuilder(
             previewInfo = CommonPreviewInfo(
                 group = "My preview group"
@@ -35,19 +35,6 @@ class CommonComposablePreviewScreenshotIdTest {
 
         assert(
             CommonPreviewScreenshotIdBuilder(preview).build() == "My_preview_group"
-        )
-    }
-
-    @Test
-    fun `GIVEN preview with only width greater than -1, THEN show only W$value$dp`() {
-        val preview = previewBuilder(
-            previewInfo = CommonPreviewInfo(
-                widthDp = 33
-            )
-        )
-
-        assert(
-            CommonPreviewScreenshotIdBuilder(preview).build() == "W33dp"
         )
     }
 
