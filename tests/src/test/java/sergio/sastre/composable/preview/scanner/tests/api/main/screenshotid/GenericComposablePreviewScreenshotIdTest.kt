@@ -118,6 +118,61 @@ class GenericComposablePreviewScreenshotIdTest(
     }
 
     @Test
+    fun `GIVEN methodParameters not ignored, THEN methodParameters is included`() {
+        val previewScreenshotId =
+            screenshotIdBuilder
+                .passPreviewWithInfo(
+                    methodParameters = "name_String",
+                )
+                .doNotIgnoreMethodParametersType()
+                .build()
+
+        assert(
+            previewScreenshotId.contains("name_String")
+        )
+    }
+
+    @Test
+    fun `GIVEN 2 previews differ only in the methodParametersType WHEN these are not ignored, THEN the screenshotIds differ`() {
+        val screenshotIdPreview1 =
+            screenshotIdBuilder
+                .passPreviewWithInfo(
+                    methodParameters = "name_String",
+                )
+                .doNotIgnoreMethodParametersType()
+                .build()
+
+        val screenshotIdPreview2 =
+            screenshotIdBuilder
+                .passPreviewWithInfo(
+                    methodParameters = "name_Int",
+                )
+                .doNotIgnoreMethodParametersType()
+                .build()
+
+        assert(screenshotIdPreview1 != screenshotIdPreview2)
+    }
+
+    @Test
+    fun `GIVEN 2 previews differ only in the methodParametersType WHEN these are ignored, THEN the screenshotIds are the same`() {
+        val screenshotIdPreview1 =
+            screenshotIdBuilder
+                .passPreviewWithInfo(
+                    methodParameters = "name_String",
+                )
+                .build()
+
+        val screenshotIdPreview2 =
+            screenshotIdBuilder
+                .passPreviewWithInfo(
+                    methodParameters = "name_Int",
+                )
+                .build()
+
+        assert(screenshotIdPreview1 == screenshotIdPreview2)
+    }
+
+    @Test
     fun `GIVEN Preview with name is fully of unsafe chars WHEN escaped THEN each character matches URl encoding pattern`() {
         val previewScreenshotId =
             screenshotIdBuilder

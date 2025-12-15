@@ -36,56 +36,6 @@ class GlanceComposablePreviewScreenshotIdTest {
         )
     }
 
-    @Test
-    fun `GIVEN methodParameters not ignored, THEN methodParameters are included`() {
-        val preview = glancePreviewBuilder(
-            methodParameters = "name_String",
-        )
-
-        assert(
-            GlancePreviewScreenshotIdBuilder(preview)
-                .doNotIgnoreMethodParametersType()
-                .build()
-                .contains("name_String")
-        )
-    }
-
-    @Test
-    fun `GIVEN 2 previews differ only in the methodParametersType WHEN these are not ignored, THEN the screenshotIds differ`() {
-        val preview1 = glancePreviewBuilder(
-            methodParameters = "name_String",
-        )
-        val preview2 = glancePreviewBuilder(
-            methodParameters = "name_Int",
-        )
-
-        val screenshotIdPreview1 = GlancePreviewScreenshotIdBuilder(preview1)
-            .doNotIgnoreMethodParametersType()
-            .build()
-
-        val screenshotIdPreview2 = GlancePreviewScreenshotIdBuilder(preview2)
-            .doNotIgnoreMethodParametersType()
-            .build()
-
-        assert(screenshotIdPreview1 != screenshotIdPreview2)
-    }
-
-    @Test
-    fun `GIVEN 2 previews differ only in the methodParametersType WHEN these are ignored, THEN the screenshotIds are the same`() {
-        val preview1 = glancePreviewBuilder(
-            methodParameters = "name_String",
-        )
-        val preview2 = glancePreviewBuilder(
-            methodParameters = "name_Int",
-        )
-
-        val screenshotIdPreview1 = GlancePreviewScreenshotIdBuilder(preview1).build()
-
-        val screenshotIdPreview2 = GlancePreviewScreenshotIdBuilder(preview2).build()
-
-        assert(screenshotIdPreview1 == screenshotIdPreview2)
-    }
-
     enum class PreviewKeyAndInfo(
         val key: String,
         val previewInfo: GlancePreviewInfo
