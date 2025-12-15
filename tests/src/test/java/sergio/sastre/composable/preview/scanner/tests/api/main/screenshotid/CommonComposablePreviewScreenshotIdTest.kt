@@ -2,6 +2,7 @@ package sergio.sastre.composable.preview.scanner.tests.api.main.screenshotid
 
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
+import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import sergio.sastre.composable.preview.scanner.common.CommonPreviewInfo
@@ -19,8 +20,9 @@ class CommonComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            CommonPreviewScreenshotIdBuilder(preview).build() == "My_preview_name"
+        assertEquals(
+            "My_preview_name",
+            CommonPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -32,8 +34,9 @@ class CommonComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            CommonPreviewScreenshotIdBuilder(preview).build() == "My_preview_group"
+        assertEquals(
+            "My_preview_group",
+            CommonPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -45,8 +48,9 @@ class CommonComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            CommonPreviewScreenshotIdBuilder(preview).build() == "af_ZA"
+        assertEquals(
+            "af_ZA",
+            CommonPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -58,8 +62,9 @@ class CommonComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            CommonPreviewScreenshotIdBuilder(preview).build() == "WITH_BACKGROUND"
+        assertEquals(
+            "WITH_BACKGROUND",
+            CommonPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -71,8 +76,9 @@ class CommonComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            CommonPreviewScreenshotIdBuilder(preview).build() == ""
+        assertEquals(
+            "",
+            CommonPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -84,8 +90,9 @@ class CommonComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            CommonPreviewScreenshotIdBuilder(preview).build() == "BG_COLOR_16"
+        assertEquals(
+            "BG_COLOR_16",
+            CommonPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -97,7 +104,8 @@ class CommonComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
+        assertEquals(
+            "WITHOUT_BACKGROUND",
             CommonPreviewScreenshotIdBuilder(preview)
                 .overrideDefaultIdFor(
                     previewInfoName = "showBackground",
@@ -108,7 +116,7 @@ class CommonComposablePreviewScreenshotIdTest {
                         }
                     }
                 )
-                .build() == "WITHOUT_BACKGROUND" // instead of "" as the default
+                .build()
         )
     }
 
@@ -132,10 +140,11 @@ class CommonComposablePreviewScreenshotIdTest {
             previewInfo = previewKeyAndInfo.previewInfo
         )
 
-        assert(
+        assertEquals(
+            "",
             CommonPreviewScreenshotIdBuilder(preview)
                 .ignoreIdFor(previewKeyAndInfo.key)
-                .build() == ""
+                .build()
         )
     }
 }

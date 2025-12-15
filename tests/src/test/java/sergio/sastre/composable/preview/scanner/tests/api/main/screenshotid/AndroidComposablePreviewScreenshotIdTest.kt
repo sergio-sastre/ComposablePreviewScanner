@@ -33,8 +33,9 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "My_preview_name"
+        assertEquals(
+            "My_preview_name",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -46,8 +47,9 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "My_preview_group"
+        assertEquals(
+            "My_preview_group",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -59,8 +61,9 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "API_LEVEL_33"
+        assertEquals(
+            "API_LEVEL_33",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -72,8 +75,9 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "af_ZA"
+        assertEquals(
+            "af_ZA",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -85,8 +89,9 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "FONT_1_55f"
+        assertEquals(
+            "FONT_1_55f",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -98,8 +103,9 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "WITH_BACKGROUND"
+        assertEquals(
+            "WITH_BACKGROUND",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -111,8 +117,9 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == ""
+        assertEquals(
+            "",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -124,8 +131,9 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "BG_COLOR_16"
+        assertEquals(
+            "BG_COLOR_16",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -137,8 +145,9 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "NIGHT"
+        assertEquals(
+            "NIGHT",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -150,8 +159,9 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "NIGHT"
+        assertEquals(
+            "NIGHT",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -163,8 +173,9 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "DAY"
+        assertEquals(
+            "DAY",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -176,8 +187,9 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == ""
+        assertEquals(
+            "",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -189,7 +201,8 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
+        assertEquals(
+            "WITHOUT_BACKGROUND",
             AndroidPreviewScreenshotIdBuilder(preview)
                 .overrideDefaultIdFor(
                     previewInfoName = "showBackground",
@@ -200,7 +213,7 @@ class AndroidComposablePreviewScreenshotIdTest {
                         }
                     }
                 )
-                .build() == "WITHOUT_BACKGROUND" // instead of "" as the default
+                .build()
         )
     }
 
@@ -212,7 +225,8 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
         assertEquals(
-            AndroidPreviewScreenshotIdBuilder(preview).build(), ""
+            "",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -352,7 +366,8 @@ class AndroidComposablePreviewScreenshotIdTest {
         )
 
         assertEquals(
-            AndroidPreviewScreenshotIdBuilder(preview).build(), wallpaperColorDominated.screenshotId
+            wallpaperColorDominated.screenshotId,
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -365,7 +380,8 @@ class AndroidComposablePreviewScreenshotIdTest {
         )
 
         assertEquals(
-            AndroidPreviewScreenshotIdBuilder(preview).build(), ""
+            "",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -396,10 +412,11 @@ class AndroidComposablePreviewScreenshotIdTest {
             previewInfo = previewKeyAndInfo.previewInfo
         )
 
-        assert(
+        assertEquals(
+            "",
             AndroidPreviewScreenshotIdBuilder(preview)
                 .ignoreIdFor(previewKeyAndInfo.key)
-                .build() == ""
+                .build()
         )
     }
 
