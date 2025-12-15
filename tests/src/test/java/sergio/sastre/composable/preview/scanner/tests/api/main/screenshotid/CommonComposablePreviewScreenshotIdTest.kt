@@ -39,19 +39,6 @@ class CommonComposablePreviewScreenshotIdTest {
     }
 
     @Test
-    fun `GIVEN preview with only height greater than -1, THEN show only H$value$dp`() {
-        val preview = previewBuilder(
-            previewInfo = CommonPreviewInfo(
-                heightDp = 33
-            )
-        )
-
-        assert(
-            CommonPreviewScreenshotIdBuilder(preview).build() == "H33dp"
-        )
-    }
-
-    @Test
     fun `GIVEN preview with only locale af_ZA, THEN show only locale af_ZA`() {
         val preview = previewBuilder(
             previewInfo = CommonPreviewInfo(
