@@ -177,20 +177,6 @@ class CommonComposablePreviewScreenshotIdTest {
         assert(screenshotIdPreview1 == screenshotIdPreview2)
     }
 
-    @Test
-    fun `GIVEN methodName ignored, THEN methodName is not included`() {
-        val preview = commonPreviewBuilder(
-            methodName = "PreviewName",
-        )
-
-        assert(
-            !CommonPreviewScreenshotIdBuilder(preview)
-                .ignoreMethodName()
-                .build()
-                .contains("PreviewName")
-        )
-    }
-
     enum class PreviewKeyAndInfo(
         val key: String,
         val previewInfo: CommonPreviewInfo

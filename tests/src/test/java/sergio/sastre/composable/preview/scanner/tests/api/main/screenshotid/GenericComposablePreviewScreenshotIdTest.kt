@@ -88,6 +88,21 @@ class GenericComposablePreviewScreenshotIdTest(
     }
 
     @Test
+    fun `GIVEN methodName ignored, THEN methodName is not included`() {
+        val previewScreenshotId =
+            screenshotIdBuilder
+                .passPreviewWithInfo(
+                    methodName = "PreviewName",
+                )
+                .ignoreMethodName()
+                .build()
+
+        assert(
+            !previewScreenshotId.contains("PreviewName")
+        )
+    }
+
+    @Test
     fun `GIVEN Preview with name is fully of unsafe chars WHEN escaped THEN each character matches URl encoding pattern`() {
         val previewScreenshotId =
             screenshotIdBuilder
