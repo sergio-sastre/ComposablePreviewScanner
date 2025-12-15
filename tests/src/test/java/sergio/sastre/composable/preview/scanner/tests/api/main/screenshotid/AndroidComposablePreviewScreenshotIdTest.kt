@@ -20,7 +20,6 @@ import sergio.sastre.composable.preview.scanner.android.device.types.Television
 import sergio.sastre.composable.preview.scanner.android.device.types.Wear
 import sergio.sastre.composable.preview.scanner.android.device.types.XR
 import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
-import sergio.sastre.composable.preview.scanner.utils.androidPreviewBuilder
 import sergio.sastre.composable.preview.scanner.utils.previewBuilder
 
 @RunWith(TestParameterInjector::class)

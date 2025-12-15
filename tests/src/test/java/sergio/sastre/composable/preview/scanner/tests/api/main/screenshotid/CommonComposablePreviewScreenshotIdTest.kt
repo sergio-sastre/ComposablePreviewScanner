@@ -6,7 +6,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import sergio.sastre.composable.preview.scanner.common.CommonPreviewInfo
 import sergio.sastre.composable.preview.scanner.common.screenshotid.CommonPreviewScreenshotIdBuilder
-import sergio.sastre.composable.preview.scanner.utils.commonPreviewBuilder
 import sergio.sastre.composable.preview.scanner.utils.previewBuilder
 
 @RunWith(TestParameterInjector::class)

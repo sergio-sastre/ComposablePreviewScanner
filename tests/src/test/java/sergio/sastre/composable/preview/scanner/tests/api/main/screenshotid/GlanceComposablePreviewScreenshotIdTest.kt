@@ -2,12 +2,10 @@ package sergio.sastre.composable.preview.scanner.tests.api.main.screenshotid
 
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
-import io.github.classgraph.AnnotationInfoList
 import org.junit.Test
 import org.junit.runner.RunWith
 import sergio.sastre.composable.preview.scanner.glance.GlancePreviewInfo
 import sergio.sastre.composable.preview.scanner.glance.screenshotid.GlancePreviewScreenshotIdBuilder
-import sergio.sastre.composable.preview.scanner.utils.glancePreviewBuilder
 import sergio.sastre.composable.preview.scanner.utils.previewBuilder
 
 @RunWith(TestParameterInjector::class)
