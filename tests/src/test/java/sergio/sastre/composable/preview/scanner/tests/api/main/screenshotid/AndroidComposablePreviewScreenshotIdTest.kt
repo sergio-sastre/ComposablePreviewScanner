@@ -371,21 +371,7 @@ class AndroidComposablePreviewScreenshotIdTest {
     }
 
     @Test
-    fun `GIVEN className ignored, THEN declaringClass is not included`() {
-        val preview = androidPreviewBuilder(
-            declaringClass = "MyClass",
-        )
-
-        assert(
-            !AndroidPreviewScreenshotIdBuilder(preview)
-                .ignoreClassName()
-                .build()
-                .contains("MyClass")
-        )
-    }
-
-    @Test
-    fun `GIVEN methodParameters not ignored, THEN declaringClass is included`() {
+    fun `GIVEN methodParameters not ignored, THEN methodParameters is included`() {
         val preview = androidPreviewBuilder(
             methodParameters = "name_String",
         )

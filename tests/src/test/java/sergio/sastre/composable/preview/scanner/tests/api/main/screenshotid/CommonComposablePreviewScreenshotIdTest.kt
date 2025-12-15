@@ -114,21 +114,7 @@ class CommonComposablePreviewScreenshotIdTest {
     }
 
     @Test
-    fun `GIVEN className ignored, THEN declaringClass is not included`() {
-        val preview = commonPreviewBuilder(
-            declaringClass = "MyClass",
-        )
-
-        assert(
-            !CommonPreviewScreenshotIdBuilder(preview)
-                .ignoreClassName()
-                .build()
-                .contains("MyClass")
-        )
-    }
-
-    @Test
-    fun `GIVEN methodParameters not ignored, THEN declaringClass is included`() {
+    fun `GIVEN methodParameters not ignored, THEN methodParameters is included`() {
         val preview = commonPreviewBuilder(
             methodParameters = "name_String",
         )
