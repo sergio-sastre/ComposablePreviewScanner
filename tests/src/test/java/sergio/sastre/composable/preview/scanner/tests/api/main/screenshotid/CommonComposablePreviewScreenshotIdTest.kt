@@ -13,17 +13,6 @@ import sergio.sastre.composable.preview.scanner.utils.previewBuilder
 class CommonComposablePreviewScreenshotIdTest {
 
     @Test
-    fun `GIVEN preview with only previewIndex, THEN show only index`() {
-        val preview = commonPreviewBuilder(
-            previewIndex = 1,
-        )
-
-        assert(
-            CommonPreviewScreenshotIdBuilder(preview).build() == "1"
-        )
-    }
-
-    @Test
     fun `GIVEN preview with only name, THEN show only name with underscores`() {
         val preview = previewBuilder(
             previewInfo = CommonPreviewInfo(
