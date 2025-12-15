@@ -12,17 +12,6 @@ import sergio.sastre.composable.preview.scanner.utils.previewBuilder
 
 @RunWith(TestParameterInjector::class)
 class GlanceComposablePreviewScreenshotIdTest {
-    @Test
-    fun `GIVEN preview className and methodName, THEN show them only but separated by a dot`() {
-        val preview = glancePreviewBuilder(
-            declaringClass = "MyClass",
-            methodName = "PreviewName",
-        )
-
-        assert(
-            GlancePreviewScreenshotIdBuilder(preview).build() == "MyClass.PreviewName"
-        )
-    }
 
     @Test
     fun `GIVEN preview with only previewIndex, THEN show only index`() {

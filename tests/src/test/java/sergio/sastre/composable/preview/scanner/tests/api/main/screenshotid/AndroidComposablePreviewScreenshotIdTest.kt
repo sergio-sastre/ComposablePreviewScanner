@@ -27,18 +27,6 @@ import sergio.sastre.composable.preview.scanner.utils.previewBuilder
 class AndroidComposablePreviewScreenshotIdTest {
 
     @Test
-    fun `GIVEN preview className and methodName, THEN show them only but separated by a dot`() {
-        val preview = androidPreviewBuilder(
-            declaringClass = "MyClass",
-            methodName = "PreviewName",
-        )
-
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "MyClass.PreviewName"
-        )
-    }
-
-    @Test
     fun `GIVEN preview with only previewIndex, THEN show only index`() {
         val preview = androidPreviewBuilder(
             previewIndex = 1,

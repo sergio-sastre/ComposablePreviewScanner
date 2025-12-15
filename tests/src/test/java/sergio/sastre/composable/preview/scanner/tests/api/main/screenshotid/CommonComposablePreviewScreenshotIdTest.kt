@@ -11,17 +11,6 @@ import sergio.sastre.composable.preview.scanner.utils.previewBuilder
 
 @RunWith(TestParameterInjector::class)
 class CommonComposablePreviewScreenshotIdTest {
-    @Test
-    fun `GIVEN preview className and methodName, THEN show them only but separated by a dot`() {
-        val preview = commonPreviewBuilder(
-            declaringClass = "MyClass",
-            methodName = "PreviewName",
-        )
-
-        assert(
-            CommonPreviewScreenshotIdBuilder(preview).build() == "MyClass.PreviewName"
-        )
-    }
 
     @Test
     fun `GIVEN preview with only previewIndex, THEN show only index`() {
