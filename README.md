@@ -349,30 +349,6 @@ private class PreviewHtmlReportWriter: SnapshotHandler {
 }
 ```
 
-To simplify the file naming conventions further, you could also do something like as follows:
-```kotlin
-   override fun newFrameHandler(
-      snapshot: Snapshot,
-      frameCount: Int,
-      fps: Int
-   ): SnapshotHandler.FrameHandler {
-      val methodName = snapshot.testName.methodName
-            .substringAfterLast("_")
-            .substringBeforeLast("]")
-      val newSnapshot = Snapshot(
-         name = snapshot.name,
-         testName = TestName(packageName = "", className = "", methodName = methodName),
-         timestamp = snapshot.timestamp,
-         tags = snapshot.tags,
-         file = snapshot.file,
-      )
-      return snapshotHandler.newFrameHandler(
-         snapshot = newSnapshot,
-         frameCount = frameCount,
-         fps = fps
-      )
-   }
-```
 In the next step, we’ll show how to pass these custom SnapshotHandlers to the Paparazzi TestRule to take full control of screenshot filenames.
 
 4. Map the PreviewInfo and PaparazziConfig values.
