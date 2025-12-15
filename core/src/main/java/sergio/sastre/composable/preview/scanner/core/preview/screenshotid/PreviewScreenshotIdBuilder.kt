@@ -12,6 +12,8 @@ open class PreviewScreenshotIdBuilder<T>(
     private var ignoreClassName: Boolean = false
     private var ignoreMethodName: Boolean = false
     private var ignoreMethodParametersType: Boolean = true
+
+    private var encodeUnsafeCharactersIsEnabled: Boolean = false
     private val defaultPreviewInfoId = defaultPreviewInfoIdProvider()
 
     fun overrideDefaultIdFor(
@@ -46,8 +48,31 @@ open class PreviewScreenshotIdBuilder<T>(
         ignoreMethodParametersType = false
     }
 
-    fun build(): String =
-        buildList {
+    /**
+     * Encodes unsafe characters that could be problematic when using
+     * certain Screenshot testing libraries like Paparazzi or Android-Testify
+     *
+     * Any of the following are considered an unsafe character:
+     * <>:\"/\\|?*
+     */
+    fun encodeUnsafeCharacters() = apply {
+        encodeUnsafeCharactersIsEnabled = true
+    }
+
+    private val unsafeFileNameChars = setOf('<', '>', ':', '"', '/', '\\', '|', '?', '*')
+
+    private fun encodeUnsafeCharactersIn(fileName: String): String =
+        buildString {
+            for (ch in fileName) {
+                when (ch in unsafeFileNameChars) {
+                    true -> append("%${ch.code.toString(16).uppercase()}")
+                    false -> append(ch)
+                }
+            }
+        }
+
+    fun build(): String {
+        val fileName = buildList {
             val previewInfoId =
                 defaultPreviewInfoId.values.filterNot { it.isNullOrBlank() }.joinToString("_")
             val declaringClass = when (ignoreClassName) {
@@ -73,4 +98,10 @@ open class PreviewScreenshotIdBuilder<T>(
                 add(composablePreview.previewIndex)
             }
         }.joinToString("")
+
+        return when (encodeUnsafeCharactersIsEnabled) {
+            true -> encodeUnsafeCharactersIn(fileName)
+            false -> fileName
+        }
+    }
 }

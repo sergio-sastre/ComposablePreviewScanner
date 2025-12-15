@@ -18,7 +18,10 @@ JVM-based (i.e. Paparazzi, Roborazzi) as well as Instrumentation-based (i.e. Sho
 
 ![composable_preview_scanner_overview.png](composable_preview_scanner_overview.png)
 > [!NOTE]
-> Support for Wear OS Tile `@Previews` is under evaluation
+> 1. Support for Wear OS Tile `@Previews` is under evaluation</br>
+> 2. `common` and `desktop` previews are deprecated in favour of the `android` preview (`androidx.compose.ui.tooling.preview.Preview`), which can be used
+> in `common` and JVM-based source sets like `desktop` since Compose Multiplatform 1.10.0-beta-02</br>
+
 
 #### Provide anonymous feedback
 Already using ComposablePreviewScanner?</br>
@@ -58,21 +61,25 @@ ComposablePreviewScanner also works with:
 > Beware the prefixes:</br>
 > *Maven Central* -> **io.github**</br>
 > *JitPack* -> **com.github**</br>
+
 ## Maven Central (since 0.3.2)
 ```kotlin
-// all of them are supported in jvm-targets only
 dependencies {
-   // android previews
-   testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:android:<version>")
+    // android previews (androidx.compose.ui.tooling.preview.Preview)
+    // supported in jvm targets e.g. android & desktop
+    testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:android:<version>")
 
-   // glance previews (since 0.7.0+)
-   testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:glance:<version>")
+    // glance previews (androidx.glance.preview.Preview)
+    // supported since 0.7.0+ in android target
+    testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:glance:<version>")
+    
+    // common previews (org.jetbrains.compose.ui.tooling.preview.Preview)
+    // supported in jvm targets e.g. android & desktop
+    testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:common:<version>")
 
-   // common previews (compose multiplatform)
-   testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:common:<version>")
-
-   // define annotation to scan. Use this for desktop previews (compose multiplatform)
-   testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")
+    // desktop previews (androidx.compose.desktop.ui.tooling.preview.Preview) via custom annotation
+    // supported in jvm targets e.g. android & desktop
+    testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")
 }
 ```
 
@@ -88,17 +95,21 @@ allprojects {
 
 ```kotlin
 dependencies {
-   // android previews
-   testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:android:<version>")
+    // android previews (androidx.compose.ui.tooling.preview.Preview)
+    // supported in jvm targets e.g. android & desktop
+    testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:android:<version>")
 
-   // glance previews (since 0.7.0+)
-   testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:glance:<version>")
+    // glance previews (androidx.glance.preview.Preview)
+    // supported since 0.7.0+ in android target
+    testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:glance:<version>")
 
-   // common previews (compose multiplatform)
-   testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:common:<version>")
+    // common previews (org.jetbrains.compose.ui.tooling.preview.Preview)
+    // supported in jvm targets e.g. android & desktop
+    testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:common:<version>")
 
-   // define annotation to scan. Use this for desktop previews (compose multiplatform)
-   testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")
+    // desktop previews (androidx.compose.desktop.ui.tooling.preview.Preview) via custom annotation
+    // supported in jvm targets e.g. android & desktop
+    testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")
 }
 ```
 
@@ -348,6 +359,7 @@ private class PreviewHtmlReportWriter: SnapshotHandler {
    }
 }
 ```
+
 In the next step, we’ll show how to pass these custom SnapshotHandlers to the Paparazzi TestRule to take full control of screenshot filenames.
 
 4. Map the PreviewInfo and PaparazziConfig values.
@@ -401,6 +413,7 @@ object DeviceConfigBuilder {
          screenRound = ScreenRound.valueOf(parsedDevice.shape.name),
          orientation = ScreenOrientation.valueOf(parsedDevice.orientation.name),
          locale = preview.locale.ifBlank { "en" },
+          fontScale = preview.fontScale,
          nightMode = when (preview.uiMode and UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES) {
             true -> NightMode.NIGHT
             false -> NightMode.NOTNIGHT
@@ -886,12 +899,20 @@ To write such screenshot tests you have to:
 
 ## Compose Multiplatform Previews Support
 Starting with Compose Multiplatform 1.10.0-beta02, Common and Desktop @Preview annotations are deprecated. Instead, Android `@Preview` can now be used across `common` and `desktop` platforms.
-In this setup, you can continue using `AndroidComposablePreviewScanner` in the `androidUnitTest` source set, while also scanning package trees in common, for example:
+ComposablePreviewScanner 0.8.0+ fully supports this modern setup. You can use the `AndroidComposablePreviewScanner` to scan for `@Preview` annotations across all relevant source sets, including commonMain.</br>
+For example, to scan previews located in both a platform-specific (androidMain or desktopMain) and a shared (commonMain) source set, you would configure the scanner like this:
 
 ```kotlin
 AndroidComposablePreviewScanner()
-    .scanPackageTrees("package.tree.android", "package.tree.common")
+    .scanPackageTrees(
+        "package.tree.android.or.desktop",
+        "package.tree.common"
+    )
 ```
+
+You can find executable examples with Roborazzi here:
+- [Android @Previews in common](https://github.com/sergio-sastre/roborazzi/blob/droidcon/preview_tests/sample-generate-preview-common/src/androidUnitTest/kotlin/com/github/takahirom/preview/tests/AndroidPreviewTest.kt)
+- [Android @Previews in desktop](https://github.com/sergio-sastre/roborazzi/blob/droidcon/preview_tests/sample-generate-preview-desktop/src/desktopTest/kotlin/AndroidPreviewTest.kt)
 
 If you are still using the deprecated Common or Desktop `@Preview` annotations, see the sections below for guidance.
 
@@ -1058,7 +1079,18 @@ But if you're still experiencing such issues, consider:
 
 Some libraries restrict the characters allowed in filenames and may alter the provided screenshot name (e.g., Paparazzi 1.3.5+ like reported in this issue [here](https://github.com/cashapp/paparazzi/issues/1963)).
 This is especially problematic when the `TestParameterInjector` test runner is used.</br>
-To avoid issues, `ComposablePreviewScanner`s ScreenshotIdBuilders should be used with the standard JUnit4 `Parameterized` test runner, and invalid characters should be encoded manually if needed, for example:
+To avoid issues, `ComposablePreviewScanner`s ScreenshotIdBuilders should be used with the standard JUnit4 `Parameterized` test runner, and invalid characters should be encoded if needed:</br>
+
+ComposablePreviewScanner 0.8.0+
+```kotlin
+AndroidPreviewScreenshotIdBuilder(preview)
+    ...
+    .encodeUnsafeCharacters()
+    .build()
+```
+
+ComposablePreviewScanner < 0.8.0:
+You have to encode them manually
 ```kotlin
 AndroidPreviewScreenshotIdBuilder(preview)
     ...

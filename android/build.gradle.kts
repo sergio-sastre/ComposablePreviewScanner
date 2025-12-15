@@ -1,52 +1,15 @@
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.jetbrains.kotlin.plugin.compose)
+    kotlin("jvm") version "2.0.0"
     id("maven-publish")
 }
 
-android {
-    namespace = "sergio.sastre.composable.preview.scanner.android"
-    compileSdk = 35
-
-    defaultConfig {
-        minSdk = 21
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-
-    buildFeatures {
-        // Enables Jetpack Compose for this module
-        compose = true
-    }
-
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-            withJavadocJar()
-        }
-    }
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 dependencies {
     api(project(":core"))
-    implementation(platform(libs.androidx.compose.bom))
-    compileOnly(libs.androidx.ui.tooling.preview)
     implementation(libs.kotlin.reflect)
     implementation (libs.classgraph)
 }
@@ -54,13 +17,13 @@ dependencies {
 //https://www.talentica.com/blogs/publish-your-android-library-on-jitpack-for-better-reachability/
 publishing {
     publications {
-        create<MavenPublication>("release") {
+        create<MavenPublication>("mavenJava") {
             afterEvaluate {
-                from(components["release"])
+                from(components["kotlin"])
             }
             groupId = "sergio.sastre.composable.preview.scanner"
             artifactId = "android"
-            version = "0.7.2"
+            version = "0.8.0"
         }
     }
 }

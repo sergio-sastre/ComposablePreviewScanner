@@ -105,6 +105,7 @@ class TestifyComposablePreviewScannerInstrumentationInvokeTest(
             .assertSame(
                 name = AndroidPreviewScreenshotIdBuilder(preview)
                     .doNotIgnoreMethodParametersType()
+                    .encodeUnsafeCharacters()
                     .build()
             )
     }

@@ -1,39 +1,16 @@
 package sergio.sastre.composable.preview.scanner.tests.api.main.screenshotid
 
-import androidx.compose.runtime.Composable
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
-import io.github.classgraph.AnnotationInfoList
+import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
-import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.common.CommonPreviewInfo
 import sergio.sastre.composable.preview.scanner.common.screenshotid.CommonPreviewScreenshotIdBuilder
+import sergio.sastre.composable.preview.scanner.utils.previewBuilder
 
 @RunWith(TestParameterInjector::class)
 class CommonComposablePreviewScreenshotIdTest {
-    @Test
-    fun `GIVEN preview className and methodName, THEN show them only but separated by a dot`() {
-        val preview = previewBuilder(
-            declaringClass = "MyClass",
-            methodName = "PreviewName",
-        )
-
-        assert(
-            CommonPreviewScreenshotIdBuilder(preview).build() == "MyClass.PreviewName"
-        )
-    }
-
-    @Test
-    fun `GIVEN preview with only previewIndex, THEN show only index`() {
-        val preview = previewBuilder(
-            previewIndex = 1,
-        )
-
-        assert(
-            CommonPreviewScreenshotIdBuilder(preview).build() == "1"
-        )
-    }
 
     @Test
     fun `GIVEN preview with only name, THEN show only name with underscores`() {
@@ -43,47 +20,23 @@ class CommonComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            CommonPreviewScreenshotIdBuilder(preview).build() == "My_preview_name"
+        assertEquals(
+            "My_preview_name",
+            CommonPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
     @Test
-    fun `GIVEN preview with only , THEN show group with underscores`() {
+    fun `GIVEN preview with only group, THEN show group with underscores`() {
         val preview = previewBuilder(
             previewInfo = CommonPreviewInfo(
                 group = "My preview group"
             )
         )
 
-        assert(
-            CommonPreviewScreenshotIdBuilder(preview).build() == "My_preview_group"
-        )
-    }
-
-    @Test
-    fun `GIVEN preview with only width greater than -1, THEN show only W$value$dp`() {
-        val preview = previewBuilder(
-            previewInfo = CommonPreviewInfo(
-                widthDp = 33
-            )
-        )
-
-        assert(
-            CommonPreviewScreenshotIdBuilder(preview).build() == "W33dp"
-        )
-    }
-
-    @Test
-    fun `GIVEN preview with only height greater than -1, THEN show only H$value$dp`() {
-        val preview = previewBuilder(
-            previewInfo = CommonPreviewInfo(
-                heightDp = 33
-            )
-        )
-
-        assert(
-            CommonPreviewScreenshotIdBuilder(preview).build() == "H33dp"
+        assertEquals(
+            "My_preview_group",
+            CommonPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -95,8 +48,9 @@ class CommonComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            CommonPreviewScreenshotIdBuilder(preview).build() == "af_ZA"
+        assertEquals(
+            "af_ZA",
+            CommonPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -108,8 +62,9 @@ class CommonComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            CommonPreviewScreenshotIdBuilder(preview).build() == "WITH_BACKGROUND"
+        assertEquals(
+            "WITH_BACKGROUND",
+            CommonPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -121,8 +76,9 @@ class CommonComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            CommonPreviewScreenshotIdBuilder(preview).build() == ""
+        assertEquals(
+            "",
+            CommonPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -134,8 +90,9 @@ class CommonComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            CommonPreviewScreenshotIdBuilder(preview).build() == "BG_COLOR_16"
+        assertEquals(
+            "BG_COLOR_16",
+            CommonPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -147,7 +104,8 @@ class CommonComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
+        assertEquals(
+            "WITHOUT_BACKGROUND",
             CommonPreviewScreenshotIdBuilder(preview)
                 .overrideDefaultIdFor(
                     previewInfoName = "showBackground",
@@ -158,85 +116,7 @@ class CommonComposablePreviewScreenshotIdTest {
                         }
                     }
                 )
-                .build() == "WITHOUT_BACKGROUND" // instead of "" as the default
-        )
-    }
-
-    @Test
-    fun `GIVEN className ignored, THEN declaringClass is not included`() {
-        val preview = previewBuilder(
-            declaringClass = "MyClass",
-        )
-
-        assert(
-            !CommonPreviewScreenshotIdBuilder(preview)
-                .ignoreClassName()
                 .build()
-                .contains("MyClass")
-        )
-    }
-
-    @Test
-    fun `GIVEN methodParameters not ignored, THEN declaringClass is included`() {
-        val preview = previewBuilder(
-            methodParameters = "name_String",
-        )
-
-        assert(
-            CommonPreviewScreenshotIdBuilder(preview)
-                .doNotIgnoreMethodParametersType()
-                .build()
-                .contains("name_String")
-        )
-    }
-
-    @Test
-    fun `GIVEN 2 previews differ only in the methodParametersType WHEN these are not ignored, THEN the screenshotIds differ`() {
-        val preview1 = previewBuilder(
-            methodParameters = "name_String",
-        )
-        val preview2 = previewBuilder(
-            methodParameters = "name_Int",
-        )
-
-        val screenshotIdPreview1 = CommonPreviewScreenshotIdBuilder(preview1)
-            .doNotIgnoreMethodParametersType()
-            .build()
-
-        val screenshotIdPreview2 = CommonPreviewScreenshotIdBuilder(preview2)
-            .doNotIgnoreMethodParametersType()
-            .build()
-
-        assert(screenshotIdPreview1 != screenshotIdPreview2)
-    }
-
-    @Test
-    fun `GIVEN 2 previews differ only in the methodParametersType WHEN these are ignored, THEN the screenshotIds are the same`() {
-        val preview1 = previewBuilder(
-            methodParameters = "name_String",
-        )
-        val preview2 = previewBuilder(
-            methodParameters = "name_Int",
-        )
-
-        val screenshotIdPreview1 = CommonPreviewScreenshotIdBuilder(preview1).build()
-
-        val screenshotIdPreview2 = CommonPreviewScreenshotIdBuilder(preview2).build()
-
-        assert(screenshotIdPreview1 == screenshotIdPreview2)
-    }
-
-    @Test
-    fun `GIVEN methodName ignored, THEN methodName is not included`() {
-        val preview = previewBuilder(
-            methodName = "PreviewName",
-        )
-
-        assert(
-            !CommonPreviewScreenshotIdBuilder(preview)
-                .ignoreMethodName()
-                .build()
-                .contains("PreviewName")
         )
     }
 
@@ -260,47 +140,11 @@ class CommonComposablePreviewScreenshotIdTest {
             previewInfo = previewKeyAndInfo.previewInfo
         )
 
-        assert(
+        assertEquals(
+            "",
             CommonPreviewScreenshotIdBuilder(preview)
                 .ignoreIdFor(previewKeyAndInfo.key)
-                .build() == ""
+                .build()
         )
-    }
-
-    @Test
-    fun `GIVEN preview with only widthDp and heightDp but both ignored, THEN show nothing`() {
-        val preview = previewBuilder(
-            previewInfo = CommonPreviewInfo(
-                widthDp = 33,
-                heightDp = 32,
-            )
-        )
-
-        assert(
-            CommonPreviewScreenshotIdBuilder(preview)
-                .ignoreIdFor("widthDp")
-                .ignoreIdFor("heightDp")
-                .build() == "" // instead of "W33dp_H32dp" as the default
-        )
-    }
-
-    private fun previewBuilder(
-        previewInfo: CommonPreviewInfo = CommonPreviewInfo(),
-        previewIndex: Int? = null,
-        otherAnnotationsInfo: AnnotationInfoList? = null,
-        declaringClass: String = "",
-        methodName: String = "",
-        methodParameters: String = "",
-    ): ComposablePreview<CommonPreviewInfo> = object : ComposablePreview<CommonPreviewInfo> {
-        override val previewInfo: CommonPreviewInfo = previewInfo
-        override val previewIndex: Int? = previewIndex
-        override val otherAnnotationsInfo: AnnotationInfoList? = otherAnnotationsInfo
-        override val declaringClass: String = declaringClass
-        override val methodName: String = methodName
-        override val methodParametersType: String = methodParameters
-
-        @Composable
-        override fun invoke() {
-        }
     }
 }

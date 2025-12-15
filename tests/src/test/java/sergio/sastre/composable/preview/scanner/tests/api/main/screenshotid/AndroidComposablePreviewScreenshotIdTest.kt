@@ -1,13 +1,11 @@
 package sergio.sastre.composable.preview.scanner.tests.api.main.screenshotid
 
 import android.content.res.Configuration
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Wallpapers
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.google.testing.junit.testparameterinjector.TestParameterValuesProvider
-import io.github.classgraph.AnnotationInfoList
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,33 +20,10 @@ import sergio.sastre.composable.preview.scanner.android.device.types.Television
 import sergio.sastre.composable.preview.scanner.android.device.types.Wear
 import sergio.sastre.composable.preview.scanner.android.device.types.XR
 import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
-import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
+import sergio.sastre.composable.preview.scanner.utils.previewBuilder
 
 @RunWith(TestParameterInjector::class)
 class AndroidComposablePreviewScreenshotIdTest {
-
-    @Test
-    fun `GIVEN preview className and methodName, THEN show them only but separated by a dot`() {
-        val preview = previewBuilder(
-            declaringClass = "MyClass",
-            methodName = "PreviewName",
-        )
-
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "MyClass.PreviewName"
-        )
-    }
-
-    @Test
-    fun `GIVEN preview with only previewIndex, THEN show only index`() {
-        val preview = previewBuilder(
-            previewIndex = 1,
-        )
-
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "1"
-        )
-    }
 
     @Test
     fun `GIVEN preview with only name, THEN show only name with underscores`() {
@@ -58,8 +33,9 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "My_preview_name"
+        assertEquals(
+            "My_preview_name",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -71,8 +47,9 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "My_preview_group"
+        assertEquals(
+            "My_preview_group",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -84,34 +61,9 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "API_LEVEL_33"
-        )
-    }
-
-    @Test
-    fun `GIVEN preview with only width greater than -1, THEN show only W$value$dp`() {
-        val preview = previewBuilder(
-            previewInfo = AndroidPreviewInfo(
-                widthDp = 33
-            )
-        )
-
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "W33dp"
-        )
-    }
-
-    @Test
-    fun `GIVEN preview with only height greater than -1, THEN show only H$value$dp`() {
-        val preview = previewBuilder(
-            previewInfo = AndroidPreviewInfo(
-                heightDp = 33
-            )
-        )
-
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "H33dp"
+        assertEquals(
+            "API_LEVEL_33",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -123,21 +75,23 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "af_ZA"
+        assertEquals(
+            "af_ZA",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
     @Test
-    fun `GIVEN preview with only fontScale 1,555f , THEN show only fontScale 1_555F`() {
+    fun `GIVEN preview with only fontScale 1,55f , THEN show only fontScale 1_55F`() {
         val preview = previewBuilder(
             previewInfo = AndroidPreviewInfo(
                 fontScale = 1.55F
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "FONT_1_55f"
+        assertEquals(
+            "FONT_1_55f",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -149,8 +103,9 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "WITH_BACKGROUND"
+        assertEquals(
+            "WITH_BACKGROUND",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -162,8 +117,9 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == ""
+        assertEquals(
+            "",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -175,8 +131,9 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "BG_COLOR_16"
+        assertEquals(
+            "BG_COLOR_16",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -188,8 +145,9 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "NIGHT"
+        assertEquals(
+            "NIGHT",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -201,8 +159,9 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "NIGHT"
+        assertEquals(
+            "NIGHT",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -214,8 +173,9 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == "DAY"
+        assertEquals(
+            "DAY",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -227,8 +187,9 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview).build() == ""
+        assertEquals(
+            "",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -240,7 +201,8 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
 
-        assert(
+        assertEquals(
+            "WITHOUT_BACKGROUND",
             AndroidPreviewScreenshotIdBuilder(preview)
                 .overrideDefaultIdFor(
                     previewInfoName = "showBackground",
@@ -251,7 +213,7 @@ class AndroidComposablePreviewScreenshotIdTest {
                         }
                     }
                 )
-                .build() == "WITHOUT_BACKGROUND" // instead of "" as the default
+                .build()
         )
     }
 
@@ -263,7 +225,8 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
         assertEquals(
-            AndroidPreviewScreenshotIdBuilder(preview).build(), ""
+            "",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -345,6 +308,14 @@ class AndroidComposablePreviewScreenshotIdTest {
             "spec:parent=Nexus 7, orientation=landscape",
             "PARENT_NEXUS_7_ORIENTATION_LANDSCAPE"
         ),
+        CUSTOM_DIMENSIONS_DP(
+            "spec:width=114.3dp,height=114.3dp,chinSize=9.7dp",
+            "WIDTH_114_3fDP_HEIGHT_114_3fDP_CHINSIZE_9_7fDP"
+        ),
+        CUSTOM_DIMENSIONS_PX(
+            "spec:width=114.3px,height=114.3px,chinSize=9.7px",
+            "WIDTH_114_3fPX_HEIGHT_114_3fPX_CHINSIZE_9_7fPX"
+        ),
         CUSTOM_PARENT_REVERSED(
             "spec: orientation=landscape, cutout= none,parent=Nexus 7",
             "ORIENTATION_LANDSCAPE_CUTOUT_NONE_PARENT_NEXUS_7"
@@ -358,6 +329,7 @@ class AndroidComposablePreviewScreenshotIdTest {
             "WIDTH_411DP_HEIGHT_891DP"
         )
     }
+
     @Test
     fun `GIVEN preview with custom device, THEN only show its properties as expectedId separated by underscores`(
         @TestParameter device: CustomDeviceTestParam,
@@ -368,7 +340,8 @@ class AndroidComposablePreviewScreenshotIdTest {
             )
         )
         assertEquals(
-            AndroidPreviewScreenshotIdBuilder(preview).build(), device.expectedId
+            device.expectedId,
+            AndroidPreviewScreenshotIdBuilder(preview).build(),
         )
     }
 
@@ -393,7 +366,8 @@ class AndroidComposablePreviewScreenshotIdTest {
         )
 
         assertEquals(
-            AndroidPreviewScreenshotIdBuilder(preview).build(), wallpaperColorDominated.screenshotId
+            wallpaperColorDominated.screenshotId,
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -406,85 +380,8 @@ class AndroidComposablePreviewScreenshotIdTest {
         )
 
         assertEquals(
-            AndroidPreviewScreenshotIdBuilder(preview).build(), ""
-        )
-    }
-
-    @Test
-    fun `GIVEN className ignored, THEN declaringClass is not included`() {
-        val preview = previewBuilder(
-            declaringClass = "MyClass",
-        )
-
-        assert(
-            !AndroidPreviewScreenshotIdBuilder(preview)
-                .ignoreClassName()
-                .build()
-                .contains("MyClass")
-        )
-    }
-
-    @Test
-    fun `GIVEN methodParameters not ignored, THEN declaringClass is included`() {
-        val preview = previewBuilder(
-            methodParameters = "name_String",
-        )
-
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview)
-                .doNotIgnoreMethodParametersType()
-                .build()
-                .contains("name_String")
-        )
-    }
-
-    @Test
-    fun `GIVEN 2 previews differ only in the methodParametersType WHEN these are not ignored, THEN the screenshotIds differ`() {
-        val preview1 = previewBuilder(
-            methodParameters = "name_String",
-        )
-        val preview2 = previewBuilder(
-            methodParameters = "name_Int",
-        )
-
-        val screenshotIdPreview1 = AndroidPreviewScreenshotIdBuilder(preview1)
-            .doNotIgnoreMethodParametersType()
-            .build()
-
-        val screenshotIdPreview2 = AndroidPreviewScreenshotIdBuilder(preview2)
-            .doNotIgnoreMethodParametersType()
-            .build()
-
-        assert(screenshotIdPreview1 != screenshotIdPreview2)
-    }
-
-    @Test
-    fun `GIVEN 2 previews differ only in the methodParametersType WHEN these are ignored, THEN the screenshotIds are the same`() {
-        val preview1 = previewBuilder(
-            methodParameters = "name_String",
-        )
-        val preview2 = previewBuilder(
-            methodParameters = "name_Int",
-        )
-
-        val screenshotIdPreview1 = AndroidPreviewScreenshotIdBuilder(preview1).build()
-
-        val screenshotIdPreview2 = AndroidPreviewScreenshotIdBuilder(preview2).build()
-
-        assert(screenshotIdPreview1 == screenshotIdPreview2)
-    }
-
-    @Test
-    fun `GIVEN methodName ignored, THEN methodName is not included`() {
-        val preview = previewBuilder(
-            methodName = "PreviewName",
-        )
-
-        assert(
-            !AndroidPreviewScreenshotIdBuilder(preview)
-                .ignoreMethodName()
-                .build()
-                .contains("PreviewName")
+            "",
+            AndroidPreviewScreenshotIdBuilder(preview).build()
         )
     }
 
@@ -515,48 +412,12 @@ class AndroidComposablePreviewScreenshotIdTest {
             previewInfo = previewKeyAndInfo.previewInfo
         )
 
-        assert(
+        assertEquals(
+            "",
             AndroidPreviewScreenshotIdBuilder(preview)
                 .ignoreIdFor(previewKeyAndInfo.key)
-                .build() == ""
+                .build()
         )
-    }
-
-    @Test
-    fun `GIVEN preview with only widthDp and heightDp but both ignored, THEN show nothing`() {
-        val preview = previewBuilder(
-            previewInfo = AndroidPreviewInfo(
-                widthDp = 33,
-                heightDp = 32,
-            )
-        )
-
-        assert(
-            AndroidPreviewScreenshotIdBuilder(preview)
-                .ignoreIdFor("widthDp")
-                .ignoreIdFor("heightDp")
-                .build() == "" // instead of "W33dp_H32dp" as the default
-        )
-    }
-
-    private fun previewBuilder(
-        previewInfo: AndroidPreviewInfo = AndroidPreviewInfo(),
-        previewIndex: Int? = null,
-        otherAnnotationsInfo: AnnotationInfoList? = null,
-        declaringClass: String = "",
-        methodName: String = "",
-        methodParameters: String = "",
-    ): ComposablePreview<AndroidPreviewInfo> = object : ComposablePreview<AndroidPreviewInfo> {
-        override val previewInfo: AndroidPreviewInfo = previewInfo
-        override val previewIndex: Int? = previewIndex
-        override val otherAnnotationsInfo: AnnotationInfoList? = otherAnnotationsInfo
-        override val declaringClass: String = declaringClass
-        override val methodName: String = methodName
-        override val methodParametersType: String = methodParameters
-
-        @Composable
-        override fun invoke() {
-        }
     }
 
     private class IdentifierValueProvider : TestParameterValuesProvider() {
