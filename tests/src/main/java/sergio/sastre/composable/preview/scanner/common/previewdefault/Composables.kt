@@ -43,7 +43,7 @@ fun ExampleDefault(
 @Preview
 @Composable
 fun ExampleDefaultPlusPreviewParameters(
-    @PreviewParameter(CommonStringProvider::class) name: String,
+    @PreviewParameter(CommonStringProvider::class) name: String?,
     hello: String? = "arg1",
     hello1: String = "arg2",
     hello2: String = "arg3",

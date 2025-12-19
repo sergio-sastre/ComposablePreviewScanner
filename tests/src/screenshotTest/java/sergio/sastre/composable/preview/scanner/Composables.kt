@@ -19,9 +19,9 @@ class ComposePreviewScreenshotTests {
     @PreviewDynamicColors    // 4 previews
     @Composable
     fun ScreenshotTestExampleMultiplePreview(
-        @PreviewParameter(provider = AndroidStringProvider::class) name: String
+        @PreviewParameter(provider = AndroidStringProvider::class) name: String?
     ) {
-        Example(name)
+        Example(name.toString())
     }
 
     @CrossModuleCustomPreview // 3 Previews

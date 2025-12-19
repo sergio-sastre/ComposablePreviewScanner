@@ -7,14 +7,14 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import sergio.sastre.composable.preview.scanner.AndroidStringProvider
 
 @Composable
-fun Example(name: String){
-    Text(name)
+fun Example(name: String?){
+    Text(name.toString())
 }
 
 @Preview(group = "no-preview-parameter-limit")
 @Composable
 fun ExamplePreviewNoLimit(
-    @PreviewParameter(provider = AndroidStringProvider::class) name: String
+    @PreviewParameter(provider = AndroidStringProvider::class) name: String?
 ){
     Example(name)
 }
@@ -22,7 +22,7 @@ fun ExamplePreviewNoLimit(
 @Preview(group = "preview-parameter-limit=1")
 @Composable
 fun ExamplePreviewLimit1(
-    @PreviewParameter(provider = AndroidStringProvider::class, limit = 1) name: String
+    @PreviewParameter(provider = AndroidStringProvider::class, limit = 1) name: String?
 ){
     Example(name)
 }
