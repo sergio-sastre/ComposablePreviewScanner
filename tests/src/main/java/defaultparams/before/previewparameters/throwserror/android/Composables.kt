@@ -10,7 +10,7 @@ import sergio.sastre.composable.preview.scanner.AndroidStringProvider
 @Composable
 fun ExampleDefaultPlusPreviewParameters(
     hello: String? = "arg1",
-    @PreviewParameter(AndroidStringProvider::class) name: String,
+    @PreviewParameter(AndroidStringProvider::class) name: String?,
     hello1: String = "arg2",
     hello2: String = "arg3",
 ) {

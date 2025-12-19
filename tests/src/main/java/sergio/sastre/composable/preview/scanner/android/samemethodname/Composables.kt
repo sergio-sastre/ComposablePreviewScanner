@@ -15,15 +15,15 @@ fun Example(name: String){
 @Preview
 @Composable
 fun ExampleSamePreviewName(
-    @PreviewParameter(provider = AndroidStringProvider::class) name: String
+    @PreviewParameter(provider = AndroidStringProvider::class) name: String?
 ){
-    Example(name)
+    Example(name.toString())
 }
 
 @Preview
 @Composable
 fun ExampleSamePreviewName(
-    @PreviewParameter(provider = ListProvider::class) name: List<Int>
+    @PreviewParameter(provider = ListProvider::class) name: List<Int?>
 ){
     Example(name.joinToString("."))
 }

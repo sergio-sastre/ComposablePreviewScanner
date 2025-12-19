@@ -14,7 +14,7 @@ import sergio.sastre.composable.preview.scanner.android.previewparameters.Exampl
 @PreviewDynamicColors    // 4 previews
 @Composable
 fun ExampleMultiplePreviewWithParams(
-    @PreviewParameter(provider = AndroidStringProvider::class) name: String
+    @PreviewParameter(provider = AndroidStringProvider::class) name: String?
 ){
     Example(name)
 }
