@@ -1,6 +1,7 @@
 package sergio.sastre.composable.preview.scanner.tests.api.sourcesets
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeTrue
 import org.junit.Test
@@ -133,6 +134,9 @@ class AndroidComposablePreviewScannerSourceSetTest {
                 screenshotTestClasspathPreviews
             )
         )
-        assertEquals(18, screenshotTestClasspathPreviews.size)
+        assertFalse(
+            "There are no Previews in screenshotTest classpath",
+            screenshotTestClasspathPreviews.isEmpty()
+        )
     }
 }

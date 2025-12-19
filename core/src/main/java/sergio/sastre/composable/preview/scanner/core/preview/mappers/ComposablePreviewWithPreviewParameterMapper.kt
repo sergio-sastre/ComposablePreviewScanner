@@ -71,7 +71,7 @@ data class ComposablePreviewWithPreviewParameterMapper<T>(
         val providerInstance = createProviderInstance(providerClass)
             ?: return sequenceOf(provideComposablePreview(this))
 
-        val values = getPropertyValue(providerInstance, "values") as? Sequence<Any>
+        val values = getPropertyValue(providerInstance, "values") as? Sequence<Any?>
             ?: return sequenceOf(provideComposablePreview(this))
 
         val limit = getPropertyValue(previewParameterAnnotation, "limit") as? Int
