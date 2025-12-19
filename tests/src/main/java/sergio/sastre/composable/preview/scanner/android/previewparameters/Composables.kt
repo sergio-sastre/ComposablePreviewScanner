@@ -22,7 +22,7 @@ fun ExamplePreviewNoLimit(
 @Preview(group = "preview-parameter-limit=1")
 @Composable
 fun ExamplePreviewLimit1(
-    @PreviewParameter(provider = AndroidStringProvider::class, limit = 1) name: String
+    @PreviewParameter(provider = AndroidStringProvider::class, limit = 1) name: String?
 ){
     Example(name)
 }
