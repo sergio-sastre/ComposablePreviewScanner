@@ -11,7 +11,7 @@ import sergio.sastre.composable.preview.scanner.android.previewparameters.Exampl
 @Preview(showBackground = true)
 @Composable
 fun ExampleMultiplePreviewWithParams(
-    @PreviewParameter(provider = CommonStringProvider::class) name: String
+    @PreviewParameter(provider = CommonStringProvider::class) name: String?
 ){
     Example(name)
 }

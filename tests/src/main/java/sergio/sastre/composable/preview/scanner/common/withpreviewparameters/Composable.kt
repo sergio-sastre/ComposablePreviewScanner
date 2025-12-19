@@ -9,15 +9,15 @@ import sergio.sastre.composable.preview.scanner.CommonStringProvider
 @Preview
 @Composable
 fun PreviewParameterWithoutLimitPreview(
-    @PreviewParameter(provider = CommonStringProvider::class) name: String
+    @PreviewParameter(provider = CommonStringProvider::class) name: String?
 ){
-    Text(name)
+    Text(name.toString())
 }
 
 @Preview
 @Composable
 fun PreviewParameterWithLimit1Preview(
-    @PreviewParameter(provider = CommonStringProvider::class, limit = 1) name: String
+    @PreviewParameter(provider = CommonStringProvider::class, limit = 1) name: String?
 ){
-    Text(name)
+    Text(name.toString())
 }
