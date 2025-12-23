@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.ComponentName
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
-import com.github.takahirom.roborazzi.DEFAULT_ROBORAZZI_OUTPUT_DIR_PATH
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.RoborazziActivity
@@ -75,7 +74,7 @@ class RoborazziGlanceComposablePreviewInvokeTests(
         createAndroidComposeRule<RoborazziActivity>()
 
     fun screenshotName(preview: ComposablePreview<GlancePreviewInfo>): String =
-        "$DEFAULT_ROBORAZZI_OUTPUT_DIR_PATH/${
+        "src/test/screenshots/glance/${
             GlancePreviewScreenshotIdBuilder(preview).build()
         }.png"
 

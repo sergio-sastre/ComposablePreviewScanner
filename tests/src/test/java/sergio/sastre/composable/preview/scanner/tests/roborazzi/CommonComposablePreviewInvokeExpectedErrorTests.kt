@@ -1,6 +1,5 @@
 package sergio.sastre.composable.preview.scanner.tests.roborazzi
 
-import com.github.takahirom.roborazzi.DEFAULT_ROBORAZZI_OUTPUT_DIR_PATH
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -39,7 +38,7 @@ class CommonComposablePreviewInvokeExpectedErrorTests(
     }
 
     fun screenshotName(preview: ComposablePreview<CommonPreviewInfo>): String =
-        "$DEFAULT_ROBORAZZI_OUTPUT_DIR_PATH/${
+        "src/test/screenshots/common/${
         CommonPreviewScreenshotIdBuilder(preview)
             .doNotIgnoreMethodParametersType()
             .build()
