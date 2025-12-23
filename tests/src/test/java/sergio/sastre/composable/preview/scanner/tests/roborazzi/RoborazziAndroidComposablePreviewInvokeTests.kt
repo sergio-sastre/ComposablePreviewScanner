@@ -46,7 +46,7 @@ class RoborazziAndroidComposablePreviewInvokeTests(
     }
 
     fun screenshotName(preview: ComposablePreview<AndroidPreviewInfo>): String =
-        "$DEFAULT_ROBORAZZI_OUTPUT_DIR_PATH/${
+        "src/test/screenshots/android/${
             AndroidPreviewScreenshotIdBuilder(preview)
                 .doNotIgnoreMethodParametersType()
                 .build()

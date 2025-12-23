@@ -152,6 +152,6 @@ tasks.register("lintVitalAnalyzeRelease") {
 
 plugins.withId("io.github.takahirom.roborazzi") {
     configure<io.github.takahirom.roborazzi.RoborazziExtension> {
-        outputDir.set(file("src/screenshots"))
+        outputDir.set(file("src/test/screenshots"))
     }
 }
