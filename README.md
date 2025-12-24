@@ -127,7 +127,7 @@ If you encounter any issues when executing the screenshot tests, take a look at 
 
 ### Related
 1. [Glance Previews Support](#glance-previews-support)
-2. [Compose Multiplatform Support](#compose-multiplatform-previews-support)
+2. [Compose Multiplatform Support](#compose-multiplatform-support)
 
 ## API   
 `AndroidComposablePreviewScanner`, `GlanceComposablePreviewScanner`, `CommonComposablePreviewScanner`, and `JvmAnnotationScanner` have the same API.
