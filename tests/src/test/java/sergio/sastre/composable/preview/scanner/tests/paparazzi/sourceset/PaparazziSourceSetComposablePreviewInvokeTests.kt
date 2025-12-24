@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.tests.paparazzi
+package sergio.sastre.composable.preview.scanner.tests.paparazzi.sourceset
 
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
@@ -18,23 +18,51 @@ import sergio.sastre.composable.preview.scanner.android.device.DevicePreviewInfo
 import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
 import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet
 
 /**
  * These tests ensure that the invoke() function of a ComposablePreview works as expected
- * for all the @Composable's in the main source at build time.
+ * for all the @Composable's in the 'main' and 'screenshotTest' sources based on their respective compiled classes.
  *
- * ./gradlew :tests:recordPaparazziDebug --tests 'PaparazziAndroidComposablePreviewInvokeTests' -Plibrary=paparazzi
+ * ./gradlew :tests:recordPaparazziDebug --tests 'PaparazziSourceSetComposablePreviewInvokeTests' -Plibrary=paparazzi
  */
 @RunWith(Parameterized::class)
-class PaparazziAndroidComposablePreviewInvokeTests(
+class PaparazziSourceSetComposablePreviewInvokeTests(
     private val preview: ComposablePreview<AndroidPreviewInfo>,
 ) {
 
     companion object {
         @OptIn(RequiresShowStandardStreams::class)
-        private val cachedPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
+        private val cachedMainPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
             AndroidComposablePreviewScanner()
                 .enableScanningLogs()
+                .setTargetSourceSet(
+                    sourceSetClasspath = Classpath(SourceSet.MAIN),
+                    packageTreesOfCrossModuleCustomPreviews = listOf("sergio.sastre.composable.preview.custompreviews")
+                )
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+                .includePrivatePreviews()
+                .getPreviews()
+        }
+
+        private val cachedScreenshotTestPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
+            AndroidComposablePreviewScanner()
+                .setTargetSourceSet(
+                    sourceSetClasspath = Classpath(SourceSet.SCREENSHOT_TEST),
+                    packageTreesOfCrossModuleCustomPreviews = listOf("sergio.sastre.composable.preview.custompreviews")
+                )
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+                .includePrivatePreviews()
+                .getPreviews()
+        }
+
+        private val cachedAndroidTestPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
+            AndroidComposablePreviewScanner()
+                .setTargetSourceSet(
+                    sourceSetClasspath = Classpath(SourceSet.ANDROID_TEST),
+                    packageTreesOfCrossModuleCustomPreviews = listOf("sergio.sastre.composable.preview.custompreviews")
+                )
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .includePrivatePreviews()
                 .getPreviews()
@@ -42,7 +70,8 @@ class PaparazziAndroidComposablePreviewInvokeTests(
 
         @JvmStatic
         @Parameterized.Parameters
-        fun values(): List<ComposablePreview<AndroidPreviewInfo>> = cachedPreviews
+        fun values(): List<ComposablePreview<AndroidPreviewInfo>> =
+            cachedMainPreviews + cachedScreenshotTestPreviews + cachedAndroidTestPreviews
     }
 
     @get:Rule

@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.tests.paparazzi
+package sergio.sastre.composable.preview.scanner.tests.paparazzi.runtime
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

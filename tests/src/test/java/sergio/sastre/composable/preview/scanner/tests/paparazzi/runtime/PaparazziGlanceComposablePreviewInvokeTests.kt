@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.tests.paparazzi
+package sergio.sastre.composable.preview.scanner.tests.paparazzi.runtime
 
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
