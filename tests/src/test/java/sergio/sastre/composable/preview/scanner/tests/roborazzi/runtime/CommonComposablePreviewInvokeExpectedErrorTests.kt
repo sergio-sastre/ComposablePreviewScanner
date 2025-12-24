@@ -1,11 +1,6 @@
-package sergio.sastre.composable.preview.scanner.tests.roborazzi
+package sergio.sastre.composable.preview.scanner.tests.roborazzi.runtime
 
-import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
-import com.github.takahirom.roborazzi.RoborazziComposeOptions
-import com.github.takahirom.roborazzi.background
 import com.github.takahirom.roborazzi.captureRoboImage
-import com.github.takahirom.roborazzi.locale
-import com.github.takahirom.roborazzi.size
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
@@ -13,6 +8,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
+import sergio.sastre.composable.preview.scanner.core.preview.exception.PreviewParameterIsNotFirstArgumentException
 import sergio.sastre.composable.preview.scanner.common.CommonComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.common.CommonPreviewInfo
 import sergio.sastre.composable.preview.scanner.common.screenshotid.CommonPreviewScreenshotIdBuilder
@@ -21,10 +17,10 @@ import sergio.sastre.composable.preview.scanner.common.screenshotid.CommonPrevie
  * These tests ensure that the invoke() function of a ComposablePreview works as expected
  * for all the @Composable's in the main source at build time.
  *
- * ./gradlew :tests:recordRoborazziDebug --tests 'RoborazziCommonComposablePreviewInvokeTests' -Plibrary=roborazzi
+ * ./gradlew :tests:recordRoborazziDebug --tests 'CommonComposablePreviewInvokeExpectedErrorTests' -Plibrary=roborazzi
  */
 @RunWith(ParameterizedRobolectricTestRunner::class)
-class RoborazziCommonComposablePreviewInvokeTests(
+class CommonComposablePreviewInvokeExpectedErrorTests(
     private val preview: ComposablePreview<CommonPreviewInfo>,
 ) {
     companion object {
@@ -32,8 +28,7 @@ class RoborazziCommonComposablePreviewInvokeTests(
         private val cachedBuildTimePreviews: List<ComposablePreview<CommonPreviewInfo>> by lazy {
             CommonComposablePreviewScanner()
                 .enableScanningLogs()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner")
-                .includePrivatePreviews()
+                .scanPackageTrees("defaultparams.before.previewparameters.throwserror")
                 .getPreviews()
         }
 
@@ -44,30 +39,16 @@ class RoborazziCommonComposablePreviewInvokeTests(
 
     fun screenshotName(preview: ComposablePreview<CommonPreviewInfo>): String =
         "src/test/screenshots/common/${
-            CommonPreviewScreenshotIdBuilder(preview)
-                .doNotIgnoreMethodParametersType()
-                .build()
+        CommonPreviewScreenshotIdBuilder(preview)
+            .doNotIgnoreMethodParametersType()
+            .build()
         }.png"
 
-    @OptIn(ExperimentalRoborazziApi::class)
     @GraphicsMode(GraphicsMode.Mode.NATIVE)
     @Config(sdk = [30])
-    @Test
+    @Test(expected = PreviewParameterIsNotFirstArgumentException::class)
     fun snapshot() {
-        captureRoboImage(
-            filePath = screenshotName(preview),
-            roborazziComposeOptions = RoborazziComposeOptions {
-                size(
-                    widthDp = preview.previewInfo.widthDp,
-                    heightDp = preview.previewInfo.heightDp
-                )
-                background(
-                    showBackground = preview.previewInfo.showBackground,
-                    backgroundColor = preview.previewInfo.backgroundColor
-                )
-                locale(preview.previewInfo.locale)
-            },
-        ) {
+        captureRoboImage(filePath = screenshotName(preview)) {
             preview()
         }
     }

@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.tests.roborazzi
+package sergio.sastre.composable.preview.scanner.tests.roborazzi.sourceset
 
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Test
@@ -14,9 +14,7 @@ import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPrev
 import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.ANDROID_TEST
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.MAIN
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.SCREENSHOT_TEST
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet
 
 /**
  * These tests ensure that the invoke() function of a ComposablePreview works as expected
@@ -34,7 +32,7 @@ class RoborazziSourceSetComposablePreviewInvokeTests(
             AndroidComposablePreviewScanner()
                 .enableScanningLogs()
                 .setTargetSourceSet(
-                    sourceSetClasspath = Classpath(MAIN),
+                    sourceSetClasspath = Classpath(SourceSet.MAIN),
                     packageTreesOfCrossModuleCustomPreviews = listOf("sergio.sastre.composable.preview.custompreviews")
                 )
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
@@ -45,7 +43,7 @@ class RoborazziSourceSetComposablePreviewInvokeTests(
         private val cachedScreenshotTestPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
             AndroidComposablePreviewScanner()
                 .setTargetSourceSet(
-                    sourceSetClasspath = Classpath(SCREENSHOT_TEST),
+                    sourceSetClasspath = Classpath(SourceSet.SCREENSHOT_TEST),
                     packageTreesOfCrossModuleCustomPreviews = listOf("sergio.sastre.composable.preview.custompreviews")
                 )
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
@@ -56,7 +54,7 @@ class RoborazziSourceSetComposablePreviewInvokeTests(
         private val cachedAndroidTestPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
             AndroidComposablePreviewScanner()
                 .setTargetSourceSet(
-                    sourceSetClasspath = Classpath(ANDROID_TEST),
+                    sourceSetClasspath = Classpath(SourceSet.ANDROID_TEST),
                     packageTreesOfCrossModuleCustomPreviews = listOf("sergio.sastre.composable.preview.custompreviews")
                 )
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")

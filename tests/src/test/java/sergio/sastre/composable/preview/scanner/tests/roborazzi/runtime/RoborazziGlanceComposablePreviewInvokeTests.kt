@@ -1,4 +1,4 @@
-package sergio.sastre.composable.preview.scanner.tests.roborazzi
+package sergio.sastre.composable.preview.scanner.tests.roborazzi.runtime
 
 import android.app.Application
 import android.content.ComponentName

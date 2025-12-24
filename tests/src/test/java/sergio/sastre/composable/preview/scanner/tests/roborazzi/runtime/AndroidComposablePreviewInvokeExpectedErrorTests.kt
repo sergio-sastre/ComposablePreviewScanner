@@ -1,6 +1,5 @@
-package sergio.sastre.composable.preview.scanner.tests.roborazzi
+package sergio.sastre.composable.preview.scanner.tests.roborazzi.runtime
 
-import com.github.takahirom.roborazzi.DEFAULT_ROBORAZZI_OUTPUT_DIR_PATH
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -49,9 +48,7 @@ class AndroidComposablePreviewInvokeExpectedErrorTests(
     @Config(sdk = [30])
     @Test(expected = PreviewParameterIsNotFirstArgumentException::class)
     fun snapshot() {
-        val name = AndroidPreviewScreenshotIdBuilder(preview)
-            .doNotIgnoreMethodParametersType()
-            .build()
+        val name = screenshotName(preview)
         captureRoboImage(filePath = "${name}.png") {
             preview()
         }

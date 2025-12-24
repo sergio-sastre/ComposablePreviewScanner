@@ -85,6 +85,9 @@ android {
         all { test ->
             test.jvmArgs("-Xmx4g")
             test.testLogging { showStandardStreams = true }
+            if (project.hasProperty("maxParallelForks")) {
+                test.maxParallelForks = (project.property("maxParallelForks") as String).toInt()
+            }
         }
     }
 }

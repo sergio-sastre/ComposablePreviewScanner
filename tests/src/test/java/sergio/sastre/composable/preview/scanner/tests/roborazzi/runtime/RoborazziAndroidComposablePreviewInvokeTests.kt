@@ -1,6 +1,5 @@
-package sergio.sastre.composable.preview.scanner.tests.roborazzi
+package sergio.sastre.composable.preview.scanner.tests.roborazzi.runtime
 
-import com.github.takahirom.roborazzi.DEFAULT_ROBORAZZI_OUTPUT_DIR_PATH
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RoborazziComposeOptions
 import com.github.takahirom.roborazzi.background
