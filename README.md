@@ -43,7 +43,7 @@ Help shape its future by taking [this quick survey](https://forms.gle/jcvggBxv14
 <sup>3</sup> Showkase components only hold information about the Composable, but not about the Preview Info (i.e. ApiLevel, Locale, UiMode, FontScale...).</br></br>
 <sup>4</sup> ComposablePreviewScanner supports adding extra lib-config (e.g. Paparazzi's Rendering Mode or Roborazzi's compare options) in the form of annotations that are additionally added to the preview. You can check how in the examples below in [Jvm Screenshot Tests](#jvm-screenshot-tests) and [Instrumentation Screenshot Tests](#instrumentation-screenshot-tests) respectively.</br></br>
 <sup>5</sup> Compose Preview Screenshot Testing supports *only general tolerance* via gradle plugin from version [0.0.1-alpha06](https://developer.android.com/studio/preview/compose-screenshot-testing#001-alpha06)</br></br>
-<sup>6</sup> Desktop Previews (which are deprecated) are supported with a workaround</br></br>
+<sup>6</sup> Desktop Previews (which are deprecated since Compose Multiplatform 1.10.0-beta02) are supported with a workaround</br></br>
 <sup>7</sup> [Showkase: Compose Multiplatform Support](https://github.com/airbnb/Showkase/issues/364)
 </br></br></br>
 ComposablePreviewScanner also works with:
@@ -125,7 +125,7 @@ If you encounter any issues when executing the screenshot tests, take a look at 
 > [!NOTE]
 > [Roborazzi](https://github.com/takahirom/roborazzi) has integrated ComposablePreviewScanner in its plugin since [version 1.22](https://github.com/takahirom/roborazzi/releases/tag/1.22.0)
 
-## Related
+### Related
 1. [Glance Previews Support](#glance-previews-support)
 2. [Compose Multiplatform Support](#compose-multiplatform-previews-support)
 
