@@ -909,10 +909,11 @@ AndroidComposablePreviewScanner()
     )
 ```
 
-> [!NOTE] screenshot tests must run on a platform supported by your screenshot library.
+> [!NOTE]
+> Screenshot tests must run on a platform supported by your screenshot library.
 > • Android: Paparazzi and Roborazzi are supported.
 > • Desktop: Roborazzi only.
-> • Common: no library runs directly in commonMain; run your tests from an Android or Desktop target instead. ComposablePreviewScanner can still find the Previews in common target packages.
+> • Common: no library runs directly in common; run your tests from an Android or Desktop target instead. ComposablePreviewScanner can still find the Previews in common target packages.
 
 You can find executable examples with Roborazzi here:
 - [Android @Previews in common](https://github.com/sergio-sastre/roborazzi/blob/droidcon/preview_tests/sample-generate-preview-common/src/androidUnitTest/kotlin/com/github/takahirom/preview/tests/AndroidPreviewTest.kt)
