@@ -222,4 +222,4 @@ jobs:
         run: chmod +x gradlew
 
       - name: Run metalava checks
-        run: ./gradlew core:metalavaCheckCompatibility android:metalavaCheckCompatibility glance:metalavaCheckCompatibility common:metalavaCheckCompatibility jvm:metalavaCheckCompatibility --parallel
+        run: ./gradlew core:metalavaCheckCompatibility android:metalavaCheckCompatibility glance:metalavaCheckCompatibilityRelease common:metalavaCheckCompatibility jvm:metalavaCheckCompatibility --parallel
