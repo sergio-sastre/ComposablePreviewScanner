@@ -50,5 +50,11 @@ tasks.register<Test>("testSourceSets") {
 tasks.register<Delete>("cleanTestsBuildFolder") {
     description = "Deletes the build directory of the tests module"
     group = "Cleanup"
-    delete(layout.buildDirectory)
+
+    // only delete the build dirs where the compiled classes are located
+    delete(
+        layout.buildDirectory.dir("tmp/kotlin-classes"),
+        layout.buildDirectory.dir("intermediates/kotlinc"),
+        layout.buildDirectory.dir("intermediates/built_in_kotlinc")
+    )
 }
