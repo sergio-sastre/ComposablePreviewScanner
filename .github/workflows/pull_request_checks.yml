@@ -160,6 +160,14 @@ jobs:
       - name: Run roborazziPreviewsRuntime
         run: ./gradlew roborazziPreviewsRuntime -Pverify=true
 
+      - name: Upload Roborazzi reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: roborazzi-runtime-reports
+          path: tests/build/reports/roborazzi/
+          retention-days: 7
+
   roborazziPreviewsSourceSet:
     runs-on: ubuntu-latest
     steps:
@@ -183,3 +191,11 @@ jobs:
 
       - name: Run roborazziPreviewsSourceSet
         run: ./gradlew roborazziPreviewsSourceSet -Pverify=true
+
+      - name: Upload Roborazzi reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: roborazzi-source-set-reports
+          path: tests/build/reports/roborazzi/
+          retention-days: 7
