@@ -1,0 +1,13 @@
+// Signature format: 4.0
+package sergio.sastre.composable.preview.scanner.jvm {
+
+  public final class JvmAnnotationInfo {
+    field public static final sergio.sastre.composable.preview.scanner.jvm.JvmAnnotationInfo INSTANCE;
+  }
+
+  public final class JvmAnnotationScanner extends sergio.sastre.composable.preview.scanner.core.scanner.ComposablePreviewScanner<sergio.sastre.composable.preview.scanner.jvm.JvmAnnotationInfo> {
+    ctor public JvmAnnotationScanner(String annotationToScanClassName);
+  }
+
+}
+

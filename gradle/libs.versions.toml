@@ -17,6 +17,7 @@ robolectric = "4.15.1"
 roborazzi = "1.46.1"
 roborazziCompose = "1.46.1"
 paparazzi = "1.3.5"
+metalava = "0.4.0-alpha03"
 
 testParameterInjector = "1.18"
 utils = "2.7.0"
@@ -63,3 +64,4 @@ roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
 testify = { id = "dev.testify" , version.ref = "testify"}
 jetbrains-kotlin-plugin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+metalava = { id = "me.tylerbwong.gradle.metalava", version.ref = "metalava"}

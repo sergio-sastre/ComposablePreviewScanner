@@ -1,0 +1,52 @@
+// Signature format: 4.0
+package sergio.sastre.composable.preview.scanner.glance {
+
+  public final class GlanceComposablePreviewScanner extends sergio.sastre.composable.preview.scanner.core.scanner.ComposablePreviewScanner<sergio.sastre.composable.preview.scanner.glance.GlancePreviewInfo> {
+    ctor public GlanceComposablePreviewScanner();
+  }
+
+  public final class GlancePreviewInfo {
+    ctor public GlancePreviewInfo(optional int widthDp, optional int heightDp);
+    method public int component1();
+    method public int component2();
+    method public sergio.sastre.composable.preview.scanner.glance.GlancePreviewInfo copy(int widthDp, int heightDp);
+    method public int getHeightDp();
+    method public int getWidthDp();
+    property public final int heightDp;
+    property public final int widthDp;
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.glance.configuration {
+
+  public final class GlanceDeviceConfigDimensions {
+    ctor public GlanceDeviceConfigDimensions(float densityDpi, int previewWidthDp, int previewHeightDp);
+    method public int height(int originalDeviceConfigHeightPx);
+    method public int width(int originalDeviceConfigWidthPx);
+  }
+
+  public final class GlanceSnapshotConfigurator {
+    ctor public GlanceSnapshotConfigurator(android.content.Context context);
+    method public android.view.View composableToView(kotlin.jvm.functions.Function0<kotlin.Unit> composable);
+    method public android.content.Context getContext();
+    method public sergio.sastre.composable.preview.scanner.glance.configuration.GlanceSnapshotConfigurator setSizeDp(int widthDp, int heightDp);
+    method public <T> sergio.sastre.composable.preview.scanner.glance.configuration.GlanceSnapshotConfigurator setState(T state);
+    property public final android.content.Context context;
+  }
+
+  public final class RobolectricDeviceQualifierBuilder {
+    method public String? build(sergio.sastre.composable.preview.scanner.glance.GlancePreviewInfo previewInfo);
+    field public static final sergio.sastre.composable.preview.scanner.glance.configuration.RobolectricDeviceQualifierBuilder INSTANCE;
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.glance.screenshotid {
+
+  public final class GlancePreviewScreenshotIdBuilder extends sergio.sastre.composable.preview.scanner.core.preview.screenshotid.PreviewScreenshotIdBuilder<sergio.sastre.composable.preview.scanner.glance.GlancePreviewInfo> {
+    ctor public GlancePreviewScreenshotIdBuilder(sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview<sergio.sastre.composable.preview.scanner.glance.GlancePreviewInfo> composablePreview);
+  }
+
+}
+

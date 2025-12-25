@@ -1,0 +1,349 @@
+// Signature format: 4.0
+package sergio.sastre.composable.preview.scanner.core.annotations {
+
+  @kotlin.RequiresOptIn(level=kotlin.RequiresOptIn.Level.ERROR, message="Currently, logs are printed in the console via the standard output." + "In order to see them, standard streams must be enabled in jvm tests." + "However, when using Junit4, that is not the default." + "The easiest way to enable them is to add the following line to your build.gradle file:\n" + "testOptions.unitTests {\n" + "    all { test -> \n" + "        test.testLogging { showStandardStreams = true }\n" + "    }\n" + "}\n") public @interface RequiresShowStandardStreams {
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.core.preview {
+
+  public interface ComposablePreview<T> {
+    method public String getDeclaringClass();
+    method public String getMethodName();
+    method public String getMethodParametersType();
+    method public io.github.classgraph.AnnotationInfoList? getOtherAnnotationsInfo();
+    method public Integer? getPreviewIndex();
+    method public T getPreviewInfo();
+    method @androidx.compose.runtime.Composable public operator void invoke();
+    property public abstract String declaringClass;
+    property public abstract String methodName;
+    property public abstract String methodParametersType;
+    property public abstract io.github.classgraph.AnnotationInfoList? otherAnnotationsInfo;
+    property public abstract Integer? previewIndex;
+    property public abstract T previewInfo;
+  }
+
+  public final class ComposablePreviewKt {
+    method public static inline <reified T extends java.lang.annotation.Annotation> T? getAnnotation(sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview<? extends java.lang.Object?>);
+  }
+
+  public final class ProvideComposablePreview<T> {
+    ctor public ProvideComposablePreview();
+    method public operator sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview<T> invoke(sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapper<T> composablePreviewMapper, optional Integer? previewIndex, optional Object? parameter);
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.core.preview.exception {
+
+  public final class PreviewParameterIsNotFirstArgumentException {
+    ctor public PreviewParameterIsNotFirstArgumentException(String className, String methodName);
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.core.preview.mappers {
+
+  public interface ComposablePreviewInfoMapper<T> {
+    method public T mapToComposablePreviewInfo(io.github.classgraph.AnnotationParameterValueList parameters);
+  }
+
+  public abstract class ComposablePreviewMapper<T> {
+    ctor public ComposablePreviewMapper(error.NonExistentClass previewMethod, T previewInfo, io.github.classgraph.AnnotationInfoList? annotationsInfo);
+    method public io.github.classgraph.AnnotationInfoList? getAnnotationsInfo();
+    method public T getPreviewInfo();
+    method public error.NonExistentClass getPreviewMethod();
+    method public abstract kotlin.sequences.Sequence<sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview<T>> mapToComposablePreviews();
+    property public io.github.classgraph.AnnotationInfoList? annotationsInfo;
+    property public T previewInfo;
+    property public error.NonExistentClass previewMethod;
+  }
+
+  public interface ComposablePreviewMapperCreator<T> {
+    method public sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapper<T> createComposablePreviewMapper(error.NonExistentClass previewMethod, T previewInfo, io.github.classgraph.AnnotationInfoList? annotationsInfo);
+  }
+
+  public final class ComposablePreviewWithPreviewParameterMapper<T> extends sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapper<T> {
+    ctor public ComposablePreviewWithPreviewParameterMapper(String previewParameterClassName, error.NonExistentClass previewMethod, T previewInfo, io.github.classgraph.AnnotationInfoList? annotationsInfo);
+    method public error.NonExistentClass component2();
+    method public T component3();
+    method public io.github.classgraph.AnnotationInfoList? component4();
+    method public sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewWithPreviewParameterMapper<T> copy(String previewParameterClassName, error.NonExistentClass previewMethod, T previewInfo, io.github.classgraph.AnnotationInfoList? annotationsInfo);
+    method public boolean equals(Object? other);
+    method public int hashCode();
+    method public kotlin.sequences.Sequence<sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview<T>> mapToComposablePreviews();
+    method public String toString();
+    property public io.github.classgraph.AnnotationInfoList? annotationsInfo;
+    property public T previewInfo;
+    property public error.NonExistentClass previewMethod;
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.core.preview.screenshotid {
+
+  public final class DefaultPreviewInfoParameterToStringConverter {
+    ctor public DefaultPreviewInfoParameterToStringConverter();
+    method public String? apiLevel(int apiLevel);
+    method public String? backgroundColor(long backgroundColor);
+    method public String? fontScale(float fontScale);
+    method public String? group(String group);
+    method public String? heightDp(int heightDp);
+    method public String? name(String name);
+    method public String? showBackground(boolean showBackground);
+    method public String? showSystemUi(boolean showSystemUi);
+    method public String? widthDp(int widthDp);
+    field public static final sergio.sastre.composable.preview.scanner.core.preview.screenshotid.DefaultPreviewInfoParameterToStringConverter.Companion Companion;
+  }
+
+  public static final class DefaultPreviewInfoParameterToStringConverter.Companion {
+  }
+
+  public class PreviewScreenshotIdBuilder<T> {
+    ctor public PreviewScreenshotIdBuilder(sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview<T> composablePreview, kotlin.jvm.functions.Function0<java.util.LinkedHashMap<java.lang.String,java.lang.String?>> defaultPreviewInfoIdProvider);
+    method public final String build();
+    method public final sergio.sastre.composable.preview.scanner.core.preview.screenshotid.PreviewScreenshotIdBuilder<T> doNotIgnoreMethodParametersType();
+    method public final sergio.sastre.composable.preview.scanner.core.preview.screenshotid.PreviewScreenshotIdBuilder<T> encodeUnsafeCharacters();
+    method public final sergio.sastre.composable.preview.scanner.core.preview.screenshotid.PreviewScreenshotIdBuilder<T> ignoreClassName();
+    method public final sergio.sastre.composable.preview.scanner.core.preview.screenshotid.PreviewScreenshotIdBuilder<T> ignoreIdFor(String previewInfoName);
+    method public final sergio.sastre.composable.preview.scanner.core.preview.screenshotid.PreviewScreenshotIdBuilder<T> ignoreMethodName();
+    method public final sergio.sastre.composable.preview.scanner.core.preview.screenshotid.PreviewScreenshotIdBuilder<T> overrideDefaultIdFor(String previewInfoName, kotlin.jvm.functions.Function1<? super T,java.lang.String?> applyInfoValue);
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.core.scanner {
+
+  public abstract class ComposablePreviewScanner<T> implements sergio.sastre.composable.preview.scanner.core.scanner.config.SourceScanner<T> {
+    ctor public ComposablePreviewScanner(sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.ClasspathPreviewsFinder<T> findComposableWithPreviewsInClass, optional java.util.List<java.lang.String> defaultPackageTreesOfCrossModuleCustomPreviews);
+    method @sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams public final sergio.sastre.composable.preview.scanner.core.scanner.ComposablePreviewScanner<T> enableScanningLogs();
+    method @sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter<T> scanAllPackages();
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter<T> scanFile(error.NonExistentClass jsonFile);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter<T> scanFile(error.NonExistentClass targetInputStream, error.NonExistentClass customPreviewsInfoInputStream);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter<T> scanPackageTrees(java.lang.String... packageTrees);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter<T> scanPackageTrees(java.util.List<java.lang.String> include, java.util.List<java.lang.String> exclude);
+    method public final sergio.sastre.composable.preview.scanner.core.scanner.config.ClassGraphSourceScanner<T> setTargetSourceSet(sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath sourceSetClasspath, optional java.util.List<java.lang.String> packageTreesOfCrossModuleCustomPreviews);
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.core.scanner.config {
+
+  public final class ClassGraphSourceScanner<T> implements sergio.sastre.composable.preview.scanner.core.scanner.config.SourceScanner<T> {
+    ctor public ClassGraphSourceScanner(io.github.classgraph.ClassGraph classGraph, sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.ClasspathPreviewsFinder<T> findComposableWithPreviewsInClass, sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath? classpath, boolean isLoggingEnabled);
+    method @sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter<T> scanAllPackages();
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter<T> scanFile(error.NonExistentClass jsonFile);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter<T> scanFile(error.NonExistentClass targetInputStream, error.NonExistentClass customPreviewsInfoInputStream);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter<T> scanPackageTrees(java.lang.String... packageTrees);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter<T> scanPackageTrees(java.util.List<java.lang.String> include, java.util.List<java.lang.String> exclude);
+  }
+
+  public interface SourceScanner<T> {
+    method @sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter<T> scanAllPackages();
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter<T> scanFile(error.NonExistentClass jsonFile);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter<T> scanFile(error.NonExistentClass targetInputStream, error.NonExistentClass customPreviewsInfoInputStream);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter<T> scanPackageTrees(java.lang.String... packageTrees);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter<T> scanPackageTrees(java.util.List<java.lang.String> include, java.util.List<java.lang.String> exclude);
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.core.scanner.config.classpath {
+
+  public final class Classpath {
+    ctor public Classpath(String packagePath, optional String rootDir);
+    ctor public Classpath(sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.LegacySourceSetClasspath legacySourceSetClasspath, optional String variantName);
+    ctor public Classpath(sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet sourceSet, optional String variantName);
+    method public String component1();
+    method public String component2();
+    method public sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath copy(String packagePath, String rootDir);
+    method public boolean equals(Object? other);
+    method public String getPackagePath();
+    method public String getRootDir();
+    method public int hashCode();
+    method public String toString();
+    property public final String packagePath;
+    property public final String rootDir;
+    field public static final sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath.Companion Companion;
+  }
+
+  public static final class Classpath.Companion {
+  }
+
+  public enum LegacySourceSetClasspath {
+    enum_constant public static final sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.LegacySourceSetClasspath SCREENSHOT_TEST_PRE_AGP_8_7_0;
+  }
+
+  public enum SourceSet {
+    enum_constant public static final sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet ANDROID_TEST;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet MAIN;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet SCREENSHOT_TEST;
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder {
+
+  public final class ClasspathPreviewsFinder<T> implements sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.PreviewsFinder<T> {
+    ctor public ClasspathPreviewsFinder(String annotationToScanClassName, sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewInfoMapper<T> previewInfoMapper, sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator<T> previewMapperCreator);
+    method public sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.ClasspathPreviewsFinder<T> applyCrossModuleCustomPreviewPackageTrees(java.util.List<java.lang.String> packageTrees);
+    method public sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.ClasspathPreviewsFinder<T> applyCustomPreviewsScanResult(io.github.classgraph.ScanResult customPreviewsScanResult);
+    method public sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.ClasspathPreviewsFinder<T> applyOverridenClasspath(sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath classPath);
+    method public java.util.List<sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview<T>> findPreviewsFor(io.github.classgraph.ClassInfo classInfo, sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilterState<T> scanResultFilterState);
+    method public String getAnnotationToScanClassName();
+    property public String annotationToScanClassName;
+  }
+
+  public interface PreviewsFinder<T> {
+    method public java.util.List<sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview<T>> findPreviewsFor(io.github.classgraph.ClassInfo classInfo, sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilterState<T> scanResultFilterState);
+    method public String getAnnotationToScanClassName();
+    property public abstract String annotationToScanClassName;
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.compiledclass.annotationloader {
+
+  public interface CustomPreviewAnnotationLoader {
+    method public java.util.Map<java.lang.String,io.github.classgraph.AnnotationInfoList> loadCustomPreviewAnnotation();
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.validator {
+
+  public final class ClasspathValidator {
+    ctor public ClasspathValidator(sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath classpath);
+    method public sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath getClasspath();
+    method public void validate();
+    property public final sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath classpath;
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.core.scanner.exceptions {
+
+  public final class ClassNotFoundInSourceSetException {
+    ctor public ClassNotFoundInSourceSetException();
+  }
+
+  public final class CompiledClassesNotFound {
+    ctor public CompiledClassesNotFound(sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath classpath);
+  }
+
+  public final class ScanSourceNotSupported {
+    ctor public ScanSourceNotSupported();
+  }
+
+  public final class ScanningLogsNotSupported {
+    ctor public ScanningLogsNotSupported();
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.core.scanresult {
+
+  @kotlin.RequiresOptIn(level=kotlin.RequiresOptIn.Level.ERROR, message="Increase the heap size to mitigate OOM Exceptions. " + "For Unit Tests, add the corresponding jvm args " + "either in the gradle file or via command line by adding -Xmx<value> e.g. -Xmx2g. " + "For Instrumentation Tests, add android:largeHeap = \"true\" " + "in the application section of your androidTest manifest") public @interface RequiresLargeHeap {
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.core.scanresult.dump {
+
+  public final class ScanResultDumper {
+    ctor public ScanResultDumper();
+    method @sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams public sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper enableScanningLogs();
+    method @sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap public sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper.ScanResultProcessor scanAllPackages();
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper.ScanResultProcessor scanPackageTrees(java.lang.String... packages);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper setTargetSourceSet(sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath sourceSetClasspath);
+  }
+
+  public final class ScanResultDumper.ScanResultProcessor {
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper.ScanResultProcessor dumpScanResultToFile(error.NonExistentClass outputFile);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper.ScanResultProcessor dumpScanResultToFileInAssets(String scanFileName, optional String variantName, optional java.util.List<java.lang.String> packageTreesOfCustomPreviews, optional String customPreviewsFileName);
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.core.scanresult.filter {
+
+  public interface ExclusiveFilter<T> extends sergio.sastre.composable.preview.scanner.core.scanresult.filter.PreviewProvider<T> {
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ExclusiveFilter<T> filterPreviews(kotlin.jvm.functions.Function1<? super T,java.lang.Boolean> predicate);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ExclusiveFilter<T> includeAnnotationInfoForAllOf(error.NonExistentClass... annotations);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ExclusiveFilter<T> includePrivatePreviews();
+  }
+
+  public interface GeneralScanResultFilter<T> extends sergio.sastre.composable.preview.scanner.core.scanresult.filter.PreviewProvider<T> {
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ExclusiveFilter<T> excludeIfAnnotatedWithAnyOf(error.NonExistentClass... annotations);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.GeneralScanResultFilter<T> filterPreviews(kotlin.jvm.functions.Function1<? super T,java.lang.Boolean> predicate);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.GeneralScanResultFilter<T> includeAnnotationInfoForAllOf(error.NonExistentClass... annotations);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.InclusiveFilter<T> includeIfAnnotatedWithAnyOf(error.NonExistentClass... annotations);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.GeneralScanResultFilter<T> includePrivatePreviews();
+  }
+
+  public interface InclusiveFilter<T> extends sergio.sastre.composable.preview.scanner.core.scanresult.filter.PreviewProvider<T> {
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.InclusiveFilter<T> filterPreviews(kotlin.jvm.functions.Function1<? super T,java.lang.Boolean> predicate);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.InclusiveFilter<T> includeAnnotationInfoForAllOf(error.NonExistentClass... annotations);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.InclusiveFilter<T> includePrivatePreviews();
+  }
+
+  public interface PreviewProvider<T> {
+    method public java.util.List<sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview<T>> getPreviews();
+  }
+
+  public final class ScanResultFilter<T> implements sergio.sastre.composable.preview.scanner.core.scanresult.filter.ExclusiveFilter<T> sergio.sastre.composable.preview.scanner.core.scanresult.filter.GeneralScanResultFilter<T> sergio.sastre.composable.preview.scanner.core.scanresult.filter.InclusiveFilter<T> {
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ExclusiveFilter<T> excludeIfAnnotatedWithAnyOf(error.NonExistentClass... annotations);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter<T> filterPreviews(kotlin.jvm.functions.Function1<? super T,java.lang.Boolean> predicate);
+    method public java.util.List<sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview<T>> getPreviews();
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter<T> includeAnnotationInfoForAllOf(error.NonExistentClass... annotations);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.InclusiveFilter<T> includeIfAnnotatedWithAnyOf(error.NonExistentClass... annotations);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter<T> includePrivatePreviews();
+  }
+
+  public final class ScanResultFilterState<T> {
+    ctor public ScanResultFilterState(optional boolean overriddenClasspath, optional java.util.List<? extends error.NonExistentClass> excludedAnnotations, optional java.util.List<? extends error.NonExistentClass> includedAnnotations, optional java.util.Set<java.lang.String> namesOfIncludeAnnotationsInfo, optional kotlin.jvm.functions.Function1<? super T,java.lang.Boolean> meetsPreviewCriteria, optional boolean includesPrivatePreviews);
+    method public boolean component1();
+    method public java.util.List<error.NonExistentClass> component2();
+    method public java.util.List<error.NonExistentClass> component3();
+    method public java.util.Set<java.lang.String> component4();
+    method public kotlin.jvm.functions.Function1<T,java.lang.Boolean> component5();
+    method public boolean component6();
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilterState<T> copy(boolean overriddenClasspath, java.util.List<? extends error.NonExistentClass> excludedAnnotations, java.util.List<? extends error.NonExistentClass> includedAnnotations, java.util.Set<java.lang.String> namesOfIncludeAnnotationsInfo, kotlin.jvm.functions.Function1<? super T,java.lang.Boolean> meetsPreviewCriteria, boolean includesPrivatePreviews);
+    method public boolean equals(Object? other);
+    method public java.util.List<error.NonExistentClass> getExcludedAnnotations();
+    method public java.util.List<error.NonExistentClass> getIncludedAnnotations();
+    method public boolean getIncludesPrivatePreviews();
+    method public kotlin.jvm.functions.Function1<T,java.lang.Boolean> getMeetsPreviewCriteria();
+    method public java.util.Set<java.lang.String> getNamesOfIncludeAnnotationsInfo();
+    method public boolean getOverriddenClasspath();
+    method public int hashCode();
+    method public boolean shouldIncludeMethod(io.github.classgraph.MethodInfo methodInfo);
+    method public String toString();
+    property public final java.util.List<error.NonExistentClass> excludedAnnotations;
+    property public final java.util.List<error.NonExistentClass> includedAnnotations;
+    property public final boolean includesPrivatePreviews;
+    property public final kotlin.jvm.functions.Function1<T,java.lang.Boolean> meetsPreviewCriteria;
+    property public final java.util.Set<java.lang.String> namesOfIncludeAnnotationsInfo;
+    property public final boolean overriddenClasspath;
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.core.scanresult.filter.exceptions {
+
+  public final class RepeatableAnnotationNotSupportedException {
+    ctor public RepeatableAnnotationNotSupportedException(String methodName, java.util.List<? extends error.NonExistentClass> repeatableAnnotations);
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.core.utils {
+
+  public final class FileUtilsKt {
+    method public static error.NonExistentClass assetsFilePath(String fileName, optional String variantName);
+    method public static error.NonExistentClass testFilePath(String fileName);
+  }
+
+}
+
