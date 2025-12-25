@@ -32,6 +32,14 @@ jobs:
       - name: Run tests
         run: ./gradlew :tests:testApi
 
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-api-reports
+          path: tests/build/reports/tests/
+          retention-days: 7
+
   testSourceSets:
     runs-on: ubuntu-latest
     steps:
@@ -55,6 +63,14 @@ jobs:
 
       - name: Run tests
         run: ./gradlew :tests:testSourceSets
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-source-sets-reports
+          path: tests/build/reports/tests/
+          retention-days: 7
 
   paparazziPreviewsRuntime:
     runs-on: ubuntu-latest
