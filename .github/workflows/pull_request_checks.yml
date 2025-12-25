@@ -101,7 +101,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: paparazzi-runtime-reports
-          path: tests/build/reports/paparazzi/
+          path: tests/build/paparazzi/
           retention-days: 7
 
   paparazziPreviewsSourceSet:
@@ -133,7 +133,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: paparazzi-source-set-reports
-          path: tests/build/reports/paparazzi/
+          path: tests/build/paparazzi/
           retention-days: 7
 
   roborazziPreviewsRuntime:
