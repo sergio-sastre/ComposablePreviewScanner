@@ -4,7 +4,7 @@ tasks.register<Test>("testApi") {
     description = "Runs tests for ComposablePrevewScanner API"
     group = "Verification"
     maxHeapSize = "4g"
-    maxParallelForks = 3
+    maxParallelForks = 2
 
     val testDebugTask = tasks.getByName("testDebugUnitTest") as Test
     testClassesDirs = testDebugTask.testClassesDirs
