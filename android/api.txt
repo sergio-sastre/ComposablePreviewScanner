@@ -1,0 +1,564 @@
+// Signature format: 4.0
+package sergio.sastre.composable.preview.scanner.android {
+
+  public final class AndroidComposablePreviewScanner extends sergio.sastre.composable.preview.scanner.core.scanner.ComposablePreviewScanner<sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo> {
+    ctor public AndroidComposablePreviewScanner();
+  }
+
+  public final class AndroidPreviewInfo {
+    ctor public AndroidPreviewInfo(optional String name, optional String group, optional int apiLevel, optional int widthDp, optional int heightDp, optional String locale, optional float fontScale, optional boolean showSystemUi, optional boolean showBackground, optional long backgroundColor, optional int uiMode, optional String device, optional int wallpaper);
+    method public String component1();
+    method public long component10();
+    method public int component11();
+    method public String component12();
+    method public int component13();
+    method public String component2();
+    method public int component3();
+    method public int component4();
+    method public int component5();
+    method public String component6();
+    method public float component7();
+    method public boolean component8();
+    method public boolean component9();
+    method public sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo copy(String name, String group, int apiLevel, int widthDp, int heightDp, String locale, float fontScale, boolean showSystemUi, boolean showBackground, long backgroundColor, int uiMode, String device, int wallpaper);
+    method public boolean equals(Object? other);
+    method public int getApiLevel();
+    method public long getBackgroundColor();
+    method public String getDevice();
+    method public float getFontScale();
+    method public String getGroup();
+    method public int getHeightDp();
+    method public String getLocale();
+    method public String getName();
+    method public boolean getShowBackground();
+    method public boolean getShowSystemUi();
+    method public int getUiMode();
+    method public int getWallpaper();
+    method public int getWidthDp();
+    method public int hashCode();
+    method public String toString();
+    property public final int apiLevel;
+    property public final long backgroundColor;
+    property public final String device;
+    property public final float fontScale;
+    property public final String group;
+    property public final int heightDp;
+    property public final String locale;
+    property public final String name;
+    property public final boolean showBackground;
+    property public final boolean showSystemUi;
+    property public final int uiMode;
+    property public final int wallpaper;
+    property public final int widthDp;
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.android.device {
+
+  public final class DevicePreviewInfoParser {
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Device? parse(String device);
+    field public static final sergio.sastre.composable.preview.scanner.android.device.DevicePreviewInfoParser INSTANCE;
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.android.device.domain {
+
+  public final class ChinSize {
+    ctor public ChinSize(float value, sergio.sastre.composable.preview.scanner.android.device.domain.Unit unit);
+    method public float component1();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Unit component2();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.ChinSize copy(float value, sergio.sastre.composable.preview.scanner.android.device.domain.Unit unit);
+    method public boolean equals(Object? other);
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Unit getUnit();
+    method public float getValue();
+    method public int hashCode();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.ChinSize inDp(int densityDpi);
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.ChinSize inPx(int densityDpi);
+    method public String toString();
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Unit unit;
+    property public final float value;
+  }
+
+  public enum Cutout {
+    method public String getValue();
+    property public final String value;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.Cutout CORNER;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.Cutout DOUBLE;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.Cutout NONE;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.Cutout PUNCH_HOLE;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.Cutout TALL;
+  }
+
+  public final class Device {
+    ctor public Device(sergio.sastre.composable.preview.scanner.android.device.domain.Identifier? identifier, sergio.sastre.composable.preview.scanner.android.device.domain.Dimensions dimensions, int densityDpi, sergio.sastre.composable.preview.scanner.android.device.domain.Orientation orientation, sergio.sastre.composable.preview.scanner.android.device.domain.Shape shape, optional sergio.sastre.composable.preview.scanner.android.device.domain.ChinSize chinSize, optional sergio.sastre.composable.preview.scanner.android.device.domain.Type? type, optional sergio.sastre.composable.preview.scanner.android.device.domain.ScreenRatio screenRatio, optional sergio.sastre.composable.preview.scanner.android.device.domain.ScreenSize screenSize, optional sergio.sastre.composable.preview.scanner.android.device.domain.Cutout cutout, optional sergio.sastre.composable.preview.scanner.android.device.domain.Navigation navigation);
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier? component1();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Cutout component10();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Navigation component11();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Dimensions component2();
+    method public int component3();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Orientation component4();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Shape component5();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.ChinSize component6();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Type? component7();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.ScreenRatio component8();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.ScreenSize component9();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Device copy(sergio.sastre.composable.preview.scanner.android.device.domain.Identifier? identifier, sergio.sastre.composable.preview.scanner.android.device.domain.Dimensions dimensions, int densityDpi, sergio.sastre.composable.preview.scanner.android.device.domain.Orientation orientation, sergio.sastre.composable.preview.scanner.android.device.domain.Shape shape, sergio.sastre.composable.preview.scanner.android.device.domain.ChinSize chinSize, sergio.sastre.composable.preview.scanner.android.device.domain.Type? type, sergio.sastre.composable.preview.scanner.android.device.domain.ScreenRatio screenRatio, sergio.sastre.composable.preview.scanner.android.device.domain.ScreenSize screenSize, sergio.sastre.composable.preview.scanner.android.device.domain.Cutout cutout, sergio.sastre.composable.preview.scanner.android.device.domain.Navigation navigation);
+    method public boolean equals(Object? other);
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.ChinSize getChinSize();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Cutout getCutout();
+    method public int getDensityDpi();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Dimensions getDimensions();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier? getIdentifier();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Navigation getNavigation();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Orientation getOrientation();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.ScreenRatio getScreenRatio();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.ScreenSize getScreenSize();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Shape getShape();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Type? getType();
+    method public int hashCode();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Device inDp();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Device inPx();
+    method public String toString();
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.ChinSize chinSize;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Cutout cutout;
+    property public final int densityDpi;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Dimensions dimensions;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier? identifier;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Navigation navigation;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Orientation orientation;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.ScreenRatio screenRatio;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.ScreenSize screenSize;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Shape shape;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Type? type;
+  }
+
+  public final class Dimensions {
+    ctor public Dimensions(float height, float width, sergio.sastre.composable.preview.scanner.android.device.domain.Unit unit);
+    method public float component1();
+    method public float component2();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Unit component3();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Dimensions copy(float height, float width, sergio.sastre.composable.preview.scanner.android.device.domain.Unit unit);
+    method public boolean equals(Object? other);
+    method public float getHeight();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Unit getUnit();
+    method public float getWidth();
+    method public int hashCode();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Dimensions inDp(int densityDpi);
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Dimensions inPx(int densityDpi);
+    method public String toString();
+    property public final float height;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Unit unit;
+    property public final float width;
+  }
+
+  public interface GetDeviceByIdentifier<T extends java.lang.Enum<T>> {
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Device getDevice();
+    property public abstract sergio.sastre.composable.preview.scanner.android.device.domain.Device device;
+    field public static final sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceByIdentifier.Companion Companion;
+  }
+
+  public static final class GetDeviceByIdentifier.Companion {
+    method public inline <reified T> T? findByDeviceId(String deviceId);
+    method public inline <reified T> T? findByDeviceName(String deviceName);
+  }
+
+  public final class Identifier {
+    ctor public Identifier(optional String? id, optional String? name);
+    method public String? component1();
+    method public String? component2();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier copy(String? id, String? name);
+    method public boolean equals(Object? other);
+    method public String? getId();
+    method public String? getName();
+    method public int hashCode();
+    method public String toString();
+    property public final String? id;
+    property public final String? name;
+    field public static final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier.Companion Companion;
+  }
+
+  public static final class Identifier.Companion {
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getAUTOMOTIVE_1024DP_LANDSCAPE();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getAUTOMOTIVE_1080DP_LANDSCAPE();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getAUTOMOTIVE_1408DP_LANDSCAPE();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getAUTOMOTIVE_1408DP_LANDSCAPE_WITH_GOOGLE_PLAY();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getAUTOMOTIVE_DISTANT_DISPLAY();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getAUTOMOTIVE_DISTANT_DISPLAY_WITH_GOOGLE_PLAY();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getAUTOMOTIVE_LARGE_PORTRAIT();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getAUTOMOTIVE_PORTRAIT();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getAUTOMOTIVE_ULTRAWIDE();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getFOLD_IN_WITH_OUTER_DISPLAY_7_6IN();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getFOLD_OUT_8IN();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getFREEFORM_13_5IN();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getFWVGA_3_7IN_SLIDER();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getFWVGA_5_4IN();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getGALAXY_NEXUS();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getGALAXY_NEXUS_4_65IN_720P();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getHORIZONTAL_FOLD_IN_6_7IN();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getHVGA_3_2IN_ADP1();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getLARGE_DESKTOP();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getMEDIUM_DESKTOP();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getMEDIUM_PHONE();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getMEDIUM_TABLET();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getNEXUS_10();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getNEXUS_4();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getNEXUS_5();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getNEXUS_5X();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getNEXUS_6();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getNEXUS_6P();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getNEXUS_7_2012();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getNEXUS_7_2013();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getNEXUS_9();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getNEXUS_ONE();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getNEXUS_ONE_WVGA_3_7IN();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getNEXUS_S();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getNEXUS_S_WVGA_4IN();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_2();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_2_XL();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_3();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_3A();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_3A_XL();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_3_XL();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_4();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_4A();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_4_XL();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_5();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_6();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_6A();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_6_PRO();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_7();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_7A();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_7_PRO();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_8();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_8A();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_8_PRO();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_9();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_9A();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_9_PRO();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_9_PRO_FOLD();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_9_PRO_XL();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_C();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_FOLD();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_TABLET();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getPIXEL_XL();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getQVGA_2_7IN();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getQVGA_2_7IN_SLIDER();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getQVGA_3_2IN_ADP2();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getRESIZABLE_EXPERIMENTAL();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getROLLABLE_7_4IN();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getSMALL_DESKTOP();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getSMALL_PHONE();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getTV_1080p();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getTV_4K();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getTV_720p();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getWEAR_OS_LARGE_ROUND();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getWEAR_OS_RECT();
+    method @Deprecated public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getWEAR_OS_RECTANGULAR();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getWEAR_OS_SMALL_ROUND();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getWEAR_OS_SQUARE();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getWQVGA_3_3IN();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getWQVGA_3_4IN();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getWSVGA_TABLET_7IN();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getWVGA_5_1IN();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getWXGA_4_7IN();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getWXGA_TABLET_10_1IN();
+    method @Deprecated public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getXR_DEVICE();
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Identifier getXR_HEADSET();
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier AUTOMOTIVE_1024DP_LANDSCAPE;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier AUTOMOTIVE_1080DP_LANDSCAPE;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier AUTOMOTIVE_1408DP_LANDSCAPE;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier AUTOMOTIVE_1408DP_LANDSCAPE_WITH_GOOGLE_PLAY;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier AUTOMOTIVE_DISTANT_DISPLAY;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier AUTOMOTIVE_DISTANT_DISPLAY_WITH_GOOGLE_PLAY;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier AUTOMOTIVE_LARGE_PORTRAIT;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier AUTOMOTIVE_PORTRAIT;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier AUTOMOTIVE_ULTRAWIDE;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier FOLD_IN_WITH_OUTER_DISPLAY_7_6IN;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier FOLD_OUT_8IN;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier FREEFORM_13_5IN;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier FWVGA_3_7IN_SLIDER;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier FWVGA_5_4IN;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier GALAXY_NEXUS;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier GALAXY_NEXUS_4_65IN_720P;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier HORIZONTAL_FOLD_IN_6_7IN;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier HVGA_3_2IN_ADP1;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier LARGE_DESKTOP;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier MEDIUM_DESKTOP;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier MEDIUM_PHONE;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier MEDIUM_TABLET;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier NEXUS_10;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier NEXUS_4;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier NEXUS_5;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier NEXUS_5X;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier NEXUS_6;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier NEXUS_6P;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier NEXUS_7_2012;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier NEXUS_7_2013;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier NEXUS_9;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier NEXUS_ONE;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier NEXUS_ONE_WVGA_3_7IN;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier NEXUS_S;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier NEXUS_S_WVGA_4IN;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_2;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_2_XL;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_3;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_3A;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_3A_XL;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_3_XL;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_4;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_4A;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_4_XL;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_5;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_6;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_6A;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_6_PRO;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_7;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_7A;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_7_PRO;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_8;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_8A;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_8_PRO;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_9;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_9A;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_9_PRO;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_9_PRO_FOLD;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_9_PRO_XL;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_C;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_FOLD;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_TABLET;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier PIXEL_XL;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier QVGA_2_7IN;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier QVGA_2_7IN_SLIDER;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier QVGA_3_2IN_ADP2;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier RESIZABLE_EXPERIMENTAL;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier ROLLABLE_7_4IN;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier SMALL_DESKTOP;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier SMALL_PHONE;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier TV_1080p;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier TV_4K;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier TV_720p;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier WEAR_OS_LARGE_ROUND;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier WEAR_OS_RECT;
+    property @Deprecated public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier WEAR_OS_RECTANGULAR;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier WEAR_OS_SMALL_ROUND;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier WEAR_OS_SQUARE;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier WQVGA_3_3IN;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier WQVGA_3_4IN;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier WSVGA_TABLET_7IN;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier WVGA_5_1IN;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier WXGA_4_7IN;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier WXGA_TABLET_10_1IN;
+    property @Deprecated public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier XR_DEVICE;
+    property public final sergio.sastre.composable.preview.scanner.android.device.domain.Identifier XR_HEADSET;
+  }
+
+  public enum Navigation {
+    method public String getValue();
+    property public final String value;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.Navigation BUTTONS;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.Navigation GESTURE;
+  }
+
+  public enum Orientation {
+    method public String getValue();
+    property public final String value;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.Orientation LANDSCAPE;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.Orientation PORTRAIT;
+  }
+
+  public final class RobolectricDeviceQualifierBuilder {
+    method public String? build(String previewDevice);
+    method public String build(sergio.sastre.composable.preview.scanner.android.device.domain.Device device);
+    field public static final sergio.sastre.composable.preview.scanner.android.device.domain.RobolectricDeviceQualifierBuilder INSTANCE;
+  }
+
+  public enum ScreenRatio {
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.ScreenRatio LONG;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.ScreenRatio NOTLONG;
+  }
+
+  public enum ScreenSize {
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.ScreenSize LARGE;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.ScreenSize NORMAL;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.ScreenSize SMALL;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.ScreenSize XLARGE;
+  }
+
+  public enum Shape {
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.Shape NOTROUND;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.Shape ROUND;
+  }
+
+  public enum Type {
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.Type CAR;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.Type DESKTOP;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.Type FOLDABLE;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.Type PHONE;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.Type TABLET;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.Type TV;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.Type WEAR;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.Type XR;
+  }
+
+  public enum Unit {
+    method public String getValue();
+    property public final String value;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.Unit DP;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.domain.Unit PX;
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.android.device.types {
+
+  public enum Automotive implements sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceByIdentifier<sergio.sastre.composable.preview.scanner.android.device.types.Automotive> {
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Device getDevice();
+    property public sergio.sastre.composable.preview.scanner.android.device.domain.Device device;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Automotive AUTOMOTIVE_1024DP_LANDSCAPE;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Automotive AUTOMOTIVE_1080DP_LANDSCAPE;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Automotive AUTOMOTIVE_1408DP_LANDSCAPE;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Automotive AUTOMOTIVE_1408DP_LANDSCAPE_WITH_GOOGLE_PLAY;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Automotive AUTOMOTIVE_DISTANT_DISPLAY;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Automotive AUTOMOTIVE_DISTANT_DISPLAY_WITH_GOOGLE_PLAY;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Automotive AUTOMOTIVE_LARGE_PORTRAIT;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Automotive AUTOMOTIVE_PORTRAIT;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Automotive AUTOMOTIVE_ULTRAWIDE;
+  }
+
+  public final class DefaultKt {
+    method public static sergio.sastre.composable.preview.scanner.android.device.domain.Device getDEFAULT();
+    property public static final sergio.sastre.composable.preview.scanner.android.device.domain.Device DEFAULT;
+  }
+
+  public enum Desktop implements sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceByIdentifier<sergio.sastre.composable.preview.scanner.android.device.types.Desktop> {
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Device getDevice();
+    property public sergio.sastre.composable.preview.scanner.android.device.domain.Device device;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Desktop LARGE_DESKTOP;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Desktop MEDIUM_DESKTOP;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Desktop SMALL_DESKTOP;
+  }
+
+  public enum GenericDevices implements sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceByIdentifier<sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices> {
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Device getDevice();
+    property public sergio.sastre.composable.preview.scanner.android.device.domain.Device device;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices FOLD_IN_WITH_OUTER_DISPLAY_7_6IN;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices FOLD_OUT_8IN;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices FREEFORM_13_5IN;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices FWVGA_3_7IN_SLIDER;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices FWVGA_5_4IN;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices GALAXY_NEXUS_4_65IN_720P;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices HORIZONTAL_FOLD_IN_6_7IN;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices HVGA_3_2IN_SLIDER_ADP1;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices MEDIUM_PHONE;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices MEDIUM_TABLET;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices NEXUS_ONE_WVGA_3_7IN;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices NEXUS_S_WVGA_4IN;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices QVGA_2_7IN;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices QVGA_2_7IN_SLIDER;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices QVGA_3_2IN_ADP2;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices RESIZABLE_EXPERIMENTAL;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices ROLLABLE_7_4IN;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices SMALL_PHONE;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices WQVGA_3_3IN;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices WQVGA_3_4IN;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices WSVGA_TABLET_7IN;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices WVGA_5_1IN;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices WXGA_4_7IN;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.GenericDevices WXGA_TABLET_10_1IN;
+  }
+
+  public enum Phone implements sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceByIdentifier<sergio.sastre.composable.preview.scanner.android.device.types.Phone> {
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Device getDevice();
+    property public sergio.sastre.composable.preview.scanner.android.device.domain.Device device;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone GALAXY_NEXUS;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone NEXUS_4;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone NEXUS_5;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone NEXUS_5X;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone NEXUS_6;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone NEXUS_6P;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone NEXUS_ONE;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone NEXUS_S;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_2;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_2_XL;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_3;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_3A;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_3A_XL;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_3_XL;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_4;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_4A;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_4_XL;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_5;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_6;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_6A;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_6_PRO;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_7;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_7A;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_7_PRO;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_8;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_8A;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_8_PRO;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_9;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_9A;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_9_PRO;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_9_PRO_XL;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_FOLD;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Phone PIXEL_XL;
+  }
+
+  public enum Tablet implements sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceByIdentifier<sergio.sastre.composable.preview.scanner.android.device.types.Tablet> {
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Device getDevice();
+    property public sergio.sastre.composable.preview.scanner.android.device.domain.Device device;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Tablet NEXUS_10;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Tablet NEXUS_7_2012;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Tablet NEXUS_7_2013;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Tablet NEXUS_9;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Tablet PIXEL_9_PRO_FOLD;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Tablet PIXEL_C;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Tablet PIXEL_TABLET;
+  }
+
+  public enum Television implements sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceByIdentifier<sergio.sastre.composable.preview.scanner.android.device.types.Television> {
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Device getDevice();
+    property public sergio.sastre.composable.preview.scanner.android.device.domain.Device device;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Television TV_1080p;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Television TV_4K;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Television TV_720p;
+  }
+
+  public enum Wear implements sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceByIdentifier<sergio.sastre.composable.preview.scanner.android.device.types.Wear> {
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Device getDevice();
+    property public sergio.sastre.composable.preview.scanner.android.device.domain.Device device;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Wear WEAR_OS_LARGE_ROUND;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Wear WEAR_OS_RECT;
+    enum_constant @Deprecated public static final sergio.sastre.composable.preview.scanner.android.device.types.Wear WEAR_OS_RECTANGULAR;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Wear WEAR_OS_SMALL_ROUND;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.Wear WEAR_OS_SQUARE;
+  }
+
+  public enum XR implements sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceByIdentifier<sergio.sastre.composable.preview.scanner.android.device.types.XR> {
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Device getDevice();
+    property public sergio.sastre.composable.preview.scanner.android.device.domain.Device device;
+    enum_constant @Deprecated public static final sergio.sastre.composable.preview.scanner.android.device.types.XR XR_DEVICE;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.android.device.types.XR XR_HEADSET;
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.android.screenshotid {
+
+  public final class AndroidPreviewScreenshotIdBuilder extends sergio.sastre.composable.preview.scanner.core.preview.screenshotid.PreviewScreenshotIdBuilder<sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo> {
+    ctor public AndroidPreviewScreenshotIdBuilder(sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview<sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo> composablePreview);
+  }
+
+  public final class GetDeviceScreenshotId {
+    method public String? getDeviceScreenshotId(String device);
+    field public static final sergio.sastre.composable.preview.scanner.android.screenshotid.GetDeviceScreenshotId INSTANCE;
+  }
+
+}
+

@@ -85,6 +85,9 @@ android {
         all { test ->
             test.jvmArgs("-Xmx4g")
             test.testLogging { showStandardStreams = true }
+            if (project.hasProperty("maxParallelForks")) {
+                test.maxParallelForks = (project.property("maxParallelForks") as String).toInt()
+            }
         }
     }
 }
@@ -111,6 +114,7 @@ dependencies {
     implementation(libs.androidx.glance.preview)
     implementation(libs.androidx.glance.appwidget.preview)
     implementation(libs.androidx.junit.ktx)
+    implementation(libs.androidx.compose.ui.test.junit4)
 
     screenshotTestImplementation(libs.kotlinx.collections.immutable)
     debugImplementation(libs.kotlinx.collections.immutable) {
@@ -146,5 +150,11 @@ tasks.register("lintVitalAnalyzeRelease") {
     description = "No-op placeholder. Lint vital for release is disabled in this test module."
     doLast {
         println("lintVitalAnalyzeRelease is disabled by configuration; skipping.")
+    }
+}
+
+plugins.withId("io.github.takahirom.roborazzi") {
+    configure<io.github.takahirom.roborazzi.RoborazziExtension> {
+        outputDir.set(file("src/test/screenshots"))
     }
 }

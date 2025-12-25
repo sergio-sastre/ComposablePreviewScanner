@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "2.0.0"
+    alias(libs.plugins.metalava)
     id("maven-publish")
 }
 
