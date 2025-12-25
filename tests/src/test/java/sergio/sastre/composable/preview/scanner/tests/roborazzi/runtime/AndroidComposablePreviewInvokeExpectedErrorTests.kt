@@ -48,8 +48,7 @@ class AndroidComposablePreviewInvokeExpectedErrorTests(
     @Config(sdk = [30])
     @Test(expected = PreviewParameterIsNotFirstArgumentException::class)
     fun snapshot() {
-        val name = screenshotName(preview)
-        captureRoboImage(filePath = "${name}.png") {
+        captureRoboImage(filePath = screenshotName(preview)) {
             preview()
         }
     }
