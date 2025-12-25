@@ -27,8 +27,7 @@ tasks.register("paparazziPreviewsSourceSet") {
                 ":tests:${command}PaparazziDebug",
                 "--tests",
                 "sergio.sastre.composable.preview.scanner.tests.paparazzi.sourceset.*",
-                "-Plibrary=paparazzi",
-                "-PmaxParallelForks=3"
+                "-Plibrary=paparazzi"
             )
         }
     }

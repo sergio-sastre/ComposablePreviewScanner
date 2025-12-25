@@ -27,7 +27,7 @@ tasks.register("roborazziPreviewsSourceSet") {
                 ":tests:${command}RoborazziDebug",
                 "--tests",
                 "sergio.sastre.composable.preview.scanner.tests.roborazzi.sourceset.*",
-                "-Plibrary=roborazzi",
+                "-Plibrary=roborazzi"
             )
         }
     }
