@@ -287,7 +287,8 @@ class AndroidComposablePreviewScannerTest {
 
     @Test(expected = FileNotFoundException::class)
     fun `GIVEN a scan result file doesn't exist WHEN scan result read from file THEN throw File does not exist exception`() {
-        val scanResultFile = testFilePath("scan_result.json")
+        val scanResultFile = testFilePath("scan_result_2.json")
+        scanResultFile.delete()
         assumeFalse(scanResultFile.exists())
 
         AndroidComposablePreviewScanner()

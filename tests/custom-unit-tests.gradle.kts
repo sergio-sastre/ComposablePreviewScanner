@@ -4,6 +4,7 @@ tasks.register<Test>("testApi") {
     description = "Runs tests for ComposablePrevewScanner API"
     group = "Verification"
     maxHeapSize = "4g"
+    maxParallelForks = 3
 
     val testDebugTask = tasks.getByName("testDebugUnitTest") as Test
     testClassesDirs = testDebugTask.testClassesDirs
@@ -22,6 +23,7 @@ tasks.register<Test>("testSourceSets") {
     description = "Runs tests for ComposablePrevewScanner source sets"
     group = "Verification"
     maxHeapSize = "4g"
+    maxParallelForks = 1
 
     // source sets classes need to exist before executing these tests, otherwise they're skipped
     tasks.findByName("compileReleaseKotlin")?.let { dependsOn(it) }
