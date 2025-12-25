@@ -96,6 +96,14 @@ jobs:
       - name: Run paparazziPreviewsRuntime
         run: ./gradlew paparazziPreviewsRuntime -Pverify=true
 
+      - name: Upload Paparazzi reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: paparazzi-runtime-reports
+          path: tests/build/reports/paparazzi/
+          retention-days: 7
+
   paparazziPreviewsSourceSet:
     runs-on: ubuntu-latest
     steps:
@@ -119,6 +127,14 @@ jobs:
 
       - name: Run paparazziPreviewsSourceSet
         run: ./gradlew paparazziPreviewsSourceSet -Pverify=true
+
+      - name: Upload Paparazzi reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: paparazzi-source-set-reports
+          path: tests/build/reports/paparazzi/
+          retention-days: 7
 
   roborazziPreviewsRuntime:
     runs-on: ubuntu-latest
