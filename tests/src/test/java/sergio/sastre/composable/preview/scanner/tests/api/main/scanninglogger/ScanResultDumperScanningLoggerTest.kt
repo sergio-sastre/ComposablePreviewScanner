@@ -1,7 +1,6 @@
 package sergio.sastre.composable.preview.scanner.tests.api.main.scanninglogger
 
 import org.junit.Assert
-import org.junit.Assume
 import org.junit.Assume.assumeFalse
 import org.junit.Rule
 import org.junit.Test
@@ -10,12 +9,12 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHea
 import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper
 import sergio.sastre.composable.preview.scanner.core.utils.assetsFilePath
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
+import sergio.sastre.composable.preview.scanner.utils.ScanResultFileName
 import sergio.sastre.composable.preview.scanner.utils.SystemOutputTestRule
 
 class ScanResultDumperScanningLoggerTest {
 
     val regexAnyNumberBut0 = "[1-9]\\d*"
-    val scanFileName = "scan_result_0.json"
 
     @get:Rule
     val systemOutputTestRule = SystemOutputTestRule()
@@ -23,7 +22,7 @@ class ScanResultDumperScanningLoggerTest {
     @Test
     fun `GIVEN scan file doesn't exist WHEN logging is not enabled THEN outputs nothing`() {
         // WHEN
-        val scanResultFile = testFilePath(scanFileName)
+        val scanResultFile = testFilePath(ScanResultFileName.SCAN_RESULT_DUMPER_SCANNING_LOGGER_TEST)
         scanResultFile.delete()
         assumeFalse(scanResultFile.exists())
 
@@ -48,7 +47,7 @@ class ScanResultDumperScanningLoggerTest {
     @Test
     fun `GIVEN scan file doesn't exist WHEN Scanning package trees THEN outputs all scanning info except source set`() {
         // WHEN
-        val scanResultFile = testFilePath(scanFileName)
+        val scanResultFile = testFilePath(ScanResultFileName.SCAN_RESULT_DUMPER_SCANNING_LOGGER_TEST)
         scanResultFile.delete()
         assumeFalse(scanResultFile.exists())
 
@@ -94,7 +93,7 @@ class ScanResultDumperScanningLoggerTest {
     @Test
     fun `GIVEN scan file doesn't exist WHEN Scanning all packages THEN outputs all scanning info except source set`() {
         // WHEN
-        val scanResultFile = testFilePath(scanFileName)
+        val scanResultFile = testFilePath(ScanResultFileName.SCAN_RESULT_DUMPER_SCANNING_LOGGER_TEST)
         scanResultFile.delete()
         assumeFalse(scanResultFile.exists())
 

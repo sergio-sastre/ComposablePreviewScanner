@@ -1,6 +1,5 @@
 package sergio.sastre.composable.preview.scanner.tests.api.main
 
-import org.junit.Assume
 import org.junit.Assume.assumeFalse
 import org.junit.Test
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
@@ -10,15 +9,14 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHea
 import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper
 import sergio.sastre.composable.preview.scanner.core.utils.assetsFilePath
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
+import sergio.sastre.composable.preview.scanner.utils.ScanResultFileName
 
 class ScanResultDumperTest {
-
-    val scanFileName = "scan_result_1.json"
 
     @OptIn(RequiresLargeHeap::class)
     @Test
     fun `GIVEN a scan result file doesn't exist WHEN scan result for all previews is dumped into that file THEN that file exists and contains all previews`() {
-        val scanResultFile = testFilePath(scanFileName)
+        val scanResultFile = testFilePath(ScanResultFileName.SCAN_RESULT_DUMPER_TEST)
         scanResultFile.delete()
         assumeFalse(scanResultFile.exists())
 
@@ -48,7 +46,7 @@ class ScanResultDumperTest {
     @Test
     fun `GIVEN a scan result file does not exist WHEN scan result is dumped into that file with a flavour THEN that file exists in that flavour`() {
         val scanResultFile = assetsFilePath(
-            fileName = scanFileName,
+            fileName = ScanResultFileName.SCAN_RESULT_DUMPER_TEST,
             variantName = "debug"
         )
         scanResultFile.delete()
@@ -58,7 +56,7 @@ class ScanResultDumperTest {
             ScanResultDumper()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .dumpScanResultToFileInAssets(
-                    scanFileName = scanFileName,
+                    scanFileName = ScanResultFileName.SCAN_RESULT_DUMPER_TEST,
                     variantName = "debug"
                 )
 
@@ -76,7 +74,7 @@ class ScanResultDumperTest {
     @Test
     fun `GIVEN a scan result file does not exist WHEN scan result for some previews is dumped into that file THEN that file contains those previews`() {
         val scanResultFile = assetsFilePath(
-            fileName = scanFileName,
+            fileName = ScanResultFileName.SCAN_RESULT_DUMPER_TEST,
             variantName = "debug"
         )
         scanResultFile.delete()
@@ -86,7 +84,7 @@ class ScanResultDumperTest {
             ScanResultDumper()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .dumpScanResultToFileInAssets(
-                    scanFileName = scanFileName,
+                    scanFileName = ScanResultFileName.SCAN_RESULT_DUMPER_TEST,
                     variantName = "debug"
                 )
 
@@ -112,7 +110,7 @@ class ScanResultDumperTest {
     @Test
     fun `GIVEN a scan result file does not exist WHEN scan result for some previews in MAIN is dumped into that file THEN that file contains those previews`() {
         val scanResultFile = assetsFilePath(
-            fileName = scanFileName,
+            fileName = ScanResultFileName.SCAN_RESULT_DUMPER_TEST,
             variantName = "debug"
         )
         scanResultFile.delete()
@@ -123,7 +121,7 @@ class ScanResultDumperTest {
                 .setTargetSourceSet(Classpath(MAIN))
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner")
                 .dumpScanResultToFileInAssets(
-                    scanFileName = scanFileName,
+                    scanFileName = ScanResultFileName.SCAN_RESULT_DUMPER_TEST,
                     variantName = "debug"
                 )
 
