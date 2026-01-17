@@ -27,62 +27,7 @@ class PaparazziTestGenerator {
 
             ${generateComposableHelpers()}
             
-            @RunWith(Parameterized::class)
-            class $className(
-                val preview: ComposablePreview<AndroidPreviewInfo>,
-            ) {
-            
-                companion object {
-                    private val cachedPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
-                        AndroidComposablePreviewScanner()
-                            .scanPackageTrees($packagesExpr)
-                            ${if (includePrivatePreviewsExpr) ".includePrivatePreviews()" else ""}
-                            .getPreviews()
-                    }
-
-                    @JvmStatic
-                    @Parameterized.Parameters
-                    fun values(): List<ComposablePreview<AndroidPreviewInfo>> = cachedPreviews
-                }
-            
-                @get:Rule
-                val paparazzi: Paparazzi = PaparazziPreviewRule.createFor(preview)
-            
-                @Test
-                fun snapshot() {
-                    val screenshotId = AndroidPreviewScreenshotIdBuilder(preview)
-                    .doNotIgnoreMethodParametersType()
-                    .encodeUnsafeCharacters()
-                    .build()
-                    
-                    paparazzi.snapshot(name = screenshotId) {
-                        val previewInfo = preview.previewInfo
-                        when (previewInfo.showSystemUi) {
-                            false -> PreviewBackground(
-                                showBackground = previewInfo.showBackground,
-                                backgroundColor = previewInfo.backgroundColor,
-                            ) {
-                                preview()
-                            }
-                
-                            true -> {
-                                val parsedDevice = (DevicePreviewInfoParser.parse(previewInfo.device) ?: DEFAULT).inDp()
-                                SystemUiSize(
-                                    widthInDp = parsedDevice.dimensions.width.toInt(),
-                                    heightInDp = parsedDevice.dimensions.height.toInt()
-                                ) {
-                                    PreviewBackground(
-                                        showBackground = true,
-                                        backgroundColor = previewInfo.backgroundColor,
-                                    ) {
-                                        preview()
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            ${generateTestClass(className, packagesExpr, includePrivatePreviewsExpr)}
             """.trimIndent()
     }
 
@@ -331,6 +276,71 @@ class PaparazziTestGenerator {
                         }
                         Box(Modifier.background(color)) {
                             content()
+                        }
+                    }
+                }
+            }
+        """.trimIndent()
+    }
+
+    private fun generateTestClass(
+        className: String,
+        packagesExpr: String,
+        includePrivatePreviewsExpr: Boolean
+    ): String {
+        return """
+            @RunWith(Parameterized::class)
+            class $className(
+                val preview: ComposablePreview<AndroidPreviewInfo>,
+            ) {
+            
+                companion object {
+                    private val cachedPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
+                        AndroidComposablePreviewScanner()
+                            .scanPackageTrees($packagesExpr)
+                            ${if (includePrivatePreviewsExpr) ".includePrivatePreviews()" else ""}
+                            .getPreviews()
+                    }
+
+                    @JvmStatic
+                    @Parameterized.Parameters
+                    fun values(): List<ComposablePreview<AndroidPreviewInfo>> = cachedPreviews
+                }
+            
+                @get:Rule
+                val paparazzi: Paparazzi = PaparazziPreviewRule.createFor(preview)
+            
+                @Test
+                fun snapshot() {
+                    val screenshotId = AndroidPreviewScreenshotIdBuilder(preview)
+                    .doNotIgnoreMethodParametersType()
+                    .encodeUnsafeCharacters()
+                    .build()
+                    
+                    paparazzi.snapshot(name = screenshotId) {
+                        val previewInfo = preview.previewInfo
+                        when (previewInfo.showSystemUi) {
+                            false -> PreviewBackground(
+                                showBackground = previewInfo.showBackground,
+                                backgroundColor = previewInfo.backgroundColor,
+                            ) {
+                                preview()
+                            }
+                
+                            true -> {
+                                val parsedDevice = (DevicePreviewInfoParser.parse(previewInfo.device) ?: DEFAULT).inDp()
+                                SystemUiSize(
+                                    widthInDp = parsedDevice.dimensions.width.toInt(),
+                                    heightInDp = parsedDevice.dimensions.height.toInt()
+                                ) {
+                                    PreviewBackground(
+                                        showBackground = true,
+                                        backgroundColor = previewInfo.backgroundColor,
+                                    ) {
+                                        preview()
+                                    }
+                                }
+                            }
                         }
                     }
                 }
