@@ -8,39 +8,7 @@ class PaparazziTestGenerator {
         includePrivatePreviewsExpr: Boolean
     ): String {
         return """
-            package $packageName
-            
-            import android.content.res.Configuration.UI_MODE_NIGHT_MASK
-            import android.content.res.Configuration.UI_MODE_NIGHT_YES
-            import androidx.compose.ui.graphics.Color
-            import androidx.compose.ui.unit.dp
-            import androidx.compose.ui.Modifier
-            import androidx.compose.foundation.background
-            import androidx.compose.foundation.layout.size
-            import androidx.compose.foundation.layout.Box
-            import androidx.compose.runtime.Composable
-            import app.cash.paparazzi.detectEnvironment
-            import app.cash.paparazzi.DeviceConfig
-            import app.cash.paparazzi.HtmlReportWriter
-            import app.cash.paparazzi.Paparazzi
-            import app.cash.paparazzi.Snapshot
-            import app.cash.paparazzi.SnapshotHandler
-            import app.cash.paparazzi.SnapshotVerifier
-            import app.cash.paparazzi.TestName
-            import com.android.ide.common.rendering.api.SessionParams
-            import com.android.resources.*
-            import kotlin.math.ceil
-            import org.junit.Rule
-            import org.junit.Test
-            import org.junit.runner.RunWith
-            import org.junit.runners.Parameterized
-            import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
-            import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
-            import sergio.sastre.composable.preview.scanner.android.device.DevicePreviewInfoParser
-            import sergio.sastre.composable.preview.scanner.android.device.domain.Device
-            import sergio.sastre.composable.preview.scanner.android.device.types.DEFAULT
-            import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
-            import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
+            ${generateImports(packageName)}
             
             class Dimensions(
                 val screenWidthInPx: Int,
@@ -294,5 +262,43 @@ class PaparazziTestGenerator {
                 }
             }
             """.trimIndent()
+    }
+
+    private fun generateImports(packageName: String): String {
+        return """
+            package $packageName
+            
+            import android.content.res.Configuration.UI_MODE_NIGHT_MASK
+            import android.content.res.Configuration.UI_MODE_NIGHT_YES
+            import androidx.compose.ui.graphics.Color
+            import androidx.compose.ui.unit.dp
+            import androidx.compose.ui.Modifier
+            import androidx.compose.foundation.background
+            import androidx.compose.foundation.layout.size
+            import androidx.compose.foundation.layout.Box
+            import androidx.compose.runtime.Composable
+            import app.cash.paparazzi.detectEnvironment
+            import app.cash.paparazzi.DeviceConfig
+            import app.cash.paparazzi.HtmlReportWriter
+            import app.cash.paparazzi.Paparazzi
+            import app.cash.paparazzi.Snapshot
+            import app.cash.paparazzi.SnapshotHandler
+            import app.cash.paparazzi.SnapshotVerifier
+            import app.cash.paparazzi.TestName
+            import com.android.ide.common.rendering.api.SessionParams
+            import com.android.resources.*
+            import kotlin.math.ceil
+            import org.junit.Rule
+            import org.junit.Test
+            import org.junit.runner.RunWith
+            import org.junit.runners.Parameterized
+            import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
+            import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
+            import sergio.sastre.composable.preview.scanner.android.device.DevicePreviewInfoParser
+            import sergio.sastre.composable.preview.scanner.android.device.domain.Device
+            import sergio.sastre.composable.preview.scanner.android.device.types.DEFAULT
+            import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
+            import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
+        """.trimIndent()
     }
 }
