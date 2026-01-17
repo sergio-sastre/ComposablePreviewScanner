@@ -294,6 +294,21 @@ class PaparazziTestGenerator {
                 val preview: ComposablePreview<AndroidPreviewInfo>,
             ) {
             
+                ${generateCompanionObject(packagesExpr, includePrivatePreviewsExpr)}
+            
+                @get:Rule
+                val paparazzi: Paparazzi = PaparazziPreviewRule.createFor(preview)
+            
+                ${generateTestMethod()}
+            }
+        """.trimIndent()
+    }
+
+    private fun generateCompanionObject(
+        packagesExpr: String,
+        includePrivatePreviewsExpr: Boolean
+    ): String {
+        return """
                 companion object {
                     private val cachedPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
                         AndroidComposablePreviewScanner()
@@ -306,10 +321,11 @@ class PaparazziTestGenerator {
                     @Parameterized.Parameters
                     fun values(): List<ComposablePreview<AndroidPreviewInfo>> = cachedPreviews
                 }
-            
-                @get:Rule
-                val paparazzi: Paparazzi = PaparazziPreviewRule.createFor(preview)
-            
+        """.trimIndent()
+    }
+
+    private fun generateTestMethod(): String {
+        return """
                 @Test
                 fun snapshot() {
                     val screenshotId = AndroidPreviewScreenshotIdBuilder(preview)
@@ -344,7 +360,6 @@ class PaparazziTestGenerator {
                         }
                     }
                 }
-            }
         """.trimIndent()
     }
 }
