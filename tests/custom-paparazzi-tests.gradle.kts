@@ -1,8 +1,8 @@
 
-// record: ./gradlew paparazziPreviews
-// verify: ./gradlew paparazziPreviews -Pverify=true
-tasks.register("paparazziPreviews") {
-    description = "Records/verifies screenshots with Paparazzi for ComposablePreview tests"
+// record: ./gradlew paparazziPreviewsSourceSet
+// verify: ./gradlew paparazziPreviewsSourceSet -Pverify=true
+tasks.register("paparazziPreviewsSourceSet") {
+    description = "Records/verifies screenshots with Paparazzi for ComposablePreview tests from compiled classes"
     group = "Verification"
 
     // For the sourceTests
@@ -26,8 +26,42 @@ tasks.register("paparazziPreviews") {
                 gradleCommand,
                 ":tests:${command}PaparazziDebug",
                 "--tests",
-                "sergio.sastre.composable.preview.scanner.tests.paparazzi.*",
+                "sergio.sastre.composable.preview.scanner.tests.paparazzi.sourceset.*",
                 "-Plibrary=paparazzi"
+            )
+        }
+    }
+
+    // This makes the cleanTestsBuildFolder task run after this task completes
+    finalizedBy("cleanTestsBuildFolder")
+}
+
+// record: ./gradlew paparazziPreviewsRuntime
+// verify: ./gradlew paparazziPreviewsRuntime -Pverify=true
+tasks.register("paparazziPreviewsRuntime") {
+    description = "Records/verifies screenshots with Paparazzi for ComposablePreview tests at runtime"
+    group = "Verification"
+
+    doLast {
+        val verifyProperty = project.findProperty("verify")?.toString()
+        val isVerify = verifyProperty?.equals("true", ignoreCase = true) ?: false
+
+        val command = if (isVerify) "verify" else "record"
+        // Use the Gradle exec API to run a gradle command programmatically
+        project.exec {
+            workingDir(project.rootDir)
+
+            // Build the command with proper executable for the OS
+            val isWindows = System.getProperty("os.name").lowercase().contains("windows")
+            val gradleCommand = if (isWindows) "gradlew.bat" else "./gradlew"
+
+            commandLine(
+                gradleCommand,
+                ":tests:${command}PaparazziDebug",
+                "--tests",
+                "sergio.sastre.composable.preview.scanner.tests.paparazzi.runtime.*",
+                "-Plibrary=paparazzi",
+                "-PmaxParallelForks=2"
             )
         }
     }

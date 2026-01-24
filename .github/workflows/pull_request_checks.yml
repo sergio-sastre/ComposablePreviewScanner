@@ -1,0 +1,55 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        task:
+          - { name: 'testApi', command: ':tests:testApi', artifact: 'test-api-reports', path: 'tests/build/reports/tests/' }
+          - { name: 'testSourceSets', command: ':tests:testSourceSets', artifact: 'test-source-sets-reports', path: 'tests/build/reports/tests/' }
+          - { name: 'paparazziPreviewsRuntime', command: 'paparazziPreviewsRuntime -Pverify=true', artifact: 'paparazzi-runtime-reports', path: 'tests/build/paparazzi/' }
+          - { name: 'paparazziPreviewsSourceSet', command: 'paparazziPreviewsSourceSet -Pverify=true', artifact: 'paparazzi-source-set-reports', path: 'tests/build/paparazzi/' }
+          - { name: 'roborazziPreviewsRuntime', command: 'roborazziPreviewsRuntime -Pverify=true', artifact: 'roborazzi-runtime-reports', path: 'tests/build/reports/roborazzi/' }
+          - { name: 'roborazziPreviewsSourceSet', command: 'roborazziPreviewsSourceSet -Pverify=true', artifact: 'roborazzi-source-set-reports', path: 'tests/build/reports/roborazzi/' }
+          - { name: 'metalavaCheck', command: 'core:metalavaCheckCompatibility android:metalavaCheckCompatibility glance:metalavaCheckCompatibilityRelease common:metalavaCheckCompatibility jvm:metalavaCheckCompatibility --parallel', artifact: '', path: '' }
+    name: ${{ matrix.task.name }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run ${{ matrix.task.name }}
+        run: ./gradlew ${{ matrix.task.command }}
+
+      - name: Upload reports
+        if: always() && matrix.task.artifact != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.task.artifact }}
+          path: ${{ matrix.task.path }}
+          retention-days: 7
+
+      - name: Upload metalava reports
+        if: failure() && matrix.task.name == 'metalavaCheck'
+        uses: actions/upload-artifact@v4
+        with:
+          name: metalava-compatibility-reports
+          path: |
+            **/build/metalava/
+          retention-days: 7

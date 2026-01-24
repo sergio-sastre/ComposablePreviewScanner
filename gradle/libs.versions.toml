@@ -17,12 +17,14 @@ robolectric = "4.15.1"
 roborazzi = "1.46.1"
 roborazziCompose = "1.46.1"
 paparazzi = "1.3.5"
+metalava = "0.4.0-alpha03"
 
 testParameterInjector = "1.18"
 utils = "2.7.0"
 testify = "3.2.2"
 espressoCore = "3.6.1"
 junitKtx = "1.2.1"
+uiTestJunit4 = "1.10.0"
 
 [libraries]
 android-testify = { module = "com.github.sergio-sastre.AndroidUiTestingUtils:android-testify", version.ref = "androidTestify" }
@@ -51,6 +53,7 @@ test-parameter-injector = { module = "com.google.testparameterinjector:test-para
 android-ui-testing-utils = { module = "com.github.sergio-sastre.AndroidUiTestingUtils:utils", version.ref = "utils" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
+androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "uiTestJunit4" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -61,3 +64,4 @@ roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
 testify = { id = "dev.testify" , version.ref = "testify"}
 jetbrains-kotlin-plugin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+metalava = { id = "me.tylerbwong.gradle.metalava", version.ref = "metalava"}

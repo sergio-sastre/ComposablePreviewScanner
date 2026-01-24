@@ -1,0 +1,46 @@
+// Signature format: 4.0
+package sergio.sastre.composable.preview.scanner.common {
+
+  public final class CommonComposablePreviewScanner extends sergio.sastre.composable.preview.scanner.core.scanner.ComposablePreviewScanner<sergio.sastre.composable.preview.scanner.common.CommonPreviewInfo> {
+    ctor public CommonComposablePreviewScanner();
+  }
+
+  public final class CommonPreviewInfo {
+    ctor public CommonPreviewInfo(optional String name, optional String group, optional int widthDp, optional int heightDp, optional String locale, optional boolean showBackground, optional long backgroundColor);
+    method public String component1();
+    method public String component2();
+    method public int component3();
+    method public int component4();
+    method public String component5();
+    method public boolean component6();
+    method public long component7();
+    method public sergio.sastre.composable.preview.scanner.common.CommonPreviewInfo copy(String name, String group, int widthDp, int heightDp, String locale, boolean showBackground, long backgroundColor);
+    method public boolean equals(Object? other);
+    method public long getBackgroundColor();
+    method public String getGroup();
+    method public int getHeightDp();
+    method public String getLocale();
+    method public String getName();
+    method public boolean getShowBackground();
+    method public int getWidthDp();
+    method public int hashCode();
+    method public String toString();
+    property public final long backgroundColor;
+    property public final String group;
+    property public final int heightDp;
+    property public final String locale;
+    property public final String name;
+    property public final boolean showBackground;
+    property public final int widthDp;
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.common.screenshotid {
+
+  public final class CommonPreviewScreenshotIdBuilder extends sergio.sastre.composable.preview.scanner.core.preview.screenshotid.PreviewScreenshotIdBuilder<sergio.sastre.composable.preview.scanner.common.CommonPreviewInfo> {
+    ctor public CommonPreviewScreenshotIdBuilder(sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview<sergio.sastre.composable.preview.scanner.common.CommonPreviewInfo> composablePreview);
+  }
+
+}
+

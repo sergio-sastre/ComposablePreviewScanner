@@ -17,6 +17,7 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHea
 import sergio.sastre.composable.preview.scanner.core.preview.getAnnotation
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.exceptions.RepeatableAnnotationNotSupportedException
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
+import sergio.sastre.composable.preview.scanner.utils.ScanResultFileName
 import java.io.FileNotFoundException
 
 class AndroidComposablePreviewScannerTest {
@@ -287,7 +288,8 @@ class AndroidComposablePreviewScannerTest {
 
     @Test(expected = FileNotFoundException::class)
     fun `GIVEN a scan result file doesn't exist WHEN scan result read from file THEN throw File does not exist exception`() {
-        val scanResultFile = testFilePath("scan_result.json")
+        val scanResultFile = testFilePath(ScanResultFileName.ANDROID_COMPOSABLE_PREVIEW_SCANNER_TEST)
+        scanResultFile.delete()
         assumeFalse(scanResultFile.exists())
 
         AndroidComposablePreviewScanner()

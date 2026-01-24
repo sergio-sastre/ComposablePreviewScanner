@@ -8,4 +8,5 @@ plugins {
     alias(libs.plugins.roborazzi) apply false
     alias(libs.plugins.paparazzi) apply false
     alias(libs.plugins.testify) apply false
+    alias(libs.plugins.metalava) apply false
 }
