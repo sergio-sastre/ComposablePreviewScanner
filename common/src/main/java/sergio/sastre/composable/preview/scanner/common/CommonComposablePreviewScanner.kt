@@ -14,7 +14,7 @@ import java.lang.reflect.Method
  * Scans the target package trees for the @Preview s in "common" in a Compose Multiplatform project
  * and returns their Composable, which can be invoked.
  *
- * This is meant to be used for @Composables using the @Preview located in "org.jetbrains.compose.ui.tooling.preview.Preview",
+ * This is meant to be used for @Composables using the @Preview located in "androidx.compose.ui.tooling.preview.Preview",
  * which is used in Compose Multiplatform for common previews.
  *
  * WARNING: Since ComposablePreviewScanner is based on ClassGraph, which is a Jvm-based Class Scanner,
@@ -26,7 +26,7 @@ class CommonComposablePreviewScanner : ComposablePreviewScanner<CommonPreviewInf
     private object CommonComposablePreviewFinder {
         operator fun invoke(): ClasspathPreviewsFinder<CommonPreviewInfo> =
             ClasspathPreviewsFinder(
-                annotationToScanClassName = "org.jetbrains.compose.ui.tooling.preview.Preview",
+                annotationToScanClassName = "androidx.compose.ui.tooling.preview.Preview",
                 previewInfoMapper = CommonComposablePreviewInfoMapper(),
                 previewMapperCreator = CommonPreviewMapperCreator()
             )
@@ -58,7 +58,7 @@ class CommonComposablePreviewScanner : ComposablePreviewScanner<CommonPreviewInf
                 annotationsInfo: AnnotationInfoList?
             ): ComposablePreviewMapper<CommonPreviewInfo> =
                 ComposablePreviewWithPreviewParameterMapper(
-                    previewParameterClassName = "org.jetbrains.compose.ui.tooling.preview.PreviewParameter",
+                    previewParameterClassName = "androidx.compose.ui.tooling.preview.PreviewParameter",
                     previewMethod = previewMethod,
                     previewInfo = previewInfo,
                     annotationsInfo = annotationsInfo
