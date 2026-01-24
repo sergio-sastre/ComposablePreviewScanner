@@ -44,3 +44,12 @@ jobs:
           name: ${{ matrix.task.artifact }}
           path: ${{ matrix.task.path }}
           retention-days: 7
+
+      - name: Upload metalava reports
+        if: failure() && matrix.task.name == 'metalavaCheck'
+        uses: actions/upload-artifact@v4
+        with:
+          name: metalava-compatibility-reports
+          path: |
+            **/build/metalava/
+          retention-days: 7
