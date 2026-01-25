@@ -9,15 +9,11 @@ open class PreviewScreenshotIdBuilder<T>(
     private val composablePreview: ComposablePreview<T>,
     private val defaultPreviewInfoIdProvider: () -> LinkedHashMap<String, String?>
 ) {
-
     private var ignoreClassName: Boolean = false
     private var ignoreMethodName: Boolean = false
     private var ignoreMethodParametersType: Boolean = true
 
     private var encodeUnsafeCharactersIsEnabled: Boolean = false
-
-    private var parameterNameStrategy: ParameterNameStrategy = UseDisplayNameStrategy
-
     private val defaultPreviewInfoId = defaultPreviewInfoIdProvider()
 
     fun overrideDefaultIdFor(
@@ -39,10 +35,6 @@ open class PreviewScreenshotIdBuilder<T>(
 
     fun ignoreMethodName() = apply {
         ignoreMethodName = true
-    }
-
-    fun replaceIndexDisplayNameWithIndex() = apply {
-        parameterNameStrategy = UseIndexStrategy
     }
 
     /**
@@ -97,19 +89,15 @@ open class PreviewScreenshotIdBuilder<T>(
                     methodName,
                     previewInfoId
                 )
-                    .filter { it.isNotBlank() }
-                    .joinToString(".")
+                    .filter { it.isNotBlank() }.joinToString(".")
             )
-            // DO these separately
             if (!ignoreMethodParametersType && composablePreview.methodParametersType.isNotBlank()) {
                 add("_${composablePreview.methodParametersType}")
             }
             if (composablePreview.previewIndex != null) {
-                this.add("_${parameterNameStrategy.resolve(composablePreview)}")
+                add(composablePreview.previewIndex)
             }
-        }
-            .joinToString("")
-            .trim { it == '_'}
+        }.joinToString("")
 
         return when (encodeUnsafeCharactersIsEnabled) {
             true -> encodeUnsafeCharactersIn(fileName)
