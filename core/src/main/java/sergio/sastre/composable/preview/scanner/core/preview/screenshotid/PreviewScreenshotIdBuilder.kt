@@ -81,25 +81,7 @@ open class PreviewScreenshotIdBuilder<T>(
 
     fun build(): String {
         val fileName = buildList {
-            val previewInfoId =
-                defaultPreviewInfoId.values.filterNot { it.isNullOrBlank() }.joinToString("_")
-            val declaringClass = when (ignoreClassName) {
-                true -> null
-                false -> composablePreview.declaringClass
-            }
-            val methodName = when (ignoreMethodName) {
-                true -> null
-                false -> composablePreview.methodName
-            }
-            add(
-                listOfNotNull(
-                    declaringClass,
-                    methodName,
-                    previewInfoId
-                )
-                    .filter { it.isNotBlank() }
-                    .joinToString(".")
-            )
+            add(buildBaseIdentifier())
             // DO these separately
             if (!ignoreMethodParametersType && composablePreview.methodParametersType.isNotBlank()) {
                 add("_${composablePreview.methodParametersType}")
@@ -115,5 +97,25 @@ open class PreviewScreenshotIdBuilder<T>(
             true -> encodeUnsafeCharactersIn(fileName)
             false -> fileName
         }
+    }
+
+    private fun buildBaseIdentifier(): String {
+        val previewInfoId =
+            defaultPreviewInfoId.values.filterNot { it.isNullOrBlank() }.joinToString("_")
+        val declaringClass = when (ignoreClassName) {
+            true -> null
+            false -> composablePreview.declaringClass
+        }
+        val methodName = when (ignoreMethodName) {
+            true -> null
+            false -> composablePreview.methodName
+        }
+        return listOfNotNull(
+            declaringClass,
+            methodName,
+            previewInfoId
+        )
+            .filter { it.isNotBlank() }
+            .joinToString(".")
     }
 }
