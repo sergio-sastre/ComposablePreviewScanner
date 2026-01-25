@@ -36,9 +36,34 @@ class GenericComposablePreviewScreenshotIdTest(
     fun `GIVEN preview with only previewIndex, THEN show only index`() {
         val previewScreenshotId =
             screenshotIdBuilder
+                .passPreviewWithInfo(previewIndex = 1)
+                .build()
+
+        assertEquals("1", previewScreenshotId)
+    }
+
+    @Test
+    fun `GIVEN preview with previewIndex & displayName, THEN show only displayName without white spaces`() {
+        val previewScreenshotId =
+            screenshotIdBuilder
                 .passPreviewWithInfo(
                     previewIndex = 1,
+                    previewParameterDisplayName = "Display Name"
                 )
+                .build()
+
+        assertEquals("Display_Name", previewScreenshotId)
+    }
+
+    @Test
+    fun `GIVEN preview with previewIndex & displayName, WHEN replaceDisplayNameWithIndex, THEN show only index`() {
+        val previewScreenshotId =
+            screenshotIdBuilder
+                .passPreviewWithInfo(
+                    previewIndex = 1,
+                    previewParameterDisplayName = "Display Name"
+                )
+                .replaceIndexDisplayNameWithIndex()
                 .build()
 
         assertEquals("1", previewScreenshotId)
@@ -48,9 +73,7 @@ class GenericComposablePreviewScreenshotIdTest(
     fun `GIVEN preview with only width greater than -1, THEN show only W$value$dp`() {
         val previewScreenshotId =
             screenshotIdBuilder
-                .passPreviewWithInfo(
-                    widthDp = 33,
-                )
+                .passPreviewWithInfo(widthDp = 33)
                 .build()
 
         assertEquals("W33dp", previewScreenshotId)
@@ -189,8 +212,6 @@ class GenericComposablePreviewScreenshotIdTest(
                 .doNotIgnoreMethodParametersType()
                 .encodeUnsafeCharacters()
                 .build()
-                // remove leading "_" due to doNotIgnoreMethodParametersType()
-                .substring(1)
 
         val unicodePattern = "%[0-9A-F]+"
         val multipleUnicodePattern = "($unicodePattern)+"
@@ -207,8 +228,6 @@ class GenericComposablePreviewScreenshotIdTest(
                 .doNotIgnoreMethodParametersType()
                 .encodeUnsafeCharacters()
                 .build()
-                // remove leading "_" due to doNotIgnoreMethodParametersType()
-                .substring(1)
 
         val unsafeCharsRegex = Regex("[$ALL_UNSAFE_CHARS]")
         assertFalse(unsafeCharsRegex.containsMatchIn(previewScreenshotId))
@@ -222,7 +241,7 @@ class GenericComposablePreviewScreenshotIdTest(
                 .doNotIgnoreMethodParametersType()
                 .build()
                 // remove leading "_" due to doNotIgnoreMethodParametersType()
-                .substring(1)
+                //.substring(1)
 
         assertEquals(ALL_UNSAFE_CHARS, previewScreenshotId)
     }

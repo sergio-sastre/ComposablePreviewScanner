@@ -18,6 +18,7 @@ import kotlin.reflect.full.primaryConstructor
 interface ComposablePreview<T> {
     val previewInfo: T
     val previewIndex: Int?
+    val previewIndexDisplayName: String?
     val otherAnnotationsInfo: AnnotationInfoList?
     val declaringClass: String
     val methodName: String

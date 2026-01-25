@@ -1,6 +1,8 @@
 package sergio.sastre.composable.preview.scanner.core.preview.screenshotid
 
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
+import sergio.sastre.composable.preview.scanner.core.preview.screenshotid.PreviewScreenshotIdBuilder.ParameterIndex.DISPLAY_NAME
+import sergio.sastre.composable.preview.scanner.core.preview.screenshotid.PreviewScreenshotIdBuilder.ParameterIndex.INDEX
 
 /**
  * Provides a base class to generate unique screenshot ids based on [ComposablePreview]
@@ -9,11 +11,30 @@ open class PreviewScreenshotIdBuilder<T>(
     private val composablePreview: ComposablePreview<T>,
     private val defaultPreviewInfoIdProvider: () -> LinkedHashMap<String, String?>
 ) {
+
+    private enum class ParameterIndex {
+        INDEX {
+            override fun valueFor(preview: ComposablePreview<*>): String? =
+                preview.previewIndex?.toString()
+
+        },
+        DISPLAY_NAME {
+            override fun valueFor(preview: ComposablePreview<*>): String? =
+                (preview.previewIndexDisplayName?.replace(" ", "_"))
+                    ?: INDEX.valueFor(preview)
+        };
+
+        abstract fun valueFor(preview: ComposablePreview<*>): String?
+    }
+
     private var ignoreClassName: Boolean = false
     private var ignoreMethodName: Boolean = false
     private var ignoreMethodParametersType: Boolean = true
 
     private var encodeUnsafeCharactersIsEnabled: Boolean = false
+
+    private var parameterIndexName: ParameterIndex = DISPLAY_NAME
+
     private val defaultPreviewInfoId = defaultPreviewInfoIdProvider()
 
     fun overrideDefaultIdFor(
@@ -35,6 +56,10 @@ open class PreviewScreenshotIdBuilder<T>(
 
     fun ignoreMethodName() = apply {
         ignoreMethodName = true
+    }
+
+    fun replaceIndexDisplayNameWithIndex() = apply {
+        parameterIndexName = INDEX
     }
 
     /**
@@ -89,15 +114,19 @@ open class PreviewScreenshotIdBuilder<T>(
                     methodName,
                     previewInfoId
                 )
-                    .filter { it.isNotBlank() }.joinToString(".")
+                    .filter { it.isNotBlank() }
+                    .joinToString(".")
             )
+            // DO these separately
             if (!ignoreMethodParametersType && composablePreview.methodParametersType.isNotBlank()) {
                 add("_${composablePreview.methodParametersType}")
             }
             if (composablePreview.previewIndex != null) {
-                add(composablePreview.previewIndex)
+                this.add("_${parameterIndexName.valueFor(composablePreview)}")
             }
-        }.joinToString("")
+        }
+            .joinToString("")
+            .trim { it == '_'}
 
         return when (encodeUnsafeCharactersIsEnabled) {
             true -> encodeUnsafeCharactersIn(fileName)
