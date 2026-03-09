@@ -14,6 +14,7 @@ package sergio.sastre.composable.preview.scanner.core.preview {
     method public String getMethodParametersType();
     method public io.github.classgraph.AnnotationInfoList? getOtherAnnotationsInfo();
     method public Integer? getPreviewIndex();
+    method public String? getPreviewIndexDisplayName();
     method public T getPreviewInfo();
     method @androidx.compose.runtime.Composable public operator void invoke();
     property public abstract String declaringClass;
@@ -21,6 +22,7 @@ package sergio.sastre.composable.preview.scanner.core.preview {
     property public abstract String methodParametersType;
     property public abstract io.github.classgraph.AnnotationInfoList? otherAnnotationsInfo;
     property public abstract Integer? previewIndex;
+    property public abstract String? previewIndexDisplayName;
     property public abstract T previewInfo;
   }
 
@@ -30,7 +32,7 @@ package sergio.sastre.composable.preview.scanner.core.preview {
 
   public final class ProvideComposablePreview<T> {
     ctor public ProvideComposablePreview();
-    method public operator sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview<T> invoke(sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapper<T> composablePreviewMapper, optional Integer? previewIndex, optional Object? parameter);
+    method public operator sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview<T> invoke(sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapper<T> composablePreviewMapper, optional Integer? previewIndex, optional String? previewParameterDisplayName, optional Object? parameter);
   }
 
 }
@@ -109,6 +111,7 @@ package sergio.sastre.composable.preview.scanner.core.preview.screenshotid {
     method public final sergio.sastre.composable.preview.scanner.core.preview.screenshotid.PreviewScreenshotIdBuilder<T> ignoreIdFor(String previewInfoName);
     method public final sergio.sastre.composable.preview.scanner.core.preview.screenshotid.PreviewScreenshotIdBuilder<T> ignoreMethodName();
     method public final sergio.sastre.composable.preview.scanner.core.preview.screenshotid.PreviewScreenshotIdBuilder<T> overrideDefaultIdFor(String previewInfoName, kotlin.jvm.functions.Function1<? super T,java.lang.String?> applyInfoValue);
+    method public final sergio.sastre.composable.preview.scanner.core.preview.screenshotid.PreviewScreenshotIdBuilder<T> replaceDisplayNameWithIndex();
   }
 
 }
