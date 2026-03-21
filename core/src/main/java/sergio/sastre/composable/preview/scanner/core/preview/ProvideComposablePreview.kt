@@ -8,9 +8,14 @@ import kotlin.reflect.jvm.kotlinFunction
  * Provides an invokable ComposablePreview
  */
 class ProvideComposablePreview<T> {
+    data class PreviewIndexInfo(
+        val index: Int,
+        val displayName: String? = null
+    )
+
     operator fun invoke(
         composablePreviewMapper: ComposablePreviewMapper<T>,
-        previewIndex: Int? = null,
+        previewIndexInfo: PreviewIndexInfo? = null,
         parameter: Any? = ComposablePreviewInvocationHandler.NoParameter,
     ): ComposablePreview<T> {
 
@@ -27,7 +32,8 @@ class ProvideComposablePreview<T> {
         // to provide a more descriptive name for the test and resulting snapshot filename.
         return object : ComposablePreview<T> by proxy {
             override val previewInfo: T = composablePreviewMapper.previewInfo
-            override val previewIndex: Int? = previewIndex
+            override val previewIndex: Int? = previewIndexInfo?.index
+            override val previewIndexDisplayName: String? = previewIndexInfo?.displayName
             override val otherAnnotationsInfo = composablePreviewMapper.annotationsInfo
             override val declaringClass: String =
                 composablePreviewMapper.previewMethod.declaringClass.toClassName()
