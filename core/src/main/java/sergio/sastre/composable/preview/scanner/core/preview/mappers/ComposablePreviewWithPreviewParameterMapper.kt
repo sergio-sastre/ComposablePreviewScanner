@@ -3,9 +3,11 @@ package sergio.sastre.composable.preview.scanner.core.preview.mappers
 import io.github.classgraph.AnnotationInfoList
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.preview.ProvideComposablePreview
+import sergio.sastre.composable.preview.scanner.core.preview.PreviewIndexInfo
 import java.lang.reflect.Method
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.memberProperties
+import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.jvm.isAccessible
 
 /**
@@ -77,12 +79,19 @@ data class ComposablePreviewWithPreviewParameterMapper<T>(
         val limit = getPropertyValue(previewParameterAnnotation, "limit") as? Int
             ?: Int.MAX_VALUE
 
+        val getDisplayNameMethod = providerInstance::class.memberFunctions
+            .find { it.name == "getDisplayName" }
+            ?.apply { isAccessible = true }
+
         return values
             .take(limit)
             .mapIndexed { index, value ->
                 provideComposablePreview(
                     composablePreviewMapper = this,
-                    previewIndex = index,
+                    previewIndexInfo = PreviewIndexInfo(
+                        index = index,
+                        displayName = getDisplayNameMethod?.call(providerInstance, index) as? String?
+                    ),
                     parameter = value,
                 )
             }
