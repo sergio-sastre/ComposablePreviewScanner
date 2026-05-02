@@ -19,7 +19,7 @@ dependencies {
 
 //https://medium.com/@iRYO400/how-to-upload-your-android-library-to-maven-central-central-portal-in-2024-af7348742247
 mavenPublishing {
-    coordinates("io.github.sergio-sastre.ComposablePreviewScanner", "jvm", "0.8.2")
+    coordinates("io.github.sergio-sastre.ComposablePreviewScanner", "jvm", "0.9.0")
     pom {
         name = "ComposablePreviewScanner"
         description = "A library to help auto-generate screenshot tests from Composable Previews with any screenshot testing library"
