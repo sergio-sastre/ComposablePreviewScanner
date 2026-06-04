@@ -1,9 +1,11 @@
 # Deprecated Modules
 
+![composable_preview_scanner_overview_deprecated.png](composable_preview_scanner_overview.png)
 > [!WARNING]
 > The `:common` and `:jvm` modules are deprecated and will be removed in version 0.10.0.
 > Starting with Compose Multiplatform 1.10.0-beta02, Common and Desktop `@Preview` annotations are deprecated in favour of the Android `@Preview` annotation (`androidx.compose.ui.tooling.preview.Preview`), which can be used across `common` and `desktop` platforms as well.
 > After migrating to these Android `@Preview`s, please migrate to using `AndroidComposablePreviewScanner` as described in the main [README.md](README.md).
+
 
 ### Common Previews (Deprecated)
 You can find executable examples here:
