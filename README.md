@@ -57,6 +57,35 @@ ComposablePreviewScanner also works with:
 
 <sup>1</sup> The [Compose Preview Screenshot Testing tool](https://developer.android.com/studio/preview/compose-screenshot-testing) from Google requires you to put your `@Previews` inside a class.
 
+## Compose Multiplatform Support
+ComposablePreviewScanner fully supports **Android** and **Desktop** targets, including previews defined in the **`common`** source set.
+It allows you to use the standard **`androidx.compose.ui.tooling.preview.Preview`** annotation across all relevant source sets, including `commonMain`.
+
+For example, to scan previews located in both a platform-specific (`androidMain` or `desktopMain`) and a ui-shared (e.g. `commonMain`) source set, you would configure the scanner like this:
+
+```kotlin
+AndroidComposablePreviewScanner()
+    .scanPackageTrees(
+        include = listOf(
+            "your.package.android_or_desktop", // platform-specific
+            "your.package.common"              // commonMain
+        )
+    )
+    .getPreviews()
+```
+
+> [!NOTE]
+> Screenshot tests must run on a platform supported by your screenshot library.</br>
+> • Android: Paparazzi and Roborazzi are supported.</br>
+> • Desktop: Roborazzi only.</br>
+> • Common: no library runs directly in common; run your tests from an Android or Desktop target instead. ComposablePreviewScanner can still find the Previews in common target packages.</br>
+
+You can find executable examples with Roborazzi here:
+- [Android @Previews in common](https://github.com/sergio-sastre/roborazzi/blob/droidcon/preview_tests/sample-generate-preview-common/src/androidUnitTest/kotlin/com/github/takahirom/preview/tests/AndroidPreviewTest.kt)
+- [Android @Previews in desktop](https://github.com/sergio-sastre/roborazzi/blob/droidcon/preview_tests/sample-generate-preview-desktop/src/desktopTest/kotlin/AndroidPreviewTest.kt)
+
+If you are still using the deprecated Common or Desktop `@Preview` annotations, see [README_DEPRECATED.md](README_DEPRECATED.md) for guidance.
+
 # How to set up
 > [!WARNING]  
 > Beware the prefixes:</br>
@@ -890,31 +919,6 @@ To write such screenshot tests you have to:
 3. Write the Parameterized screenshot test like in the examples above.
 
 <sup>1</sup> Unfortunately, Paparazzi is not able to always render screenshots accurately for Glance `@Preview`s without `widthDp`.
-
-## Compose Multiplatform Support
-Android `@Preview`s can be used across `common`or `android` and `desktop` platforms.
-ComposablePreviewScanner 0.8.0+ fully supports this modern setup. You can use the `AndroidComposablePreviewScanner` to scan for `@Preview` annotations across all relevant source sets, including `commonMain`.</br>
-For example, to scan previews located in both a platform-specific (`androidMain` or `desktopMain`) and a ui-shared (e.g. `commonMain`) source set, you would configure the scanner like this:
-
-```kotlin
-AndroidComposablePreviewScanner()
-    .scanPackageTrees(
-        "package.tree.android.or.desktop",
-        "package.tree.common"
-    )
-```
-
-> [!NOTE]
-> Screenshot tests must run on a platform supported by your screenshot library.</br>
-> • Android: Paparazzi and Roborazzi are supported.</br>
-> • Desktop: Roborazzi only.</br>
-> • Common: no library runs directly in common; run your tests from an Android or Desktop target instead. ComposablePreviewScanner can still find the Previews in common target packages.</br>
-
-You can find executable examples with Roborazzi here:
-- [Android @Previews in common](https://github.com/sergio-sastre/roborazzi/blob/droidcon/preview_tests/sample-generate-preview-common/src/androidUnitTest/kotlin/com/github/takahirom/preview/tests/AndroidPreviewTest.kt)
-- [Android @Previews in desktop](https://github.com/sergio-sastre/roborazzi/blob/droidcon/preview_tests/sample-generate-preview-desktop/src/desktopTest/kotlin/AndroidPreviewTest.kt)
-
-If you are still using the deprecated Common or Desktop `@Preview` annotations, see [README_DEPRECATED.md](README_DEPRECATED.md) for guidance.
 
 # Resources 
 ## Tech talks
