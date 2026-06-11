@@ -108,36 +108,6 @@ dependencies {
 }
 ```
 
-## JitPack
-Add JitPack to your root build.gradle file:
-```kotlin
-allprojects {
-   repositories {
-      maven { url = uri('https://jitpack.io') }
-   }
-}
-```
-
-```kotlin
-dependencies {
-    // android previews (androidx.compose.ui.tooling.preview.Preview)
-    // supported in jvm targets e.g. android & desktop
-    testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:android:<version>")
-
-    // glance previews (androidx.glance.preview.Preview)
-    // supported since 0.7.0+ in android target
-    testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:glance:<version>")
-
-    // common previews (org.jetbrains.compose.ui.tooling.preview.Preview) (deprecated)
-    // supported in jvm targets e.g. android & desktop
-    testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:common:<version>")
-
-    // desktop previews (androidx.compose.desktop.ui.tooling.preview.Preview) via custom annotation (deprecated)
-    // supported in jvm targets e.g. android & desktop
-    testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")
-}
-```
-
 # How to use
 ### Examples with Screenshot Testing Libraries (Android target)
 1. [JVM Screenshot Tests](#jvm-screenshot-tests)</br>
@@ -320,7 +290,12 @@ fun MyComposable(){
    // Composable code here
 }
 ```
-3. Create custom record and verify `SnapshotHandler`s for better control over the screenshot file names.</br> By default, Paparazzi prefixes all generated screenshot files using its internal `SnapshotHandler`. While this works for most cases, it causes issues in parameterized tests: the default `SnapshotHandler` includes the test [index] in the filename. If the order of your previews changes, filenames no longer match, which can break snapshot verification.</br></br>
+3. Create custom record and verify `SnapshotHandler`s for better control over the screenshot file names.
+
+<details>
+<summary>Click to see the custom SnapshotHandlers implementation</summary>
+
+By default, Paparazzi prefixes all generated screenshot files using its internal `SnapshotHandler`. While this works for most cases, it causes issues in parameterized tests: the default `SnapshotHandler` includes the test [index] in the filename. If the order of your previews changes, filenames no longer match, which can break snapshot verification.</br></br>
    To solve this, we can create custom `SnapshotHandler`s that use a fixed prefix, like "Paparazzi_Preview_Test", instead of a test-index-dependent name. This ensures filenames remain stable regardless of test order.
 ```kotlin
 // Define the prefix = <packageName>_<className>_<methodName>
@@ -383,10 +358,15 @@ private class PreviewHtmlReportWriter: SnapshotHandler {
    }
 }
 ```
+</details>
 
 In the next step, we’ll show how to pass these custom SnapshotHandlers to the Paparazzi TestRule to take full control of screenshot filenames.
 
 4. Map the PreviewInfo and PaparazziConfig values.
+
+<details>
+<summary>Click to see the mapping logic for Paparazzi configuration</summary>
+
 ```kotlin
 class Dimensions(
    val screenWidthInPx: Int,
@@ -522,6 +502,8 @@ fun PreviewBackground(
         }
     }
 }
+```
+</details>
 ```
 
 5. Create the corresponding Parameterized Test:
@@ -948,7 +930,7 @@ The core of ComposablePreviewScanner is developed using **Test-Driven Developmen
 To maintain strict binary compatibility for library consumers, the project uses **Metalava** to track and enforce API standards.
 
 ## Automated Verification
-To streamline the TDD workflow, the following custom Gradle tasks handle environment prerequisites and integration testing:
+To ensure continuous quality, the following custom Gradle tasks handle environment prerequisites and integration testing. These tasks are executed locally during development and automatically in our **CI pipeline** for every PR:
 1. API logic tests:`./gradlew :tests:testApi`
 2. SourceSet logic tests: `./gradlew :tests:testSourceSets`
 3. Paparazzi integration tests: `./gradlew :tests:paparazziPreviews` and `./gradlew :tests:paparazziPreviews -Pverify=true`
@@ -1042,6 +1024,17 @@ internal fun MapScreenPreview() {
     }
 }
 ```
+
+# Roadmap 
+- [ ] Support for Wear Previews.
+- [ ] Better integration in Gradle tasks.
+- [ ] Speed and memory consumption improvements.
+- [ ] KSP support to enable other platforms like iOS.
+
+# Governance & Contributing
+Contributions are welcome! Please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to submit pull requests and report issues.
+
+As mentioned in the [Engineering Quality](#engineering-quality) section, this project uses **Metalava** to ensure strict binary compatibility for all library consumers.
 
 </br></br>
 <a href="https://www.flaticon.com/free-icons/magnify" title="magnify icons">Composable Preview Scanner logo modified from one by Freepik - Flaticon</a>
