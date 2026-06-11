@@ -16,6 +16,9 @@
 A Compose Multiplatform friendly library to help auto-generate screenshot tests from Composable Previews (e.g. **Android**, **Glance**) with any screenshot testing library:
 JVM-based (i.e. Paparazzi, Roborazzi) as well as Instrumentation-based (i.e. Shot, Dropshots, Android-Testify, etc.).
 
+> [!IMPORTANT]
+> **Roborazzi** has integrated Composable Preview Scanner as a core dependency for its native [Compose Preview support](https://github.com/takahirom/roborazzi?tab=readme-ov-file#compose-preview-support-experimental).
+
 With an estimated over **300,000 monthly downloads** (JitPack + Maven Central), Composable Preview Scanner is a trusted solution for automated UI verification in the Kotlin ecosystem.
 
 ![composable_preview_scanner_overview.png](composable_preview_scanner_overview.png)
@@ -920,38 +923,32 @@ To write such screenshot tests you have to:
 
 <sup>1</sup> Unfortunately, Paparazzi is not able to always render screenshots accurately for Glance `@Preview`s without `widthDp`.
 
-# Resources 
+# Conferences & Community
 ## Tech talks
-In these tech-talks have also been mentioned the benefits of using ComposablePreviewScanner:
-- DroidKaigi 2024 [in JA 🇯🇵 with EN 🇬🇧 slides]:</br>
-  [Understand the mechanism! Let's do screenshots testing of Compose Previews with various variations](https://www.youtube.com/watch?app=desktop&v=c4AxUXTQgw4) by [Sumio Toyama](https://x.com/sumio_tym)</br>
-- Droidcon Lisbon 2024:</br>
-  [Composable Preview Driven Development: TDD-fying your UI with ease!](https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.youtube.com/watch%3Fv%3DcDqdosrS83k&ved=2ahUKEwjprPGKqaiPAxWxSvEDHdSRBKkQwqsBegQIFRAG&usg=AOvVaw2ZfX6fYQbNI4Op6KN0d5i5) by Sergio Sastre</br>
-- [“Fast Feedback loops & Composable Preview Scanner”](https://www.youtube.com/watch?v=SphQelcGdHk) with the Skool Android Community by Sergio Sastre</br>
-- Droidcon Lisbon & Berlin 2025:</br>
+The benefits and usage of ComposablePreviewScanner have been featured at major Android conferences:
+- **Droidcon Lisbon & Berlin 2025**:</br>
   [Let's @Preview the future: Automating Screenshot Testing in Compose Multiplatform](https://www.youtube.com/watch?v=zYsNXrf2-Lo) by Sergio Sastre
+- **Droidcon Lisbon 2024**:</br>
+  [Composable Preview Driven Development: TDD-fying your UI with ease!](https://www.youtube.com/watch?v=cDqdosrS83k) by Sergio Sastre
+- **DroidKaigi 2024** [JA 🇯🇵 / EN 🇬🇧 slides]:</br>
+  [Understand the mechanism! Let's do screenshots testing of Compose Previews with various variations](https://www.youtube.com/watch?app=desktop&v=c4AxUXTQgw4) by [Sumio Toyama](https://x.com/sumio_tym)
+- **Skool Android Community**:</br>
+  [“Fast Feedback loops & Composable Preview Scanner”](https://www.youtube.com/watch?v=SphQelcGdHk) by Sergio Sastre
 
 ## Blog posts
 - [Automating screens verification with Roborazzi and GitHub Actions](https://medium.com/@matiasdelbel/automating-screens-verification-with-roborazzi-and-github-actions-473b3301a5c0) by Matías del Bel
 - [Implementing Screenshot Testing in the Unlimited Android App Was Tougher Than Expected](https://blog.kinto-technologies.com/posts/2024-12-13-Introducing-Screenshot-Testing-in-UnlimitedApp-en/) by KINTO Technologies
 
-# Testing
-The core of ComposablePreviewScanner has been (and it's being) developed using Test-Driven Development (TDD).</br>
-I strongly believe this approach is one of the key reasons the library has very few known bugs although it's widely used with over 300k monthly downloads (130k from Jitpack, Roborazzi integrates ComposablePreviewScanner with maven-central, which download count is unknown but estimated to be much higher).
+## Books
+- [Mastering Android Screenshot Testing](https://alexzh.com/books/mastering-android-screenshot-testing/) by Alex Zhukovich
 
-However, some tests have specific preconditions and may be skipped if those aren't met.</br>
-For example, when running tests to retrieve @Previews from a SourceSet other than main, such as screenshotTest or androidTest,
-the corresponding compiled classes must be generated first via the corresponding Gradle task.</br>
+# Engineering Quality
+The core of ComposablePreviewScanner is developed using **Test-Driven Development (TDD)** to ensure maximum stability and reliability across the diverse Compose ecosystem. This rigorous approach is a primary reason for its high adoption rate and minimal bug reports despite handling complex bytecode scanning.
 
-Moreover, Paparazzi & Roborazzi tests also play a key role:
-1. Each of these libraries uses a different mechanism to download Android resources for running tests. ComposablePreviewScanner also loads certain classes by using ClassLoaders, and for those classes to be available it is necessary that Paparazzi and Roborazzi already downloaded them to [avoid issues like this one](https://github.com/sergio-sastre/ComposablePreviewScanner/issues/27). These tests help catch and avoid such errors.
-2. They help avoid errors in @Composable invocations. Since they can only occur within the context of a @Composable function and standard unit tests cannot access Android resources (e.g. Composable framework), it is hard to verify their correctness without UI tests. 
+To maintain strict binary compatibility for library consumers, the project uses **Metalava** to track and enforce API standards.
 
-To streamline this process and support my TDD workflow, I’ve created custom Gradle tasks that handle these prerequisites automatically,
-saving time and reducing friction during development.</br>
-They can also help you in case you fork this library and make some code adjustments, to ensure everything still works as expected.</br>
-
-These custom gradle tasks are the following:</br>
+## Automated Verification
+To streamline the TDD workflow, the following custom Gradle tasks handle environment prerequisites and integration testing:
 1. API logic tests:`./gradlew :tests:testApi`
 2. SourceSet logic tests: `./gradlew :tests:testSourceSets`
 3. Paparazzi integration tests: `./gradlew :tests:paparazziPreviews` and `./gradlew :tests:paparazziPreviews -Pverify=true`
