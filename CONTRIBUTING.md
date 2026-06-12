@@ -14,7 +14,7 @@ If you find a bug or have a feature request, please [open an issue](https://gith
 - Relevant environment details (OS, JDK version, Compose version, etc.).
 
 ### Submitting Pull Requests
-1. **Fork the repository** and create your branch from `main`.
+1. **Fork the repository** and create your branch from `master`.
 2. **Implement your changes.** If you are adding a new feature or fixing a bug, please include corresponding tests. We follow a TDD approach.
 3. **Ensure the build passes.** Run the relevant Gradle tasks (see [Verification](#verification) below).
 4. **Follow the code style.** Maintain consistency with the existing codebase.
