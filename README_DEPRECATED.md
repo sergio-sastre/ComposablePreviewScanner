@@ -44,10 +44,8 @@ testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:common:<ve
 ### Desktop Previews (Deprecated)
 You can find [a video on how to set it with Roborazzi here](https://www.youtube.com/watch?v=zYsNXrf2-Lo&t=23m52s), and the [repo used in the video here](https://github.com/sergio-sastre/roborazzi/tree/droidcon/preview_tests).
 
-As we've seen in the previous section [How it works](README.md#how-it-works), Compose-Desktop previews are still not visible to ClassGraph since they use `AnnotationRetention.SOURCE`.
-There is [already an open issue](https://youtrack.jetbrains.com/issue/CMP-5675) to change it to `AnnotationRetention.BINARY`, which would allow ClassGraph to find them.
-
-In the meanwhile, it is also possible to workaround this limitation with ComposablePreviewScanner as follows.
+Compose-Desktop previews have `AnnotationRetention.SOURCE` and therefore it is not visible to ClassGraph.
+However, it is also possible to workaround this limitation with ComposablePreviewScanner as follows.
 
 1. Add `:jvm` dependency from ComposablePreviewScanner 0.2.0+ and use Roborazzi:
 ```kotlin
