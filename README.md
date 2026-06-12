@@ -93,9 +93,6 @@ If you are still using the deprecated Common or Desktop `@Preview` annotations, 
 > *JitPack* -> **com.github**<br/>
 
 ## Maven Central (since 0.3.2)
-<details>
-<summary>Click to see dependency configuration</summary>
-
 ```kotlin
 dependencies {
     // android previews (androidx.compose.ui.tooling.preview.Preview)
@@ -107,12 +104,8 @@ dependencies {
     testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:glance:<version>")
 }
 ```
-</details>
 
 ## JitPack
-<details>
-<summary>Click to see JitPack configuration</summary>
-
 Add JitPack to your root build.gradle file:
 ```kotlin
 allprojects {
@@ -133,7 +126,6 @@ dependencies {
     testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:glance:<version>")
 }
 ```
-</details>
 
 # How to use
 ### Examples with Screenshot Testing Libraries (Android target)
@@ -154,9 +146,6 @@ If you encounter any issues when executing the screenshot tests, take a look at 
 ## API   
 `AndroidComposablePreviewScanner` and `GlanceComposablePreviewScanner` have the same API.
 The API is pretty simple:
-
-<details>
-<summary>Click to see the full API example</summary>
 
 ```kotlin
 AndroidComposablePreviewScanner()
@@ -200,7 +189,6 @@ AndroidComposablePreviewScanner()
     // ---
     .getPreviews()
 ```
-</details>
 
 ## Scanning
 
