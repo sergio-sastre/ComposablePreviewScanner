@@ -1,13 +1,12 @@
-[![](https://jitpack.io/v/sergio-sastre/ComposablePreviewScanner.svg)](https://jitpack.io/#sergio-sastre/ComposablePreviewScanner) [![](https://img.shields.io/badge/dynamic/xml.svg?color=brightgreen&label=Maven%20Central&query=%2F%2Fmetadata%2Fversioning%2Frelease&url=https%3A%2F%2Frepo.maven.apache.org%2Fmaven2%2Fio%2Fgithub%2Fsergio-sastre%2FComposablePreviewScanner%2Fandroid%2Fmaven-metadata.xml)](https://central.sonatype.com/artifact/io.github.sergio-sastre.ComposablePreviewScanner/android) [![](https://img.shields.io/badge/downloads-300k%2B%2Fmonth-brightgreen)](#)</br>
+# <p align="center">Composable Preview Scanner</p>
+[![](https://jitpack.io/v/sergio-sastre/ComposablePreviewScanner.svg)](https://jitpack.io/#sergio-sastre/ComposablePreviewScanner) ![](https://jitpack.io/v/sergio-sastre/ComposablePreviewScanner/month.svg)</br>
+[![](https://img.shields.io/badge/dynamic/xml.svg?color=brightgreen&label=Maven%20Central&query=%2F%2Fmetadata%2Fversioning%2Frelease&url=https%3A%2F%2Frepo.maven.apache.org%2Fmaven2%2Fio%2Fgithub%2Fsergio-sastre%2FComposablePreviewScanner%2Fandroid%2Fmaven-metadata.xml)](https://central.sonatype.com/artifact/io.github.sergio-sastre.ComposablePreviewScanner/android) ![](https://img.shields.io/badge/downloads-unknown-yell)</br></br>
 [![](https://img.shields.io/badge/Kotlin-Multiplatform-%237f52ff?logo=kotlin&logoColor=white)](https://kotlinlang.org/docs/multiplatform.html) [![](https://img.shields.io/badge/Platform-Android-3DDC84?logo=android&logoColor=white)](#) [![](https://img.shields.io/badge/Platform-Desktop-0078D4?logo=openjdk&logoColor=white)](#)</br>
 
 <a href="https://androidweekly.net/issues/issue-628">
 <img src="https://androidweekly.net/issues/issue-628/badge">
 </a></br>
 <a href="https://jetc.dev/issues/221.html"><img src="https://img.shields.io/badge/As_Seen_In-jetc.dev_Newsletter_Issue_%23221-blue?logo=Jetpack+Compose&amp;logoColor=white" alt="As Seen In - jetc.dev Newsletter Issue #221"></a>
-
-# <p align="center">Composable Preview Scanner</p>
-
 
 <p align="center">
 <img width="400" src="composable_preview_scanner_new_logo.png">
