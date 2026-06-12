@@ -44,8 +44,8 @@ With over **300,000 monthly downloads** (JitPack + Maven Central), Composable Pr
 <sup>5</sup> Compose Preview Screenshot Testing supports *only general tolerance* via gradle plugin from version [0.0.1-alpha06](https://developer.android.com/studio/preview/compose-screenshot-testing#001-alpha06)<br/><br/>
 <sup>6</sup> Wear Previews support is planned<br/><br/>
 <sup>7</sup> [Showkase: Compose Multiplatform Support](https://github.com/airbnb/Showkase/issues/364)
-</details>
-<br/><br/><br/>
+</details><br/>
+
 ComposablePreviewScanner also works with:
 - **NEW** `@PreviewWrapper` (since 0.9.0+) automatically. No changes required in the Screenshot Testing library using ComposablePreviewScanner.
 - `@PreviewParameters` (for Compose Multiplatform since 0.6.0+)
@@ -310,6 +310,9 @@ You can find [executable examples here](https://github.com/sergio-sastre/Android
 > You can also find a paparazzi-plugin in this repo that generates all this boilerplate code for you!
 > Take a look at [its README.md](paparazzi-plugin/README.md)
 
+<details>
+<summary>Click to see Paparazzi implementation details</summary>
+
 Let's say we want to enable some custom Paparazzi config for some Previews, for instance a maxPercentDifference value
 
 1. Define your own annotation for the Lib config.
@@ -327,9 +330,6 @@ fun MyComposable(){
 }
 ```
 3. Create custom record and verify `SnapshotHandler`s for better control over the screenshot file names.
-
-<details>
-<summary>Click to see the custom SnapshotHandlers implementation</summary>
 
 By default, Paparazzi prefixes all generated screenshot files using its internal `SnapshotHandler`. While this works for most cases, it causes issues in parameterized tests: the default `SnapshotHandler` includes the test [index] in the filename. If the order of your previews changes, filenames no longer match, which can break snapshot verification.<br/><br/>
    To solve this, we can create custom `SnapshotHandler`s that use a fixed prefix, like "Paparazzi_Preview_Test", instead of a test-index-dependent name. This ensures filenames remain stable regardless of test order.
@@ -393,15 +393,10 @@ private class PreviewHtmlReportWriter: SnapshotHandler {
       snapshotHandler.close()
    }
 }
-```
-</details>
 
 In the next step, we’ll show how to pass these custom SnapshotHandlers to the Paparazzi TestRule to take full control of screenshot filenames.
 
 4. Map the PreviewInfo and PaparazziConfig values.
-
-<details>
-<summary>Click to see the mapping logic for Paparazzi configuration</summary>
 
 ```kotlin
 class Dimensions(
@@ -538,14 +533,8 @@ fun PreviewBackground(
         }
     }
 }
-```
-</details>
-```
 
 5. Create the corresponding Parameterized Test:
-
-<details>
-<summary>Click to see the Paparazzi Parameterized Test implementation</summary>
 
 ```kotlin
 @RunWith(Parameterized::class)
@@ -603,12 +592,15 @@ class PreviewTestParameterTests(
     }
 }
 ```
-</details>
 
 6. Run these Paparazzi tests together with the existing ones by executing the corresponding command e.g. `./gradlew yourModule:recordPaparazziDebug`
+</details>
 
 ### Roborazzi
 You can find [executable examples here](https://github.com/sergio-sastre/Android-screenshot-testing-playground/tree/master/lazycolumnscreen-previews/roborazzi/src)
+
+<details>
+<summary>Click to see Roborazzi implementation details</summary>
 
 Let's say we want to enable some custom Roborazzi Config for some Previews, for instance a maxPercentDifferent value
 
@@ -628,9 +620,6 @@ fun MyComposable(){
 ```
 
 3. Map the PreviewInfo and RoborazziConfig values.
-
-<details>
-<summary>Click to see the mapping logic for Roborazzi configuration</summary>
 
 ```kotlin
 object RoborazziOptionsMapper {
@@ -663,12 +652,8 @@ object RoborazziComposeOptionsMapper {
 }
 ```
 Check the following link for a full list of [Robolectric device qualifiers](https://robolectric.org/device-configuration/) and this blog post on how to [set the cumulative Qualifiers dynamically](https://sergiosastre.hashnode.dev/efficient-testing-with-robolectric-roborazzi-across-many-ui-states-devices-and-configurations)
-</details>
 
 4. Create the corresponding Parameterized Test:
-
-<details>
-<summary>Click to see the Roborazzi Parameterized Test implementation</summary>
 
 ```kotlin
 @RunWith(ParameterizedRobolectricTestRunner::class)
@@ -709,9 +694,9 @@ class PreviewParameterizedTests(
     }
 }
 ```
-</details>
 
 5. Run these Roborazzi tests together with the existing ones by executing the corresponding command e.g. `./gradlew yourModule:recordRoborazziDebug`
+</details>
 
 ## Instrumentation Screenshot Tests
 You can find executable examples that use ComposablePreviewScanner with the different instrumentation-based libraries in the corresponding links below:
@@ -722,10 +707,10 @@ You can find executable examples that use ComposablePreviewScanner with the diff
 Android does not use the standard Java bytecode format and does not actually even have a runtime classpath.
 Moreover, the "build" folders, where the compiled classes are located, are not accessible from instrumentation tests.
 Therefore, the current way to support instrumentation tests, is by previously dumping the relevant classes into a file and moving it into a folder that can be accessed while running instrumentation tests.
-1. run the scan in a unit test & save it in a file accessible by instrumentation tests e.g. in assets
-
 <details>
-<summary>Click to see the ScanResultDumper implementation</summary>
+<summary>Click to see Instrumentation implementation details</summary>
+
+1. run the scan in a unit test & save it in a file accessible by instrumentation tests e.g. in assets
 
 ```kotlin
 class SaveScanResultInAssets {
@@ -746,7 +731,7 @@ class SaveScanResultInAssets {
     }
 }
 ```
-</details>
+
 Ensure that the .json with the scan result is up-to-date before executing the instrumentation screenshot tests. For instance, execute that test always before your instrumentation screenshot tests.
 Ideally, this scanning could be done via a Gradle Plugin in the future instead of by running it in a unit test.
 
@@ -766,9 +751,6 @@ Let's say we want to enable some custom Dropshots Config for some Previews, for 
    }
    ```
    - Map the PreviewInfo and DropshotsConfig values. For instance, you can use a custom class for that. To map the Preview Info values, I recommend to use the ActivityScenarioForComposableRule of [AndroidUiTestingUtils](https://github.com/sergio-sastre/AndroidUiTestingUtils)
-
-<details>
-<summary>Click to see the mapping logic for Instrumentation configuration</summary>
 
    ```kotlin
    object DropshotsPreviewRule {
@@ -809,11 +791,8 @@ Let's say we want to enable some custom Dropshots Config for some Previews, for 
        }
    }
    ```
-</details>
-3. Create the corresponding Parameterized Test:
 
-<details>
-<summary>Click to see the Dropshots Parameterized Test implementation</summary>
+3. Create the corresponding Parameterized Test:
 
 ```kotlin
    @RunWith(ParameterizedTestRunner::class)
@@ -855,13 +834,14 @@ Let's say we want to enable some custom Dropshots Config for some Previews, for 
       }
    }
    ```
-</details>
+
    - Run these Dropshots tests together with the existing ones by executing the corresponding command e.g. `./gradlew yourModule:connectedAndroidTest -Pdropshots.record`
 
 > [!WARNING]
 > Beware that Locale Strings in Preview Infos, unlike AndroidUiTestingUtils, use The BCP-47 tag but with + instead of - as separators, and have the prefix b+. Therefore, the BCP-47 tag "zh-Hans-CN" would be written as "b+zh+Hans+CN" instead. 
 > So for this case, you'd have to convert locale "b+zh+Hans+CN" to "zh-Hans-CN" in order to use it with AndroidUiTestingUtils, for instance as showcased above: <br/>
 > `val locale = preview.previewInfo.locale.removePrefix("b+").replace("+", "-").ifBlank { "en" }`
+</details>
 
 ## Advanced Usage
 ### Screenshot File Names
@@ -972,12 +952,15 @@ You can find executable examples in this repo with different screenshot librarie
 - [Android-Testify](tests/src/androidTest/java/sergio/sastre/composable/preview/scanner/screenshots/AndroidTestifyGlanceComposablePreviewScannerInstrumentationTest.kt) (Check the [instrumentation-screenshot-tests](#instrumentation-screenshot-tests) section before)
 
 To write such screenshot tests you have to:
+<details>
+<summary>Click to see Glance implementation details</summary>
 
 1. Add `:glance` dependency for ComposablePreviewScanner e.g. `io.github.sergio-sastre.ComposablePreviewScanner:glance:<version>`. This contains some utils to correctly set the size of the Composable as well as the size of the device. Take a look at the executable examples above to see how they are used.
 2. Ensure `targetSdk` is set to any value in the gradle file<sup>1</sup>. Otherwise you can see some discrepancies between the Preview and the generated screenshot file for Glance `@Preview`s without `widthDp`.
 3. Write the Parameterized screenshot test like in the examples above.
 
 <sup>1</sup> Unfortunately, Paparazzi is not able to always render screenshots accurately for Glance `@Preview`s without `widthDp`.
+</details>
 
 # Conferences & Community
 <details>
