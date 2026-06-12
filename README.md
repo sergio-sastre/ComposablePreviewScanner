@@ -10,7 +10,7 @@
 
 
 <p align="center">
-<img width="400" src="https://github.com/sergio-sastre/ComposablePreviewScanner/assets/6097181/63d9676d-22c4-4bd1-8680-3fcf1a72e001">
+<img width="400" src="composable_preview_scanner_new_logo.png">
 </p>
 
 A Compose Multiplatform friendly library to help auto-generate screenshot tests from Composable Previews (e.g. **Android**, **Glance**) with any screenshot testing library:
