@@ -752,7 +752,7 @@ Let's say we want to enable some custom Dropshots Config for some Previews, for 
       fun createFor(preview: ComposablePreview<AndroidPreviewInfo>): Dropshots =
          preview.getAnnotation<DropshotsConfig>()?.let { config ->
             Dropshots(
-               resultValidator = ThresholdValidator(config.comparisonThreshold))
+               resultValidator = ThresholdValidator(config.comparisonThreshold)
             )
          } ?: Dropshots()
    }
