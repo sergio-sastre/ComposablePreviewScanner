@@ -30,7 +30,14 @@ Assuming that you have:
 
 Here is how you could also run screenshot tests for those Compose Multiplatform `@Previews` together, for instance, with Roborazzi (would also work with Paparazzi or any Instrumentation-based library).
 
-1. Add `:common` dependency for ComposablePreviewScanner e.g. `io.github.sergio-sastre.ComposablePreviewScanner:common:<version>`.
+1. Add `:common` dependency for ComposablePreviewScanner:
+```kotlin
+// Maven Central
+testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:common:<version>")
+
+// JitPack
+testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:common:<version>")
+```
 2. Add an additional Parameterized screenshot test for these Compose Multiplatform `@Previews`. This is basically the same as in the corresponding [Paparazzi](README.md#paparazzi), [Roborazzi](README.md#roborazzi), or [Instrumentation screenshot tests](README.md#instrumentation-screenshot-tests) sections, but use `CommonComposablePreviewScanner<CommonPreviewInfo>` and `CommonPreviewScreenshotIdBuilder`.
 3. Run these screenshot tests by executing the corresponding command e.g. for android: `./gradlew yourModule:recordRoborazziDebug`
 
@@ -42,8 +49,14 @@ There is [already an open issue](https://youtrack.jetbrains.com/issue/CMP-5675) 
 
 In the meanwhile, it is also possible to workaround this limitation with ComposablePreviewScanner as follows.
 
-1. Add `:jvm` dependency from ComposablePreviewScanner 0.2.0+ and use Roborazzi, since it is the only Screenshot Testing Library that supports Compose-Desktop
-   `testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")`
+1. Add `:jvm` dependency from ComposablePreviewScanner 0.2.0+ and use Roborazzi:
+```kotlin
+// Maven Central
+testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")
+
+// JitPack
+testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")
+```
 
 2. Configure Roborazzi as described [in the corresponding "Multiplatform support" section](https://github.com/takahirom/roborazzi?tab=readme-ov-file#multiplatform-support)
 

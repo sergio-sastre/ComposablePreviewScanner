@@ -108,6 +108,28 @@ dependencies {
 }
 ```
 
+## JitPack
+Add JitPack to your root build.gradle file:
+```kotlin
+allprojects {
+   repositories {
+      maven { url = uri('https://jitpack.io') }
+   }
+}
+```
+
+```kotlin
+dependencies {
+    // android previews (androidx.compose.ui.tooling.preview.Preview)
+    // supported in jvm targets e.g. android & desktop
+    testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:android:<version>")
+
+    // glance previews (androidx.glance.preview.Preview)
+    // supported since 0.7.0+ in android target
+    testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:glance:<version>")
+}
+```
+
 # How to use
 ### Examples with Screenshot Testing Libraries (Android target)
 1. [JVM Screenshot Tests](#jvm-screenshot-tests)</br>
@@ -507,6 +529,10 @@ fun PreviewBackground(
 ```
 
 5. Create the corresponding Parameterized Test:
+
+<details>
+<summary>Click to see the Paparazzi Parameterized Test implementation</summary>
+
 ```kotlin
 @RunWith(Parameterized::class)
 class PreviewTestParameterTests(
@@ -563,6 +589,7 @@ class PreviewTestParameterTests(
     }
 }
 ```
+</details>
 
 6. Run these Paparazzi tests together with the existing ones by executing the corresponding command e.g. `./gradlew yourModule:recordPaparazziDebug`
 
@@ -586,7 +613,11 @@ fun MyComposable(){
 }
 ```
 
-3. Map the PreviewInfo and RoborazziConfig values. For instance, you can use a custom class for that.
+3. Map the PreviewInfo and RoborazziConfig values.
+
+<details>
+<summary>Click to see the mapping logic for Roborazzi configuration</summary>
+
 ```kotlin
 object RoborazziOptionsMapper {
     fun createFor(preview: ComposablePreview<AndroidPreviewInfo>): RoborazziOptions =
@@ -618,8 +649,13 @@ object RoborazziComposeOptionsMapper {
 }
 ```
 Check the following link for a full list of [Robolectric device qualifiers](https://robolectric.org/device-configuration/) and this blog post on how to [set the cumulative Qualifiers dynamically](https://sergiosastre.hashnode.dev/efficient-testing-with-robolectric-roborazzi-across-many-ui-states-devices-and-configurations)
+</details>
 
 4. Create the corresponding Parameterized Test:
+
+<details>
+<summary>Click to see the Roborazzi Parameterized Test implementation</summary>
+
 ```kotlin
 @RunWith(ParameterizedRobolectricTestRunner::class)
 class PreviewParameterizedTests(
@@ -659,6 +695,7 @@ class PreviewParameterizedTests(
     }
 }
 ```
+</details>
 
 5. Run these Roborazzi tests together with the existing ones by executing the corresponding command e.g. `./gradlew yourModule:recordRoborazziDebug`
 
@@ -672,6 +709,10 @@ Android does not use the standard Java bytecode format and does not actually eve
 Moreover, the "build" folders, where the compiled classes are located, are not accessible from instrumentation tests.
 Therefore, the current way to support instrumentation tests, is by previously dumping the relevant classes into a file and moving it into a folder that can be accessed while running instrumentation tests.
 1. run the scan in a unit test & save it in a file accessible by instrumentation tests e.g. in assets
+
+<details>
+<summary>Click to see the ScanResultDumper implementation</summary>
+
 ```kotlin
 class SaveScanResultInAssets {
     @Test
@@ -691,6 +732,7 @@ class SaveScanResultInAssets {
     }
 }
 ```
+</details>
 Ensure that the .json with the scan result is up-to-date before executing the instrumentation screenshot tests. For instance, execute that test always before your instrumentation screenshot tests.
 Ideally, this scanning could be done via a Gradle Plugin in the future instead of by running it in a unit test.
 
@@ -710,6 +752,10 @@ Let's say we want to enable some custom Dropshots Config for some Previews, for 
    }
    ```
    - Map the PreviewInfo and DropshotsConfig values. For instance, you can use a custom class for that. To map the Preview Info values, I recommend to use the ActivityScenarioForComposableRule of [AndroidUiTestingUtils](https://github.com/sergio-sastre/AndroidUiTestingUtils)
+
+<details>
+<summary>Click to see the mapping logic for Instrumentation configuration</summary>
+
    ```kotlin
    object DropshotsPreviewRule {
       fun createFor(preview: ComposablePreview<AndroidPreviewInfo>): Dropshots =
@@ -749,7 +795,12 @@ Let's say we want to enable some custom Dropshots Config for some Previews, for 
        }
    }
    ```
-- Create the corresponding Parameterized Test:
+</details>
+3. Create the corresponding Parameterized Test:
+
+<details>
+<summary>Click to see the Dropshots Parameterized Test implementation</summary>
+
 ```kotlin
    @RunWith(ParameterizedTestRunner::class)
    class PreviewParameterizedTests(
@@ -790,6 +841,7 @@ Let's say we want to enable some custom Dropshots Config for some Previews, for 
       }
    }
    ```
+</details>
    - Run these Dropshots tests together with the existing ones by executing the corresponding command e.g. `./gradlew yourModule:connectedAndroidTest -Pdropshots.record`
 
 > [!WARNING]
