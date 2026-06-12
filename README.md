@@ -59,7 +59,7 @@ ComposablePreviewScanner also works with:
 <sup>1</sup> The [Compose Preview Screenshot Testing tool](https://developer.android.com/studio/preview/compose-screenshot-testing) from Google requires you to put your `@Previews` inside a class.
 
 ## Compose Multiplatform Support
-Compose Multiplatform allows you to use the standard Android Preview **`androidx.compose.ui.tooling.preview.Preview`** annotation across all relevant source sets, like **Android** and **Desktop** but also including `common`.
+Compose Multiplatform allows you to use the standard Android Preview annotation **`androidx.compose.ui.tooling.preview.Preview`** across **Android** and **Desktop** targets, but also in `common`.</br>
 ComposablePreviewScanner can scan and run on both platforms, **Android** and **Desktop**, and additionally scan Previews in `common`.
 
 For example, to scan previews located in both a platform-specific (`androidMain` or `desktopMain`) and a ui-shared (e.g. `commonMain`) source set, you would configure the scanner like this:
@@ -77,9 +77,9 @@ AndroidComposablePreviewScanner()
 
 > [!NOTE]
 > Screenshot tests must run on a platform supported by your screenshot library.<br/>
-> • Android: Paparazzi, Roborazzi & instrumentation libraries (e.g. Dropshots, Android-Testify) are supported.<br/>
-> • Desktop: Roborazzi only.<br/>
-> • Common: no library runs directly in common; run your tests from an Android or Desktop target instead. ComposablePreviewScanner can still find the Previews in common target packages.<br/>
+> • **Android**: Paparazzi, Roborazzi & instrumentation libraries (e.g. Dropshots, Android-Testify) are supported.<br/>
+> • **Desktop**: Roborazzi only.<br/>
+> • **Common**: no current library can run screenshot tests directly in common; run your tests from an Android or Desktop target instead. ComposablePreviewScanner can still find the Previews in common target packages.<br/>
 
 You can find executable examples with Roborazzi here:
 - [Android @Previews in common](https://github.com/sergio-sastre/roborazzi/blob/droidcon/preview_tests/sample-generate-preview-common/src/androidUnitTest/kotlin/com/github/takahirom/preview/tests/AndroidPreviewTest.kt)
