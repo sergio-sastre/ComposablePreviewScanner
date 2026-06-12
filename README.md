@@ -1,69 +1,99 @@
-[![](https://jitpack.io/v/sergio-sastre/ComposablePreviewScanner.svg)](https://jitpack.io/#sergio-sastre/ComposablePreviewScanner) ![](https://jitpack.io/v/sergio-sastre/ComposablePreviewScanner/month.svg)</br>
-[![](https://img.shields.io/badge/dynamic/xml.svg?color=brightgreen&label=Maven%20Central&query=%2F%2Fmetadata%2Fversioning%2Frelease&url=https%3A%2F%2Frepo.maven.apache.org%2Fmaven2%2Fio%2Fgithub%2Fsergio-sastre%2FComposablePreviewScanner%2Fandroid%2Fmaven-metadata.xml)](https://central.sonatype.com/artifact/io.github.sergio-sastre.ComposablePreviewScanner/android) ![](https://img.shields.io/badge/downloads-unknown-yell)</br>
-
 <a href="https://androidweekly.net/issues/issue-628">
 <img src="https://androidweekly.net/issues/issue-628/badge">
-</a></br>
+</a><br/>
 <a href="https://jetc.dev/issues/221.html"><img src="https://img.shields.io/badge/As_Seen_In-jetc.dev_Newsletter_Issue_%23221-blue?logo=Jetpack+Compose&amp;logoColor=white" alt="As Seen In - jetc.dev Newsletter Issue #221"></a>
 
-# <p align="center">Composable Preview Scanner</p>
-
-
 <p align="center">
-<img width="400" src="https://github.com/sergio-sastre/ComposablePreviewScanner/assets/6097181/63d9676d-22c4-4bd1-8680-3fcf1a72e001">
-</p>
+<img width="400" src="composable_preview_scanner_new_logo.png">
+</p><br/>
 
-A library to help auto-generate screenshot tests from Composable Previews (e.g. **Android**, **Glance** & **Compose Multiplatform**) with any screenshot testing library:
-JVM-based (i.e. Paparazzi, Roborazzi) as well as Instrumentation-based (i.e. Shot, Dropshots, Android-Testify, etc.)
+[![](https://img.shields.io/badge/Kotlin-Multiplatform-%237f52ff?logo=kotlin&logoColor=white)](https://kotlinlang.org/docs/multiplatform.html) [![](https://img.shields.io/badge/Platform-Android-3DDC84?logo=android&logoColor=white)](#) [![](https://img.shields.io/badge/Platform-Desktop-0078D4?logo=openjdk&logoColor=white)](#)<br/>
+
+A Compose Multiplatform friendly library to help auto-generate screenshot tests from Composable Previews (e.g. **Android**, **Glance**) with any screenshot testing library:
+JVM-based (i.e. Paparazzi, Roborazzi) as well as Instrumentation-based (i.e. Shot, Dropshots, Android-Testify, etc.).
+
+> [!IMPORTANT]
+> **Roborazzi** has integrated Composable Preview Scanner (maven-central) as a core dependency for its native [Compose Preview support](https://github.com/takahirom/roborazzi?tab=readme-ov-file#compose-preview-support-experimental).<br/>
+
+# Overview
+[![](https://jitpack.io/v/sergio-sastre/ComposablePreviewScanner.svg)](https://jitpack.io/#sergio-sastre/ComposablePreviewScanner) ![](https://jitpack.io/v/sergio-sastre/ComposablePreviewScanner/month.svg)<br/>
+[![](https://img.shields.io/badge/dynamic/xml.svg?color=brightgreen&label=Maven%20Central&query=%2F%2Fmetadata%2Fversioning%2Frelease&url=https%3A%2F%2Frepo.maven.apache.org%2Fmaven2%2Fio%2Fgithub%2Fsergio-sastre%2FComposablePreviewScanner%2Fandroid%2Fmaven-metadata.xml)](https://central.sonatype.com/artifact/io.github.sergio-sastre.ComposablePreviewScanner/android) ![](https://img.shields.io/badge/downloads-unknown-yell)<br/>
+With over **300,000 monthly downloads** (JitPack + Maven Central), Composable Preview Scanner is a trusted solution for automated visual UI verification in the Compose ecosystem.
 
 ![composable_preview_scanner_overview.png](composable_preview_scanner_overview.png)
 > [!NOTE]
-> 1. Support for Wear OS Tile `@Previews` is under evaluation</br>
-> 2. `common` and `desktop` previews are deprecated in favour of the `android` preview (`androidx.compose.ui.tooling.preview.Preview`), which can be used
-> in `common` and JVM-based source sets like `desktop` since Compose Multiplatform 1.10.0-beta-02. This library has also deprecated its support. More info in [README_DEPRECATED.md](README_DEPRECATED.md)</br>
-
-
-#### Provide anonymous feedback
-Already using ComposablePreviewScanner?</br>
-I'd love to hear your thoughts!</br>
-Help shape its future by taking [this quick survey](https://forms.gle/jcvggBxv14CLqjFo6)
+> If you are still using the deprecated `org.jetbrains.compose.ui.tooling.preview.Preview`, see [README_DEPRECATED.md](README_DEPRECATED.md)<br/>
 
 # Comparison with other solutions
-|                                                      | Composable Preview Scanner                                             | Showkase                                                        | Compose Preview Screenshot Testing            |
-|------------------------------------------------------|------------------------------------------------------------------------|-----------------------------------------------------------------|-----------------------------------------------|
-| Independent of AGP version                           | ✅                                                                      | ✅                                                               | ❌                                             |
-| Library-agnostic solution                            | ✅                                                                      | ✅                                                               | ❌<sup>1</sup>                                 |
-| Scans previews in different sources sets<sup>2</sup> | ✅ main<br/>✅ screenshotTest<br/>✅ androidTest                          | ✅ main<br/>❌ screenshotTest<br/>❌ androidTest                   | ❌ main<br/>✅ screenshotTest<br/>❌ androidTest |
-| Preview Infos available                              | ✅                                                                      | ❌<sup>3</sup>                                                   | ✅                                             |
-| Specific Config (e.g. for Libs) available            | ✅<sup>4</sup>                                                          | ❌                                                               | ⚠️<sup>5</sup>                                |
-| Supported Preview types                              | ✅ Android</br> ✅ Glance</br> ✅ Compose Multiplatform <sup>6</sup></br> | ✅ Android</br> ❌Glance</br> ❌Compose Multiplatform <sup>7</sup> | ✅ Android</br> ❌ Glance</br> ❌ Compose Multiplatform               |
+|                                                      | Composable Preview Scanner                                | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Showkase&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Compose Preview Screenshot Testing          |
+|------------------------------------------------------|-----------------------------------------------------------|----------------------------------------------------|---------------------------------------------|
+| Independent of AGP version                           | ✅                                                         | ✅                                                  | ❌                                           |
+| Library-agnostic solution                            | ✅                                                         | ✅                                                  | ❌<sup>1</sup>                               |
+| Scans previews in different sources sets<sup>2</sup> | ✅&nbsp;main<br/>✅&nbsp;screenshotTest<br/>✅&nbsp;androidTest | ✅&nbsp;main<br/>❌&nbsp;screenshotTest<br/>❌&nbsp;androidTest | ❌&nbsp;main<br/>✅&nbsp;screenshotTest<br/>❌&nbsp;androidTest |
+| Preview Infos available                              | ✅                                                         | ❌<sup>3</sup>                                      | ✅                                           |
+| Specific Config (e.g. for Libs) available            | ✅<sup>4</sup>                                             | ❌                                                  | ⚠️<sup>5</sup>                               |
+| Supported Preview types                              | ✅&nbsp;Android<br/>✅&nbsp;Glance<br/>❌&nbsp;Wear<sup>6</sup> | ✅&nbsp;Android<br/>❌&nbsp;Glance<br/>❌&nbsp;Wear | ✅&nbsp;Android<br/>❌&nbsp;Glance<br/>❌&nbsp;Wear |
+| Supported Locations in Compose Multiplatform         | ✅&nbsp;Android<br/>✅&nbsp;Desktop/JVM<br/>✅&nbsp;Common | ✅&nbsp;Android<br/>❌&nbsp;Desktop/JVM<sup>7</sup><br/>❌&nbsp;Common | ✅&nbsp;Android<br/>✅&nbsp;Desktop/JVM<br/>❌&nbsp;Common |
 
-<sup>1</sup> Compose Preview Screenshot Testing is a standalone solution based on LayoutLib, whereas ComposablePreviewScanner and Showkase provide Composables' infos so you can run screenshot tests with your favourite screenshot testing library.</br></br>
-<sup>2</sup> From version 0.5.0, ComposablePreviewScanner can scan previews in any source set. Compose Preview Screenshot Testing requires to put the previews in a brand-new "screenshotTest" source.</br></br>
-<sup>3</sup> Showkase components only hold information about the Composable, but not about the Preview Info (i.e. ApiLevel, Locale, UiMode, FontScale...).</br></br>
-<sup>4</sup> ComposablePreviewScanner supports adding extra lib-config (e.g. Paparazzi's Rendering Mode or Roborazzi's compare options) in the form of annotations that are additionally added to the preview. You can check how in the examples below in [Jvm Screenshot Tests](#jvm-screenshot-tests) and [Instrumentation Screenshot Tests](#instrumentation-screenshot-tests) respectively.</br></br>
-<sup>5</sup> Compose Preview Screenshot Testing supports *only general tolerance* via gradle plugin from version [0.0.1-alpha06](https://developer.android.com/studio/preview/compose-screenshot-testing#001-alpha06)</br></br>
-<sup>6</sup> Desktop Previews (which are deprecated since Compose Multiplatform 1.10.0-beta02) are supported with a workaround. See [README_DEPRECATED.md](README_DEPRECATED.md)</br></br>
+<details>
+<summary>Click to see comparison footnotes</summary>
+
+<sup>1</sup> Compose Preview Screenshot Testing is a standalone solution based on LayoutLib, whereas ComposablePreviewScanner and Showkase provide Composables' infos so you can run screenshot tests with your favourite screenshot testing library.<br/><br/>
+<sup>2</sup> From version 0.5.0, ComposablePreviewScanner can scan previews in any source set. Compose Preview Screenshot Testing requires to put the previews in a brand-new "screenshotTest" source.<br/><br/>
+<sup>3</sup> Showkase components only hold information about the Composable, but not about the Preview Info (i.e. ApiLevel, Locale, UiMode, FontScale...).<br/><br/>
+<sup>4</sup> ComposablePreviewScanner supports adding extra lib-config (e.g. Paparazzi's Rendering Mode or Roborazzi's compare options) in the form of annotations that are additionally added to the preview. You can check how in the examples below in [Jvm Screenshot Tests](#jvm-screenshot-tests) and [Instrumentation Screenshot Tests](#instrumentation-screenshot-tests) respectively.<br/><br/>
+<sup>5</sup> Compose Preview Screenshot Testing supports *only general tolerance* via gradle plugin from version [0.0.1-alpha06](https://developer.android.com/studio/preview/compose-screenshot-testing#001-alpha06)<br/><br/>
+<sup>6</sup> Wear Previews support is planned<br/><br/>
 <sup>7</sup> [Showkase: Compose Multiplatform Support](https://github.com/airbnb/Showkase/issues/364)
-</br></br></br>
+</details><br/>
+
 ComposablePreviewScanner also works with:
-- **NEW*** `@PreviewWrapper` (since 0.9.0+) automatically. No changes required in the Screenshot Testing library using ComposablePreviewScanner.
-- `@PreviewParameters` (for Compose Multiplatform since 0.6.0+)
-- Multi-Previews, including  `@PreviewScreenSizes`, `@PreviewFontScales`, `@PreviewLightDark`, and `@PreviewDynamicColors` as well as custom multi-previews.
-- private `@Previews` (from version 0.1.3+)
-- `@Previews` inside public classes<sup>1</sup> (from version 0.3.0+), not nested classes though
-- `@Previews` located in any source set, like "main", "screenshotTest" and "androidTest" (from version 0.5.0+)
+- **NEW** `@PreviewWrapper` (since 0.9.0+) automatically. No changes required in the Screenshot Testing library using ComposablePreviewScanner.
+- `@PreviewParameters`
+- `@PreviewScreenSizes`, `@PreviewFontScales`, `@PreviewLightDark` and `@PreviewDynamicColors` as well as custom multi-previews.
 - `@Previews` with default-parameters (from version 0.5.1+)
+- `@Previews` located in any source set, like "main", "screenshotTest" and "androidTest" (from version 0.5.0+)
+- `@Previews` inside public classes<sup>1</sup> (from version 0.3.0+)
+- private `@Previews` (from version 0.1.3+)
 
 <sup>1</sup> The [Compose Preview Screenshot Testing tool](https://developer.android.com/studio/preview/compose-screenshot-testing) from Google requires you to put your `@Previews` inside a class.
 
+## Compose Multiplatform Support
+Compose Multiplatform allows you to use the standard Android Preview **`androidx.compose.ui.tooling.preview.Preview`** annotation across all relevant source sets, like **Android** and **Desktop** but also including `common`.
+ComposablePreviewScanner can scan and run on both platforms, **Android** and **Desktop**, and additionally scan Previews in `common`.
+
+For example, to scan previews located in both a platform-specific (`androidMain` or `desktopMain`) and a ui-shared (e.g. `commonMain`) source set, you would configure the scanner like this:
+
+```kotlin
+AndroidComposablePreviewScanner()
+    .scanPackageTrees(
+        include = listOf(
+            "your.package.android_or_desktop", // platform-specific
+            "your.package.common"              // commonMain
+        )
+    )
+    .getPreviews()
+```
+
+> [!NOTE]
+> Screenshot tests must run on a platform supported by your screenshot library.<br/>
+> • Android: Paparazzi, Roborazzi & instrumentation libraries (e.g. Dropshots, Android-Testify) are supported.<br/>
+> • Desktop: Roborazzi only.<br/>
+> • Common: no library runs directly in common; run your tests from an Android or Desktop target instead. ComposablePreviewScanner can still find the Previews in common target packages.<br/>
+
+You can find executable examples with Roborazzi here:
+- [Android @Previews in common](https://github.com/sergio-sastre/roborazzi/blob/droidcon/preview_tests/sample-generate-preview-common/src/androidUnitTest/kotlin/com/github/takahirom/preview/tests/AndroidPreviewTest.kt)
+- [Android @Previews in desktop](https://github.com/sergio-sastre/roborazzi/blob/droidcon/preview_tests/sample-generate-preview-desktop/src/desktopTest/kotlin/AndroidPreviewTest.kt)
+
+If you are still using the deprecated Common or Desktop `@Preview` annotations, see [README_DEPRECATED.md](README_DEPRECATED.md) for guidance.
+
 # How to set up
 > [!WARNING]  
-> Beware the prefixes:</br>
-> *Maven Central* -> **io.github**</br>
-> *JitPack* -> **com.github**</br>
+> Beware the prefixes:<br/>
+> *Maven Central* -> **io.github**<br/>
+> *JitPack* -> **com.github**<br/>
 
-## Maven Central (since 0.3.2)
+## Maven Central (since 0.3.2+)
 ```kotlin
 dependencies {
     // android previews (androidx.compose.ui.tooling.preview.Preview)
@@ -73,14 +103,6 @@ dependencies {
     // glance previews (androidx.glance.preview.Preview)
     // supported since 0.7.0+ in android target
     testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:glance:<version>")
-    
-    // common previews (org.jetbrains.compose.ui.tooling.preview.Preview) (deprecated)
-    // supported in jvm targets e.g. android & desktop
-    testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:common:<version>")
-
-    // desktop previews (androidx.compose.desktop.ui.tooling.preview.Preview) via custom annotation (deprecated)
-    // supported in jvm targets e.g. android & desktop
-    testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")
 }
 ```
 
@@ -103,22 +125,14 @@ dependencies {
     // glance previews (androidx.glance.preview.Preview)
     // supported since 0.7.0+ in android target
     testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:glance:<version>")
-
-    // common previews (org.jetbrains.compose.ui.tooling.preview.Preview) (deprecated)
-    // supported in jvm targets e.g. android & desktop
-    testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:common:<version>")
-
-    // desktop previews (androidx.compose.desktop.ui.tooling.preview.Preview) via custom annotation (deprecated)
-    // supported in jvm targets e.g. android & desktop
-    testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")
 }
 ```
 
 # How to use
 ### Examples with Screenshot Testing Libraries (Android target)
-1. [JVM Screenshot Tests](#jvm-screenshot-tests)</br>
-   1.1  [Paparazzi](#paparazzi)</br>
-   1.2  [Roborazzi](#roborazzi)</br>
+1. [JVM Screenshot Tests](#jvm-screenshot-tests)<br/>
+   1.1  [Paparazzi](#paparazzi)<br/>
+   1.2  [Roborazzi (without configuring its plugin)](#roborazzi)<br/>
 2. [Instrumentation Screenshot Tests](#instrumentation-screenshot-tests)
 
 If you encounter any issues when executing the screenshot tests, take a look at the [Troubleshooting](#troubleshooting) section.
@@ -131,11 +145,11 @@ If you encounter any issues when executing the screenshot tests, take a look at 
 2. [Compose Multiplatform Support](#compose-multiplatform-support)
 
 ## API   
-`AndroidComposablePreviewScanner`, `GlanceComposablePreviewScanner`, `CommonComposablePreviewScanner` (deprecated), and `JvmAnnotationScanner` (deprecated) have the same API.
+`AndroidComposablePreviewScanner` and `GlanceComposablePreviewScanner` have the same API.
 The API is pretty simple:
 
 ```kotlin
-AndroidComposablePreviewScanner()
+AndroidComposablePreviewScanner() // or GlanceComposablePreviewScanner()
     // Optional to log scanning info like scanning time or amount of previews found
     .enableScanningLogs()
     // Optional to scan previews in compiled classes of other source sets, like "screenshotTest" or "androidTest"
@@ -169,9 +183,9 @@ AndroidComposablePreviewScanner()
     )
     // Optional to also provide private Previews
     .includePrivatePreviews()
-    // Optional to filter by any previewInfo: name, group, apiLevel, locale, uiMode, fontScale...
+    // Optional to filter by any previewInfo: heightDp, widthDp...
     .filterPreviews {
-        previewInfo ->  previewInfo.apiLevel == 30 
+        previewInfo ->  previewInfo.heightDP >= 800
     }
     // ---
     .getPreviews()
@@ -182,7 +196,7 @@ AndroidComposablePreviewScanner()
 ### Scanning Source Sets (screenshotTest, androidTest, main)
 By default, ComposablePreviewScanner scans `@Preview`s in the `main` Source Set at build time.
 However, one can scan previews in other Source Sets different from `main` by using `.setTargetSourceSet(classpath:Classpath)`,
-where `classpath` is the local path to the compiled classes of that Source Set.</br>
+where `classpath` is the local path to the compiled classes of that Source Set.<br/>
 ComposablePreviewScanner provides some default values to facilitate this:
 ```kotlin
 // Previews under "screenshotTest"
@@ -191,6 +205,9 @@ Classpath(SourceSet.SCREENSHOT_TEST)
 // Previews under "androidTest"
 Classpath(SourceSet.ANDROID_TEST)
 ```
+
+<details>
+<summary>Click to see scanning Source Set instructions</summary>
 
 #### Ensure compiled classes exist
 You have to make sure the corresponding compiled classes for that Source Set exist and are up to date.
@@ -213,7 +230,7 @@ tasks.withType<Test> {
 
 #### Ensure Source Set dependencies available in tests
 Last but not least, make sure all the code inside the previews of the target Source Set is also
-available in `test` (for Roborazzi and Paparazzi) or `android test` (for any instrumentation-based library).</br>
+available in `test` (for Roborazzi and Paparazzi) or `android test` (for any instrumentation-based library).<br/>
 So, let's say that you only have `@Preview`s in `screenshotTest`, and not in `main`. Therefore you've only added that dependency to `screenshotTest`:
 ```kotlin
 screenshotTestImplementation("androidx.compose.ui:ui-tooling-preview:<version>")
@@ -227,6 +244,7 @@ testImplementation("androidx.compose.ui:ui-tooling-preview:<version>")
 > [!WARNING]
 > For instrumentation tests and Source Sets different from `main` or `androidTest`, like `screenshotTest`, you'll also need to ensure that the classes of those source sets
 > are also included in the .apk installed on the device or emulator, or it will throw ClassNotFoundErrors.
+>
 > The easiest way to achieve this is to add the following code snippet to your gradle file:
 > ```kotlin
 > val includeScreenshotTests = project.hasProperty("includeSourceSetScreenshotTest")
@@ -241,16 +259,22 @@ testImplementation("androidx.compose.ui:ui-tooling-preview:<version>")
 > ```
 > And pass that gradle property when executing the screenshot tests via command-line, e.g.:
 > `./gradlew :tests:screenshotRecord -PincludeSourceSetScreenshotTest`
-> 
+>
 > This is NOT necessary for JVM-based screenshot testing libraries like Roborazzi and Paparazzi
 
+</details>
+
 ### Scanning Source Options (packages, files, inputStreams)
+<details>
+<summary>Click to see scanning source options</summary>
+
 Apart from `scanPackageTrees(include:List<String>, exclude:List<String>)`, there are 2 more options to scan previews:
 1. All Packages: `scanAllPackages()`. This might require a huge amount of memory since it would scan not only in a set of packages, but in all packages used in your app/module (i.e. also in its transitive dependencies). This is in 99% of the cases unnecessary, and scanning the main package trees of your module should be sufficient. 
-2. From a file containing the ScanResult. This speeds up your screenshot tests, since it avoids the time-consuming process of scanning each time by reusing previously scanned data: </br>
-   2.1. `scanFile(jsonFile: File)`. Use this for JVM-based screenshot testing libraries (i.e. Roborazzi & Paparazzi).</br>
-   2.2. `scanFile(targetInputStream: InputStream, customPreviewsInfoInputStream: InputStream)`. This is meant for Instrumentation-based screenshot testing libraries.</br></br>
+2. From a file containing the ScanResult. This speeds up your screenshot tests, since it avoids the time-consuming process of scanning each time by reusing previously scanned data: <br/>
+   2.1. `scanFile(jsonFile: File)`. Use this for JVM-based screenshot testing libraries (i.e. Roborazzi & Paparazzi).<br/>
+   2.2. `scanFile(targetInputStream: InputStream, customPreviewsInfoInputStream: InputStream)`. This is meant for Instrumentation-based screenshot testing libraries.<br/><br/>
 You can create a unit test for that:
+
 ```kotlin
 class SaveScanResultInFiles {
     @Test
@@ -270,6 +294,7 @@ class SaveScanResultInFiles {
     }
 }
 ```
+</details>
 
 ## JVM Screenshot Tests
 
@@ -279,6 +304,9 @@ You can find [executable examples here](https://github.com/sergio-sastre/Android
 > [!NOTE]
 > You can also find a paparazzi-plugin in this repo that generates all this boilerplate code for you!
 > Take a look at [its README.md](paparazzi-plugin/README.md)
+
+<details>
+<summary>Click to see Paparazzi implementation details</summary>
 
 Let's say we want to enable some custom Paparazzi config for some Previews, for instance a maxPercentDifference value
 
@@ -296,7 +324,9 @@ fun MyComposable(){
    // Composable code here
 }
 ```
-3. Create custom record and verify `SnapshotHandler`s for better control over the screenshot file names.</br> By default, Paparazzi prefixes all generated screenshot files using its internal `SnapshotHandler`. While this works for most cases, it causes issues in parameterized tests: the default `SnapshotHandler` includes the test [index] in the filename. If the order of your previews changes, filenames no longer match, which can break snapshot verification.</br></br>
+3. Create custom record and verify `SnapshotHandler`s for better control over the screenshot file names.
+
+By default, Paparazzi prefixes all generated screenshot files using its internal `SnapshotHandler`. While this works for most cases, it causes issues in parameterized tests: the default `SnapshotHandler` includes the test [index] in the filename. If the order of your previews changes, filenames no longer match, which can break snapshot verification.<br/><br/>
    To solve this, we can create custom `SnapshotHandler`s that use a fixed prefix, like "Paparazzi_Preview_Test", instead of a test-index-dependent name. This ensures filenames remain stable regardless of test order.
 ```kotlin
 // Define the prefix = <packageName>_<className>_<methodName>
@@ -358,11 +388,11 @@ private class PreviewHtmlReportWriter: SnapshotHandler {
       snapshotHandler.close()
    }
 }
-```
 
 In the next step, we’ll show how to pass these custom SnapshotHandlers to the Paparazzi TestRule to take full control of screenshot filenames.
 
 4. Map the PreviewInfo and PaparazziConfig values.
+
 ```kotlin
 class Dimensions(
    val screenWidthInPx: Int,
@@ -498,9 +528,9 @@ fun PreviewBackground(
         }
     }
 }
-```
 
 5. Create the corresponding Parameterized Test:
+
 ```kotlin
 @RunWith(Parameterized::class)
 class PreviewTestParameterTests(
@@ -559,9 +589,13 @@ class PreviewTestParameterTests(
 ```
 
 6. Run these Paparazzi tests together with the existing ones by executing the corresponding command e.g. `./gradlew yourModule:recordPaparazziDebug`
+</details>
 
 ### Roborazzi
 You can find [executable examples here](https://github.com/sergio-sastre/Android-screenshot-testing-playground/tree/master/lazycolumnscreen-previews/roborazzi/src)
+
+<details>
+<summary>Click to see Roborazzi implementation details</summary>
 
 Let's say we want to enable some custom Roborazzi Config for some Previews, for instance a maxPercentDifferent value
 
@@ -580,7 +614,8 @@ fun MyComposable(){
 }
 ```
 
-3. Map the PreviewInfo and RoborazziConfig values. For instance, you can use a custom class for that.
+3. Map the PreviewInfo and RoborazziConfig values.
+
 ```kotlin
 object RoborazziOptionsMapper {
     fun createFor(preview: ComposablePreview<AndroidPreviewInfo>): RoborazziOptions =
@@ -614,6 +649,7 @@ object RoborazziComposeOptionsMapper {
 Check the following link for a full list of [Robolectric device qualifiers](https://robolectric.org/device-configuration/) and this blog post on how to [set the cumulative Qualifiers dynamically](https://sergiosastre.hashnode.dev/efficient-testing-with-robolectric-roborazzi-across-many-ui-states-devices-and-configurations)
 
 4. Create the corresponding Parameterized Test:
+
 ```kotlin
 @RunWith(ParameterizedRobolectricTestRunner::class)
 class PreviewParameterizedTests(
@@ -655,17 +691,22 @@ class PreviewParameterizedTests(
 ```
 
 5. Run these Roborazzi tests together with the existing ones by executing the corresponding command e.g. `./gradlew yourModule:recordRoborazziDebug`
+</details>
 
 ## Instrumentation Screenshot Tests
 You can find executable examples that use ComposablePreviewScanner with the different instrumentation-based libraries in the corresponding links below:
 - [Dropshots](https://github.com/sergio-sastre/Android-screenshot-testing-playground/tree/master/recyclerviewscreen-previews/dropshots)
 - [Shot](https://github.com/sergio-sastre/Android-screenshot-testing-playground/tree/master/recyclerviewscreen-previews/shot)
-- [Android-Testify](https://github.com/sergio-sastre/Android-screenshot-testing-playground/tree/master/recyclerviewscreen-previews/android-testify)</br>
+- [Android-Testify](https://github.com/sergio-sastre/Android-screenshot-testing-playground/tree/master/recyclerviewscreen-previews/android-testify)<br/>
 
 Android does not use the standard Java bytecode format and does not actually even have a runtime classpath.
 Moreover, the "build" folders, where the compiled classes are located, are not accessible from instrumentation tests.
 Therefore, the current way to support instrumentation tests, is by previously dumping the relevant classes into a file and moving it into a folder that can be accessed while running instrumentation tests.
+<details>
+<summary>Click to see Instrumentation implementation details</summary>
+
 1. run the scan in a unit test & save it in a file accessible by instrumentation tests e.g. in assets
+
 ```kotlin
 class SaveScanResultInAssets {
     @Test
@@ -685,6 +726,7 @@ class SaveScanResultInAssets {
     }
 }
 ```
+
 Ensure that the .json with the scan result is up-to-date before executing the instrumentation screenshot tests. For instance, execute that test always before your instrumentation screenshot tests.
 Ideally, this scanning could be done via a Gradle Plugin in the future instead of by running it in a unit test.
 
@@ -704,12 +746,13 @@ Let's say we want to enable some custom Dropshots Config for some Previews, for 
    }
    ```
    - Map the PreviewInfo and DropshotsConfig values. For instance, you can use a custom class for that. To map the Preview Info values, I recommend to use the ActivityScenarioForComposableRule of [AndroidUiTestingUtils](https://github.com/sergio-sastre/AndroidUiTestingUtils)
+
    ```kotlin
    object DropshotsPreviewRule {
       fun createFor(preview: ComposablePreview<AndroidPreviewInfo>): Dropshots =
          preview.getAnnotation<DropshotsConfig>()?.let { config ->
             Dropshots(
-               resultValidator = ThresholdValidator(config.comparisonThreshold))
+               resultValidator = ThresholdValidator(config.comparisonThreshold)
             )
          } ?: Dropshots()
    }
@@ -743,7 +786,9 @@ Let's say we want to enable some custom Dropshots Config for some Previews, for 
        }
    }
    ```
-- Create the corresponding Parameterized Test:
+
+3. Create the corresponding Parameterized Test:
+
 ```kotlin
    @RunWith(ParameterizedTestRunner::class)
    class PreviewParameterizedTests(
@@ -784,12 +829,14 @@ Let's say we want to enable some custom Dropshots Config for some Previews, for 
       }
    }
    ```
+
    - Run these Dropshots tests together with the existing ones by executing the corresponding command e.g. `./gradlew yourModule:connectedAndroidTest -Pdropshots.record`
 
 > [!WARNING]
 > Beware that Locale Strings in Preview Infos, unlike AndroidUiTestingUtils, use The BCP-47 tag but with + instead of - as separators, and have the prefix b+. Therefore, the BCP-47 tag "zh-Hans-CN" would be written as "b+zh+Hans+CN" instead. 
-> So for this case, you'd have to convert locale "b+zh+Hans+CN" to "zh-Hans-CN" in order to use it with AndroidUiTestingUtils, for instance as showcased above: </br>
+> So for this case, you'd have to convert locale "b+zh+Hans+CN" to "zh-Hans-CN" in order to use it with AndroidUiTestingUtils, for instance as showcased above: <br/>
 > `val locale = preview.previewInfo.locale.removePrefix("b+").replace("+", "-").ifBlank { "en" }`
+</details>
 
 ## Advanced Usage
 ### Screenshot File Names
@@ -797,6 +844,9 @@ ComposablePreviewScanner also provides classes to customize the name of the gene
 These are `AndroidPreviewScreenshotIdBuilder`, `GlancePreviewScreenshotIdBuilder` and `CommonPreviewScreenshotIdBuilder` respectively, and they both share the same API.
 By default, these classes do not include the Preview Info in the screenshot file name if it is the same as its default value, but it can be configured to behave differently.
 That means, for @Preview(showBackground = false), showBackground would not be included in the screenshot file name since it is the default.
+
+<details>
+<summary>Click to see screenshot naming configuration example</summary>
 
 ```kotlin 
 AndroidPreviewScreenshotIdBuilder(preview)
@@ -844,10 +894,14 @@ class MyClass {
 }
 ```
 createScreenshotIdFor(preview) will generate the following id: `"MyClass.MyComposable.FONT_1_5f_WITHOUT_BACKGROUND"`
+</details>
 
 ### Parsing Preview Device String (Android Previews)
 Since 0.4.0, ComposablePreviewScanner also provides `DevicePreviewInfoParser.parse(device: String)`
 which returns a `Device` object containing all the necessary information to support different devices in your Roborazzi & Paparazzi screenshot tests!
+
+<details>
+<summary>Click to see device string parsing examples</summary>
 
 It can parse ALL possible combinations of "device strings" up to Android Studio Quail, namely:
 ```kotlin
@@ -862,12 +916,13 @@ It can parse ALL possible combinations of "device strings" up to Android Studio 
 @Preview(device = "spec:id=reference_desktop,shape=Normal,width=1920,height=1080,unit=dp,dpi=160") // in dp
 ```
 For further info on how to use them, see [Roborazzi](#roborazzi) and [Paparazzi](#paparazzi) sections respectively.
+</details>
 
 ## How it works
 This library is written on top of [ClassGraph](https://github.com/classgraph/classgraph), an uber-fast parallelized classpath scanner.
 
 ClassGraph can scan everything that is available either at bytecode level or at runtime.
-This is also the case of annotations without retention or with either `AnnotationRetention.BINARY` or `AnnotationRetention.RUNTIME`, like Android Composable Previews
+This is also the case of annotations without retention or with either `AnnotationRetention.BINARY` or `AnnotationRetention.RUNTIME`, like Android, Glance and Wear Composable Previews
 ```kotlin
 package androidx.compose.ui.tooling.preview
 
@@ -876,94 +931,69 @@ annotation class Preview(
    // Preview code here ...
 )
 ```
-
-However, those with `AnnotationRetention.SOURCE` are not visible to Classgraph. Such annotations are mainly used for IDE tooling, and that is the case for the Compose-Desktop Preview annotation.
-```kotlin
-package androidx.compose.desktop.ui.tooling.preview
-
-@Retention(AnnotationRetention.SOURCE)
-annotation class Preview
-```
-
+__
 ## Glance Previews Support
 You can find executable examples in this repo with different screenshot libraries:
 - [Roborazzi](tests/src/test/java/sergio/sastre/composable/preview/scanner/tests/roborazzi/RoborazziGlanceComposablePreviewInvokeTests.kt)
 - [Paparazzi](tests/src/test/java/sergio/sastre/composable/preview/scanner/tests/paparazzi/PaparazziGlanceComposablePreviewInvokeTests.kt)
 - [Android-Testify](tests/src/androidTest/java/sergio/sastre/composable/preview/scanner/screenshots/AndroidTestifyGlanceComposablePreviewScannerInstrumentationTest.kt) (Check the [instrumentation-screenshot-tests](#instrumentation-screenshot-tests) section before)
 
-To write such screenshot tests you have to:
+<details>
+<summary>Click to see Glance implementation details</summary>
 
+To write such screenshot tests you have to:
 1. Add `:glance` dependency for ComposablePreviewScanner e.g. `io.github.sergio-sastre.ComposablePreviewScanner:glance:<version>`. This contains some utils to correctly set the size of the Composable as well as the size of the device. Take a look at the executable examples above to see how they are used.
 2. Ensure `targetSdk` is set to any value in the gradle file<sup>1</sup>. Otherwise you can see some discrepancies between the Preview and the generated screenshot file for Glance `@Preview`s without `widthDp`.
 3. Write the Parameterized screenshot test like in the examples above.
 
 <sup>1</sup> Unfortunately, Paparazzi is not able to always render screenshots accurately for Glance `@Preview`s without `widthDp`.
+</details>
 
-## Compose Multiplatform Support
-Starting with Compose Multiplatform 1.10.0-beta02, Common and Desktop @Preview annotations are deprecated. Instead, Android `@Preview` can now be used across `common` and `desktop` platforms.
-ComposablePreviewScanner 0.8.0+ fully supports this modern setup. You can use the `AndroidComposablePreviewScanner` to scan for `@Preview` annotations across all relevant source sets, including commonMain.</br>
-For example, to scan previews located in both a platform-specific (androidMain or desktopMain) and a shared (commonMain) source set, you would configure the scanner like this:
+# Conferences & Community
+<details>
+<summary>Click to see talks, blog posts, and books</summary>
 
-```kotlin
-AndroidComposablePreviewScanner()
-    .scanPackageTrees(
-        "package.tree.android.or.desktop",
-        "package.tree.common"
-    )
-```
-
-> [!NOTE]
-> Screenshot tests must run on a platform supported by your screenshot library.</br>
-> • Android: Paparazzi and Roborazzi are supported.</br>
-> • Desktop: Roborazzi only.</br>
-> • Common: no library runs directly in common; run your tests from an Android or Desktop target instead. ComposablePreviewScanner can still find the Previews in common target packages.</br>
-
-You can find executable examples with Roborazzi here:
-- [Android @Previews in common](https://github.com/sergio-sastre/roborazzi/blob/droidcon/preview_tests/sample-generate-preview-common/src/androidUnitTest/kotlin/com/github/takahirom/preview/tests/AndroidPreviewTest.kt)
-- [Android @Previews in desktop](https://github.com/sergio-sastre/roborazzi/blob/droidcon/preview_tests/sample-generate-preview-desktop/src/desktopTest/kotlin/AndroidPreviewTest.kt)
-
-If you are still using the deprecated Common or Desktop `@Preview` annotations, see [README_DEPRECATED.md](README_DEPRECATED.md) for guidance.
-
-# Resources 
 ## Tech talks
-In these tech-talks have also been mentioned the benefits of using ComposablePreviewScanner:
-- DroidKaigi 2024 [in JA 🇯🇵 with EN 🇬🇧 slides]:</br>
-  [Understand the mechanism! Let's do screenshots testing of Compose Previews with various variations](https://www.youtube.com/watch?app=desktop&v=c4AxUXTQgw4) by [Sumio Toyama](https://x.com/sumio_tym)</br>
-- Droidcon Lisbon 2024:</br>
-  [Composable Preview Driven Development: TDD-fying your UI with ease!](https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.youtube.com/watch%3Fv%3DcDqdosrS83k&ved=2ahUKEwjprPGKqaiPAxWxSvEDHdSRBKkQwqsBegQIFRAG&usg=AOvVaw2ZfX6fYQbNI4Op6KN0d5i5) by Sergio Sastre</br>
-- [“Fast Feedback loops & Composable Preview Scanner”](https://www.youtube.com/watch?v=SphQelcGdHk) with the Skool Android Community by Sergio Sastre</br>
-- Droidcon Lisbon & Berlin 2025:</br>
+The benefits and usage of ComposablePreviewScanner have been featured at major Android conferences:
+- **Droidcon Lisbon & Berlin 2025**:<br/>
   [Let's @Preview the future: Automating Screenshot Testing in Compose Multiplatform](https://www.youtube.com/watch?v=zYsNXrf2-Lo) by Sergio Sastre
+- **Droidcon Lisbon 2024**:<br/>
+  [Composable Preview Driven Development: TDD-fying your UI with ease!](https://www.youtube.com/watch?v=cDqdosrS83k) by Sergio Sastre
+- **DroidKaigi 2024** [JA 🇯🇵 / EN 🇬🇧 slides]:<br/>
+  [Understand the mechanism! Let's do screenshots testing of Compose Previews with various variations](https://www.youtube.com/watch?app=desktop&v=c4AxUXTQgw4) by [Sumio Toyama](https://x.com/sumio_tym)
+- **Skool Android Community**:<br/>
+  [“Fast Feedback loops & Composable Preview Scanner”](https://www.youtube.com/watch?v=SphQelcGdHk) by Sergio Sastre
 
 ## Blog posts
 - [Automating screens verification with Roborazzi and GitHub Actions](https://medium.com/@matiasdelbel/automating-screens-verification-with-roborazzi-and-github-actions-473b3301a5c0) by Matías del Bel
 - [Implementing Screenshot Testing in the Unlimited Android App Was Tougher Than Expected](https://blog.kinto-technologies.com/posts/2024-12-13-Introducing-Screenshot-Testing-in-UnlimitedApp-en/) by KINTO Technologies
 
-# Testing
-The core of ComposablePreviewScanner has been (and it's being) developed using Test-Driven Development (TDD).</br>
-I strongly believe this approach is one of the key reasons the library has very few known bugs although it's widely used with over 150k monthly downloads.
+## Books
+- [Mastering Android Screenshot Testing](https://alexzh.com/books/mastering-android-screenshot-testing/) by Alex Zhukovich
+</details>
 
-However, some tests have specific preconditions and may be skipped if those aren't met.</br>
-For example, when running tests to retrieve @Previews from a SourceSet other than main, such as screenshotTest or androidTest,
-the corresponding compiled classes must be generated first via the corresponding Gradle task.</br>
+# Engineering Quality
+The core of ComposablePreviewScanner is developed using **Test-Driven Development (TDD)** to ensure maximum stability and reliability across the diverse Compose ecosystem. This rigorous approach is a primary reason for its high adoption rate and minimal bug reports despite handling complex bytecode scanning.
 
-Moreover, Paparazzi & Roborazzi tests also play a key role:
-1. Each of these libraries uses a different mechanism to download Android resources for running tests. ComposablePreviewScanner also loads certain classes by using ClassLoaders, and for those classes to be available it is necessary that Paparazzi and Roborazzi already downloaded them to [avoid issues like this one](https://github.com/sergio-sastre/ComposablePreviewScanner/issues/27). These tests help catch and avoid such errors.
-2. They help avoid errors in @Composable invocations. Since they can only occur within the context of a @Composable function and standard unit tests cannot access Android resources (e.g. Composable framework), it is hard to verify their correctness without UI tests. 
+To maintain strict binary compatibility for library consumers, the project uses **Metalava** to track and enforce API standards.
 
-To streamline this process and support my TDD workflow, I’ve created custom Gradle tasks that handle these prerequisites automatically,
-saving time and reducing friction during development.</br>
-They can also help you in case you fork this library and make some code adjustments, to ensure everything still works as expected.</br>
+## Automated Verification
+To ensure continuous quality, the following custom Gradle tasks handle environment prerequisites and integration testing.
+<details>
+<summary>Click to see the list of custom Gradle tasks</summary>
 
-These custom gradle tasks are the following:</br>
+These tasks are executed locally during development and automatically in our **CI pipeline** for every PR:
 1. API logic tests:`./gradlew :tests:testApi`
 2. SourceSet logic tests: `./gradlew :tests:testSourceSets`
 3. Paparazzi integration tests: `./gradlew :tests:paparazziPreviews` and `./gradlew :tests:paparazziPreviews -Pverify=true`
 4. Roborazzi integration tests: `./gradlew :tests:roborazziPreviews` and `./gradlew :tests:roborazziPreviews -Pverify=true`
 
 Custom gradle tasks for Android-testify integration tests (i.e. instrumentation screenshot testing libraries) coming soon
+</details>
 
 # Troubleshooting
+<details>
+<summary>Click to see solution for common issues</summary>
 
 ## Slow JVM Screenshot tests
 JVM Screenshot tests can consume significant memory, and ComposablePreviewScanner may require even more RAM when scanning large sets of subpackages.
@@ -979,9 +1009,8 @@ testOptions.unitTests {
 This adjustment helps reduce test execution time during large scans.
 
 ## java.io.FileNotFoundException (File name too long)
-
-`java.io.FileNotFoundException: ... (File name too long)`</br>
-This is more likely to happen when using Paparazzi. By default, Paparazzi additionally prefixes the screenshot file named internally instead of just using the `name` we pass to its `snapshot()` method, and this results sometimes in the final screenshot file name being longer than allowed.</br></br>
+`java.io.FileNotFoundException: ... (File name too long)`<br/>
+This is more likely to happen when using Paparazzi. By default, Paparazzi additionally prefixes the screenshot file named internally instead of just using the `name` we pass to its `snapshot()` method, and this results sometimes in the final screenshot file name being longer than allowed.<br/><br/>
 That is why it is recommended to [set a custom SnapshotHandler](#paparazzi) in the Paparazzi Test Rule.
 
 But if you're still experiencing such issues, consider:
@@ -989,10 +1018,9 @@ But if you're still experiencing such issues, consider:
 2. Avoid `AndroidPreviewScreenshotIdBuilder` and use `paparazzi.snapshot {}` instead of `paparazzi.snapshot(name = screenshotId)`
 
 ## java.lang.IllegalArgumentException: Generated method name contains invalid characters
-
 Some libraries restrict the characters allowed in filenames and may alter the provided screenshot name (e.g., Paparazzi 1.3.5+ like reported in this issue [here](https://github.com/cashapp/paparazzi/issues/1963)).
-This is especially problematic when the `TestParameterInjector` test runner is used.</br>
-To avoid issues, `ComposablePreviewScanner`s ScreenshotIdBuilders should be used with the standard JUnit4 `Parameterized` test runner, and invalid characters should be encoded if needed:</br>
+This is especially problematic when the `TestParameterInjector` test runner is used.<br/>
+To avoid issues, `ComposablePreviewScanner`s ScreenshotIdBuilders should be used with the standard JUnit4 `Parameterized` test runner, and invalid characters should be encoded if needed:<br/>
 
 ComposablePreviewScanner 0.8.0+
 ```kotlin
@@ -1017,7 +1045,6 @@ AndroidPreviewScreenshotIdBuilder(preview)
 > Use the JUnit4 `Parameterized` test runner for valid results.
 
 ## Cannot inline bytecode built with JVM target 17
-
 ```text
 Task compileDebugUnitTestKotlin FAILED
 e: file:... Cannot inline bytecode built with JVM target 17 into bytecode that is being built with JVM target 11. Specify proper '-jvm-target' option.
@@ -1033,7 +1060,6 @@ kotlin {
 ```
 
 ## GooglePlayServicesMissingManifestValueException
-
 ```text
 com.google.android.gms.common.GooglePlayServicesMissingManifestValueException: A required meta-data tag in your app's AndroidManifest.xml does not exist.  You must have the following declaration within the <application> element:     <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
 ```
@@ -1049,6 +1075,18 @@ internal fun MapScreenPreview() {
     }
 }
 ```
+</details>
 
-</br></br>
+# Roadmap 
+- [ ] **Support for Wear Previews**
+- [ ] **KSP support**: This facilitates running Screenshot tests for Previews in `common` on iOS with Roborazzi.
+- [ ] **Better integration in Gradle tasks**: This helps provide better support for instrumentation testing libraries.
+- [ ] **Speed and memory consumption improvements**
+
+# Governance & Contributing
+Contributions are welcome! Please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to submit pull requests and report issues.
+
+As mentioned in the [Engineering Quality](#engineering-quality) section, this project uses **Metalava** to ensure strict binary compatibility for all library consumers.
+
+<br/><br/>
 <a href="https://www.flaticon.com/free-icons/magnify" title="magnify icons">Composable Preview Scanner logo modified from one by Freepik - Flaticon</a>
