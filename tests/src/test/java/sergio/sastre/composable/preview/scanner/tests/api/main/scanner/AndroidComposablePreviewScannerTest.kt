@@ -17,6 +17,7 @@ import sergio.sastre.composable.preview.scanner.android.customextraannotation.Fo
 import sergio.sastre.composable.preview.scanner.android.customextraannotation.ScreenshotTestConfig
 import sergio.sastre.composable.preview.scanner.android.excluded.ExcludeScreenshot
 import sergio.sastre.composable.preview.scanner.android.included.IncludeScreenshot
+import sergio.sastre.composable.preview.scanner.android.previewparameterscount.StringMinusCountParameterProvider
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.preview.getAnnotation
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.exceptions.RepeatableAnnotationNotSupportedException
@@ -399,6 +400,20 @@ class AndroidComposablePreviewScannerTest {
         previewsWithParameterProviderInConstructor.onEachIndexed { index, preview ->
             assert(preview.toString().substringAfterLast("_") == index.toString())
         }
+    }
+
+    @Test
+    fun `GIVEN preview parameters with count less than 0 THEN it does not return previews`() {
+        val stringProvider = StringMinusCountParameterProvider()
+
+        val previewsWithParameterProviderInConstructor =
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.previewparameterscount")
+                .filterPreviews { it.group == "count < 0" }
+                .getPreviews()
+
+        assert(stringProvider.count <= 0)
+        assert(previewsWithParameterProviderInConstructor.isEmpty())
     }
 
     @Test
