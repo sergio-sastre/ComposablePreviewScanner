@@ -4,6 +4,7 @@ import io.github.classgraph.AnnotationInfoList
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.preview.ProvideComposablePreview
 import java.lang.reflect.Method
+import kotlin.math.max
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.declaredMemberFunctions
@@ -98,7 +99,7 @@ data class ComposablePreviewWithPreviewParameterMapper<T>(
             providerInstance::class.declaredMemberFunctions.getDisplayNameFunction()
 
         return values
-            .take(limit)
+            .take(max(0, limit))
             .mapIndexed { index, value ->
                 provideComposablePreview(
                     composablePreviewMapper = this,

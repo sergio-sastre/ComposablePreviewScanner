@@ -35,3 +35,11 @@ fun ExamplePreviewLimit1(
 ){
     Example(name)
 }
+
+@Preview(group = "preview-parameter-limit=-1")
+@Composable
+fun ExamplePreviewLimitMinus1(
+    @PreviewParameter(provider = AndroidStringProvider::class, limit = -1) name: String?
+){
+    Example(name)
+}
