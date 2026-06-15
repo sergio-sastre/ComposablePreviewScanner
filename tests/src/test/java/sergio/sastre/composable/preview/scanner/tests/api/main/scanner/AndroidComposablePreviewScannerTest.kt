@@ -17,6 +17,7 @@ import sergio.sastre.composable.preview.scanner.android.customextraannotation.Fo
 import sergio.sastre.composable.preview.scanner.android.customextraannotation.ScreenshotTestConfig
 import sergio.sastre.composable.preview.scanner.android.excluded.ExcludeScreenshot
 import sergio.sastre.composable.preview.scanner.android.included.IncludeScreenshot
+import sergio.sastre.composable.preview.scanner.android.previewparameterscount.StringCountGreaterThanLimitParameterProvider
 import sergio.sastre.composable.preview.scanner.android.previewparameterscount.StringMinusCountParameterProvider
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.preview.getAnnotation
@@ -414,6 +415,22 @@ class AndroidComposablePreviewScannerTest {
 
         assert(stringProvider.count <= 0)
         assert(previewsWithParameterProviderInConstructor.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN preview parameters with count greater than limit THEN it does not return as many previews as limit`() {
+        val stringProvider = StringCountGreaterThanLimitParameterProvider()
+        val limit = 1
+        val count = stringProvider.count
+        assert(count > limit)
+
+        val previewsWithParameterProviderInConstructor =
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.previewparameterscount")
+                .filterPreviews { it.group == "count > limit and limit = 1" }
+                .getPreviews()
+
+        assert(previewsWithParameterProviderInConstructor.size == limit)
     }
 
     @Test

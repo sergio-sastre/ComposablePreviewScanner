@@ -5,13 +5,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import sergio.sastre.composable.preview.scanner.AndroidStringConstructorParameterProvider
-import sergio.sastre.composable.preview.scanner.AndroidStringProvider
 
-val stringValues: Sequence<String?> = sequenceOf("Jim", "Jens")
+val stringValues: Sequence<String?> = sequenceOf("Jim", "Jens", null)
 class StringMinusCountParameterProvider(
     override val values: Sequence<String?> = stringValues,
     override val count: Int = -1,
+) : PreviewParameterProvider<String?>
+
+class StringCountGreaterThanLimitParameterProvider(
+    override val values: Sequence<String?> = stringValues,
+    override val count: Int = 2,
 ) : PreviewParameterProvider<String?>
 
 @Composable
@@ -23,6 +26,14 @@ fun Example(name: String?){
 @Composable
 fun ExamplePreviewProviderInParameterConstructor(
     @PreviewParameter(provider = StringMinusCountParameterProvider ::class) name: String?
+){
+    Example(name)
+}
+
+@Preview(group = "count > limit and limit = 1")
+@Composable
+fun ExamplePreviewCountGreaterThanLimitProviderInParameterConstructor(
+    @PreviewParameter(provider = StringCountGreaterThanLimitParameterProvider ::class, limit = 1) name: String?
 ){
     Example(name)
 }
