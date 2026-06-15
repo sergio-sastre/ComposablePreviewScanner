@@ -43,3 +43,11 @@ fun ExamplePreviewLimitMinus1(
 ){
     Example(name)
 }
+
+@Preview(group = "preview-parameter-limit=4")
+@Composable
+fun ExamplePreviewLimitGreaterThanValuesSize(
+    @PreviewParameter(provider = AndroidStringProvider::class, limit = 4) name: String?
+){
+    Example(name)
+}
