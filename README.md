@@ -24,7 +24,7 @@ With over **300,000 monthly downloads** (JitPack + Maven Central), Composable Pr
 > [!NOTE]
 > If you are still using the deprecated `org.jetbrains.compose.ui.tooling.preview.Preview`, see [README_DEPRECATED.md](README_DEPRECATED.md)<br/>
 
-# Comparison with other solutions
+## Comparison with other solutions
 |                                                      | Composable Preview Scanner                                | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Showkase&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Compose Preview Screenshot Testing          |
 |------------------------------------------------------|-----------------------------------------------------------|----------------------------------------------------|---------------------------------------------|
 | Independent of AGP version                           | ✅                                                         | ✅                                                  | ❌                                           |
@@ -33,7 +33,7 @@ With over **300,000 monthly downloads** (JitPack + Maven Central), Composable Pr
 | Preview Infos available                              | ✅                                                         | ❌<sup>3</sup>                                      | ✅                                           |
 | Specific Config (e.g. for Libs) available            | ✅<sup>4</sup>                                             | ❌                                                  | ⚠️<sup>5</sup>                               |
 | Supported Preview types                              | ✅&nbsp;Android<br/>✅&nbsp;Glance<br/>❌&nbsp;Wear<sup>6</sup> | ✅&nbsp;Android<br/>❌&nbsp;Glance<br/>❌&nbsp;Wear | ✅&nbsp;Android<br/>❌&nbsp;Glance<br/>❌&nbsp;Wear |
-| Supported Locations in Compose Multiplatform         | ✅&nbsp;Android<br/>✅&nbsp;Desktop/JVM<br/>✅&nbsp;Common | ✅&nbsp;Android<br/>❌&nbsp;Desktop/JVM<sup>7</sup><br/>❌&nbsp;Common | ✅&nbsp;Android<br/>✅&nbsp;Desktop/JVM<br/>❌&nbsp;Common |
+| Supported Locations in Compose Multiplatform         | ✅&nbsp;Android<br/>✅&nbsp;Desktop/JVM<br/>✅&nbsp;Common | ✅&nbsp;Android<br/>❌&nbsp;Desktop/JVM<sup>7</sup><br/>❌&nbsp;Common | ✅&nbsp;Android<br/>❌&nbsp;Desktop/JVM<br/>❌&nbsp;Common |
 
 <details>
 <summary>Click to see comparison footnotes</summary>
@@ -48,7 +48,7 @@ With over **300,000 monthly downloads** (JitPack + Maven Central), Composable Pr
 </details><br/>
 
 ComposablePreviewScanner also works with:
-- **NEW** `@PreviewWrapper` (since 0.9.0+) automatically. No changes required in the Screenshot Testing library using ComposablePreviewScanner.
+- **NEW** `@PreviewWrapper` (since 0.9.0+). It works automatically, no changes required in the Screenshot Testing library using ComposablePreviewScanner.
 - `@PreviewParameters`
 - `@PreviewScreenSizes`, `@PreviewFontScales`, `@PreviewLightDark` and `@PreviewDynamicColors` as well as custom multi-previews.
 - `@Previews` with default-parameters (from version 0.5.1+)
@@ -79,13 +79,14 @@ AndroidComposablePreviewScanner()
 > Screenshot tests must run on a platform supported by your screenshot library.<br/>
 > • **Android**: Paparazzi, Roborazzi & instrumentation libraries (e.g. Dropshots, Android-Testify) are supported.<br/>
 > • **Desktop**: Roborazzi only.<br/>
-> • **Common**: no current library can run screenshot tests directly in common; run your tests from an Android or Desktop target instead. ComposablePreviewScanner can still find the Previews in common target packages.<br/>
+> • **Common**: no current library can run screenshot tests directly in common; run your tests from an `Android` or `Desktop` target instead. ComposablePreviewScanner can still find the Previews in `common` target packages.<br/>
 
 You can find executable examples with Roborazzi here:
+- [Android @Previews in android (See `How to use`)](#how-to-use)
 - [Android @Previews in common](https://github.com/sergio-sastre/roborazzi/blob/droidcon/preview_tests/sample-generate-preview-common/src/androidUnitTest/kotlin/com/github/takahirom/preview/tests/AndroidPreviewTest.kt)
 - [Android @Previews in desktop](https://github.com/sergio-sastre/roborazzi/blob/droidcon/preview_tests/sample-generate-preview-desktop/src/desktopTest/kotlin/AndroidPreviewTest.kt)
 
-If you are still using the deprecated Common or Desktop `@Preview` annotations, see [README_DEPRECATED.md](README_DEPRECATED.md) for guidance.
+If you are still using the deprecated Common or Desktop `@Preview` annotations of Compose Multiplatform, see [README_DEPRECATED.md](README_DEPRECATED.md) for guidance.
 
 # How to set up
 > [!WARNING]  
@@ -896,7 +897,7 @@ class MyClass {
 createScreenshotIdFor(preview) will generate the following id: `"MyClass.MyComposable.FONT_1_5f_WITHOUT_BACKGROUND"`
 </details>
 
-### Parsing Preview Device String (Android Previews)
+### Parsing Preview Device String
 Since 0.4.0, ComposablePreviewScanner also provides `DevicePreviewInfoParser.parse(device: String)`
 which returns a `Device` object containing all the necessary information to support different devices in your Roborazzi & Paparazzi screenshot tests!
 
@@ -1079,9 +1080,9 @@ internal fun MapScreenPreview() {
 
 # Roadmap 
 - [ ] **Support for Wear Previews**
-- [ ] **KSP support**: This facilitates running Screenshot tests for Previews in `common` on iOS with Roborazzi.
-- [ ] **Better integration in Gradle tasks**: This helps provide better support for instrumentation testing libraries.
-- [ ] **Speed and memory consumption improvements**
+- [ ] **Better integration in Gradle tasks**: This helps to speed up the test execution & provide better support for instrumentation testing libraries.
+- [ ] **KSP support**: This enables running Screenshot tests for Previews in `common` on other platforms (e.g. iOS) with libraries that support it (e.g. Roborazzi).
+- [ ] **General speed and memory consumption improvements**
 
 # Governance & Contributing
 Contributions are welcome! Please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to submit pull requests and report issues.
