@@ -42,4 +42,4 @@ We use **Metalava** to track API changes and prevent breaking binary compatibili
 Please be respectful and professional in all interactions within this project.
 
 ## License
-By contributing, you agree that your contributions will be licensed under the project's [LICENSE](https://github.com/sergio-sastre/ComposablePreviewScanner/blob/main/LICENSE).
+By contributing, you agree that your contributions will be licensed under the project's [LICENSE](https://github.com/sergio-sastre/ComposablePreviewScanner?tab=MIT-1-ov-file).
