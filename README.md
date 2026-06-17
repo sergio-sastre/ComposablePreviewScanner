@@ -842,7 +842,7 @@ Let's say we want to enable some custom Dropshots Config for some Previews, for 
 ## Advanced Usage
 ### Screenshot File Names
 ComposablePreviewScanner also provides classes to customize the name of the generated screenshots based on its Preview Info.
-These are `AndroidPreviewScreenshotIdBuilder`, `GlancePreviewScreenshotIdBuilder` and `CommonPreviewScreenshotIdBuilder` respectively, and they both share the same API.
+These are `AndroidPreviewScreenshotIdBuilder` and `GlancePreviewScreenshotIdBuilder` respectively, and they both share the same API.
 By default, these classes do not include the Preview Info in the screenshot file name if it is the same as its default value, but it can be configured to behave differently.
 That means, for @Preview(showBackground = false), showBackground would not be included in the screenshot file name since it is the default.
 
@@ -932,7 +932,6 @@ annotation class Preview(
    // Preview code here ...
 )
 ```
-__
 ## Glance Previews Support
 You can find executable examples in this repo with different screenshot libraries:
 - [Roborazzi](tests/src/test/java/sergio/sastre/composable/preview/scanner/tests/roborazzi/RoborazziGlanceComposablePreviewInvokeTests.kt)
