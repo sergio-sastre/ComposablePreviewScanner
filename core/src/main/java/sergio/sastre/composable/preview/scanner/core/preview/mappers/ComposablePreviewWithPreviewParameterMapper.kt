@@ -93,13 +93,11 @@ data class ComposablePreviewWithPreviewParameterMapper<T>(
         val values = getPropertyValue(providerInstance, "values") as? Sequence<Any?>
             ?: return sequenceOf(provideComposablePreview(this))
 
-        val count = getPropertyValue(providerInstance, "count") as? Int
-            ?: values.count()
-
         val limit = getPropertyValue(previewParameterAnnotation, "limit") as? Int
             ?: Int.MAX_VALUE
 
-        val displayedValuesCount = min(count, limit)
+        val count = getPropertyValue(providerInstance, "count") as? Int
+        val displayedValuesCount = count?.let { min(it, limit) } ?: limit
 
         val getDisplayNameMethod =
             providerInstance::class.declaredMemberFunctions.getDisplayNameFunction()
