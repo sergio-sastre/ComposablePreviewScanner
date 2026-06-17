@@ -317,6 +317,36 @@ class AndroidComposablePreviewScannerTest {
         assert(previewsWithParameterLimit1.first().previewIndex == 0)
     }
 
+
+    @Test
+    fun `GIVEN preview parameters with StringProvider but limit -1 THEN it returns no preview`() {
+        val stringProviderValues = AndroidStringProvider().values.toList()
+        assumeTrue(stringProviderValues.size > 1)
+
+        val previewsWithParameterLimitLessThan0 =
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.previewparameters")
+                .filterPreviews { it.group == "preview-parameter-limit=-1" }
+                .getPreviews()
+
+        assert(previewsWithParameterLimitLessThan0.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN preview parameters with StringProvider but limit greater than values size THEN it returns as many previews as values`() {
+        val stringProviderValues = AndroidStringProvider().values.toList()
+        assumeTrue(stringProviderValues.size > 1)
+        assumeTrue(stringProviderValues.size < 4)
+
+        val previewsWithParameterLimitGreaterThanValuesSize =
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.previewparameters")
+                .filterPreviews { it.group == "preview-parameter-limit=4" }
+                .getPreviews()
+
+        assert(previewsWithParameterLimitGreaterThanValuesSize.size == stringProviderValues.size)
+    }
+
     @Test
     fun `GIVEN 2 previews with same method Name but different params are considered different`() {
         val stringProviderValues = AndroidStringProvider().values.toList()
