@@ -5,6 +5,7 @@ import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.preview.ProvideComposablePreview
 import java.lang.reflect.Method
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.declaredMemberFunctions
@@ -95,11 +96,14 @@ data class ComposablePreviewWithPreviewParameterMapper<T>(
         val limit = getPropertyValue(previewParameterAnnotation, "limit") as? Int
             ?: Int.MAX_VALUE
 
+        val count = getPropertyValue(providerInstance, "count") as? Int
+        val displayedValuesCount = count?.let { min(it, limit) } ?: limit
+
         val getDisplayNameMethod =
             providerInstance::class.declaredMemberFunctions.getDisplayNameFunction()
 
         return values
-            .take(max(0, limit))
+            .take(max(0, displayedValuesCount))
             .mapIndexed { index, value ->
                 provideComposablePreview(
                     composablePreviewMapper = this,

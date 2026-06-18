@@ -17,6 +17,10 @@ import sergio.sastre.composable.preview.scanner.android.customextraannotation.Fo
 import sergio.sastre.composable.preview.scanner.android.customextraannotation.ScreenshotTestConfig
 import sergio.sastre.composable.preview.scanner.android.excluded.ExcludeScreenshot
 import sergio.sastre.composable.preview.scanner.android.included.IncludeScreenshot
+import sergio.sastre.composable.preview.scanner.android.previewparameterscount.StringCountGreaterThanLimitParameterProvider
+import sergio.sastre.composable.preview.scanner.android.previewparameterscount.StringCountGreaterThanValuesSizeParameterProvider
+import sergio.sastre.composable.preview.scanner.android.previewparameterscount.StringCountLessThanLimitParameterProvider
+import sergio.sastre.composable.preview.scanner.android.previewparameterscount.StringMinusCountParameterProvider
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.preview.getAnnotation
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.exceptions.RepeatableAnnotationNotSupportedException
@@ -399,6 +403,68 @@ class AndroidComposablePreviewScannerTest {
         previewsWithParameterProviderInConstructor.onEachIndexed { index, preview ->
             assert(preview.toString().substringAfterLast("_") == index.toString())
         }
+    }
+
+    @Test
+    fun `GIVEN preview parameters with count less than 0 THEN it does not return previews`() {
+        val stringProvider = StringMinusCountParameterProvider()
+
+        val previewsWithParameterProviderInConstructor =
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.previewparameterscount")
+                .filterPreviews { it.group == "count < 0" }
+                .getPreviews()
+
+        assert(stringProvider.count <= 0)
+        assert(previewsWithParameterProviderInConstructor.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN preview parameters with count greater than values size THEN it does return as many previews as values size`() {
+        val stringProvider = StringCountGreaterThanValuesSizeParameterProvider()
+        val count = stringProvider.count
+        val valuesSize = stringProvider.values.count()
+        assert(count > valuesSize)
+
+        val previewsWithParameterProviderInConstructor =
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.previewparameterscount")
+                .filterPreviews { it.group == "count > values size" }
+                .getPreviews()
+
+        assert(previewsWithParameterProviderInConstructor.size == valuesSize)
+    }
+
+    @Test
+    fun `GIVEN preview parameters with count greater than limit THEN it does not return as many previews as limit`() {
+        val stringProvider = StringCountGreaterThanLimitParameterProvider()
+        val limit = 1
+        val count = stringProvider.count
+        assert(count > limit)
+
+        val previewsWithParameterProviderInConstructor =
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.previewparameterscount")
+                .filterPreviews { it.group == "count > limit and limit = 1" }
+                .getPreviews()
+
+        assert(previewsWithParameterProviderInConstructor.size == limit)
+    }
+
+    @Test
+    fun `GIVEN preview parameters with count less than limit THEN it does not return as many previews as count`() {
+        val stringProvider = StringCountLessThanLimitParameterProvider()
+        val limit = 2
+        val count = stringProvider.count
+        assert(count < limit)
+
+        val previewsWithParameterProviderInConstructor =
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.previewparameterscount")
+                .filterPreviews { it.group == "count < limit and limit = 2" }
+                .getPreviews()
+
+        assert(previewsWithParameterProviderInConstructor.size == count)
     }
 
     @Test
