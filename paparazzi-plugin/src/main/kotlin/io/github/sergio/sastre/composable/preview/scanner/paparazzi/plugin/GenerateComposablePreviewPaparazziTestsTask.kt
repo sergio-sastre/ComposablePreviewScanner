@@ -44,7 +44,7 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
         directory.mkdirs()
 
         if (shards < 1) {
-            logger.info("Number of shards must be at least 1")
+            throw IllegalArgumentException("generatedTestClassCount must be at least 1, but was $shards")
         } else if (shards == 1) {
             File(directory, "$className.kt").writeText(
                 generateTestFileContent(
