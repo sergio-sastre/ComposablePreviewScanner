@@ -26,6 +26,9 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
     @get:Input
     abstract val testPackageName: Property<String>
 
+    @get:Input
+    abstract val generatedTestClassCount: Property<Int>
+
     @TaskAction
     fun generateTests() {
         val testDir = outputDir.get().asFile
@@ -35,29 +38,78 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
         val includePrivatePreviewsExpr = includePrivatePreviews.get()
         val className = testClassName.get()
         val packageName = testPackageName.get()
+        val shards = generatedTestClassCount.get()
 
         val directory = File(testDir, packageName.replace(".", "/"))
         directory.mkdirs()
 
-        File(directory, "$className.kt").writeText(
-            generateTestFileContent(
-                packageName,
-                className,
-                packagesExpr,
-                includePrivatePreviewsExpr
+        if (shards < 1) {
+            throw IllegalArgumentException("generatedTestClassCount must be at least 1, but was $shards")
+        } else if (shards == 1) {
+            File(directory, "$className.kt").writeText(
+                generateTestFileContent(
+                    packageName = packageName,
+                    className = className,
+                    packagesExpr = packagesExpr,
+                    includePrivatePreviewsExpr = includePrivatePreviewsExpr,
+                    shardIndex = null,
+                    numShards = 1,
+                    includeHeader = true
+                )
             )
-        )
-
-        logger.info("Generated Paparazzi test file: ${directory.absolutePath}/$className.kt")
+            logger.info("Generated Paparazzi test file: ${directory.absolutePath}/$className.kt")
+        } else {
+            val targetFile = File(directory, "$className.kt")
+            val content = buildString {
+                // First shard with header and shared code
+                append(
+                    generateTestFileContent(
+                        packageName = packageName,
+                        className = "${className}Shard1",
+                        packagesExpr = packagesExpr,
+                        includePrivatePreviewsExpr = includePrivatePreviewsExpr,
+                        shardIndex = 0,
+                        numShards = shards,
+                        includeHeader = true
+                    )
+                )
+                // Remaining shards: only class declarations
+                for (index in 1 until shards) {
+                    append("\n\n")
+                    append(
+                        generateTestFileContent(
+                            packageName = packageName,
+                            className = "${className}Shard${index + 1}",
+                            packagesExpr = packagesExpr,
+                            includePrivatePreviewsExpr = includePrivatePreviewsExpr,
+                            shardIndex = index,
+                            numShards = shards,
+                            includeHeader = false
+                        )
+                    )
+                }
+            }
+            targetFile.writeText(content)
+            logger.info("Generated Paparazzi test file: ${directory.absolutePath}/$className.kt")
+        }
     }
 
     private fun generateTestFileContent(
         packageName: String,
         className: String,
         packagesExpr: String,
-        includePrivatePreviewsExpr: Boolean
+        includePrivatePreviewsExpr: Boolean,
+        shardIndex: Int?,
+        numShards: Int,
+        includeHeader: Boolean
     ): String {
-        return """
+        val valuesExpr = if (shardIndex == null || numShards <= 1) {
+            "cachedPreviews"
+        } else {
+            "shardedCachedPreviews[$shardIndex]?:emptyList()"
+        }
+
+        val header = """
             package $packageName
             
             import android.content.res.Configuration.UI_MODE_NIGHT_MASK
@@ -91,64 +143,6 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
             import sergio.sastre.composable.preview.scanner.android.device.types.DEFAULT
             import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
             import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
-            
-            class Dimensions(
-                val screenWidthInPx: Int,
-                val screenHeightInPx: Int
-            )
-
-            object ScreenDimensions {
-                fun dimensions(
-                    parsedDevice: Device,
-                    widthDp: Int,
-                    heightDp: Int
-                ): Dimensions {
-                    val conversionFactor = parsedDevice.densityDpi / 160f
-                    val previewWidthInPx = ceil(widthDp * conversionFactor).toInt()
-                    val previewHeightInPx = ceil(heightDp * conversionFactor).toInt()
-                    return Dimensions(
-                        screenHeightInPx = when (heightDp > 0) {
-                            true -> previewHeightInPx
-                            false -> parsedDevice.dimensions.height.toInt()
-                        },
-                        screenWidthInPx = when (widthDp > 0) {
-                            true -> previewWidthInPx
-                            false -> parsedDevice.dimensions.width.toInt()
-                        }
-                    )
-                }
-            }
-
-            object DeviceConfigBuilder {
-                fun build(preview: AndroidPreviewInfo): DeviceConfig {
-                    val parsedDevice =
-                        DevicePreviewInfoParser.parse(preview.device)?.inPx() ?: return DeviceConfig()
-
-                    val dimensions = ScreenDimensions.dimensions(
-                        parsedDevice = parsedDevice,
-                        widthDp = preview.widthDp,
-                        heightDp = preview.heightDp
-                    )
-
-                    return DeviceConfig(
-                        screenHeight = dimensions.screenHeightInPx,
-                        screenWidth = dimensions.screenWidthInPx,
-                        density = Density(parsedDevice.densityDpi),
-                        xdpi = parsedDevice.densityDpi, // not 100% precise
-                        ydpi = parsedDevice.densityDpi, // not 100% precise
-                        size = ScreenSize.valueOf(parsedDevice.screenSize.name),
-                        ratio = ScreenRatio.valueOf(parsedDevice.screenRatio.name),
-                        screenRound = ScreenRound.valueOf(parsedDevice.shape.name),
-                        orientation = ScreenOrientation.valueOf(parsedDevice.orientation.name),
-                        locale = preview.locale.ifBlank { "en" },
-                        fontScale = preview.fontScale,
-                        nightMode = when (preview.uiMode and UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES) {
-                            true -> NightMode.NIGHT
-                            false -> NightMode.NOTNIGHT
-                        }
-                    )
-                }
-            }
             
             // In order to have full control over the screenshot file names
             // we need to pass our own SnapshotHandler to the Paparazzi TestRule
@@ -210,10 +204,68 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                     snapshotHandler.close()
                 }
             }
+            
+            class Dimensions(
+                val screenWidthInPx: Int,
+                val screenHeightInPx: Int
+            )
+
+            object ScreenDimensions {
+                fun dimensions(
+                    parsedDevice: Device,
+                    widthDp: Int,
+                    heightDp: Int
+                ): Dimensions {
+                    val conversionFactor = parsedDevice.densityDpi / 160f
+                    val previewWidthInPx = ceil(widthDp * conversionFactor).toInt()
+                    val previewHeightInPx = ceil(heightDp * conversionFactor).toInt()
+                    return Dimensions(
+                        screenHeightInPx = when (heightDp > 0) {
+                            true -> previewHeightInPx
+                            false -> parsedDevice.dimensions.height.toInt()
+                        },
+                        screenWidthInPx = when (widthDp > 0) {
+                            true -> previewWidthInPx
+                            false -> parsedDevice.dimensions.width.toInt()
+                        }
+                    )
+                }
+            }
+
+            object DeviceConfigBuilder {
+                fun build(preview: AndroidPreviewInfo): DeviceConfig {
+                    val parsedDevice =
+                        DevicePreviewInfoParser.parse(preview.device)?.inPx() ?: return DeviceConfig()
+
+                    val dimensions = ScreenDimensions.dimensions(
+                        parsedDevice = parsedDevice,
+                        widthDp = preview.widthDp,
+                        heightDp = preview.heightDp
+                    )
+
+                    return DeviceConfig(
+                        screenHeight = dimensions.screenHeightInPx,
+                        screenWidth = dimensions.screenWidthInPx,
+                        density = Density(parsedDevice.densityDpi),
+                        xdpi = parsedDevice.densityDpi, // not 100% precise
+                        ydpi = parsedDevice.densityDpi, // not 100% precise
+                        size = ScreenSize.valueOf(parsedDevice.screenSize.name),
+                        ratio = ScreenRatio.valueOf(parsedDevice.screenRatio.name),
+                        screenRound = ScreenRound.valueOf(parsedDevice.shape.name),
+                        orientation = ScreenOrientation.valueOf(parsedDevice.orientation.name),
+                        locale = preview.locale.ifBlank { "en" },
+                        fontScale = preview.fontScale,
+                        nightMode = when (preview.uiMode and UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES) {
+                            true -> NightMode.NIGHT
+                            false -> NightMode.NOTNIGHT
+                        }
+                    )
+                }
+            }
 
             object PaparazziPreviewRule {
                 const val UNDEFINED_API_LEVEL = -1
-                const val MAX_API_LEVEL = 36
+                const val MAX_API_LEVEL = 34
                 
                 fun createFor(preview: ComposablePreview<AndroidPreviewInfo>): Paparazzi {
                     val previewInfo = preview.previewInfo
@@ -286,23 +338,32 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                     }
                 }
             }
+
+            // Expensive scan cached once per file to be shared by all shard classes
+            private val cachedPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
+                AndroidComposablePreviewScanner()
+                    .scanPackageTrees($packagesExpr)
+                    ${if (includePrivatePreviewsExpr) ".includePrivatePreviews()" else ""}
+                    .getPreviews()
+            }
             
+            private val shardedCachedPreviews: Map<Int, List<ComposablePreview<AndroidPreviewInfo>>> by lazy {
+                cachedPreviews
+                    .mapIndexed { index, preview -> index % $numShards to preview }
+                    .groupBy({ it.first }, { it.second })
+            }
+        """.trimIndent()
+
+        val classSection = """
             @RunWith(Parameterized::class)
             class $className(
                 val preview: ComposablePreview<AndroidPreviewInfo>,
             ) {
             
                 companion object {
-                    private val cachedPreviews: List<ComposablePreview<AndroidPreviewInfo>> by lazy {
-                        AndroidComposablePreviewScanner()
-                            .scanPackageTrees($packagesExpr)
-                            ${if (includePrivatePreviewsExpr) ".includePrivatePreviews()" else ""}
-                            .getPreviews()
-                    }
-
                     @JvmStatic
                     @Parameterized.Parameters
-                    fun values(): List<ComposablePreview<AndroidPreviewInfo>> = cachedPreviews
+                    fun values(): List<ComposablePreview<AndroidPreviewInfo>> = $valuesExpr
                 }
             
                 @get:Rule
@@ -343,6 +404,8 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                     }
                 }
             }
-            """.trimIndent()
+        """.trimIndent()
+
+        return if (includeHeader) "$header\n\n$classSection" else classSection
     }
 }

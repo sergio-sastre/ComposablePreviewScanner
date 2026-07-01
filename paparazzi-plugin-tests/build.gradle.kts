@@ -31,6 +31,12 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    testOptions {
+        unitTests.all {
+            it.maxParallelForks = maxOf(1, Runtime.getRuntime().availableProcessors() / 2)
+        }
+    }
 }
 
 // Execute ./gradlew :paparazzi-plugin-tests:recordPaparazziDebug
@@ -40,6 +46,7 @@ composablePreviewPaparazzi {
     includePrivatePreviews = true
     testClassName = "GeneratedPaparazziTests"
     testPackageName = "preview.generated"
+    generatedTestClassCount = 2
 }
 
 dependencies {

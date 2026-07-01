@@ -31,4 +31,9 @@ open class ComposablePreviewPaparazziExtension @Inject constructor(objects: Obje
      * The package name for the generated test class.
      */
     val testPackageName: Property<String> = objects.property(String::class.java)
+
+    /**
+     * Number of test classes to split the generated parameterized tests into.
+     */
+    val generatedTestClassCount: Property<Int> = objects.property(Int::class.java)
 }
