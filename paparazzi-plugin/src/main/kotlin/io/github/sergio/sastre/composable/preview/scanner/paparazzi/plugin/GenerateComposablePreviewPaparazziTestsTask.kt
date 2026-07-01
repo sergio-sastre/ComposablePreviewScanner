@@ -27,7 +27,7 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
     abstract val testPackageName: Property<String>
 
     @get:Input
-    abstract val numOfShards: Property<Int>
+    abstract val generatedTestClassCount: Property<Int>
 
     @TaskAction
     fun generateTests() {
@@ -38,7 +38,7 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
         val includePrivatePreviewsExpr = includePrivatePreviews.get()
         val className = testClassName.get()
         val packageName = testPackageName.get()
-        val shards = numOfShards.get()
+        val shards = generatedTestClassCount.get()
 
         val directory = File(testDir, packageName.replace(".", "/"))
         directory.mkdirs()

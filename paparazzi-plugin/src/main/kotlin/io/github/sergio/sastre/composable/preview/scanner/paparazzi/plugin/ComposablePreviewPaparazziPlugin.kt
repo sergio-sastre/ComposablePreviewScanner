@@ -18,15 +18,15 @@ class ComposablePreviewPaparazziPlugin : Plugin<Project> {
         extension.includePrivatePreviews.convention(false)
         extension.testClassName.convention("GeneratedComposablePreviewPaparazziTests")
         extension.testPackageName.convention("generated.paparazzi.tests")
-        // Do not set a convention for numOfShards here; we will derive it from Gradle's Test.maxParallelForks later.
+        // Do not set a convention for generatedTestClassCount here; we will derive it from Gradle's Test.maxParallelForks later.
 
         // Configure the task after project evaluation
         project.afterEvaluate {
-            // Default numOfShards to Gradle Test.maxParallelForks (users can still override via extension)
+            // Default generatedTestClassCount to Gradle Test.maxParallelForks (users can still override via extension)
             val tests = project.tasks.withType(org.gradle.api.tasks.testing.Test::class.java)
             val maxForks = tests.findByName("test")?.maxParallelForks
                 ?: tests.maxOfOrNull { it.maxParallelForks } ?: 1
-            extension.numOfShards.convention(maxForks)
+            extension.generatedTestClassCount.convention(maxForks)
 
             if (extension.enable.get()) {
                 setupGenerateComposablePreviewPaparazziTestsTask(project, extension)

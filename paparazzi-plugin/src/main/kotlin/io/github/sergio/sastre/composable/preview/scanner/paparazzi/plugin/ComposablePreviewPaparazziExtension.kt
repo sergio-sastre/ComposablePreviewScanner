@@ -33,7 +33,7 @@ open class ComposablePreviewPaparazziExtension @Inject constructor(objects: Obje
     val testPackageName: Property<String> = objects.property(String::class.java)
 
     /**
-     * Number of shards to split the generated parameterized tests into.
+     * Number of test classes to split the generated parameterized tests into.
      */
-    val numOfShards: Property<Int> = objects.property(Int::class.java)
+    val generatedTestClassCount: Property<Int> = objects.property(Int::class.java)
 }
