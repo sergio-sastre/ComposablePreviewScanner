@@ -455,7 +455,7 @@ object DeviceConfigBuilder {
 
 object PaparazziPreviewRule {
     const val UNDEFINED_API_LEVEL = -1
-    const val MAX_API_LEVEL = 36
+    const val MAX_API_LEVEL = 34
     
     fun createFor(preview: ComposablePreview<AndroidPreviewInfo>): Paparazzi {
        val previewInfo = preview.previewInfo
