@@ -34,7 +34,7 @@ android {
 
     testOptions {
         unitTests.all {
-            it.maxParallelForks = Runtime.getRuntime().availableProcessors() / 2
+            it.maxParallelForks = maxOf(1, Runtime.getRuntime().availableProcessors() / 2)
         }
     }
 }
