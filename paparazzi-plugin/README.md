@@ -81,6 +81,34 @@ dependencies {
 | `includePrivatePreviews` | `Boolean` | `false` | Include private preview functions |
 | `testClassName` | `String` | `"GeneratedComposablePreviewPaparazziTests"` | Name of the generated test class |
 | `testPackageName` | `String` | `"generated.paparazzi.tests"` | Package name for generated tests |
+| `generatedTestClassCount` | `Int` | `maxParallelForks` | Number of test classes to split the generated parameterized tests into |
+
+### Parallel execution
+Paparazzi (using JUnit 4) runs parameterized tests sequentially within a single class. To speed up execution, this plugin can split your previews into multiple test classes (shards), allowing Gradle to run them in parallel across multiple worker processes.
+
+1. **`generatedTestClassCount`**: Controls how many test classes are generated. Each class will contain a subset of your previews.
+2. **`maxParallelForks`**: A standard Gradle property that defines how many worker processes Gradle can start to run test classes in parallel.
+
+For effective parallelism, you should set both, for instance:
+
+```kotlin
+// In your module's build.gradle.kts
+composablePreviewPaparazzi {
+    // ... other config
+    // 1. Generate 4 test classes
+    generatedTestClassCount = 4 
+}
+
+tasks.withType<Test> {
+    // 2. Allow Gradle to run up to 4 test classes at the same time
+    maxParallelForks = 4 
+}
+```
+
+> [!IMPORTANT]
+> `generatedTestClassCount` defaults to the same value as `maxParallelForks`. Therefore, if you already use `maxParallelForks` during testing, the behavior may change if your tests are non-deterministic—for example, if they depend on the order in which other tests run.
+> 
+> However, this option does not modify `maxParallelForks` itself. Following [Roborazzi's policy](https://github.com/takahirom/roborazzi/releases/tag/1.53.0), this plugin **never modifies your AGP/Gradle settings** automatically in order to keep one single source of configuration. You must always configure `maxParallelForks` explicitly in your build script to enable parallel processing.
 
 ### Run the Generated Tests
 By running any of the following gradle tasks, the tests will be generated AND then executed (both):
