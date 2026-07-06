@@ -8,7 +8,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.declaredMemberFunctions
+import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.isAccessible
@@ -72,10 +72,8 @@ data class ComposablePreviewWithPreviewParameterMapper<T>(
                     func.valueParameters.singleOrNull()?.type?.let { type ->
                         type.classifier == Int::class && !type.isMarkedNullable
                     } == true &&
-                    // : String?
-                    func.returnType.let { type ->
-                        type.classifier == String::class && type.isMarkedNullable
-                    }
+                    // : String? or String
+                    func.returnType.classifier == String::class
         }
             ?.apply { isAccessible = true }
 
@@ -100,7 +98,7 @@ data class ComposablePreviewWithPreviewParameterMapper<T>(
         val displayedValuesCount = count?.let { min(it, limit) } ?: limit
 
         val getDisplayNameMethod =
-            providerInstance::class.declaredMemberFunctions.getDisplayNameFunction()
+            providerInstance::class.memberFunctions.getDisplayNameFunction()
 
         return values
             .take(max(0, displayedValuesCount))

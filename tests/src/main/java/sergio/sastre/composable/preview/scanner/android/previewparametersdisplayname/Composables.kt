@@ -11,7 +11,7 @@ private class AndroidStringProviderWithDisplayName : PreviewParameterProvider<St
 
     // Add method with same name but different signature to ensure
     // the other method is picked when using reflection
-    fun getDisplayName(index: Int?): String? = "WRONG"
+    fun getDisplayName(index: Int?): String? = throw RuntimeException("WRONG")
 
     override val values: Sequence<String?>
         get() = sequenceOf("Jim", "Jens", null)
@@ -19,6 +19,41 @@ private class AndroidStringProviderWithDisplayName : PreviewParameterProvider<St
     override fun getDisplayName(index: Int): String? {
         return values.elementAt(index)
     }
+}
+
+// Overriding getDisplayName with a non-nullable String return (covariant narrowing)
+private class AndroidStringProviderWithNonNullableDisplayName : PreviewParameterProvider<String> {
+
+    override val values: Sequence<String>
+        get() = sequenceOf("Jim", "Jens")
+
+    override fun getDisplayName(index: Int): String {
+        return values.elementAt(index)
+    }
+}
+
+// getDisplayName is only declared as an interface default, so implementing providers inherit it
+private interface ProviderWithDisplayNameDefault : PreviewParameterProvider<String> {
+    override fun getDisplayName(index: Int): String? {
+        return values.elementAt(index)
+    }
+}
+
+private class AndroidStringProviderWithInterfaceInheritedDisplayName : ProviderWithDisplayNameDefault {
+    override val values: Sequence<String>
+        get() = sequenceOf("Jim", "Jens")
+}
+
+// getDisplayName is only declared on an abstract superclass, so subclasses inherit it
+private abstract class BaseProviderWithDisplayName : PreviewParameterProvider<String> {
+    override fun getDisplayName(index: Int): String? {
+        return values.elementAt(index)
+    }
+}
+
+private class AndroidStringProviderWithSuperclassInheritedDisplayName : BaseProviderWithDisplayName() {
+    override val values: Sequence<String>
+        get() = sequenceOf("Jim", "Jens")
 }
 
 @Composable
@@ -30,6 +65,30 @@ fun Example(name: String?) {
 @Composable
 fun ExamplePreviewNoLimit(
     @PreviewParameter(provider = AndroidStringProviderWithDisplayName::class) name: String?
+) {
+    Example(name)
+}
+
+@Preview(group = "non-nullable-display-name")
+@Composable
+fun ExamplePreviewNonNullableDisplayName(
+    @PreviewParameter(provider = AndroidStringProviderWithNonNullableDisplayName::class) name: String
+) {
+    Example(name)
+}
+
+@Preview(group = "interface-inherited-display-name")
+@Composable
+fun ExamplePreviewInterfaceInheritedDisplayName(
+    @PreviewParameter(provider = AndroidStringProviderWithInterfaceInheritedDisplayName::class) name: String
+) {
+    Example(name)
+}
+
+@Preview(group = "superclass-inherited-display-name")
+@Composable
+fun ExamplePreviewSuperclassInheritedDisplayName(
+    @PreviewParameter(provider = AndroidStringProviderWithSuperclassInheritedDisplayName::class) name: String
 ) {
     Example(name)
 }
