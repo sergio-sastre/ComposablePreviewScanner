@@ -11,7 +11,7 @@ private class AndroidStringProviderWithDisplayName : PreviewParameterProvider<St
 
     // Add method with same name but different signature to ensure
     // the other method is picked when using reflection
-    fun getDisplayName(index: Int?): String? = "WRONG"
+    fun getDisplayName(index: Int?): String? = throw RuntimeException("WRONG")
 
     override val values: Sequence<String?>
         get() = sequenceOf("Jim", "Jens", null)
