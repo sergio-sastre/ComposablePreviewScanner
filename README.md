@@ -753,9 +753,26 @@ Let's say we want to enable some custom Dropshots Config for some Previews, for 
       fun createFor(preview: ComposablePreview<AndroidPreviewInfo>): Dropshots =
          preview.getAnnotation<DropshotsConfig>()?.let { config ->
             Dropshots(
+               filenameFunc = { _, name -> name },
                resultValidator = ThresholdValidator(config.comparisonThreshold)
             )
-         } ?: Dropshots()
+         } ?: Dropshots(filenameFunc = { _, name -> name })
+   }
+
+   // This part requires AndroidUiTestingUtils 2.10.0
+   object SystemUiPreviewRule {
+     fun createFor(preview: ComposablePreview<AndroidPreviewInfo>): SystemUiTestRule {
+        val navigation =
+            when (DevicePreviewInfoParser.parse(preview.previewInfo.device)?.navigation) {
+                BUTTONS -> Navigation.THREE_BUTTON
+                GESTURE -> Navigation.GESTURAL
+                null -> Navigation.GESTURAL
+            }
+        return SystemUiTestRule(
+            navigationConfig = NavigationConfig(mode = navigation),
+            statusBarConfig = StatusBarConfig(clockTime = ClockTime.from("10:00"))
+        )
+     }
    }
 
    object ActivityScenarioForComposablePreviewRule {
@@ -775,8 +792,15 @@ Let's say we want to enable some custom Dropshots Config for some Previews, for 
            val locale =
                preview.previewInfo.locale.removePrefix("b+").replace("+", "-").ifBlank { "en" }
 
+           val showSystemUi = preview.previewInfo.showSystemUi
+           val backgroundColor = when (showSystemUi) {
+               true -> null
+               false -> Color.TRANSPARENT
+           }
+
            return ActivityScenarioForComposableRule(
-               backgroundColor = Color.TRANSPARENT,
+               backgroundColor = backgroundColor,
+               showStatusBar = showSystemUi,
                config = ComposableConfigItem(
                    uiMode = uiMode,
                    fontSize = FontSizeScale.Value(preview.previewInfo.fontScale),
@@ -809,23 +833,37 @@ Let's say we want to enable some custom Dropshots Config for some Previews, for 
          fun values(): List<ComposablePreview<AndroidPreviewInfo>> = cachedPreviews
       }
    
-      @get:Rule
+      @get:Rule(order = 0)
       val dropshots: Dropshots = DropshotsPreviewRule.createFor(preview)
+
+      @get:Rule(order = 1)
+      val systemUiRule = SystemUiPreviewRule.createFor(preview)
    
-      @get:Rule
+      @get:Rule(order = 2)
       val activityScenarioForComposableRule: ActivityScenarioForComposableRule = 
             ActivityScenarioForComposablePreviewRule.createFor(preview)
 
       @Test
       fun snapshot() {
-        activityScenarioForComposableRule.onActivity {
+        val view = activityScenarioForComposableRule.activityScenario.onActivity {
             it.setContent {
                 preview()
             }
         }
+        .waitForActivity()
+        .waitForComposeView()
+
+        val bitmap = when (preview.previewInfo.showSystemUi) {
+            true -> systemUiRule.drawFullScreenToBitmap()
+            false -> view.drawToBitmapWithElevation()
+        }
 
         dropshots.assertSnapshot(
-            view = activityScenarioForComposableRule.activity.waitForComposeView()
+            bitmap = bitmap,
+            filePath = preview.declaringClass,
+            name = AndroidPreviewScreenshotIdBuilder(preview)
+                .ignoreClassName()
+                .build()
         )
       }
    }
