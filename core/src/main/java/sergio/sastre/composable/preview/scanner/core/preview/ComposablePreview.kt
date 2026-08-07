@@ -107,7 +107,12 @@ internal object PreviewWrapperCache {
                 .newInstance()
             // Find Wrap(Function2, Composer, Int)
             val wrapMethod = clazz.declaredMethods
-                .find { it.name == "Wrap" }
+                .find { method ->
+                    method.name == "Wrap" &&
+                            method.parameterCount == 3 &&
+                            method.parameterTypes[0].name == "kotlin.jvm.functions.Function2" &&
+                            method.parameterTypes[1].name == "androidx.compose.runtime.Composer"
+                }
                 ?.apply { isAccessible = true }
             val newPair = instance to wrapMethod
             val existing = cache.putIfAbsent(className, newPair)
