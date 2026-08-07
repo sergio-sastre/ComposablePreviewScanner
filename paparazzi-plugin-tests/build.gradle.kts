@@ -8,6 +8,10 @@ plugins {
     id("io.github.sergio-sastre.composable-preview-scanner.paparazzi-plugin")
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 android {
     namespace = "sergio.sastre.composable.preview.scanner.paparazzi.plugin"
     compileSdk = 35
@@ -23,14 +27,7 @@ android {
         compose = true
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-        jvmTarget = "11"
-    }
+    // Removed compileOptions and kotlinOptions as they are handled by jvmToolchain
 
     testOptions {
         unitTests.all {

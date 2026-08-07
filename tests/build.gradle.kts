@@ -5,6 +5,10 @@ plugins {
     alias(libs.plugins.testify)
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 // Apply conditionally via CLI to avoid plugin clashes
 if (project.hasProperty("library")) {
     when (project.property("library")) {
@@ -69,14 +73,7 @@ android {
         compose = true
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = "17"
-    }
+    // Removed compileOptions and kotlinOptions as they are handled by jvmToolchain
 
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
 

@@ -4,6 +4,10 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.plugin.compose)
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 android {
     namespace = "sergio.sastre.composable.preview.custompreviews"
     compileSdk = 35
@@ -19,13 +23,7 @@ android {
             isMinifyEnabled = false
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
+    // Removed compileOptions and kotlinOptions as they are handled by jvmToolchain
 }
 
 dependencies {
