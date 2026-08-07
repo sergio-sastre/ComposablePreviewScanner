@@ -46,7 +46,7 @@ class PublicScaffoldWrapper: PreviewWrapperProvider {
     fun Wrap(content: (Composer, Int) -> Unit, composer: Composer, changed: Int) {
         // Bytecode: (Function2, Composer, int)
         // This is IDENTICAL to the overridden Wrap in terms of reflection types!
-        throw RuntimeException("WRONG - This is not @Composable but looks like it")
+        throw RuntimeException("WRONG - This is not @Composable and looks identical reflection-wise")
     }
 
     @Composable
