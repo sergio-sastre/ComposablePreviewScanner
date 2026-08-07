@@ -6,6 +6,10 @@ plugins {
     id("maven-publish")
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 android {
     namespace = "sergio.sastre.composable.preview.scanner.glance"
     compileSdk = 35
@@ -22,14 +26,7 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = "17"
-    }
+    // Removed compileOptions and kotlinOptions as they are handled by jvmToolchain
 
     buildFeatures {
         // Enables Jetpack Compose for this module
@@ -60,7 +57,7 @@ publishing {
             }
             groupId = "sergio.sastre.composable.preview.scanner"
             artifactId = "glance"
-            version = "0.9.1"
+            version = "0.9.2"
         }
     }
 }

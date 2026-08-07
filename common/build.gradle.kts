@@ -4,9 +4,8 @@ plugins {
     id("maven-publish")
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+kotlin {
+    jvmToolchain(17)
 }
 
 dependencies {
@@ -24,7 +23,7 @@ publishing {
             }
             groupId = "sergio.sastre.composable.preview.scanner"
             artifactId = "common"
-            version = "0.9.1"
+            version = "0.9.2"
         }
     }
 }
