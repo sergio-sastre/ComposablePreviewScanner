@@ -1,15 +1,14 @@
 package sergio.sastre.composable.preview.scanner.core.preview
 
-import sergio.sastre.composable.preview.scanner.core.preview.exception.PreviewParameterIsNotFirstArgumentException
+import androidx.compose.runtime.Composer
+import androidx.compose.runtime.reflect.asComposableMethod
 import io.github.classgraph.AnnotationClassRef
 import io.github.classgraph.AnnotationInfoList
+import sergio.sastre.composable.preview.scanner.core.preview.exception.PreviewParameterIsNotFirstArgumentException
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.PREVIEW_WRAPPER_ANNOTATION
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
-import kotlin.math.pow
-import kotlin.reflect.jvm.isAccessible
-import kotlin.reflect.jvm.kotlinFunction
 
 /**
  * Used to handle calls to a [composableMethod].
@@ -30,51 +29,97 @@ internal class ComposablePreviewInvocationHandler(
     override fun invoke(proxy: Any?, method: Method?, args: Array<out Any>?): Any? {
         if (method?.name != "invoke") return method?.invoke(this, *(args ?: emptyArray()))
 
-        val safeArgs = fillMissingComposeArgs(args)
-
-        // Extract composer and changed once, providing defaults if args are missing
-        val composer = args?.getOrNull(args.size - 2)
+        // Args of ComposablePreview.invoke() are the compiler-added [Composer, changed] pair.
+        val composer = args?.getOrNull(args.size - 2) as? Composer
         val changed = args?.getOrNull(args.size - 1) as? Int ?: 0
 
         val previewWrapperData = getPreviewWrapperProvider()
         val wrapMethod = previewWrapperData?.second
-        // Only wrap if we have both the method AND the minimum required compose arguments
         val canWrapPreview = wrapMethod != null && (args?.size ?: 0) >= 2
         return when (canWrapPreview) {
-            false -> invokeDirectly(composer, changed, safeArgs)
+            false -> invokeComposable(composer)
             true -> {
-                val content: (Any?, Int) -> Unit = { c, i -> invokeDirectly(c, i, safeArgs) }
-                wrapMethod.invoke(previewWrapperData.first, content, composer, changed)
+                val content: (Any?, Int) -> Unit = { wrapComposer, _ ->
+                    invokeComposable(wrapComposer as? Composer)
+                }
+                wrapMethod!!.invoke(previewWrapperData.first, content, composer, changed)
             }
         }
     }
 
-    private fun invokeDirectly(composer: Any?, changed: Int, safeArgs: Array<out Any?>): Any? {
-        val allParams = composableMethod.kotlinFunction!!.parameters
-        val hasDefaultParams = allParams.any { it.isOptional }
+    /**
+     * Invokes the @Composable via androidx' [asComposableMethod] (`java.lang.reflect` based) instead of
+     * kotlin-reflect. ComposableMethod supplies the compiler-added Composer/changed/default-mask
+     * parameters itself and fills trailing default parameters, so we only pass the real
+     * @PreviewParameter value (if any).
+     *
+     * This deliberately avoids `kotlin-reflect`: resolving/calling `Method.kotlinFunction` throws
+     * `KotlinReflectionInternalError` for previews whose signature contains a value class, because
+     * kotlin-reflect's ValueClassAwareCaller derives the expected argument count from the Kotlin
+     * descriptor and cannot reconcile the Compose compiler's synthetic JVM parameters.
+     */
+    private fun invokeComposable(composer: Composer?): Any? {
+        val composable = composableMethod.asComposableMethod()
+            ?: error(
+                "Not a @Composable method: " +
+                    "${composableMethod.declaringClass.name}.${composableMethod.name}",
+            )
 
-        // Update the composer and changed values in the arguments
-        val updatedArgs = arrayOf(*safeArgs)
-        if (updatedArgs.size >= (if (hasDefaultParams) 3 else 2)) {
-            val offset = if (hasDefaultParams) 1 else 0
-            updatedArgs[updatedArgs.size - 2 - offset] = composer
-            updatedArgs[updatedArgs.size - 1 - offset] = changed
+        // Unconditional: a @PreviewParameter anywhere but first can't be placed correctly, whether or
+        // not a value was resolved for it. (Matches the previous behavior.)
+        requirePreviewParameterIsFirstArgument()
+
+        val realArgs: Array<Any?> = when (parameter) {
+            NoParameter -> emptyArray()
+            else -> arrayOf(coerceToParameterType(parameter, composable.parameterTypes.firstOrNull()))
         }
 
-        val safeArgsWithParam =
-            when (parameter != NoParameter) {
-                true -> arrayOf(parameter, *updatedArgs)
-                false -> updatedArgs
-            }
+        val receiver = when (Modifier.isStatic(composableMethod.modifiers)) {
+            true -> null
+            false -> composableMethod.declaringClass.getDeclaredConstructor()
+                .apply { isAccessible = true }
+                .newInstance()
+        }
 
-        val isInsideClass = !Modifier.isStatic(composableMethod.modifiers)
-        val kotlinComposableMethod =
-            composableMethod.kotlinFunction!!.apply { isAccessible = true }
-        return when (isInsideClass) {
-            false -> kotlinComposableMethod.call(*safeArgsWithParam)
-            true -> kotlinComposableMethod.call(
-                composableMethod.declaringClass.getDeclaredConstructor().newInstance(),
-                *safeArgsWithParam
+        return composable.invoke(
+            requireNotNull(composer) { "A Composer is required to invoke a @Composable preview" },
+            receiver,
+            *realArgs,
+        )
+    }
+
+    /**
+     * A @PreviewParameter provider yields boxed value-class instances (e.g. a Dp), but the JVM method
+     * expects the underlying type (e.g. float). Unbox via the value class's synthetic `unbox-impl` when
+     * the value does not already fit the target parameter slot (nullable/generic slots stay boxed).
+     * Loops to handle the rare nested-value-class case.
+     */
+    private fun coerceToParameterType(value: Any?, targetType: Class<*>?): Any? {
+        if (targetType == null) return value
+        var current: Any? = value
+        while (true) {
+            val boxed = current ?: break
+            if (targetType.isInstance(boxed)) break
+            val unbox = boxed.javaClass.declaredMethods.firstOrNull { it.name == "unbox-impl" } ?: break
+            unbox.isAccessible = true
+            current = unbox.invoke(boxed)
+        }
+        return current
+    }
+
+    /**
+     * Compose only supports a single @PreviewParameter and (from AS Meerkat on) enforces it is the
+     * first parameter. We forward the provider value as the first argument, so if it is not first we
+     * cannot place it correctly — fail explicitly rather than render the wrong argument.
+     */
+    private fun requirePreviewParameterIsFirstArgument() {
+        val previewParameterIndex = composableMethod.parameterAnnotations.indexOfFirst { annotations ->
+            annotations.any { it.annotationClass.java.name in PREVIEW_PARAMETER_ANNOTATIONS }
+        }
+        if (previewParameterIndex > 0) {
+            throw PreviewParameterIsNotFirstArgumentException(
+                className = composableMethod.declaringClass.name,
+                methodName = composableMethod.name,
             )
         }
     }
@@ -93,48 +138,10 @@ internal class ComposablePreviewInvocationHandler(
         return PreviewWrapperCache.getProviderAndWrapMethod(wrapperClassRef.name)
     }
 
-    private fun fillMissingComposeArgs(passedComposeArgs: Array<out Any>?): Array<out Any?> {
-        val safeArgs = passedComposeArgs ?: emptyArray()
-        val allParams = composableMethod.kotlinFunction!!.parameters
-        val defaultParams = allParams.filter { it.isOptional }
-        when (defaultParams.isEmpty()) {
-            true -> return safeArgs
-            false -> {
-                // Very rare case:
-                // if @PreviewParameters & default parameters available
-                // And @PreviewParameters is not the first of all arguments
-                // we cannot handle it:
-                // we don't know the value of that argument to pass it at a certain index
-                // and it'd throw an UndeclaredThrowableException
-                //
-                // Update: It seems that from AS Meerkat on, this is enforced :)
-                if (allParams.any { !it.isOptional && it.index != 0 }) {
-                    throw PreviewParameterIsNotFirstArgumentException(
-                        className = composableMethod.declaringClass.name,
-                        methodName = composableMethod.name
-                    )
-                }
-
-                // In kotlin reflect, null params resolve to default kotlin params.
-                // These params are added at the beginning of the method by the Compose Compiler
-                val defaultParamsAsNull: Array<out Any?> = arrayOfNulls(defaultParams.size)
-
-                // When default params available, the Compose Compiler adds a mask at the end of the method
-                // to map the default parameters to their corresponding default values.
-                //
-                // This mask contains 1 bit for each parameter (0 -> null, 1 -> default value),
-                // including default params and those passed via @PreviewParameters
-                // so in order to resolve all parameters to their corresponding values,
-                // you need the highest possible number in binary e.g.
-                // 1 param  -> 1
-                // 2 params -> 11 -> 3
-                // 3 params -> 111 -> 7
-                // 4 params -> 1111 -> 15
-                // x params -> 2 pow (x) - 1
-                val paramsMask: MutableList<Int> =
-                    mutableListOf(2.0.pow(allParams.size).toInt() - 1)
-                return (defaultParamsAsNull.toMutableList() + safeArgs.toMutableList() + paramsMask).toTypedArray()
-            }
-        }
+    private companion object {
+        private val PREVIEW_PARAMETER_ANNOTATIONS = setOf(
+            "androidx.compose.ui.tooling.preview.PreviewParameter",
+            "org.jetbrains.compose.ui.tooling.preview.PreviewParameter",
+        )
     }
 }

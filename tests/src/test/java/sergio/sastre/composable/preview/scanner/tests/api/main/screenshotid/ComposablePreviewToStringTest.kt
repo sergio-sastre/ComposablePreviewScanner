@@ -96,4 +96,26 @@ class ComposablePreviewToStringTest() {
 
         Assert.assertEquals(expectedPreviewString, previewToString)
     }
+
+    @Test
+    fun `GIVEN a preview with a value-class @PreviewParameter WHEN toString THEN it is scanned without crashing`() {
+        val previews =
+            AndroidComposablePreviewScanner()
+                .scanPackageTrees("valueclass.previewparameters.android")
+                .getPreviews()
+                .map { it.toString() }
+
+        // The JVM method name of a value-class-parameter @Composable is mangled as "<name>-<hash>",
+        // and we intentionally keep that raw name rather than demangling it. The "<hash>" disambiguates
+        // overloads whose value-class parameters share an underlying JVM type: methodParametersType is
+        // the erased underlying type (here "float"), so e.g. two same-named previews taking different
+        // value classes over Float would otherwise produce identical ids. The hash is
+        // compiler-version-dependent, so it is matched loosely rather than asserted verbatim.
+        val idPattern = Regex(
+            "valueclass\\.previewparameters\\.android\\.ComposablesKt_" +
+                "ValueClassPreviewParameterPreview(-\\w+)?_float_\\d",
+        )
+        Assert.assertEquals(2, previews.size)
+        Assert.assertTrue(previews.toString(), previews.all { idPattern.matches(it) })
+    }
 }
