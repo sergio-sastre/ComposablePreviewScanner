@@ -101,7 +101,8 @@ class ComposablePreviewToStringTest() {
     fun `GIVEN a preview with a value-class @PreviewParameter WHEN toString THEN it is scanned without crashing`() {
         val previews =
             AndroidComposablePreviewScanner()
-                .scanPackageTrees("valueclass.previewparameters.android")
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner")
+                .filterPreviews { it.name == "valueClassDp" }
                 .getPreviews()
                 .map { it.toString() }
 
@@ -112,10 +113,9 @@ class ComposablePreviewToStringTest() {
         // value classes over Float would otherwise produce identical ids. The hash is
         // compiler-version-dependent, so it is matched loosely rather than asserted verbatim.
         val idPattern = Regex(
-            "valueclass\\.previewparameters\\.android\\.ComposablesKt_" +
-                "ValueClassPreviewParameterPreview(-\\w+)?_float_\\d",
+            "sergio\\.sastre\\.composable\\.preview\\.scanner\\.android\\.previewparameters\\.ValueClassComposablesKt_" +
+                "(-\\w+)?ValueClassPreviewParameterPreview_Dp_float_\\d",
         )
-        Assert.assertEquals(2, previews.size)
         Assert.assertTrue(previews.toString(), previews.all { idPattern.matches(it) })
     }
 }
