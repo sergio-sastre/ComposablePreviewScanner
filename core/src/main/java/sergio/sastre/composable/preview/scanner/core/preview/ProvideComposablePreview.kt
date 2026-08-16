@@ -38,7 +38,16 @@ class ProvideComposablePreview<T> {
             override val otherAnnotationsInfo = composablePreviewMapper.annotationsInfo
             override val declaringClass: String =
                 composablePreviewMapper.previewMethod.declaringClass.toClassName()
-            override val methodName: String = composablePreviewMapper.previewMethod.name.removeManglingSuffix()
+
+            /**
+             * The JVM method name, including any compiler-generated hash (e.g., "-8Feqmps").
+             *
+             * This hash is appended by the Compose compiler for overloads or methods using value classes
+             * to ensure uniqueness at the JVM level. We intentionally keep the raw JVM name to
+             * guarantee unique ComposablePreview IDs (and snapshot filenames), even if it means
+             * IDs might change across compiler versions or rebuilds.
+             */
+            override val methodName: String = composablePreviewMapper.previewMethod.name
 
             override val methodParametersType: String = methodParametersTypeAsString()
 
@@ -53,26 +62,6 @@ class ProvideComposablePreview<T> {
                         add(previewIndex.toString())
                     }
                 }.joinToString("_")
-            }
-
-            /**
-             * Strips the unstable compiler-generated hash (e.g., "-8Feqmps") from the method name.
-             *
-             * This hash is appended by the Compose compiler for overloads or methods using value classes.
-             * Removing it is necessary to ensure stable and deterministic ComposablePreview IDs
-             * (and thus snapshot filenames) across different compiler versions or rebuilds.
-             *
-             * The regex targets suffixes that look like hashes: starting with a hyphen, followed by 7-11
-             * alphanumeric characters, containing at least one uppercase letter or digit.
-             * This heuristic preserves most user-defined hyphens in backticked method names
-             * (e.g., `my-method-name`) while stripping unstable compiler clutter.
-             *
-             * Note: There is a negligible risk of ID collision if a user manually suffixes a method
-             * with a string that perfectly mimics a compiler hash (e.g. `method-A1b2C3d`).
-             */
-            private fun String.removeManglingSuffix(): String {
-                val mangledPattern = Regex("-(?=[a-zA-Z0-9]*[A-Z0-9])[a-zA-Z0-9]{7,11}$")
-                return replace(mangledPattern, "")
             }
 
             private fun Class<*>.toClassName(): String = canonicalName ?: simpleName

@@ -7,7 +7,7 @@ import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreview
 import sergio.sastre.composable.preview.scanner.common.CommonComposablePreviewScanner
 
 @Suppress("DEPRECATION")
-class ComposablePreviewToStringTest() {
+class ComposablePreviewToStringTest {
 
     @Test
     fun `GIVEN Android previews WHEN toString THEN those preview names do not end with underscore`() {
@@ -98,7 +98,7 @@ class ComposablePreviewToStringTest() {
     }
 
     @Test
-    fun `GIVEN a preview with a value-class @PreviewParameter WHEN toString THEN it is scanned without crashing`() {
+    fun `GIVEN a preview with a nullable value-class @PreviewParameter WHEN toString THEN it includes alphanumeric hashcode, value class name with question mark and its value type`() {
         val previews =
             AndroidComposablePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.previewparameters")
@@ -108,16 +108,17 @@ class ComposablePreviewToStringTest() {
 
         Assert.assertTrue(previews.isNotEmpty())
 
+        val hashCodeRegex = "(-[a-zA-Z0-9]{7,11})"
         val idPattern = Regex(
-            "sergio\\.sastre\\.composable\\.preview\\.scanner\\.android\\.previewparameters\\.NonPrimitiveClassComposablesKt_" +
-                "ValueClassPreviewParameterPreview_Dp\\?_float_\\d",
+            NON_PRIMITIVE_CLASS_PATH +
+                "ValueClassPreviewParameterPreview${hashCodeRegex}_Dp\\?_float_\\d",
         )
 
         Assert.assertTrue(previews.toString(), previews.all { idPattern.matches(it) })
     }
 
     @Test
-    fun `GIVEN a preview with a List of value-class @PreviewParameter WHEN toString THEN it is scanned without crashing`() {
+    fun `GIVEN a preview with a List of value-class @PreviewParameter WHEN toString THEN it also includes diamond parenthesis`() {
         val previews =
             AndroidComposablePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.previewparameters")
@@ -126,7 +127,7 @@ class ComposablePreviewToStringTest() {
                 .map { it.toString() }
 
         val idPattern = Regex(
-            "sergio\\.sastre\\.composable\\.preview\\.scanner\\.android\\.previewparameters\\.NonPrimitiveClassComposablesKt_" +
+            NON_PRIMITIVE_CLASS_PATH +
                 "ListValueClassPreviewParameterPreview_List<Dp_float>_\\d",
         )
 
@@ -134,7 +135,7 @@ class ComposablePreviewToStringTest() {
     }
 
     @Test
-    fun `GIVEN a preview with an Array of value-class @PreviewParameter WHEN toString THEN it is scanned without crashing`() {
+    fun `GIVEN a preview with an Array of value-class @PreviewParameter WHEN toString THEN it also includes square parenthesis`() {
         val previews =
             AndroidComposablePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.previewparameters")
@@ -143,7 +144,7 @@ class ComposablePreviewToStringTest() {
                 .map { it.toString() }
 
         val idPattern = Regex(
-            "sergio\\.sastre\\.composable\\.preview\\.scanner\\.android\\.previewparameters\\.NonPrimitiveClassComposablesKt_" +
+            NON_PRIMITIVE_CLASS_PATH +
                 "ArrayValueClassPreviewParameterPreview_Dp\\?_float\\[\\]_\\d",
         )
 
@@ -151,7 +152,7 @@ class ComposablePreviewToStringTest() {
     }
 
     @Test
-    fun `GIVEN a preview with a regular class @PreviewParameter WHEN toString THEN it is scanned without crashing`() {
+    fun `GIVEN a preview with a regular class @PreviewParameter WHEN toString THEN the class name is in the name`() {
         val previews =
             AndroidComposablePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.previewparameters")
@@ -160,7 +161,7 @@ class ComposablePreviewToStringTest() {
                 .map { it.toString() }
 
         val idPattern = Regex(
-            "sergio\\.sastre\\.composable\\.preview\\.scanner\\.android\\.previewparameters\\.NonPrimitiveClassComposablesKt_" +
+            NON_PRIMITIVE_CLASS_PATH +
                 "MyClassPreviewParameterPreview_MyClass_\\d",
         )
 
@@ -168,7 +169,7 @@ class ComposablePreviewToStringTest() {
     }
 
     @Test
-    fun `GIVEN a preview with a List of wildcard @PreviewParameter WHEN toString THEN it is scanned without crashing`() {
+    fun `GIVEN a preview with a List of wildcard @PreviewParameter WHEN toString THEN wildcard translates to question mark`() {
         val previews =
             AndroidComposablePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.previewparameters")
@@ -177,10 +178,15 @@ class ComposablePreviewToStringTest() {
                 .map { it.toString() }
 
         val idPattern = Regex(
-            "sergio\\.sastre\\.composable\\.preview\\.scanner\\.android\\.previewparameters\\.NonPrimitiveClassComposablesKt_" +
+            NON_PRIMITIVE_CLASS_PATH +
                 "WildcardList-with-hypen-backsticks_List<\\?>_\\d",
         )
 
         Assert.assertTrue(previews.toString(), previews.all { idPattern.matches(it) })
+    }
+
+    companion object {
+        const val NON_PRIMITIVE_CLASS_PATH =
+            "sergio\\.sastre\\.composable\\.preview\\.scanner\\.android\\.previewparameters\\.NonPrimitiveClassComposablesKt_"
     }
 }
