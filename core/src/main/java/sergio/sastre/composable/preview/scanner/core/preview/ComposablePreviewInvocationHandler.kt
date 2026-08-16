@@ -114,7 +114,7 @@ internal class ComposablePreviewInvocationHandler(
      */
     private fun requirePreviewParameterIsFirstArgument() {
         val previewParameterIndex = composableMethod.parameterAnnotations.indexOfFirst { annotations ->
-            annotations.any { it.annotationClass.java.name in PREVIEW_PARAMETER_ANNOTATIONS }
+            annotations.any { (it as java.lang.annotation.Annotation).annotationType().name in PREVIEW_PARAMETER_ANNOTATIONS }
         }
         if (previewParameterIndex > 0) {
             throw PreviewParameterIsNotFirstArgumentException(

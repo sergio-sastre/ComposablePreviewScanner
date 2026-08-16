@@ -2,7 +2,11 @@ package sergio.sastre.composable.preview.scanner.core.preview
 
 import androidx.compose.runtime.reflect.asComposableMethod
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapper
+import java.lang.reflect.GenericArrayType
+import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Proxy
+import java.lang.reflect.Type
+import java.lang.reflect.WildcardType
 
 /**
  * Provides an invokable ComposablePreview
@@ -34,14 +38,23 @@ class ProvideComposablePreview<T> {
             override val otherAnnotationsInfo = composablePreviewMapper.annotationsInfo
             override val declaringClass: String =
                 composablePreviewMapper.previewMethod.declaringClass.toClassName()
+
+            /**
+             * The JVM method name, including any compiler-generated hash (e.g., "-8Feqmps").
+             *
+             * This hash is appended by the Compose compiler for overloads or methods using value classes
+             * to ensure uniqueness at the JVM level. We intentionally keep the raw JVM name to
+             * guarantee unique ComposablePreview IDs (and snapshot filenames), even if it means
+             * IDs might change across compiler versions or rebuilds.
+             */
             override val methodName: String = composablePreviewMapper.previewMethod.name
 
             override val methodParametersType: String = methodParametersTypeAsString()
 
             override fun toString(): String {
                 return buildList<String> {
-                    add(composablePreviewMapper.previewMethod.declaringClass.toClassName())
-                    add(composablePreviewMapper.previewMethod.name)
+                    add(declaringClass)
+                    add(methodName)
                     if (methodParametersType.isNotBlank()){
                         add(methodParametersType)
                     }
@@ -72,13 +85,57 @@ class ProvideComposablePreview<T> {
                 return previewMethod
                     .genericParameterTypes
                     .take(realParametersCount)
-                    .joinToString("_") {
-                        // From java.lang.List<java.lang.Integer> to List<Integer>
-                        it.typeName
+                    .mapIndexed { index, type ->
+                        val v = if (index == 0) parameter else null
+                        type.toResolvedTypeName(v)
                             .replace(Regex("\\b[a-zA-Z_][a-zA-Z0-9_]*\\."), "")
                             .replace("\\s+".toRegex(), "_") // blanks cause problems with some libs, like Android-Testify
                     }
+                    .joinToString("_")
             }
+
+            @Suppress("NewApi")
+            private fun Type.toResolvedTypeName(value: Any? = null): String {
+                return when (this) {
+                    is Class<*> -> {
+                        if (isArray) return "${componentType.toResolvedTypeName()}[]"
+
+                        // Recovery block for erased value classes (e.g. float -> Dp)
+                        if (value != null && value != ComposablePreviewInvocationHandler.NoParameter) {
+                            val valueClass = value.javaClass
+                            val valueUnbox = valueClass.getUnderlyingType()
+                            if (valueUnbox != null && (this == valueUnbox || this.toString() == valueUnbox.toString())) {
+                                return valueClass.typeName
+                            }
+                        }
+                        typeName
+                    }
+                    is ParameterizedType -> {
+                        val raw = (rawType as? Class<*>)?.typeName ?: rawType.toString()
+                        val args = actualTypeArguments.joinToString(", ") { it.toResolvedTypeName() }
+                        "$raw<$args>"
+                    }
+                    is GenericArrayType -> "${genericComponentType.toResolvedTypeName()}[]"
+                    is WildcardType -> {
+                        val lower = lowerBounds.firstOrNull()
+                        val upper = upperBounds.firstOrNull()
+                        when {
+                            lower != null -> "? super ${lower.toResolvedTypeName()}"
+                            upper != null && upper != Any::class.java && upper.toString() != "class java.lang.Object" ->
+                                "? extends ${upper.toResolvedTypeName()}"
+                            else -> "?"
+                        }
+                    }
+                    else -> toString()
+                }
+            }
+
+            private fun Class<*>.getUnderlyingType(): Class<*>? =
+                try {
+                    declaredMethods.firstOrNull { it.name == "unbox-impl" }?.returnType
+                } catch (_: Exception) {
+                    null
+                }
         }
     }
 }
