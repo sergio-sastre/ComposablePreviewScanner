@@ -100,8 +100,7 @@ class ProvideComposablePreview<T> {
                         if (isArray) return "${componentType.toResolvedTypeName(isInsideGeneric = isInsideGeneric)}[]"
                         val unbox = getUnderlyingType()
                         if (unbox != null) {
-                            val nullable = !isPrimitive && !isInsideGeneric
-                            return "${simpleName}${if (nullable) "?" else ""}_${unbox.simpleName}"
+                            return "${simpleName}_${unbox.simpleName}"
                         }
                         if (value != null && value != ComposablePreviewInvocationHandler.NoParameter) {
                             val valueClass = value.javaClass

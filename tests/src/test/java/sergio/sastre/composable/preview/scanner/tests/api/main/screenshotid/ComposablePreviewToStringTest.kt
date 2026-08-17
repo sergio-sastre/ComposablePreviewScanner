@@ -98,7 +98,7 @@ class ComposablePreviewToStringTest {
     }
 
     @Test
-    fun `GIVEN a preview with a nullable value-class @PreviewParameter WHEN toString THEN it includes alphanumeric hashcode, value class name with question mark and its value type`() {
+    fun `GIVEN a preview with a nullable value-class @PreviewParameter WHEN toString THEN it includes alphanumeric hashcode, value class name and its value type`() {
         val previews =
             AndroidComposablePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.previewparameters")
@@ -111,7 +111,7 @@ class ComposablePreviewToStringTest {
         val hashCodeRegex = "(-[a-zA-Z0-9]{7,11})"
         val idPattern = Regex(
             NON_PRIMITIVE_CLASS_PATH +
-                "ValueClassPreviewParameterPreview${hashCodeRegex}_Dp\\?_float_\\d",
+                "ValueClassPreviewParameterPreview${hashCodeRegex}_Dp_float_\\d",
         )
 
         Assert.assertTrue(previews.toString(), previews.all { idPattern.matches(it) })
@@ -145,7 +145,7 @@ class ComposablePreviewToStringTest {
 
         val idPattern = Regex(
             NON_PRIMITIVE_CLASS_PATH +
-                "ArrayValueClassPreviewParameterPreview_Dp\\?_float\\[\\]_\\d",
+                "ArrayValueClassPreviewParameterPreview_Dp_float\\[\\]_\\d",
         )
 
         Assert.assertTrue(previews.toString(), previews.all { idPattern.matches(it) })
