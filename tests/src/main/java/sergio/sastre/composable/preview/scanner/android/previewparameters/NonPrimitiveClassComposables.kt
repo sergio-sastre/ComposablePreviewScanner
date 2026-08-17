@@ -69,3 +69,19 @@ fun `WildcardList-with-hypen-backsticks`(
 ) {
     Text(list.toString())
 }
+
+class Outer {
+    class Inner(val value: String)
+}
+
+class InnerClassProvider : PreviewParameterProvider<Outer.Inner> {
+    override val values: Sequence<Outer.Inner> = sequenceOf(Outer.Inner("nested"))
+}
+
+@Preview(name = "innerClass")
+@Composable
+fun InnerClassPreviewParameterPreview(
+    @PreviewParameter(provider = InnerClassProvider::class) inner: Outer.Inner,
+) {
+    Text(inner.value)
+}

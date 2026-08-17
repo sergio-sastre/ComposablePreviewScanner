@@ -94,43 +94,39 @@ class ProvideComposablePreview<T> {
                     .joinToString("_")
             }
 
-            private fun Type.toResolvedTypeName(value: Any? = null, isInsideGeneric: Boolean = false): String {
+            @Suppress("NewApi")
+            private fun Type.toResolvedTypeName(value: Any? = null): String {
                 return when (this) {
                     is Class<*> -> {
-                        if (isArray) return "${componentType.toResolvedTypeName(isInsideGeneric = isInsideGeneric)}[]"
-                        val unbox = getUnderlyingType()
-                        if (unbox != null) {
-                            return "${simpleName}_${unbox.simpleName}"
-                        }
+                        if (isArray) return "${componentType.toResolvedTypeName()}[]"
+
+                        // Recovery block for erased value classes (e.g. float -> Dp)
                         if (value != null && value != ComposablePreviewInvocationHandler.NoParameter) {
                             val valueClass = value.javaClass
                             val valueUnbox = valueClass.getUnderlyingType()
                             if (valueUnbox != null && (this == valueUnbox || this.toString() == valueUnbox.toString())) {
-                                return "${valueClass.simpleName}_${valueUnbox.simpleName}"
+                                return valueClass.typeName
                             }
                         }
-                        simpleName
+                        typeName
                     }
                     is ParameterizedType -> {
-                        val raw = (rawType as? Class<*>)?.simpleName ?: rawType.toString().substringAfterLast('.')
-                        val args = actualTypeArguments.joinToString(", ") { it.toResolvedTypeName(isInsideGeneric = true) }
+                        val raw = (rawType as? Class<*>)?.typeName ?: rawType.toString()
+                        val args = actualTypeArguments.joinToString(", ") { it.toResolvedTypeName() }
                         "$raw<$args>"
                     }
-                    is GenericArrayType -> "${genericComponentType.toResolvedTypeName(isInsideGeneric = isInsideGeneric)}[]"
+                    is GenericArrayType -> "${genericComponentType.toResolvedTypeName()}[]"
                     is WildcardType -> {
-                        val lowerBound = lowerBounds.firstOrNull()
-                        if (lowerBound != null) {
-                            "? super ${lowerBound.toResolvedTypeName(isInsideGeneric = isInsideGeneric)}"
-                        } else {
-                            val upperBound = upperBounds.firstOrNull()
-                            if (upperBound == null || upperBound == Any::class.java || upperBound.toString() == "class java.lang.Object") {
-                                "?"
-                            } else {
-                                "? extends ${upperBound.toResolvedTypeName(isInsideGeneric = isInsideGeneric)}"
-                            }
+                        val lower = lowerBounds.firstOrNull()
+                        val upper = upperBounds.firstOrNull()
+                        when {
+                            lower != null -> "? super ${lower.toResolvedTypeName()}"
+                            upper != null && upper != Any::class.java && upper.toString() != "class java.lang.Object" ->
+                                "? extends ${upper.toResolvedTypeName()}"
+                            else -> "?"
                         }
                     }
-                    else -> toString().substringAfterLast('.')
+                    else -> toString()
                 }
             }
 
