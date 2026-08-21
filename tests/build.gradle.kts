@@ -27,7 +27,7 @@ android {
 
     defaultConfig {
         applicationId = "composable.preview.scanner"
-        minSdk = 23
+        minSdk = 26
         // Needs to use any targetSdk for glance to correctly render Previews without "widthDp"
         // when using Roborazzi or instrumentation testing libs
         // Paparazzi cannot handle this
@@ -100,6 +100,7 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":custompreviews"))
     implementation(project(":glance"))
+    implementation(project(":wear"))
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.runtime)
     implementation("androidx.compose.ui:ui")
@@ -110,6 +111,12 @@ dependencies {
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.androidx.glance.preview)
     implementation(libs.androidx.glance.appwidget.preview)
+    implementation("androidx.wear.compose:compose-material:1.4.0")
+    implementation("androidx.wear.compose:compose-ui-tooling:1.4.0")
+    implementation("androidx.wear.tiles:tiles-tooling-preview:1.6.2")
+    implementation("androidx.wear:wear-tooling-preview:1.0.0")
+    implementation("androidx.wear.protolayout:protolayout:1.2.1")
+    implementation("androidx.wear.protolayout:protolayout-material:1.2.1")
     implementation(libs.androidx.junit.ktx)
     implementation(libs.androidx.compose.ui.test.junit4)
 
