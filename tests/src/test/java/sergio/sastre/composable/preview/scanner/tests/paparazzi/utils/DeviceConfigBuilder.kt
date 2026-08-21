@@ -5,10 +5,12 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import app.cash.paparazzi.DeviceConfig
 import com.android.resources.Density
 import com.android.resources.NightMode
+import com.android.resources.ScreenOrientation
 import com.android.resources.ScreenRatio
 import com.android.resources.ScreenRound
 import com.android.resources.ScreenSize
 import sergio.sastre.composable.preview.scanner.android.device.DevicePreviewInfoParser
+import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewInfo
 
 object DeviceConfigBuilder {
     fun build(previewDevice: String): DeviceConfig {
@@ -25,6 +27,22 @@ object DeviceConfigBuilder {
         )
     }
 
+    fun build(wearTile: WearTilePreviewInfo): DeviceConfig {
+        val parsedDevice =
+            DevicePreviewInfoParser.parse(wearTile.device)?.inPx() ?: return DeviceConfig()
+
+        return DeviceConfig(
+            screenHeight = parsedDevice.dimensions.height.toInt(),
+            screenWidth = parsedDevice.dimensions.width.toInt(),
+            density = Density(parsedDevice.densityDpi),
+            xdpi = parsedDevice.densityDpi, // not 100% precise
+            ydpi = parsedDevice.densityDpi, // not 100% precise
+            size = ScreenSize.valueOf(parsedDevice.screenSize.name),
+            ratio = ScreenRatio.valueOf(parsedDevice.screenRatio.name),
+            screenRound = ScreenRound.valueOf(parsedDevice.shape.name),
+            orientation = ScreenOrientation.valueOf(parsedDevice.orientation.name)
+        )
+    }
 }
 
 fun DeviceConfig.applyUiMode(uiMode: Int): DeviceConfig {

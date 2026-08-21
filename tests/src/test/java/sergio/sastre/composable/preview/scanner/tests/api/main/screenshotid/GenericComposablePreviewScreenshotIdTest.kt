@@ -25,9 +25,9 @@ class GenericComposablePreviewScreenshotIdTest(
         @Parameterized.Parameters
         fun data(): Collection<Any> {
             return listOf(
-                AndroidScreenshotIdBuilderProvider(),
-                CommonScreenshotIdBuilderProvider(),
-                GlanceScreenshotIdBuilderProvider()
+                AndroidScreenshotIdBuilderProvider,
+                CommonScreenshotIdBuilderProvider,
+                GlanceScreenshotIdBuilderProvider
             )
         }
     }

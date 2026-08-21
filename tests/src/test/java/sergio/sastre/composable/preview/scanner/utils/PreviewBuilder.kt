@@ -6,9 +6,11 @@ import io.github.classgraph.AnnotationInfoList
 import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
 import sergio.sastre.composable.preview.scanner.common.CommonPreviewInfo
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
+import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWithResult
 import sergio.sastre.composable.preview.scanner.glance.GlancePreviewInfo
+import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewInfo
 
-private fun <T> createComposablePreview(
+private fun <T, R> createComposablePreviewWithResult(
     previewInfo: T,
     previewIndex: Int?,
     previewParameterDisplayName: String?,
@@ -16,7 +18,7 @@ private fun <T> createComposablePreview(
     declaringClass: String,
     methodName: String,
     methodParameters: String,
-): ComposablePreview<T> = object : ComposablePreview<T> {
+): ComposablePreviewWithResult<T, R> = object : ComposablePreviewWithResult<T, R> {
     override val previewInfo: T = previewInfo
     override val previewIndex: Int? = previewIndex
     override val previewIndexDisplayName: String? = previewParameterDisplayName
@@ -26,7 +28,33 @@ private fun <T> createComposablePreview(
     override val methodParametersType: String = methodParameters
 
     @Composable
-    override fun invoke() {
+    override fun invoke(): R {
+        throw NotImplementedError()
+    }
+}
+
+private fun <T> createComposablePreview(
+    previewInfo: T,
+    previewIndex: Int?,
+    previewParameterDisplayName: String?,
+    otherAnnotationsInfo: AnnotationInfoList?,
+    declaringClass: String,
+    methodName: String,
+    methodParameters: String,
+): ComposablePreview<T> {
+    val previewWithResult = createComposablePreviewWithResult<T, Unit>(
+        previewInfo = previewInfo,
+        previewIndex = previewIndex,
+        previewParameterDisplayName = previewParameterDisplayName,
+        otherAnnotationsInfo = otherAnnotationsInfo,
+        declaringClass = declaringClass,
+        methodName = methodName,
+        methodParameters = methodParameters,
+    )
+    return object : ComposablePreview<T>, ComposablePreviewWithResult<T, Unit> by previewWithResult {
+        @Composable
+        override fun invoke() {
+        }
     }
 }
 
@@ -85,6 +113,8 @@ fun previewBuilder(
 )
 
 fun androidPreviewBuilder(
+    widthDp: Int = -1,
+    heightDp: Int = -1,
     previewIndex: Int? = null,
     previewParameterDisplayName: String? = null,
     otherAnnotationsInfo: AnnotationInfoList? = null,
@@ -92,7 +122,7 @@ fun androidPreviewBuilder(
     methodName: String = "",
     methodParameters: String = "",
 ): ComposablePreview<AndroidPreviewInfo> = createComposablePreview(
-    previewInfo = AndroidPreviewInfo(),
+    previewInfo = AndroidPreviewInfo(widthDp = widthDp, heightDp = heightDp),
     previewIndex = previewIndex,
     previewParameterDisplayName = previewParameterDisplayName,
     otherAnnotationsInfo = otherAnnotationsInfo,
@@ -102,6 +132,8 @@ fun androidPreviewBuilder(
 )
 
 fun commonPreviewBuilder(
+    widthDp: Int = -1,
+    heightDp: Int = -1,
     previewIndex: Int? = null,
     previewParameterDisplayName: String? = null,
     otherAnnotationsInfo: AnnotationInfoList? = null,
@@ -109,7 +141,7 @@ fun commonPreviewBuilder(
     methodName: String = "",
     methodParameters: String = "",
 ): ComposablePreview<CommonPreviewInfo> = createComposablePreview(
-    previewInfo = CommonPreviewInfo(),
+    previewInfo = CommonPreviewInfo(widthDp = widthDp, heightDp = heightDp),
     previewIndex = previewIndex,
     previewParameterDisplayName = previewParameterDisplayName,
     otherAnnotationsInfo = otherAnnotationsInfo,
@@ -119,6 +151,8 @@ fun commonPreviewBuilder(
 )
 
 fun glancePreviewBuilder(
+    widthDp: Int = -1,
+    heightDp: Int = -1,
     previewIndex: Int? = null,
     previewParameterDisplayName: String? = null,
     otherAnnotationsInfo: AnnotationInfoList? = null,
@@ -126,7 +160,42 @@ fun glancePreviewBuilder(
     methodName: String = "",
     methodParameters: String = "",
 ): ComposablePreview<GlancePreviewInfo> = createComposablePreview(
-    previewInfo = GlancePreviewInfo(),
+    previewInfo = GlancePreviewInfo(widthDp = widthDp, heightDp = heightDp),
+    previewIndex = previewIndex,
+    previewParameterDisplayName = previewParameterDisplayName,
+    otherAnnotationsInfo = otherAnnotationsInfo,
+    declaringClass = declaringClass,
+    methodName = methodName,
+    methodParameters = methodParameters,
+)
+
+fun previewBuilder(
+    previewInfo: WearTilePreviewInfo = WearTilePreviewInfo(),
+    previewIndex: Int? = null,
+    previewParameterDisplayName: String? = null,
+    otherAnnotationsInfo: AnnotationInfoList? = null,
+    declaringClass: String = "",
+    methodName: String = "",
+    methodParameters: String = "",
+): ComposablePreviewWithResult<WearTilePreviewInfo, Unit> = createComposablePreviewWithResult(
+    previewInfo = previewInfo,
+    previewIndex = previewIndex,
+    previewParameterDisplayName = previewParameterDisplayName,
+    otherAnnotationsInfo = otherAnnotationsInfo,
+    declaringClass = declaringClass,
+    methodName = methodName,
+    methodParameters = methodParameters,
+)
+
+fun <R> wearTilePreviewBuilder(
+    previewIndex: Int? = null,
+    previewParameterDisplayName: String? = null,
+    otherAnnotationsInfo: AnnotationInfoList? = null,
+    declaringClass: String = "",
+    methodName: String = "",
+    methodParameters: String = "",
+): ComposablePreviewWithResult<WearTilePreviewInfo, R> = createComposablePreviewWithResult(
+    previewInfo = WearTilePreviewInfo(),
     previewIndex = previewIndex,
     previewParameterDisplayName = previewParameterDisplayName,
     otherAnnotationsInfo = otherAnnotationsInfo,

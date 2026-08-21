@@ -8,6 +8,8 @@ import sergio.sastre.composable.preview.scanner.common.screenshotid.CommonPrevie
 import sergio.sastre.composable.preview.scanner.core.preview.screenshotid.PreviewScreenshotIdBuilder
 import sergio.sastre.composable.preview.scanner.glance.GlancePreviewInfo
 import sergio.sastre.composable.preview.scanner.glance.screenshotid.GlancePreviewScreenshotIdBuilder
+import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewInfo
+import sergio.sastre.composable.preview.scanner.wear.screenshotid.WearTilePreviewScreenshotIdBuilder
 
 sealed interface PreviewScreenshotIdBuilderProvider<out T : PreviewScreenshotIdBuilder<*>> {
     fun passPreviewWithInfo(
@@ -21,7 +23,7 @@ sealed interface PreviewScreenshotIdBuilderProvider<out T : PreviewScreenshotIdB
     ): T
 }
 
-class CommonScreenshotIdBuilderProvider :
+data object CommonScreenshotIdBuilderProvider :
     PreviewScreenshotIdBuilderProvider<PreviewScreenshotIdBuilder<CommonPreviewInfo>> {
     override fun passPreviewWithInfo(
         previewIndex: Int?,
@@ -33,10 +35,11 @@ class CommonScreenshotIdBuilderProvider :
         methodParameters: String,
     ): PreviewScreenshotIdBuilder<CommonPreviewInfo> {
         return CommonPreviewScreenshotIdBuilder(
-            previewBuilder(
+            commonPreviewBuilder(
+                widthDp = widthDp,
+                heightDp = heightDp,
                 previewIndex = previewIndex,
                 previewParameterDisplayName = previewParameterDisplayName,
-                previewInfo = CommonPreviewInfo(widthDp = widthDp, heightDp = heightDp),
                 declaringClass = declaringClass,
                 methodName = methodName,
                 methodParameters = methodParameters
@@ -45,7 +48,7 @@ class CommonScreenshotIdBuilderProvider :
     }
 }
 
-class AndroidScreenshotIdBuilderProvider :
+data object AndroidScreenshotIdBuilderProvider :
     PreviewScreenshotIdBuilderProvider<PreviewScreenshotIdBuilder<AndroidPreviewInfo>> {
     override fun passPreviewWithInfo(
         previewIndex: Int?,
@@ -57,10 +60,11 @@ class AndroidScreenshotIdBuilderProvider :
         methodParameters: String,
     ): PreviewScreenshotIdBuilder<AndroidPreviewInfo> {
         return AndroidPreviewScreenshotIdBuilder(
-            previewBuilder(
+            androidPreviewBuilder(
+                widthDp = widthDp,
+                heightDp = heightDp,
                 previewIndex = previewIndex,
                 previewParameterDisplayName = previewParameterDisplayName,
-                previewInfo = AndroidPreviewInfo(widthDp = widthDp, heightDp = heightDp),
                 declaringClass = declaringClass,
                 methodName = methodName,
                 methodParameters = methodParameters
@@ -69,7 +73,7 @@ class AndroidScreenshotIdBuilderProvider :
     }
 }
 
-class GlanceScreenshotIdBuilderProvider :
+data object GlanceScreenshotIdBuilderProvider :
     PreviewScreenshotIdBuilderProvider<PreviewScreenshotIdBuilder<GlancePreviewInfo>> {
     override fun passPreviewWithInfo(
         previewIndex: Int?,
@@ -81,10 +85,34 @@ class GlanceScreenshotIdBuilderProvider :
         methodParameters: String,
     ): PreviewScreenshotIdBuilder<GlancePreviewInfo> {
         return GlancePreviewScreenshotIdBuilder(
-            previewBuilder(
+            glancePreviewBuilder(
+                widthDp = widthDp,
+                heightDp = heightDp,
                 previewIndex = previewIndex,
                 previewParameterDisplayName = previewParameterDisplayName,
-                previewInfo = GlancePreviewInfo(widthDp = widthDp, heightDp = heightDp),
+                declaringClass = declaringClass,
+                methodName = methodName,
+                methodParameters = methodParameters
+            )
+        )
+    }
+}
+
+data object WearTileScreenshotIdBuilderProvider :
+    PreviewScreenshotIdBuilderProvider<PreviewScreenshotIdBuilder<WearTilePreviewInfo>> {
+    override fun passPreviewWithInfo(
+        previewIndex: Int?,
+        previewParameterDisplayName: String?,
+        widthDp: Int,
+        heightDp: Int,
+        declaringClass: String,
+        methodName: String,
+        methodParameters: String,
+    ): PreviewScreenshotIdBuilder<WearTilePreviewInfo> {
+        return WearTilePreviewScreenshotIdBuilder(
+            wearTilePreviewBuilder<Unit>(
+                previewIndex = previewIndex,
+                previewParameterDisplayName = previewParameterDisplayName,
                 declaringClass = declaringClass,
                 methodName = methodName,
                 methodParameters = methodParameters
