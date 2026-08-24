@@ -78,7 +78,7 @@ AndroidComposablePreviewScanner()
 > [!NOTE]
 > Screenshot tests must run on a platform supported by your screenshot library.<br/>
 > • **Android**: Paparazzi, Roborazzi & instrumentation libraries (e.g. Dropshots, Android-Testify) are supported.<br/>
-> • **Desktop**: Roborazzi only.<br/>
+> • **Desktop**: Roborazzi only (native plugin support since [version 1.70.0](https://github.com/takahirom/roborazzi/releases/tag/1.70.0)).<br/>
 > • **Common**: no current library can run screenshot tests directly in common; run your tests from an `Android` or `Desktop` target instead. ComposablePreviewScanner can still find the Previews in `common` target packages.<br/>
 
 You can find executable examples with Roborazzi here:
