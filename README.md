@@ -13,7 +13,7 @@ A Compose Multiplatform friendly library to help auto-generate screenshot tests 
 JVM-based (i.e. Paparazzi, Roborazzi) as well as Instrumentation-based (i.e. Shot, Dropshots, Android-Testify, etc.).
 
 > [!IMPORTANT]
-> **Roborazzi** has integrated Composable Preview Scanner (maven-central) as a core dependency for its native [Compose Preview support](https://github.com/takahirom/roborazzi?tab=readme-ov-file#compose-preview-support-experimental).<br/>
+> **Roborazzi** has integrated Composable Preview Scanner (maven-central) as a core dependency for its native Compose Preview support ([Android](https://github.com/takahirom/roborazzi/releases/tag/1.22.0) since 1.22.0, [Desktop](https://github.com/takahirom/roborazzi/releases/tag/1.70.0) since 1.70.0).<br/>
 
 # Overview
 [![](https://jitpack.io/v/sergio-sastre/ComposablePreviewScanner.svg)](https://jitpack.io/#sergio-sastre/ComposablePreviewScanner) ![](https://jitpack.io/v/sergio-sastre/ComposablePreviewScanner/month.svg)<br/>
