@@ -16,6 +16,13 @@ If you find a bug or have a feature request, please [open an issue](https://gith
 ### Submitting Pull Requests
 1. **Fork the repository** and create your branch from `master`.
 2. **Implement your changes.** If you are adding a new feature or fixing a bug, please include corresponding tests. We follow a TDD approach.
+   
+   > [!TIP]
+   > **For bug fixes**, please structure your commits to follow the TDD cycle:
+   > - **Commit 1:** Add a test case that reproduces the issue (it should fail).
+   > - **Commit 2:** Add the fix that makes the new test pass.
+   > 
+   > If your PR addresses multiple bugs, please repeat this sequence for each one. This helps us verify the issue and confirm the fix addresses it correctly.
 3. **Ensure the build passes.** Run the relevant Gradle tasks (see [Verification](#verification) below).
 4. **Follow the code style.** Maintain consistency with the existing codebase.
 5. **Update documentation** if your changes introduce new APIs or change existing behavior.

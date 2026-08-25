@@ -13,7 +13,7 @@ A Compose Multiplatform friendly library to help auto-generate screenshot tests 
 JVM-based (i.e. Paparazzi, Roborazzi) as well as Instrumentation-based (i.e. Shot, Dropshots, Android-Testify, etc.).
 
 > [!IMPORTANT]
-> **Roborazzi** has integrated Composable Preview Scanner (maven-central) as a core dependency for its native [Compose Preview support](https://github.com/takahirom/roborazzi?tab=readme-ov-file#compose-preview-support-experimental).<br/>
+> **Roborazzi** has integrated Composable Preview Scanner (maven-central) as a core dependency for its native Compose Preview support ([Android](https://github.com/takahirom/roborazzi/releases/tag/1.22.0) since 1.22.0, [Desktop](https://github.com/takahirom/roborazzi/releases/tag/1.70.0) since 1.70.0).<br/>
 
 # Overview
 [![](https://jitpack.io/v/sergio-sastre/ComposablePreviewScanner.svg)](https://jitpack.io/#sergio-sastre/ComposablePreviewScanner) ![](https://jitpack.io/v/sergio-sastre/ComposablePreviewScanner/month.svg)<br/>
@@ -78,7 +78,7 @@ AndroidComposablePreviewScanner()
 > [!NOTE]
 > Screenshot tests must run on a platform supported by your screenshot library.<br/>
 > • **Android**: Paparazzi, Roborazzi & instrumentation libraries (e.g. Dropshots, Android-Testify) are supported.<br/>
-> • **Desktop**: Roborazzi only.<br/>
+> • **Desktop**: Roborazzi only (native plugin support since [version 1.70.0](https://github.com/takahirom/roborazzi/releases/tag/1.70.0)).<br/>
 > • **Common**: no current library can run screenshot tests directly in common; run your tests from an `Android` or `Desktop` target instead. ComposablePreviewScanner can still find the Previews in `common` target packages.<br/>
 
 You can find executable examples with Roborazzi here:
@@ -131,15 +131,16 @@ dependencies {
 
 # How to use
 ### Examples with Screenshot Testing Libraries (Android target)
+> [!NOTE]
+> [Roborazzi](https://github.com/takahirom/roborazzi) has integrated ComposablePreviewScanner in its plugin since [version 1.22](https://github.com/takahirom/roborazzi/releases/tag/1.22.0).
+> Since [version 1.70.0](https://github.com/takahirom/roborazzi/releases/tag/1.70.0), it also supports **Desktop** (Compose Multiplatform) for Preview screenshot tests.
+
 1. [JVM Screenshot Tests](#jvm-screenshot-tests)<br/>
    1.1  [Paparazzi](#paparazzi)<br/>
    1.2  [Roborazzi (without configuring its plugin)](#roborazzi)<br/>
 2. [Instrumentation Screenshot Tests](#instrumentation-screenshot-tests)
 
 If you encounter any issues when executing the screenshot tests, take a look at the [Troubleshooting](#troubleshooting) section.
-
-> [!NOTE]
-> [Roborazzi](https://github.com/takahirom/roborazzi) has integrated ComposablePreviewScanner in its plugin since [version 1.22](https://github.com/takahirom/roborazzi/releases/tag/1.22.0)
 
 ### Related
 1. [Glance Previews Support](#glance-previews-support)
