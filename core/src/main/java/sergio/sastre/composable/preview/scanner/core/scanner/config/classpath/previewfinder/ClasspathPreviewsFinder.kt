@@ -3,15 +3,17 @@ package sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.p
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.ScanResult
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
+import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWithResult
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewInfoMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator
+import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreatorWithResult
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.compiledclass.annotationloader.PackageTreesCustomPreviewAnnotationLoader
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.compiledclass.annotationloader.ScanResultCustomPreviewAnnotationLoader
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.buildtime.ComposablePreviewsAtBuildTimeFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.buildtime.ComposablePreviewsAtBuildTimeFinderWithResult
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.classloaders.ReflectionClassLoader
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.classloaders.SourceSetClassLoader
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.compiledclass.ComposablePreviewsInCompiledClassFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.compiledclass.ComposablePreviewsInCompiledClassFinderWithResult
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilterState
 
 /**
@@ -21,11 +23,11 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResul
  * @param previewMapperCreator Returns a Mapper that converts a Composable @Preview containing some kind of @PreviewParameter as argument into a Sequence of ComposablePreviews,
  * one for each value provided in that argument
  */
-class ClasspathPreviewsFinder<T>(
+open class ClasspathPreviewsFinderWithResult<T, R>(
     override val annotationToScanClassName: String,
     private val previewInfoMapper: ComposablePreviewInfoMapper<T>,
-    private val previewMapperCreator: ComposablePreviewMapperCreator<T>,
-) : PreviewsFinder<T> {
+    private val previewMapperCreator: ComposablePreviewMapperCreatorWithResult<T, R>,
+) : PreviewsFinderWithResult<T, R> {
 
     private var overridenClassPath: Classpath? = null
     private val crossModuleCustomPreviewsPackageTrees = mutableListOf<String>()
@@ -41,11 +43,11 @@ class ClasspathPreviewsFinder<T>(
         )
     }
 
-    private val previewsFinder: PreviewsFinder<T>
+    private val previewsFinder: PreviewsFinderWithResult<T, R>
         get() =
             overridenClassPath
                 ?.let {
-                    ComposablePreviewsInCompiledClassFinder(
+                    ComposablePreviewsInCompiledClassFinderWithResult(
                         annotationToScanClassName = annotationToScanClassName,
                         previewInfoMapper = previewInfoMapper,
                         previewMapperCreator = previewMapperCreator,
@@ -53,7 +55,7 @@ class ClasspathPreviewsFinder<T>(
                         crossModuleCustomPreviewAnnotationLoader = crossModuleCustomPreviewAnnotationLoader
                     )
                 }
-                ?: ComposablePreviewsAtBuildTimeFinder(
+                ?: ComposablePreviewsAtBuildTimeFinderWithResult(
                     annotationToScanClassName = annotationToScanClassName,
                     previewInfoMapper = previewInfoMapper,
                     previewMapperCreator = previewMapperCreator,
@@ -63,7 +65,7 @@ class ClasspathPreviewsFinder<T>(
     override fun findPreviewsFor(
         classInfo: ClassInfo,
         scanResultFilterState: ScanResultFilterState<T>,
-    ): List<ComposablePreview<T>> =
+    ): List<ComposablePreviewWithResult<T, R>> =
         previewsFinder.findPreviewsFor(classInfo, scanResultFilterState)
 
     fun applyOverridenClasspath(classPath: Classpath) = apply {
@@ -77,4 +79,22 @@ class ClasspathPreviewsFinder<T>(
     fun applyCrossModuleCustomPreviewPackageTrees(packageTrees: List<String>) = apply {
         crossModuleCustomPreviewsPackageTrees.addAll(packageTrees)
     }
+}
+
+class ClasspathPreviewsFinder<T>(
+    annotationToScanClassName: String,
+    previewInfoMapper: ComposablePreviewInfoMapper<T>,
+    previewMapperCreator: ComposablePreviewMapperCreator<T>,
+) : ClasspathPreviewsFinderWithResult<T, Unit>(
+    annotationToScanClassName = annotationToScanClassName,
+    previewInfoMapper = previewInfoMapper,
+    previewMapperCreator = previewMapperCreator
+), PreviewsFinder<T> {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun findPreviewsFor(
+        classInfo: ClassInfo,
+        scanResultFilterState: ScanResultFilterState<T>
+    ): List<ComposablePreview<T>> =
+        super.findPreviewsFor(classInfo, scanResultFilterState) as List<ComposablePreview<T>>
 }

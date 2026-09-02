@@ -2,7 +2,8 @@ package sergio.sastre.composable.preview.scanner.core.preview.mappers
 
 import io.github.classgraph.AnnotationInfoList
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
-import sergio.sastre.composable.preview.scanner.core.preview.ProvideComposablePreview
+import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWithResult
+import sergio.sastre.composable.preview.scanner.core.preview.ProvideComposablePreviewWithResult
 import java.lang.reflect.Method
 import kotlin.math.max
 import kotlin.math.min
@@ -14,17 +15,17 @@ import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.isAccessible
 
 /**
- * A [ComposablePreviewMapper] that can resolve parameters passed to the ComposablePreview
+ * A [ComposablePreviewMapperWithResult] that can resolve parameters passed to the ComposablePreview
  * if annotated with [previewParameterClassName]
  *
  * @param previewParameterClassName The absolute name of the PreviewParameter class.
  */
-data class ComposablePreviewWithPreviewParameterMapper<T>(
+data class ComposablePreviewWithPreviewParameterMapperWithResult<T, R>(
     private val previewParameterClassName: String,
     override val previewMethod: Method,
     override val previewInfo: T,
     override val annotationsInfo: AnnotationInfoList?,
-) : ComposablePreviewMapper<T>(previewMethod, previewInfo, annotationsInfo) {
+) : ComposablePreviewMapperWithResult<T, R>(previewMethod, previewInfo, annotationsInfo) {
 
     private val previewParameterClass: Class<*>? by lazy {
         try {
@@ -34,7 +35,7 @@ data class ComposablePreviewWithPreviewParameterMapper<T>(
             null
         }
     }
-    private val provideComposablePreview = ProvideComposablePreview<T>()
+    private val provideComposablePreview = ProvideComposablePreviewWithResult<T, R>()
 
     private fun Method.findPreviewParameterAnnotation(): Any? =
         previewParameterClass?.let { previewParameterAnnotation ->
@@ -77,7 +78,7 @@ data class ComposablePreviewWithPreviewParameterMapper<T>(
         }
             ?.apply { isAccessible = true }
 
-    override fun mapToComposablePreviews(): Sequence<ComposablePreview<T>> {
+    override fun mapToComposablePreviews(): Sequence<ComposablePreviewWithResult<T, R>> {
         val previewParameterAnnotation = previewMethod.findPreviewParameterAnnotation()
             ?: return sequenceOf(provideComposablePreview(this))
 
@@ -113,5 +114,28 @@ data class ComposablePreviewWithPreviewParameterMapper<T>(
                     parameter = value,
                 )
             }
+    }
+}
+
+data class ComposablePreviewWithPreviewParameterMapper<T>(
+    private val previewParameterClassName: String,
+    override val previewMethod: Method,
+    override val previewInfo: T,
+    override val annotationsInfo: AnnotationInfoList?,
+) : ComposablePreviewMapper<T>(
+    previewMethod = previewMethod,
+    previewInfo = previewInfo,
+    annotationsInfo = annotationsInfo
+) {
+    private val delegate = ComposablePreviewWithPreviewParameterMapperWithResult<T, Unit>(
+        previewParameterClassName = previewParameterClassName,
+        previewMethod = previewMethod,
+        previewInfo = previewInfo,
+        annotationsInfo = annotationsInfo
+    )
+
+    override fun mapToComposablePreviews(): Sequence<ComposablePreview<T>> {
+        @Suppress("UNCHECKED_CAST")
+        return delegate.mapToComposablePreviews() as Sequence<ComposablePreview<T>>
     }
 }

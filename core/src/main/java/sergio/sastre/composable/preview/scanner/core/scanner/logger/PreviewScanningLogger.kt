@@ -1,7 +1,7 @@
 package sergio.sastre.composable.preview.scanner.core.scanner.logger
 
 import io.github.classgraph.ScanResult
-import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
+import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWithResult
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
 import kotlin.system.measureTimeMillis
 
@@ -26,10 +26,10 @@ internal class PreviewScanningLogger {
         return scanResult
     }
 
-    fun <T> measureFindPreviewsTimeAndGetResult(
-        actionToMeasure:() -> List<ComposablePreview<T>>
-    ): List<ComposablePreview<T>> {
-        val scanResult: List<ComposablePreview<T>>
+    fun <T, R> measureFindPreviewsTimeAndGetResult(
+        actionToMeasure:() -> List<ComposablePreviewWithResult<T, R>>
+    ): List<ComposablePreviewWithResult<T, R>> {
+        val scanResult: List<ComposablePreviewWithResult<T, R>>
         val durationInMillis = measureTimeMillis {
             scanResult = actionToMeasure()
         }
