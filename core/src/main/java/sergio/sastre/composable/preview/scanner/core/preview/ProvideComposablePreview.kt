@@ -1,6 +1,7 @@
 package sergio.sastre.composable.preview.scanner.core.preview
 
 import androidx.compose.runtime.reflect.asComposableMethod
+import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperWithResult
 import java.lang.reflect.GenericArrayType
 import java.lang.reflect.ParameterizedType
@@ -146,6 +147,19 @@ open class ProvideComposablePreviewWithResult<T, R> {
 }
 
 class ProvideComposablePreview<T> : ProvideComposablePreviewWithResult<T, Unit>() {
+    @JvmOverloads
+    operator fun invoke(
+        composablePreviewMapper: ComposablePreviewMapper<T>,
+        previewIndex: Int? = null,
+        previewParameterDisplayName: String? = null,
+        parameter: Any? = ComposablePreviewInvocationHandler.NoParameter,
+    ): ComposablePreview<T> = invoke(
+        composablePreviewMapper = composablePreviewMapper as ComposablePreviewMapperWithResult<T, Unit>,
+        previewIndex = previewIndex,
+        previewParameterDisplayName = previewParameterDisplayName,
+        parameter = parameter,
+    )
+
     override operator fun invoke(
         composablePreviewMapper: ComposablePreviewMapperWithResult<T, Unit>,
         previewIndex: Int?,

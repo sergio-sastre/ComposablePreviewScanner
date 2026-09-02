@@ -68,15 +68,15 @@ open class ClasspathPreviewsFinderWithResult<T, R>(
     ): List<ComposablePreviewWithResult<T, R>> =
         previewsFinder.findPreviewsFor(classInfo, scanResultFilterState)
 
-    fun applyOverridenClasspath(classPath: Classpath) = apply {
+    open fun applyOverridenClasspath(classPath: Classpath): ClasspathPreviewsFinderWithResult<T, R> = apply {
         overridenClassPath = classPath
     }
 
-    fun applyCustomPreviewsScanResult(customPreviewsScanResult: ScanResult) = apply {
+    open fun applyCustomPreviewsScanResult(customPreviewsScanResult: ScanResult): ClasspathPreviewsFinderWithResult<T, R> = apply {
         this.scanResult = customPreviewsScanResult
     }
 
-    fun applyCrossModuleCustomPreviewPackageTrees(packageTrees: List<String>) = apply {
+    open fun applyCrossModuleCustomPreviewPackageTrees(packageTrees: List<String>): ClasspathPreviewsFinderWithResult<T, R> = apply {
         crossModuleCustomPreviewsPackageTrees.addAll(packageTrees)
     }
 }
@@ -97,4 +97,13 @@ class ClasspathPreviewsFinder<T>(
         scanResultFilterState: ScanResultFilterState<T>
     ): List<ComposablePreview<T>> =
         super.findPreviewsFor(classInfo, scanResultFilterState) as List<ComposablePreview<T>>
+
+    override fun applyOverridenClasspath(classPath: Classpath): ClasspathPreviewsFinder<T> =
+        super.applyOverridenClasspath(classPath) as ClasspathPreviewsFinder<T>
+
+    override fun applyCustomPreviewsScanResult(customPreviewsScanResult: ScanResult): ClasspathPreviewsFinder<T> =
+        super.applyCustomPreviewsScanResult(customPreviewsScanResult) as ClasspathPreviewsFinder<T>
+
+    override fun applyCrossModuleCustomPreviewPackageTrees(packageTrees: List<String>): ClasspathPreviewsFinder<T> =
+        super.applyCrossModuleCustomPreviewPackageTrees(packageTrees) as ClasspathPreviewsFinder<T>
 }

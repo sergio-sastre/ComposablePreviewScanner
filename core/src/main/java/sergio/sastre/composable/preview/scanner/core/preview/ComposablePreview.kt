@@ -42,6 +42,9 @@ interface ComposablePreview<T> : ComposablePreviewWithResult<T, Unit>
  * 2. Annotations that have as params any of the following types (throws exceptions):
  *  2.1. Annotation
  */
+inline fun <reified T : Annotation> ComposablePreview<*>.getAnnotation(): T? =
+    (this as ComposablePreviewWithResult<*, *>).getAnnotation<T>()
+
 inline fun <reified T : Annotation> ComposablePreviewWithResult<*, *>.getAnnotation(): T? {
     val annotationParams = otherAnnotationsInfo
         ?.filter { it.name == T::class.java.name }
