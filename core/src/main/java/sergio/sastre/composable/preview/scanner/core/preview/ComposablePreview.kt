@@ -18,7 +18,7 @@ import kotlin.reflect.full.primaryConstructor
  * @Composable methods that take @PreviewParameter as argument result into
  * one ComposablePreview per parameter, each of them identified by its [previewIndex]
  */
-interface ComposablePreview<T> {
+interface ComposablePreviewWithResult<T, R> {
     val previewInfo: T
     val previewIndex: Int?
     val previewIndexDisplayName: String?
@@ -28,8 +28,10 @@ interface ComposablePreview<T> {
     val methodParametersType: String
 
     @Composable
-    operator fun invoke()
+    operator fun invoke(): R
 }
+
+interface ComposablePreview<T> : ComposablePreviewWithResult<T, Unit>
 
 /**
  * Gets the T annotation if saved via ScanResultFilter#includeAnnotationInfoForAllOf(...).
@@ -40,7 +42,10 @@ interface ComposablePreview<T> {
  * 2. Annotations that have as params any of the following types (throws exceptions):
  *  2.1. Annotation
  */
-inline fun <reified T : Annotation> ComposablePreview<*>.getAnnotation(): T? {
+inline fun <reified T : Annotation> ComposablePreview<*>.getAnnotation(): T? =
+    (this as ComposablePreviewWithResult<*, *>).getAnnotation<T>()
+
+inline fun <reified T : Annotation> ComposablePreviewWithResult<*, *>.getAnnotation(): T? {
     val annotationParams = otherAnnotationsInfo
         ?.filter { it.name == T::class.java.name }
         ?.firstOrNull()?.parameterValues

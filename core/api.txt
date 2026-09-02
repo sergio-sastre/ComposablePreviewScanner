@@ -17,7 +17,7 @@ package sergio.sastre.composable.preview.scanner.core.preview {
     method @InaccessibleFromKotlin public java.lang.Integer? getPreviewIndex();
     method @InaccessibleFromKotlin public java.lang.String? getPreviewIndexDisplayName();
     method @InaccessibleFromKotlin public T getPreviewInfo();
-    method @KotlinOnly @androidx.compose.runtime.Composable public operator void invoke();
+    method @KotlinOnly @androidx.compose.runtime.Composable public operator kotlin.Unit invoke();
     property public abstract String declaringClass;
     property public abstract String methodName;
     property public abstract String methodParametersType;

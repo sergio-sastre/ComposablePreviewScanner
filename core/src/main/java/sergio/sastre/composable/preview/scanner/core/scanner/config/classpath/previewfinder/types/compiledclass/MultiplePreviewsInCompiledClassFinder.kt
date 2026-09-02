@@ -2,12 +2,12 @@ package sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.p
 
 import io.github.classgraph.AnnotationInfo
 import io.github.classgraph.ClassInfo
-import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
+import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWithResult
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewInfoMapper
-import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapper
-import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator
+import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperWithResult
+import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreatorWithResult
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.MethodFinder
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.PreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.PreviewsFinderWithResult
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.classloaders.ClassLoader
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilterState
 
@@ -18,12 +18,12 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResul
  * their name is suffixed with $Container and the values of each annotation are grouped under
  * the parameterValues of the previously mentioned suffixed annotation.
  */
-internal class MultiplePreviewsInCompiledClassFinder<T>(
+internal class MultiplePreviewsInCompiledClassFinderWithResult<T, R>(
     override val annotationToScanClassName: String,
     private val previewInfoMapper: ComposablePreviewInfoMapper<T>,
-    private val previewMapperCreator: ComposablePreviewMapperCreator<T>,
+    private val previewMapperCreator: ComposablePreviewMapperCreatorWithResult<T, R>,
     private val classLoader: ClassLoader,
-) : PreviewsFinder<T> {
+) : PreviewsFinderWithResult<T, R> {
 
     private fun hasPreviewsIn(classInfo: ClassInfo): Boolean =
         classInfo.hasDeclaredMethodAnnotation("$annotationToScanClassName\$Container")
@@ -32,14 +32,14 @@ internal class MultiplePreviewsInCompiledClassFinder<T>(
     override fun findPreviewsFor(
         classInfo: ClassInfo,
         scanResultFilterState: ScanResultFilterState<T>,
-    ): List<ComposablePreview<T>> {
+    ): List<ComposablePreviewWithResult<T, R>> {
         if (!hasPreviewsIn(classInfo)) return emptyList()
 
         return classInfo.declaredMethodInfo.asSequence().flatMap { methodInfo ->
             methodInfo.getAnnotationInfo("$annotationToScanClassName\$Container")?.let {
                 if (scanResultFilterState.shouldIncludeMethod(methodInfo)) {
                     val method = MethodFinder(classInfo, classLoader).find(methodInfo)
-                    val previewMethods: MutableList<ComposablePreviewMapper<T>> = mutableListOf()
+                    val previewMethods: MutableList<ComposablePreviewMapperWithResult<T, R>> = mutableListOf()
                     val previews: Array<Any> = it.parameterValues.getValue("value") as Array<Any>
                     previews
                         .map { annotation -> (annotation as AnnotationInfo) }
@@ -77,3 +77,5 @@ internal class MultiplePreviewsInCompiledClassFinder<T>(
             }
     }
 }
+
+internal typealias MultiplePreviewsInCompiledClassFinder<T> = MultiplePreviewsInCompiledClassFinderWithResult<T, Unit>

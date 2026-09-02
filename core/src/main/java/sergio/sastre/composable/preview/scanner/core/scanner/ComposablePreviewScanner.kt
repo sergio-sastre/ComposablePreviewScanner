@@ -3,8 +3,11 @@ package sergio.sastre.composable.preview.scanner.core.scanner
 import io.github.classgraph.ClassGraph
 import nonapi.io.github.classgraph.utils.VersionFinder
 import sergio.sastre.composable.preview.scanner.core.scanner.config.ClassGraphSourceScanner
+import sergio.sastre.composable.preview.scanner.core.scanner.config.ClassGraphSourceScannerWithResult
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.ClasspathPreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.ClasspathPreviewsFinderWithResult
+import sergio.sastre.composable.preview.scanner.core.scanner.config.SourceScannerWithResult
 import sergio.sastre.composable.preview.scanner.core.scanner.config.SourceScanner
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.validator.ClasspathValidator
 import sergio.sastre.composable.preview.scanner.core.scanner.exceptions.ScanSourceNotSupported
@@ -12,6 +15,7 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHea
 import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.core.scanner.exceptions.ScanningLogsNotSupported
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilter
+import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResultFilterWithResult
 import sergio.sastre.composable.preview.scanner.core.utils.isRunningOnJvm
 import java.io.File
 import java.io.InputStream
@@ -21,12 +25,12 @@ import java.io.InputStream
  * @param defaultPackageTreesOfCrossModuleCustomPreviews package where external previews
  * (i.e. previews defined in another dependency or module) can be found like those in "androidx.compose.ui.tooling.preview"
  */
-abstract class ComposablePreviewScanner<T>(
-    private val findComposableWithPreviewsInClass: ClasspathPreviewsFinder<T>,
+abstract class ComposablePreviewScannerWithResult<T, R>(
+    private val findComposableWithPreviewsInClass: ClasspathPreviewsFinderWithResult<T, R>,
     private val defaultPackageTreesOfCrossModuleCustomPreviews: List<String> = emptyList()
-) : SourceScanner<T> {
+) : SourceScannerWithResult<T, R> {
 
-    private var updatedClassGraph =
+    protected var updatedClassGraph =
         ClassGraph()
             .ignoreMethodVisibility()
             .enableClassInfo()
@@ -40,11 +44,11 @@ abstract class ComposablePreviewScanner<T>(
             }
 
 
-    private var classpath: Classpath? = null
-    private var isLoggingEnabled = false
+    protected var classpath: Classpath? = null
+    protected var isLoggingEnabled: Boolean = false
 
-    private val classGraphSourceScanner
-        get() = ClassGraphSourceScanner(
+    protected open val classGraphSourceScanner: ClassGraphSourceScannerWithResult<T, R>
+        get() = ClassGraphSourceScannerWithResult(
             classGraph = updatedClassGraph,
             classpath = classpath,
             findComposableWithPreviewsInClass = findComposableWithPreviewsInClass,
@@ -58,7 +62,7 @@ abstract class ComposablePreviewScanner<T>(
      * Warning: Not supported when running Instrumentation tests
      */
     @RequiresShowStandardStreams
-    fun enableScanningLogs(): ComposablePreviewScanner<T> = apply {
+    open fun enableScanningLogs(): ComposablePreviewScannerWithResult<T, R> = apply {
         if(!isRunningOnJvm()) throw ScanningLogsNotSupported()
         isLoggingEnabled = true
     }
@@ -77,10 +81,11 @@ abstract class ComposablePreviewScanner<T>(
      * different can be found. Previews under "androidx.compose.ui.tooling.preview", like @PreviewLightDark, do not need to be added here.
      * In most cases, you can leave it empty unless you see some custom-annotated-Previews missing, whose annotation packages should be added here.
      */
-    fun setTargetSourceSet(
+    @JvmOverloads
+    open fun setTargetSourceSetWithResult(
         sourceSetClasspath: Classpath,
         packageTreesOfCrossModuleCustomPreviews: List<String> = emptyList()
-    ): ClassGraphSourceScanner<T> {
+    ): ClassGraphSourceScannerWithResult<T, R> {
         ClasspathValidator(sourceSetClasspath).validate()
 
         val absolutePath =
@@ -96,67 +101,52 @@ abstract class ComposablePreviewScanner<T>(
 
         return classGraphSourceScanner
     }
+}
 
-    /**
-     * Scan previews in all packages, including those of external dependencies.
-     *
-     * Warning: Not supported when running Instrumentation tests
-     */
+abstract class ComposablePreviewScanner<T>(
+    private val findComposableWithPreviewsInClass: ClasspathPreviewsFinder<T>,
+    defaultPackageTreesOfCrossModuleCustomPreviews: List<String> = emptyList()
+) : ComposablePreviewScannerWithResult<T, Unit>(
+    findComposableWithPreviewsInClass = findComposableWithPreviewsInClass,
+    defaultPackageTreesOfCrossModuleCustomPreviews = defaultPackageTreesOfCrossModuleCustomPreviews
+), SourceScanner<T> {
+
+    override val classGraphSourceScanner: ClassGraphSourceScanner<T>
+        get() = ClassGraphSourceScanner(
+            classGraph = updatedClassGraph,
+            classpath = classpath,
+            findComposableWithPreviewsInClass = findComposableWithPreviewsInClass,
+            isLoggingEnabled = isLoggingEnabled
+        )
+
+    @RequiresShowStandardStreams
+    final override fun enableScanningLogs(): ComposablePreviewScanner<T> = apply {
+        super.enableScanningLogs()
+    }
+
+    @JvmOverloads
+    final fun setTargetSourceSet(
+        sourceSetClasspath: Classpath,
+        packageTreesOfCrossModuleCustomPreviews: List<String> = emptyList()
+    ): ClassGraphSourceScanner<T> =
+        setTargetSourceSetWithResult(sourceSetClasspath, packageTreesOfCrossModuleCustomPreviews) as ClassGraphSourceScanner<T>
+
     @RequiresLargeHeap
-    override fun scanAllPackages(): ScanResultFilter<T> {
-        if (!isRunningOnJvm()) throw ScanSourceNotSupported()
-        return classGraphSourceScanner.scanAllPackages()
-    }
+    override fun scanAllPackages(): ScanResultFilter<T> =
+        classGraphSourceScanner.scanAllPackages()
 
-    /**
-     * Scan previews in the given packageTrees
-     *
-     * @param packageTrees where we want to scan previews
-     *
-     * Warning: Not supported when running Instrumentation tests
-     */
-    override fun scanPackageTrees(vararg packageTrees: String): ScanResultFilter<T> {
-        if (!isRunningOnJvm()) throw ScanSourceNotSupported()
-        return classGraphSourceScanner.scanPackageTrees(*packageTrees)
-    }
+    override fun scanPackageTrees(vararg packageTrees: String): ScanResultFilter<T> =
+        classGraphSourceScanner.scanPackageTrees(*packageTrees)
 
-    /**
-     * Scan previews in the given ‘include‘ packageTrees, excluding the 'exclude' packageTrees
-     *
-     * @param include where we want to scan previews
-     * @param exclude where we do not want to scan previews, even though they were inside the included packageTrees
-     *
-     * Warning: Not supported when running Instrumentation tests
-     */
     override fun scanPackageTrees(
         include: List<String>,
         exclude: List<String>
-    ): ScanResultFilter<T> {
-        if (!isRunningOnJvm()) throw ScanSourceNotSupported()
-        return classGraphSourceScanner.scanPackageTrees(include, exclude)
-    }
+    ): ScanResultFilter<T> =
+        classGraphSourceScanner.scanPackageTrees(include, exclude)
 
-    /**
-     * Scan previews in the given file
-     *
-     * @param jsonFile a json file that was generated by using ScanResultDump.dumpScanResultToFile(fileName)
-     *
-     * Warning: Not supported when running Instrumentation tests
-     */
-    override fun scanFile(jsonFile: File): ScanResultFilter<T> {
-        if (!isRunningOnJvm()) throw ScanSourceNotSupported()
-        return classGraphSourceScanner.scanFile(jsonFile)
-    }
+    override fun scanFile(jsonFile: File): ScanResultFilter<T> =
+        classGraphSourceScanner.scanFile(jsonFile)
 
-    /**
-     * Scan for previews in the given InputStream.
-     *
-     * @param targetInputStream to make them accessible in instrumentation tests, like getInstrumentation().context.assets.open(fileName).
-     * Such file was generated previously by using ScanResultDump.dumpScanResultToFileInAssets(fileName)
-     * @param customPreviewsInfoInputStream to make custom previews defined in another dependency or module,
-     * like those in "androidx.compose.ui.tooling.preview", available in instrumentation tests.
-     * Such file was generated previously by using ScanResultDump.dumpScanResultToFileInAssets(customPreviewsPackageTrees, customPreviewsFileName)
-     */
     override fun scanFile(
         targetInputStream: InputStream,
         customPreviewsInfoInputStream: InputStream
