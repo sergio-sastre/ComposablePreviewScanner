@@ -18,6 +18,7 @@ class ComposablePreviewPaparazziPlugin : Plugin<Project> {
         extension.includePrivatePreviews.convention(false)
         extension.testClassName.convention("GeneratedComposablePreviewPaparazziTests")
         extension.testPackageName.convention("generated.paparazzi.tests")
+        extension.annotationFilter.convention(AnnotationFilter.Exclude)
         // Do not set a convention for generatedTestClassCount here; we will derive it from Gradle's Test.maxParallelForks later.
 
         // Configure the task after project evaluation

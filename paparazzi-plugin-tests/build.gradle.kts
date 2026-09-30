@@ -46,9 +46,7 @@ composablePreviewPaparazzi {
     testClassName = "GeneratedPaparazziTests"
     testPackageName = "preview.generated"
     generatedTestClassCount = 2
-    annotationFilter = AnnotationFilter.Exclude(
-        listOf("sergio.sastre.composable.preview.scanner.paparazzi.annotations.ExcludeInScreenshotTests")
-    )
+    annotationFilter = AnnotationFilter.Exclude
 }
 
 dependencies {
