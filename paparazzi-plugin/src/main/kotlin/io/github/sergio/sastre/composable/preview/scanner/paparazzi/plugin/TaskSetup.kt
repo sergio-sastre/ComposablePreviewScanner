@@ -16,6 +16,19 @@ fun setupGenerateComposablePreviewPaparazziTestsTask(
         )
     }
 
+    val configuredAnnotationFilter = extension.annotationFilter.orNull
+    if (configuredAnnotationFilter != null) {
+        val annotations = when (configuredAnnotationFilter) {
+            is AnnotationFilter.Include -> configuredAnnotationFilter.annotations
+            is AnnotationFilter.Exclude -> configuredAnnotationFilter.annotations
+        }
+        if (annotations.isEmpty()) {
+            throw IllegalArgumentException(
+                "Please provide at least one annotation FQN in 'annotationFilter' in the composablePreviewPaparazzi extension."
+            )
+        }
+    }
+
     // Register the task
     val generateTestsTask = project.tasks.register(
         "generateComposablePreviewPaparazziTests",
@@ -31,6 +44,7 @@ fun setupGenerateComposablePreviewPaparazziTestsTask(
         task.testClassName.set(extension.testClassName)
         task.testPackageName.set(extension.testPackageName)
         task.generatedTestClassCount.set(extension.generatedTestClassCount)
+        task.annotationFilter.set(extension.annotationFilter)
     }
 
     // The tests are now generated directly in src/test/kotlin, so no need to add source directories

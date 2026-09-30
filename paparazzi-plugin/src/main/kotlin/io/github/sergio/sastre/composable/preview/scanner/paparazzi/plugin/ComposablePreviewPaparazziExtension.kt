@@ -36,4 +36,9 @@ open class ComposablePreviewPaparazziExtension @Inject constructor(objects: Obje
      * Number of test classes to split the generated parameterized tests into.
      */
     val generatedTestClassCount: Property<Int> = objects.property(Int::class.java)
+
+    /**
+     * Include or exclude previews from the generated tests based on annotations.
+     */
+    val annotationFilter: Property<AnnotationFilter> = objects.property(AnnotationFilter::class.java)
 }
