@@ -1,3 +1,5 @@
+import io.github.sergio.sastre.composable.preview.scanner.paparazzi.plugin.AnnotationFilter
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -44,12 +46,14 @@ composablePreviewPaparazzi {
     testClassName = "GeneratedPaparazziTests"
     testPackageName = "preview.generated"
     generatedTestClassCount = 2
+    annotationFilter = AnnotationFilter.Exclude
 }
 
 dependencies {
     // Composable preview scanner
     testImplementation(project(":android"))
     testImplementation(project(":jvm"))
+    implementation(project(":paparazzi-plugin-annotations"))
 
     implementation(platform(libs.androidx.compose.bom))
     implementation("androidx.compose.runtime:runtime")

@@ -5,6 +5,7 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import java.io.File
@@ -29,6 +30,10 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
     @get:Input
     abstract val generatedTestClassCount: Property<Int>
 
+    @get:Input
+    @get:Optional
+    abstract val annotationFilter: Property<AnnotationFilter>
+
     @TaskAction
     fun generateTests() {
         val testDir = outputDir.get().asFile
@@ -39,6 +44,13 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
         val className = testClassName.get()
         val packageName = testPackageName.get()
         val shards = generatedTestClassCount.get()
+        val annotationFilterExpr = when (val filter = annotationFilter.orNull) {
+            is AnnotationFilter.Exclude ->
+                ".excludeIfAnnotatedWithAnyOf(${filter.annotations.joinToString(", ") { "$it::class.java" }})"
+            is AnnotationFilter.Include ->
+                ".includeIfAnnotatedWithAnyOf(${filter.annotations.joinToString(", ") { "$it::class.java" }})"
+            null -> ""
+        }
 
         val directory = File(testDir, packageName.replace(".", "/"))
         directory.mkdirs()
@@ -52,6 +64,7 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                     className = className,
                     packagesExpr = packagesExpr,
                     includePrivatePreviewsExpr = includePrivatePreviewsExpr,
+                    annotationFilterExpr = annotationFilterExpr,
                     shardIndex = null,
                     numShards = 1,
                     includeHeader = true
@@ -68,6 +81,7 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                         className = "${className}Shard1",
                         packagesExpr = packagesExpr,
                         includePrivatePreviewsExpr = includePrivatePreviewsExpr,
+                        annotationFilterExpr = annotationFilterExpr,
                         shardIndex = 0,
                         numShards = shards,
                         includeHeader = true
@@ -82,6 +96,7 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                             className = "${className}Shard${index + 1}",
                             packagesExpr = packagesExpr,
                             includePrivatePreviewsExpr = includePrivatePreviewsExpr,
+                            annotationFilterExpr = annotationFilterExpr,
                             shardIndex = index,
                             numShards = shards,
                             includeHeader = false
@@ -99,6 +114,7 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
         className: String,
         packagesExpr: String,
         includePrivatePreviewsExpr: Boolean,
+        annotationFilterExpr: String,
         shardIndex: Int?,
         numShards: Int,
         includeHeader: Boolean
@@ -344,6 +360,7 @@ abstract class GenerateComposablePreviewPaparazziTestsTask : DefaultTask() {
                 AndroidComposablePreviewScanner()
                     .scanPackageTrees($packagesExpr)
                     ${if (includePrivatePreviewsExpr) ".includePrivatePreviews()" else ""}
+                    $annotationFilterExpr
                     .getPreviews()
             }
             

@@ -8,6 +8,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
+import sergio.sastre.composable.preview.scanner.paparazzi.annotations.ExcludeInScreenshotTests
 
 class NamesProvider : PreviewParameterProvider<List<String>> {
     override val values: Sequence<List<String>> = sequenceOf(
@@ -43,4 +44,11 @@ fun ScreenSizesExample2Preview(
     @PreviewParameter(NamesProvider ::class) names: List<String>
 ) {
     Example("Names: ${names.joinToString(", ")}")
+}
+
+@ExcludeInScreenshotTests
+@Preview(name = "ExcludedFromScreenshotTests")
+@Composable
+fun ExcludedFromScreenshotTestsPreview() {
+    Example("This preview should be excluded from generated tests")
 }

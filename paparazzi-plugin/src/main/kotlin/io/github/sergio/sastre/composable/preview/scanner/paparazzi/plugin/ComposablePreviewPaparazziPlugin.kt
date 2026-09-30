@@ -18,6 +18,9 @@ class ComposablePreviewPaparazziPlugin : Plugin<Project> {
         extension.includePrivatePreviews.convention(false)
         extension.testClassName.convention("GeneratedComposablePreviewPaparazziTests")
         extension.testPackageName.convention("generated.paparazzi.tests")
+        // Do not set a convention for annotationFilter: the default annotations live in the optional
+        // paparazzi-plugin-annotations module, and we must not emit references to them unless the
+        // consumer explicitly configures an annotationFilter.
         // Do not set a convention for generatedTestClassCount here; we will derive it from Gradle's Test.maxParallelForks later.
 
         // Configure the task after project evaluation
