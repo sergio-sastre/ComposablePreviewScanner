@@ -148,7 +148,7 @@ composablePreviewPaparazzi {
 
 > [!NOTE]
 > `ExcludeInScreenshotTests` and `IncludeInScreenshotTests` are provided by the `paparazzi-plugin-annotations`
-> module. Add it as a dependency (e.g. `testImplementation(project(":paparazzi-plugin-annotations"))`) if you
+> module. Add it as a dependency (e.g. `implementation(project(":paparazzi-plugin-annotations"))`) if you
 > want to use the default annotations.
 
 ### Run the Generated Tests
