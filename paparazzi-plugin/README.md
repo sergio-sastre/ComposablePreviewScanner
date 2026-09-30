@@ -82,7 +82,7 @@ dependencies {
 | `testClassName` | `String` | `"GeneratedComposablePreviewPaparazziTests"` | Name of the generated test class |
 | `testPackageName` | `String` | `"generated.paparazzi.tests"` | Package name for generated tests |
 | `generatedTestClassCount` | `Int` | `maxParallelForks` | Number of test classes to split the generated parameterized tests into |
-| `annotationFilter` | `AnnotationFilter` | `AnnotationFilter.Exclude()` | Include or exclude previews from the generated tests based on annotations. See [Annotation Filter](#annotation-filter) |
+| `annotationFilter` | `AnnotationFilter` | Unset (no annotation filtering) | Include or exclude previews from the generated tests based on annotations. See [Annotation Filter](#annotation-filter) |
 
 ### Parallel execution
 Paparazzi (using JUnit 4) runs parameterized tests sequentially within a single class. To speed up execution, this plugin can split your previews into multiple test classes (shards), allowing Gradle to run them in parallel across multiple worker processes.
@@ -113,14 +113,16 @@ tasks.withType<Test> {
 
 ### Annotation Filter
 
-By default, the plugin generates a test for every scanned `@Preview` composable, **except** those annotated with
-`sergio.sastre.composable.preview.scanner.paparazzi.annotations.ExcludeInScreenshotTests` (provided by the
-`paparazzi-plugin-annotations` module). You can customize this behavior via the `annotationFilter` property.
+Annotation filtering is opt-in. When `annotationFilter` is unset, generated scans include all previews in the
+configured packages (subject to `includePrivatePreviews`), including those annotated with
+`sergio.sastre.composable.preview.scanner.paparazzi.annotations.ExcludeInScreenshotTests`. The generated scan
+only references annotations from the optional `paparazzi-plugin-annotations` module when you explicitly
+configure a filter that uses them.
 
 `annotationFilter` accepts an `AnnotationFilter`, which can be either:
 
-- **`AnnotationFilter.Exclude(vararg annotations: String)`** (default): Generates tests for **all** previews,
-  except those annotated with any of the given annotation FQNs. Defaults to
+- **`AnnotationFilter.Exclude(vararg annotations: String)`** (explicit configuration): Generates tests for **all** previews,
+  except those annotated with any of the given annotation FQNs. Uses
   `ExcludeInScreenshotTests` when no annotations are provided.
 - **`AnnotationFilter.Include(vararg annotations: String)`**: Generates tests **only** for previews annotated
   with any of the given annotation FQNs. Defaults to `IncludeInScreenshotTests` when no annotations are provided.
@@ -132,7 +134,7 @@ when configuring `annotationFilter` explicitly, otherwise the plugin will fail w
 composablePreviewPaparazzi {
     // ... other config
 
-    // Default behavior: exclude previews annotated with ExcludeInScreenshotTests
+    // Opt in to excluding previews annotated with ExcludeInScreenshotTests
     annotationFilter = AnnotationFilter.Exclude
 
     // Or exclude previews annotated with your own custom annotation(s)
