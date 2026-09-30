@@ -82,6 +82,7 @@ dependencies {
 | `testClassName` | `String` | `"GeneratedComposablePreviewPaparazziTests"` | Name of the generated test class |
 | `testPackageName` | `String` | `"generated.paparazzi.tests"` | Package name for generated tests |
 | `generatedTestClassCount` | `Int` | `maxParallelForks` | Number of test classes to split the generated parameterized tests into |
+| `annotationFilter` | `AnnotationFilter` | `AnnotationFilter.Exclude()` | Include or exclude previews from the generated tests based on annotations. See [Annotation Filter](#annotation-filter) |
 
 ### Parallel execution
 Paparazzi (using JUnit 4) runs parameterized tests sequentially within a single class. To speed up execution, this plugin can split your previews into multiple test classes (shards), allowing Gradle to run them in parallel across multiple worker processes.
@@ -109,6 +110,46 @@ tasks.withType<Test> {
 > `generatedTestClassCount` defaults to the same value as `maxParallelForks`. Therefore, if you already use `maxParallelForks` during testing, the behavior may change if your tests are non-deterministic—for example, if they depend on the order in which other tests run.
 > 
 > However, this option does not modify `maxParallelForks` itself. Following [Roborazzi's policy](https://github.com/takahirom/roborazzi/releases/tag/1.53.0), this plugin **never modifies your AGP/Gradle settings** automatically in order to keep one single source of configuration. You must always configure `maxParallelForks` explicitly in your build script to enable parallel processing.
+
+### Annotation Filter
+
+By default, the plugin generates a test for every scanned `@Preview` composable, **except** those annotated with
+`sergio.sastre.composable.preview.scanner.paparazzi.annotations.ExcludeInScreenshotTests` (provided by the
+`paparazzi-plugin-annotations` module). You can customize this behavior via the `annotationFilter` property.
+
+`annotationFilter` accepts an `AnnotationFilter`, which can be either:
+
+- **`AnnotationFilter.Exclude(vararg annotations: String)`** (default): Generates tests for **all** previews,
+  except those annotated with any of the given annotation FQNs. Defaults to
+  `ExcludeInScreenshotTests` when no annotations are provided.
+- **`AnnotationFilter.Include(vararg annotations: String)`**: Generates tests **only** for previews annotated
+  with any of the given annotation FQNs. Defaults to `IncludeInScreenshotTests` when no annotations are provided.
+
+The annotations must be provided as fully qualified names (FQNs), and at least one annotation FQN must be given
+when configuring `annotationFilter` explicitly, otherwise the plugin will fail with an `IllegalArgumentException`.
+
+```kotlin
+composablePreviewPaparazzi {
+    // ... other config
+
+    // Default behavior: exclude previews annotated with ExcludeInScreenshotTests
+    annotationFilter = AnnotationFilter.Exclude
+
+    // Or exclude previews annotated with your own custom annotation(s)
+    annotationFilter = AnnotationFilter.Exclude("com.example.annotations.SkipScreenshotTest")
+
+    // Or only include previews annotated with IncludeInScreenshotTests
+    annotationFilter = AnnotationFilter.Include
+
+    // Or only include previews annotated with your own custom annotation(s)
+    annotationFilter = AnnotationFilter.Include("com.example.annotations.ScreenshotTest")
+}
+```
+
+> [!NOTE]
+> `ExcludeInScreenshotTests` and `IncludeInScreenshotTests` are provided by the `paparazzi-plugin-annotations`
+> module. Add it as a dependency (e.g. `testImplementation(project(":paparazzi-plugin-annotations"))`) if you
+> want to use the default annotations.
 
 ### Run the Generated Tests
 By running any of the following gradle tasks, the tests will be generated AND then executed (both):
