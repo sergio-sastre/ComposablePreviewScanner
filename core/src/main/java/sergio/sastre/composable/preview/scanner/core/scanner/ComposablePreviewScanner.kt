@@ -10,7 +10,6 @@ import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.pr
 import sergio.sastre.composable.preview.scanner.core.scanner.config.SourceScannerWithResult
 import sergio.sastre.composable.preview.scanner.core.scanner.config.SourceScanner
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.validator.ClasspathValidator
-import sergio.sastre.composable.preview.scanner.core.scanner.exceptions.ScanSourceNotSupported
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.core.scanner.exceptions.ScanningLogsNotSupported
@@ -38,11 +37,10 @@ abstract class ComposablePreviewScannerWithResult<T, R>(
             .enableAnnotationInfo()
             .apply {
                 // Otherwise Classgraph throws exception
-                if (VersionFinder.JAVA_MAJOR_VERSION < 24){
-                   enableMemoryMapping()
+                if (VersionFinder.JAVA_MAJOR_VERSION < 24) {
+                    enableMemoryMapping()
                 }
             }
-
 
     protected var classpath: Classpath? = null
     protected var isLoggingEnabled: Boolean = false
@@ -63,7 +61,7 @@ abstract class ComposablePreviewScannerWithResult<T, R>(
      */
     @RequiresShowStandardStreams
     open fun enableScanningLogs(): ComposablePreviewScannerWithResult<T, R> = apply {
-        if(!isRunningOnJvm()) throw ScanningLogsNotSupported()
+        if (!isRunningOnJvm()) throw ScanningLogsNotSupported()
         isLoggingEnabled = true
     }
 
@@ -82,7 +80,7 @@ abstract class ComposablePreviewScannerWithResult<T, R>(
      * In most cases, you can leave it empty unless you see some custom-annotated-Previews missing, whose annotation packages should be added here.
      */
     @JvmOverloads
-    open fun setTargetSourceSetWithResult(
+    open fun setTargetSourceSet(
         sourceSetClasspath: Classpath,
         packageTreesOfCrossModuleCustomPreviews: List<String> = emptyList()
     ): ClassGraphSourceScannerWithResult<T, R> {
@@ -101,17 +99,52 @@ abstract class ComposablePreviewScannerWithResult<T, R>(
 
         return classGraphSourceScanner
     }
+
+    @RequiresLargeHeap
+    override fun scanAllPackages(): ScanResultFilterWithResult<T, R> =
+        classGraphSourceScanner.scanAllPackages()
+
+    override fun scanPackageTrees(vararg packageTrees: String): ScanResultFilterWithResult<T, R> =
+        classGraphSourceScanner.scanPackageTrees(*packageTrees)
+
+    override fun scanPackageTrees(
+        include: List<String>,
+        exclude: List<String>
+    ): ScanResultFilterWithResult<T, R> =
+        classGraphSourceScanner.scanPackageTrees(include, exclude)
+
+    override fun scanFile(jsonFile: File): ScanResultFilterWithResult<T, R> =
+        classGraphSourceScanner.scanFile(jsonFile)
+
+    override fun scanFile(
+        targetInputStream: InputStream,
+        customPreviewsInfoInputStream: InputStream
+    ): ScanResultFilterWithResult<T, R> =
+        classGraphSourceScanner.scanFile(targetInputStream, customPreviewsInfoInputStream)
 }
 
 abstract class ComposablePreviewScanner<T>(
     private val findComposableWithPreviewsInClass: ClasspathPreviewsFinder<T>,
-    defaultPackageTreesOfCrossModuleCustomPreviews: List<String> = emptyList()
-) : ComposablePreviewScannerWithResult<T, Unit>(
-    findComposableWithPreviewsInClass = findComposableWithPreviewsInClass,
-    defaultPackageTreesOfCrossModuleCustomPreviews = defaultPackageTreesOfCrossModuleCustomPreviews
-), SourceScanner<T> {
+    private val defaultPackageTreesOfCrossModuleCustomPreviews: List<String> = emptyList()
+) : SourceScanner<T> {
 
-    override val classGraphSourceScanner: ClassGraphSourceScanner<T>
+    protected var updatedClassGraph =
+        ClassGraph()
+            .ignoreMethodVisibility()
+            .enableClassInfo()
+            .enableMethodInfo()
+            .enableAnnotationInfo()
+            .apply {
+                // Otherwise Classgraph throws exception
+                if (VersionFinder.JAVA_MAJOR_VERSION < 24) {
+                    enableMemoryMapping()
+                }
+            }
+
+    protected var classpath: Classpath? = null
+    protected var isLoggingEnabled: Boolean = false
+
+    private val classGraphSourceScanner: ClassGraphSourceScanner<T>
         get() = ClassGraphSourceScanner(
             classGraph = updatedClassGraph,
             classpath = classpath,
@@ -119,17 +152,33 @@ abstract class ComposablePreviewScanner<T>(
             isLoggingEnabled = isLoggingEnabled
         )
 
+
     @RequiresShowStandardStreams
-    final override fun enableScanningLogs(): ComposablePreviewScanner<T> = apply {
-        super.enableScanningLogs()
+    fun enableScanningLogs(): ComposablePreviewScanner<T> = apply {
+        if (!isRunningOnJvm()) throw ScanningLogsNotSupported()
+        isLoggingEnabled = true
     }
 
     @JvmOverloads
-    final fun setTargetSourceSet(
+    fun setTargetSourceSet(
         sourceSetClasspath: Classpath,
-        packageTreesOfCrossModuleCustomPreviews: List<String> = emptyList()
-    ): ClassGraphSourceScanner<T> =
-        setTargetSourceSetWithResult(sourceSetClasspath, packageTreesOfCrossModuleCustomPreviews) as ClassGraphSourceScanner<T>
+        packageTreesOfCrossModuleCustomPreviews: List<String> = emptyList(),
+    ): ClassGraphSourceScanner<T> {
+        ClasspathValidator(sourceSetClasspath).validate()
+
+        val absolutePath =
+            File(sourceSetClasspath.rootDir, sourceSetClasspath.packagePath).absolutePath
+        findComposableWithPreviewsInClass
+            .applyOverridenClasspath(sourceSetClasspath)
+            .applyCrossModuleCustomPreviewPackageTrees(
+                packageTreesOfCrossModuleCustomPreviews + defaultPackageTreesOfCrossModuleCustomPreviews
+            )
+
+        updatedClassGraph.overrideClasspath(absolutePath)
+        classpath = sourceSetClasspath
+
+        return classGraphSourceScanner
+    }
 
     @RequiresLargeHeap
     override fun scanAllPackages(): ScanResultFilter<T> =
