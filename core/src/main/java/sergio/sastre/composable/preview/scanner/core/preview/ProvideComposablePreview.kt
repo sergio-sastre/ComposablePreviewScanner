@@ -18,7 +18,7 @@ private fun methodParametersTypeAsString(
 ): String {
     val previewMethod = composablePreviewMapper.previewMethod
     val realParametersCount = previewMethod.asComposableMethod()?.parameterCount
-        ?: (previewMethod.parameterTypes.size - 2).coerceAtLeast(0)
+        ?: previewMethod.parameterTypes.size
     return previewMethod
         .genericParameterTypes
         .take(realParametersCount)
