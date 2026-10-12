@@ -3,6 +3,7 @@ package sergio.sastre.composable.preview.scanner.core.preview.mappers
 import io.github.classgraph.AnnotationInfoList
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWithResult
+import sergio.sastre.composable.preview.scanner.core.preview.ProvideComposablePreview
 import sergio.sastre.composable.preview.scanner.core.preview.ProvideComposablePreviewWithResult
 import java.lang.reflect.Method
 import kotlin.math.max
@@ -25,6 +26,7 @@ data class ComposablePreviewWithPreviewParameterMapperWithResult<T, R>(
     override val previewMethod: Method,
     override val previewInfo: T,
     override val annotationsInfo: AnnotationInfoList?,
+    private val provideComposablePreview: ProvideComposablePreviewWithResult<T, R> = ProvideComposablePreviewWithResult(),
 ) : ComposablePreviewMapperWithResult<T, R>(previewMethod, previewInfo, annotationsInfo) {
 
     private val previewParameterClass: Class<*>? by lazy {
@@ -35,7 +37,7 @@ data class ComposablePreviewWithPreviewParameterMapperWithResult<T, R>(
             null
         }
     }
-    private val provideComposablePreview = ProvideComposablePreviewWithResult<T, R>()
+
 
     private fun Method.findPreviewParameterAnnotation(): Any? =
         previewParameterClass?.let { previewParameterAnnotation ->
@@ -131,7 +133,8 @@ data class ComposablePreviewWithPreviewParameterMapper<T>(
         previewParameterClassName = previewParameterClassName,
         previewMethod = previewMethod,
         previewInfo = previewInfo,
-        annotationsInfo = annotationsInfo
+        annotationsInfo = annotationsInfo,
+        provideComposablePreview = ProvideComposablePreview(),
     )
 
     override fun mapToComposablePreviews(): Sequence<ComposablePreview<T>> {

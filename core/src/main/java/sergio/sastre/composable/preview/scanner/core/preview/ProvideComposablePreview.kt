@@ -105,12 +105,12 @@ open class ProvideComposablePreviewWithResult<T, R> {
                 parameter = parameter,
                 annotationsInfo = composablePreviewMapper.annotationsInfo
             ),
-        ) as ComposablePreview<T>
+        ) as ComposablePreviewWithResult<T,R>
 
         // Wrap the call to the proxy in an object so that we can override the toString method
         // to provide a more descriptive name for the test and resulting snapshot filename.
         @Suppress("UNCHECKED_CAST")
-        return object : ComposablePreview<T> by proxy {
+        return object : ComposablePreviewWithResult<T,R> by proxy {
             override val previewInfo: T = composablePreviewMapper.previewInfo
             override val previewIndex: Int? = previewIndex
             override val previewIndexDisplayName: String? = previewParameterDisplayName
@@ -131,7 +131,7 @@ open class ProvideComposablePreviewWithResult<T, R> {
             override val methodParametersType: String = methodParametersTypeAsString(composablePreviewMapper, parameter)
 
             override fun toString(): String {
-                return buildList<String> {
+                return buildList {
                     add(declaringClass)
                     add(methodName)
                     if (methodParametersType.isNotBlank()) {
