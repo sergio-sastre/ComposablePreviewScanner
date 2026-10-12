@@ -29,18 +29,7 @@ abstract class ComposablePreviewScannerWithResult<T, R>(
     private val defaultPackageTreesOfCrossModuleCustomPreviews: List<String> = emptyList()
 ) : SourceScannerWithResult<T, R> {
 
-    protected var updatedClassGraph =
-        ClassGraph()
-            .ignoreMethodVisibility()
-            .enableClassInfo()
-            .enableMethodInfo()
-            .enableAnnotationInfo()
-            .apply {
-                // Otherwise Classgraph throws exception
-                if (VersionFinder.JAVA_MAJOR_VERSION < 24) {
-                    enableMemoryMapping()
-                }
-            }
+    protected var updatedClassGraph = classgraph
 
     protected var classpath: Classpath? = null
     protected var isLoggingEnabled: Boolean = false
@@ -84,18 +73,13 @@ abstract class ComposablePreviewScannerWithResult<T, R>(
         sourceSetClasspath: Classpath,
         packageTreesOfCrossModuleCustomPreviews: List<String> = emptyList()
     ): ClassGraphSourceScannerWithResult<T, R> {
-        ClasspathValidator(sourceSetClasspath).validate()
+        classpath = updatedClassGraph.applySourceSetClasspath(sourceSetClasspath)
 
-        val absolutePath =
-            File(sourceSetClasspath.rootDir, sourceSetClasspath.packagePath).absolutePath
-        findComposableWithPreviewsInClass
-            .applyOverridenClasspath(sourceSetClasspath)
-            .applyCrossModuleCustomPreviewPackageTrees(
-                packageTreesOfCrossModuleCustomPreviews + defaultPackageTreesOfCrossModuleCustomPreviews
-            )
-
-        updatedClassGraph.overrideClasspath(absolutePath)
-        classpath = sourceSetClasspath
+        findComposableWithPreviewsInClass.applyTargetSourceSet(
+            sourceSetClasspath = sourceSetClasspath,
+            customPackageTrees = packageTreesOfCrossModuleCustomPreviews,
+            defaultPackageTrees = defaultPackageTreesOfCrossModuleCustomPreviews
+        )
 
         return classGraphSourceScanner
     }
@@ -128,18 +112,7 @@ abstract class ComposablePreviewScanner<T>(
     private val defaultPackageTreesOfCrossModuleCustomPreviews: List<String> = emptyList()
 ) : SourceScanner<T> {
 
-    protected var updatedClassGraph =
-        ClassGraph()
-            .ignoreMethodVisibility()
-            .enableClassInfo()
-            .enableMethodInfo()
-            .enableAnnotationInfo()
-            .apply {
-                // Otherwise Classgraph throws exception
-                if (VersionFinder.JAVA_MAJOR_VERSION < 24) {
-                    enableMemoryMapping()
-                }
-            }
+    protected var updatedClassGraph = classgraph
 
     protected var classpath: Classpath? = null
     protected var isLoggingEnabled: Boolean = false
@@ -164,18 +137,13 @@ abstract class ComposablePreviewScanner<T>(
         sourceSetClasspath: Classpath,
         packageTreesOfCrossModuleCustomPreviews: List<String> = emptyList(),
     ): ClassGraphSourceScanner<T> {
-        ClasspathValidator(sourceSetClasspath).validate()
+        classpath = updatedClassGraph.applySourceSetClasspath(sourceSetClasspath)
 
-        val absolutePath =
-            File(sourceSetClasspath.rootDir, sourceSetClasspath.packagePath).absolutePath
-        findComposableWithPreviewsInClass
-            .applyOverridenClasspath(sourceSetClasspath)
-            .applyCrossModuleCustomPreviewPackageTrees(
-                packageTreesOfCrossModuleCustomPreviews + defaultPackageTreesOfCrossModuleCustomPreviews
-            )
-
-        updatedClassGraph.overrideClasspath(absolutePath)
-        classpath = sourceSetClasspath
+        findComposableWithPreviewsInClass.applyTargetSourceSet(
+            sourceSetClasspath = sourceSetClasspath,
+            customPackageTrees = packageTreesOfCrossModuleCustomPreviews,
+            defaultPackageTrees = defaultPackageTreesOfCrossModuleCustomPreviews
+        )
 
         return classGraphSourceScanner
     }
@@ -202,3 +170,32 @@ abstract class ComposablePreviewScanner<T>(
     ): ScanResultFilter<T> =
         classGraphSourceScanner.scanFile(targetInputStream, customPreviewsInfoInputStream)
 }
+
+private fun ClassGraph.applySourceSetClasspath(sourceSetClasspath: Classpath): Classpath {
+    ClasspathValidator(sourceSetClasspath).validate()
+    val absolutePath = File(sourceSetClasspath.rootDir, sourceSetClasspath.packagePath).absolutePath
+    overrideClasspath(absolutePath)
+    return sourceSetClasspath
+}
+
+private fun ClasspathPreviewsFinderWithResult<*, *>.applyTargetSourceSet(
+    sourceSetClasspath: Classpath,
+    customPackageTrees: List<String>,
+    defaultPackageTrees: List<String>
+) {
+    applyOverridenClasspath(sourceSetClasspath)
+    applyCrossModuleCustomPreviewPackageTrees(customPackageTrees + defaultPackageTrees)
+}
+
+private val classgraph
+    get() = ClassGraph()
+        .ignoreMethodVisibility()
+        .enableClassInfo()
+        .enableMethodInfo()
+        .enableAnnotationInfo()
+        .apply {
+            // Otherwise Classgraph throws exception
+            if (VersionFinder.JAVA_MAJOR_VERSION < 24) {
+                enableMemoryMapping()
+            }
+        }
