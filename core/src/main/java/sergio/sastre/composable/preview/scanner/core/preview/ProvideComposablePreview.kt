@@ -85,17 +85,9 @@ open class ProvideComposablePreviewWithResult<T, R> {
         parameter: Any? = ComposablePreviewInvocationHandler.NoParameter,
     ): ComposablePreviewWithResult<T, R> {
 
-        val classLoader = Thread.currentThread().contextClassLoader ?: ComposablePreviewWithResult::class.java.classLoader
-        val proxyInterface1 = try {
-            classLoader.loadClass("sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWithResult")
-        } catch (_: Exception) {
-            ComposablePreviewWithResult::class.java
-        }
-        val proxyInterface2 = try {
-            classLoader.loadClass("sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview")
-        } catch (_: Exception) {
-            ComposablePreview::class.java
-        }
+        val classLoader = ComposablePreviewWithResult::class.java.classLoader
+        val proxyInterface1 = ComposablePreviewWithResult::class.java
+        val proxyInterface2 = ComposablePreview::class.java
 
         val proxy = Proxy.newProxyInstance(
             classLoader,
@@ -167,17 +159,9 @@ class ProvideComposablePreview<T> : ProvideComposablePreviewWithResult<T, Unit>(
         parameter: Any?,
     ): ComposablePreview<T> {
 
-        val classLoader = Thread.currentThread().contextClassLoader ?: ComposablePreview::class.java.classLoader
-        val proxyInterface1 = try {
-            classLoader.loadClass("sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWithResult")
-        } catch (_: Exception) {
-            ComposablePreviewWithResult::class.java
-        }
-        val proxyInterface2 = try {
-            classLoader.loadClass("sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview")
-        } catch (_: Exception) {
-            ComposablePreview::class.java
-        }
+        val classLoader = ComposablePreviewWithResult::class.java.classLoader
+        val proxyInterface1 = ComposablePreviewWithResult::class.java
+        val proxyInterface2 = ComposablePreview::class.java
 
         val proxy = Proxy.newProxyInstance(
             classLoader,
