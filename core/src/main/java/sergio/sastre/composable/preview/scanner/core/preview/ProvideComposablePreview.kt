@@ -74,10 +74,28 @@ private fun Class<*>.getUnderlyingType(): Class<*>? =
         null
     }
 
+
+private val previewWithResultClassLoader = ComposablePreviewWithResult::class.java.classLoader
+private val proxyPreviewWithResult = ComposablePreviewWithResult::class.java
+private val proxyPreview = ComposablePreview::class.java
+
+private fun <T,R> ComposablePreviewWithResult<T, R>.asString(): String =
+    buildList {
+        add(declaringClass)
+        add(methodName)
+        if (methodParametersType.isNotBlank()) {
+            add(methodParametersType)
+        }
+        if (previewIndex != null) {
+            add(previewIndex.toString())
+        }
+    }.joinToString("_")
+
 /**
  * Provides an invokable ComposablePreview
  */
 open class ProvideComposablePreviewWithResult<T, R> {
+
     open operator fun invoke(
         composablePreviewMapper: ComposablePreviewMapperWithResult<T, R>,
         previewIndex: Int? = null,
@@ -85,13 +103,9 @@ open class ProvideComposablePreviewWithResult<T, R> {
         parameter: Any? = ComposablePreviewInvocationHandler.NoParameter,
     ): ComposablePreviewWithResult<T, R> {
 
-        val classLoader = ComposablePreviewWithResult::class.java.classLoader
-        val proxyInterface1 = ComposablePreviewWithResult::class.java
-        val proxyInterface2 = ComposablePreview::class.java
-
         val proxy = Proxy.newProxyInstance(
-            classLoader,
-            arrayOf(proxyInterface1, proxyInterface2),
+            previewWithResultClassLoader,
+            arrayOf(proxyPreviewWithResult, proxyPreview),
             ComposablePreviewInvocationHandler(
                 composableMethod = composablePreviewMapper.previewMethod,
                 parameter = parameter,
@@ -122,18 +136,8 @@ open class ProvideComposablePreviewWithResult<T, R> {
 
             override val methodParametersType: String = methodParametersTypeAsString(composablePreviewMapper, parameter)
 
-            override fun toString(): String {
-                return buildList {
-                    add(declaringClass)
-                    add(methodName)
-                    if (methodParametersType.isNotBlank()) {
-                        add(methodParametersType)
-                    }
-                    if (previewIndex != null) {
-                        add(previewIndex.toString())
-                    }
-                }.joinToString("_")
-            }
+            override fun toString(): String = this.asString()
+
         } as ComposablePreviewWithResult<T, R>
     }
 }
@@ -159,13 +163,9 @@ class ProvideComposablePreview<T> : ProvideComposablePreviewWithResult<T, Unit>(
         parameter: Any?,
     ): ComposablePreview<T> {
 
-        val classLoader = ComposablePreviewWithResult::class.java.classLoader
-        val proxyInterface1 = ComposablePreviewWithResult::class.java
-        val proxyInterface2 = ComposablePreview::class.java
-
         val proxy = Proxy.newProxyInstance(
-            classLoader,
-            arrayOf(proxyInterface1, proxyInterface2),
+            previewWithResultClassLoader,
+            arrayOf(proxyPreviewWithResult, proxyPreview),
             ComposablePreviewInvocationHandler(
                 composableMethod = composablePreviewMapper.previewMethod,
                 parameter = parameter,
@@ -185,18 +185,7 @@ class ProvideComposablePreview<T> : ProvideComposablePreviewWithResult<T, Unit>(
 
             override val methodParametersType: String = methodParametersTypeAsString(composablePreviewMapper, parameter)
 
-            override fun toString(): String {
-                return buildList<String> {
-                    add(declaringClass)
-                    add(methodName)
-                    if (methodParametersType.isNotBlank()) {
-                        add(methodParametersType)
-                    }
-                    if (previewIndex != null) {
-                        add(previewIndex.toString())
-                    }
-                }.joinToString("_")
-            }
+            override fun toString(): String = this.asString()
         }
     }
 }
