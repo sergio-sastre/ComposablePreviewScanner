@@ -2,36 +2,121 @@ package sergio.sastre.composable.preview.scanner.core.preview
 
 import androidx.compose.runtime.reflect.asComposableMethod
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapper
+import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperWithResult
 import java.lang.reflect.GenericArrayType
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Proxy
 import java.lang.reflect.Type
 import java.lang.reflect.WildcardType
 
+private fun Class<*>.toClassName(): String = canonicalName ?: simpleName
+
+@Suppress("NewApi")
+private fun methodParametersTypeAsString(
+    composablePreviewMapper: ComposablePreviewMapperWithResult<*, *>,
+    parameter: Any?
+): String {
+    val previewMethod = composablePreviewMapper.previewMethod
+    val realParametersCount = previewMethod.asComposableMethod()?.parameterCount
+        ?: (previewMethod.parameterTypes.size - 2).coerceAtLeast(0)
+    return previewMethod
+        .genericParameterTypes
+        .take(realParametersCount)
+        .mapIndexed { index, type ->
+            val v = if (index == 0) parameter else null
+            type.toResolvedTypeName(v)
+                .replace(Regex("\\b[a-zA-Z_][a-zA-Z0-9_]*\\."), "")
+                .replace("\\s+".toRegex(), "_") // blanks cause problems with some libs, like Android-Testify
+        }
+        .joinToString("_")
+}
+
+@Suppress("NewApi")
+private fun Type.toResolvedTypeName(value: Any? = null): String {
+    return when (this) {
+        is Class<*> -> {
+            if (isArray) return "${componentType.toResolvedTypeName()}[]"
+
+            // Recovery block for erased value classes (e.g. float -> Dp)
+            if (value != null && value != ComposablePreviewInvocationHandler.NoParameter) {
+                val valueClass = value.javaClass
+                val valueUnbox = valueClass.getUnderlyingType()
+                if (valueUnbox != null && (this == valueUnbox || this.toString() == valueUnbox.toString())) {
+                    return valueClass.typeName
+                }
+            }
+            typeName
+        }
+        is ParameterizedType -> {
+            val raw = (rawType as? Class<*>)?.typeName ?: rawType.toString()
+            val args = actualTypeArguments.joinToString(", ") { it.toResolvedTypeName() }
+            "$raw<$args>"
+        }
+        is GenericArrayType -> "${genericComponentType.toResolvedTypeName()}[]"
+        is WildcardType -> {
+            val lower = lowerBounds.firstOrNull()
+            val upper = upperBounds.firstOrNull()
+            when {
+                lower != null -> "? super ${lower.toResolvedTypeName()}"
+                upper != null && upper != Any::class.java && upper.toString() != "class java.lang.Object" ->
+                    "? extends ${upper.toResolvedTypeName()}"
+                else -> "?"
+            }
+        }
+        else -> toString()
+    }
+}
+
+private fun Class<*>.getUnderlyingType(): Class<*>? =
+    try {
+        declaredMethods.firstOrNull { it.name == "unbox-impl" }?.returnType
+    } catch (_: Exception) {
+        null
+    }
+
+
+private val previewWithResultClassLoader = ComposablePreviewWithResult::class.java.classLoader
+private val proxyPreviewWithResult = ComposablePreviewWithResult::class.java
+private val proxyPreview = ComposablePreview::class.java
+
+private fun <T,R> ComposablePreviewWithResult<T, R>.asString(): String =
+    buildList {
+        add(declaringClass)
+        add(methodName)
+        if (methodParametersType.isNotBlank()) {
+            add(methodParametersType)
+        }
+        if (previewIndex != null) {
+            add(previewIndex.toString())
+        }
+    }.joinToString("_")
+
 /**
  * Provides an invokable ComposablePreview
  */
-class ProvideComposablePreview<T> {
-    operator fun invoke(
-        composablePreviewMapper: ComposablePreviewMapper<T>,
+open class ProvideComposablePreviewWithResult<T, R> {
+
+    open operator fun invoke(
+        composablePreviewMapper: ComposablePreviewMapperWithResult<T, R>,
         previewIndex: Int? = null,
         previewParameterDisplayName: String? = null,
         parameter: Any? = ComposablePreviewInvocationHandler.NoParameter,
-    ): ComposablePreview<T> {
+    ): ComposablePreviewWithResult<T, R> {
 
         val proxy = Proxy.newProxyInstance(
-            ComposablePreview::class.java.classLoader,
-            arrayOf(ComposablePreview::class.java),
+            previewWithResultClassLoader,
+            arrayOf(proxyPreviewWithResult, proxyPreview),
             ComposablePreviewInvocationHandler(
                 composableMethod = composablePreviewMapper.previewMethod,
                 parameter = parameter,
                 annotationsInfo = composablePreviewMapper.annotationsInfo
             ),
-        ) as ComposablePreview<T>
+        ) as ComposablePreviewWithResult<T,R>
 
         // Wrap the call to the proxy in an object so that we can override the toString method
         // to provide a more descriptive name for the test and resulting snapshot filename.
-        return object : ComposablePreview<T> by proxy {
+        @Suppress("UNCHECKED_CAST")
+        return object : ComposablePreviewWithResult<T,R> by proxy {
             override val previewInfo: T = composablePreviewMapper.previewInfo
             override val previewIndex: Int? = previewIndex
             override val previewIndexDisplayName: String? = previewParameterDisplayName
@@ -49,93 +134,58 @@ class ProvideComposablePreview<T> {
              */
             override val methodName: String = composablePreviewMapper.previewMethod.name
 
-            override val methodParametersType: String = methodParametersTypeAsString()
+            override val methodParametersType: String = methodParametersTypeAsString(composablePreviewMapper, parameter)
 
-            override fun toString(): String {
-                return buildList<String> {
-                    add(declaringClass)
-                    add(methodName)
-                    if (methodParametersType.isNotBlank()){
-                        add(methodParametersType)
-                    }
-                    if (previewIndex != null) {
-                        add(previewIndex.toString())
-                    }
-                }.joinToString("_")
-            }
+            override fun toString(): String = this.asString()
 
-            private fun Class<*>.toClassName(): String = canonicalName ?: simpleName
+        } as ComposablePreviewWithResult<T, R>
+    }
+}
 
-            /**
-             * Returns the type of the (real) parameters as an underscore separated simple string.
-             *
-             * Preview methods always have compiler-added parameters at the end (Composer, an Int
-             * `changed` mask, and — for previews with default parameters — an extra Int default mask).
-             * We resolve how many of the trailing parameters are compiler-added via androidx'
-             * [asComposableMethod] (`java.lang.reflect` based) rather than kotlin-reflect: resolving
-             * `Method.kotlinFunction` throws `KotlinReflectionInternalError` for previews whose
-             * signature contains a value class (e.g. a value-class `@PreviewParameter`), because
-             * kotlin-reflect's ValueClassAwareCaller does not account for the synthetic Compose params.
-             */
-            @Suppress("NewApi")
-            private fun methodParametersTypeAsString(): String {
-                val previewMethod = composablePreviewMapper.previewMethod
-                val realParametersCount = previewMethod.asComposableMethod()?.parameterCount
-                    ?: (previewMethod.parameterTypes.size - 2).coerceAtLeast(0)
-                return previewMethod
-                    .genericParameterTypes
-                    .take(realParametersCount)
-                    .mapIndexed { index, type ->
-                        val v = if (index == 0) parameter else null
-                        type.toResolvedTypeName(v)
-                            .replace(Regex("\\b[a-zA-Z_][a-zA-Z0-9_]*\\."), "")
-                            .replace("\\s+".toRegex(), "_") // blanks cause problems with some libs, like Android-Testify
-                    }
-                    .joinToString("_")
-            }
+class ProvideComposablePreview<T> : ProvideComposablePreviewWithResult<T, Unit>() {
+    @JvmOverloads
+    operator fun invoke(
+        composablePreviewMapper: ComposablePreviewMapper<T>,
+        previewIndex: Int? = null,
+        previewParameterDisplayName: String? = null,
+        parameter: Any? = ComposablePreviewInvocationHandler.NoParameter,
+    ): ComposablePreview<T> = invoke(
+        composablePreviewMapper = composablePreviewMapper as ComposablePreviewMapperWithResult<T, Unit>,
+        previewIndex = previewIndex,
+        previewParameterDisplayName = previewParameterDisplayName,
+        parameter = parameter,
+    )
 
-            @Suppress("NewApi")
-            private fun Type.toResolvedTypeName(value: Any? = null): String {
-                return when (this) {
-                    is Class<*> -> {
-                        if (isArray) return "${componentType.toResolvedTypeName()}[]"
+    override operator fun invoke(
+        composablePreviewMapper: ComposablePreviewMapperWithResult<T, Unit>,
+        previewIndex: Int?,
+        previewParameterDisplayName: String?,
+        parameter: Any?,
+    ): ComposablePreview<T> {
 
-                        // Recovery block for erased value classes (e.g. float -> Dp)
-                        if (value != null && value != ComposablePreviewInvocationHandler.NoParameter) {
-                            val valueClass = value.javaClass
-                            val valueUnbox = valueClass.getUnderlyingType()
-                            if (valueUnbox != null && (this == valueUnbox || this.toString() == valueUnbox.toString())) {
-                                return valueClass.typeName
-                            }
-                        }
-                        typeName
-                    }
-                    is ParameterizedType -> {
-                        val raw = (rawType as? Class<*>)?.typeName ?: rawType.toString()
-                        val args = actualTypeArguments.joinToString(", ") { it.toResolvedTypeName() }
-                        "$raw<$args>"
-                    }
-                    is GenericArrayType -> "${genericComponentType.toResolvedTypeName()}[]"
-                    is WildcardType -> {
-                        val lower = lowerBounds.firstOrNull()
-                        val upper = upperBounds.firstOrNull()
-                        when {
-                            lower != null -> "? super ${lower.toResolvedTypeName()}"
-                            upper != null && upper != Any::class.java && upper.toString() != "class java.lang.Object" ->
-                                "? extends ${upper.toResolvedTypeName()}"
-                            else -> "?"
-                        }
-                    }
-                    else -> toString()
-                }
-            }
+        val proxy = Proxy.newProxyInstance(
+            previewWithResultClassLoader,
+            arrayOf(proxyPreviewWithResult, proxyPreview),
+            ComposablePreviewInvocationHandler(
+                composableMethod = composablePreviewMapper.previewMethod,
+                parameter = parameter,
+                annotationsInfo = composablePreviewMapper.annotationsInfo
+            ),
+        ) as ComposablePreview<T>
 
-            private fun Class<*>.getUnderlyingType(): Class<*>? =
-                try {
-                    declaredMethods.firstOrNull { it.name == "unbox-impl" }?.returnType
-                } catch (_: Exception) {
-                    null
-                }
+        return object : ComposablePreview<T> by proxy {
+            override val previewInfo: T = composablePreviewMapper.previewInfo
+            override val previewIndex: Int? = previewIndex
+            override val previewIndexDisplayName: String? = previewParameterDisplayName
+            override val otherAnnotationsInfo = composablePreviewMapper.annotationsInfo
+            override val declaringClass: String =
+                composablePreviewMapper.previewMethod.declaringClass.toClassName()
+
+            override val methodName: String = composablePreviewMapper.previewMethod.name
+
+            override val methodParametersType: String = methodParametersTypeAsString(composablePreviewMapper, parameter)
+
+            override fun toString(): String = this.asString()
         }
     }
 }
