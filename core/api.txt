@@ -520,6 +520,7 @@ package sergio.sastre.composable.preview.scanner.android.screenshotid {
 
   public final class GetDeviceScreenshotId {
     method public java.lang.String? getDeviceScreenshotId(java.lang.String device);
+    method public java.lang.String? getDeviceScreenshotId(java.lang.String device, java.lang.String default);
     field public static final sergio.sastre.composable.preview.scanner.android.screenshotid.GetDeviceScreenshotId INSTANCE;
   }
 
