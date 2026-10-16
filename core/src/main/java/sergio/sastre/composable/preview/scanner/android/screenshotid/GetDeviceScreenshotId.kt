@@ -6,9 +6,9 @@ import sergio.sastre.composable.preview.scanner.android.device.domain.Device
 private const val DEFAULT = ""
 object GetDeviceScreenshotId {
 
-    fun getDeviceScreenshotId(device: String): String? =
+    fun getDeviceScreenshotId(device: String, default: String): String? =
         when {
-            device == DEFAULT -> null
+            device == default -> null
             device.contains("parent") -> device.screenshotIdFromParent()
             // id:device_id or name:deviceName
             else -> {
@@ -18,6 +18,9 @@ object GetDeviceScreenshotId {
                 device.screenshotIdFromSpec().trim('_')
             }
         }
+
+    fun getDeviceScreenshotId(device: String): String? =
+        getDeviceScreenshotId(device, DEFAULT)
 
     private fun String.replaceSpecialChars(): String {
         return this
