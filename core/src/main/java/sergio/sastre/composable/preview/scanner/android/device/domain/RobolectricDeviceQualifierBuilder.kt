@@ -1,13 +1,23 @@
 package sergio.sastre.composable.preview.scanner.android.device.domain
 
 import sergio.sastre.composable.preview.scanner.android.device.DevicePreviewInfoParser
+import sergio.sastre.composable.preview.scanner.android.device.types.DEFAULT
 
 object RobolectricDeviceQualifierBuilder {
 
-    fun build(previewDevice: String): String? {
-        val device = DevicePreviewInfoParser.parse(previewDevice)
+    /**
+     * Non Android previews that support "device", like wear tiles, use a different
+     * default device, so @Preview(device = DEFAULT), displays a Wear.SMALL_ROUND instead.
+     *
+     * This method accounts for those use cases
+     */
+    fun build(previewDevice: String, default: Device): String? {
+        val device = DevicePreviewInfoParser.parse(previewDevice, default)
         return device?.let { nonNullDevice -> build(nonNullDevice) }
     }
+
+    fun build(previewDevice: String): String? =
+        build(previewDevice, DEFAULT)
 
     fun build(device: Device): String {
         val deviceInDp = device.inDp()

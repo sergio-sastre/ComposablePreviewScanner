@@ -26,8 +26,14 @@ import sergio.sastre.composable.preview.scanner.android.device.types.Wear
 import sergio.sastre.composable.preview.scanner.android.device.types.XR
 
 object DevicePreviewInfoParser {
-    fun parse(device: String): Device? {
-        if (device == "") return DEFAULT
+    /**
+     * Non Android previews that support "device", like wear tiles, use a different
+     * default device, so @Preview(device = DEFAULT), displays a Wear.SMALL_ROUND instead.
+     *
+     * This method accounts for those use cases
+     */
+    fun parse(device: String, default: Device): Device? {
+        if (device == "") return default
 
         if (device.startsWith("spec:")) {
             return GetCustomDevice.from(device)
@@ -43,6 +49,9 @@ object DevicePreviewInfoParser {
 
         return null
     }
+
+    fun parse(device: String): Device? =
+        parse(device, DEFAULT)
 }
 
 private object GetDeviceById {
