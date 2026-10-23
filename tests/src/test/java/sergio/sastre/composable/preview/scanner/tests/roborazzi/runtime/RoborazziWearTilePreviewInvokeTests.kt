@@ -20,7 +20,7 @@ import org.robolectric.annotation.GraphicsMode
 import sergio.sastre.composable.preview.scanner.android.device.domain.RobolectricDeviceQualifierBuilder
 import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWithResult
-import sergio.sastre.composable.preview.scanner.wear.WearTileComposablePreviewScanner
+import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewScanner
 import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewInfo
 import sergio.sastre.composable.preview.scanner.wear.configuration.WearTileSnapshotConfigurator
 import sergio.sastre.composable.preview.scanner.wear.screenshotid.WearTilePreviewScreenshotIdBuilder
@@ -32,13 +32,13 @@ import sergio.sastre.composable.preview.scanner.wear.screenshotid.WearTilePrevie
  * ./gradlew :tests:recordRoborazziDebug --tests 'RoborazziWearTileComposablePreviewInvokeTests' -Plibrary=roborazzi
  */
 @RunWith(ParameterizedRobolectricTestRunner::class)
-class RoborazziWearTileComposablePreviewInvokeTests(
+class RoborazziWearTilePreviewInvokeTests(
     private val preview: ComposablePreviewWithResult<WearTilePreviewInfo, TilePreviewData>,
 ) {
     companion object {
         @OptIn(RequiresShowStandardStreams::class)
         private val wearCachedBuildTimePreviews by lazy {
-            WearTileComposablePreviewScanner()
+            WearTilePreviewScanner()
                 .enableScanningLogs()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.wear")
                 .includePrivatePreviews()

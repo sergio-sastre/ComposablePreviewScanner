@@ -5,6 +5,7 @@ import org.junit.Assume
 import org.junit.Test
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.common.CommonComposablePreviewScanner
+import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewScanner
 
 @Suppress("DEPRECATION")
 class ComposablePreviewToStringTest {
@@ -200,6 +201,22 @@ class ComposablePreviewToStringTest {
         )
 
         Assert.assertTrue(previews.toString(), previews.all { idPattern.matches(it) })
+    }
+
+
+    @Test
+    fun `GIVEN overloaded wear previews WHEN toString THEN each preview includes its parameter type`() {
+        val previews =
+            WearTilePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.wear")
+                .getPreviews()
+                .filter { it.methodName == "tilePreviewWithResourcesAndPlatformData" }
+
+        Assert.assertEquals(2, previews.size)
+
+
+        val previewNames = previews.map { it.toString() }.toSet()
+        Assert.assertEquals(2, previewNames.size)
     }
 
     companion object {

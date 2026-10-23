@@ -7,7 +7,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import sergio.sastre.composable.preview.scanner.wear.WearTileComposablePreviewScanner
+import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewScanner
 import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewInfo
 import sergio.sastre.composable.preview.scanner.wear.configuration.WearTileSnapshotConfigurator
 import sergio.sastre.composable.preview.scanner.wear.screenshotid.WearTilePreviewScreenshotIdBuilder
@@ -20,13 +20,13 @@ import sergio.sastre.composable.preview.scanner.tests.paparazzi.utils.DeviceConf
  * ./gradlew :tests:recordPaparazziDebug --tests 'PaparazziWearTileComposablePreviewInvokeTests' -Plibrary=paparazzi
  */
 @RunWith(Parameterized::class)
-class PaparazziWearTileComposablePreviewInvokeTests(
+class PaparazziWearTilePreviewInvokeTests(
     private val preview: ComposablePreviewWithResult<WearTilePreviewInfo, TilePreviewData>,
 ) {
 
     companion object {
         private val wearCachedBuildTimePreviews by lazy {
-            WearTileComposablePreviewScanner()
+            WearTilePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.wear")
                 .getPreviews()
         }

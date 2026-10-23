@@ -9,7 +9,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import sergio.sastre.composable.preview.scanner.MainActivity
-import sergio.sastre.composable.preview.scanner.wear.WearTileComposablePreviewScanner
+import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewScanner
 
 @RunWith(RobolectricTestRunner::class)
 class WearTileComposablePreviewScannerTest {
@@ -20,7 +20,7 @@ class WearTileComposablePreviewScannerTest {
     @Test
     fun `GIVEN Composable with wear tile @Preview, WHEN Scanning that package tree, THEN it returns the previews`() {
         val composablePreviews =
-            WearTileComposablePreviewScanner()
+            WearTilePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.wear")
                 .getPreviews()
 
@@ -33,7 +33,7 @@ class WearTileComposablePreviewScannerTest {
     @Test
     fun `GIVEN Composable with wear tile @Preview with resources and platform data, WHEN Scanning, THEN it returns the preview with expected data`() {
         val composablePreviews =
-            WearTileComposablePreviewScanner()
+            WearTilePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.wear")
                 .getPreviews()
 
