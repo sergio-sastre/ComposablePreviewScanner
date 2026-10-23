@@ -3,6 +3,7 @@ package sergio.sastre.composable.preview.scanner.android.device {
 
   public final class DevicePreviewInfoParser {
     method public sergio.sastre.composable.preview.scanner.android.device.domain.Device? parse(java.lang.String device);
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Device? parse(java.lang.String device, sergio.sastre.composable.preview.scanner.android.device.domain.Device default);
     field public static final sergio.sastre.composable.preview.scanner.android.device.DevicePreviewInfoParser INSTANCE;
   }
 
@@ -332,6 +333,7 @@ package sergio.sastre.composable.preview.scanner.android.device.domain {
 
   public final class RobolectricDeviceQualifierBuilder {
     method public java.lang.String? build(java.lang.String previewDevice);
+    method public java.lang.String? build(java.lang.String previewDevice, sergio.sastre.composable.preview.scanner.android.device.domain.Device default);
     method public java.lang.String build(sergio.sastre.composable.preview.scanner.android.device.domain.Device device);
     field public static final sergio.sastre.composable.preview.scanner.android.device.domain.RobolectricDeviceQualifierBuilder INSTANCE;
   }
