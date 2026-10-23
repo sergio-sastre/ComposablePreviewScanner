@@ -5,6 +5,12 @@ import sergio.sastre.composable.preview.scanner.android.device.types.DEFAULT
 
 object RobolectricDeviceQualifierBuilder {
 
+    /**
+     * Non Android previews that support "device", like wear tiles, use a different
+     * default device, so @Preview(device = DEFAULT), displays a Wear.SMALL_ROUND instead.
+     *
+     * This method accounts for those use cases
+     */
     fun build(previewDevice: String, default: Device): String? {
         val device = DevicePreviewInfoParser.parse(previewDevice, default)
         return device?.let { nonNullDevice -> build(nonNullDevice) }
