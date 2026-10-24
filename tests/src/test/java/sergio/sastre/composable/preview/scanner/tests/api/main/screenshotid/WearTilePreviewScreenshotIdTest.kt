@@ -1,5 +1,6 @@
 package sergio.sastre.composable.preview.scanner.tests.api.main.screenshotid
 
+import androidx.compose.ui.tooling.preview.Devices
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import org.junit.Assert.assertEquals
@@ -10,7 +11,7 @@ import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewInfo
 import sergio.sastre.composable.preview.scanner.wear.screenshotid.WearTilePreviewScreenshotIdBuilder
 
 @RunWith(TestParameterInjector::class)
-class WearTileComposablePreviewScreenshotIdTest {
+class WearTilePreviewScreenshotIdTest {
 
     @Test
     fun `GIVEN preview with default parameters, THEN show default device`() {
@@ -25,7 +26,7 @@ class WearTileComposablePreviewScreenshotIdTest {
     }
 
     @Test
-    fun `GIVEN preview with name, THEN show name and default device`() {
+    fun `GIVEN preview with name, THEN show name`() {
         val preview = previewBuilder(
             previewInfo = WearTilePreviewInfo(
                 name = "My preview name"
@@ -33,13 +34,13 @@ class WearTileComposablePreviewScreenshotIdTest {
         )
 
         assertEquals(
-            "My_preview_name_id:wearos_small_round",
+            "My_preview_name",
             WearTilePreviewScreenshotIdBuilder(preview).build()
         )
     }
 
     @Test
-    fun `GIVEN preview with group, THEN show group and default device`() {
+    fun `GIVEN preview with group, THEN show group`() {
         val preview = previewBuilder(
             previewInfo = WearTilePreviewInfo(
                 group = "My preview group"
@@ -47,13 +48,13 @@ class WearTileComposablePreviewScreenshotIdTest {
         )
 
         assertEquals(
-            "My_preview_group_id:wearos_small_round",
+            "My_preview_group",
             WearTilePreviewScreenshotIdBuilder(preview).build()
         )
     }
 
     @Test
-    fun `GIVEN preview with custom device, THEN show custom device`() {
+    fun `GIVEN preview with custom device, THEN show custom device uppercase`() {
         val preview = previewBuilder(
             previewInfo = WearTilePreviewInfo(
                 device = "id:wearos_large_round"
@@ -61,21 +62,7 @@ class WearTileComposablePreviewScreenshotIdTest {
         )
 
         assertEquals(
-            "id:wearos_large_round",
-            WearTilePreviewScreenshotIdBuilder(preview).build()
-        )
-    }
-
-    @Test
-    fun `GIVEN preview with empty device, THEN show nothing`() {
-        val preview = previewBuilder(
-            previewInfo = WearTilePreviewInfo(
-                device = ""
-            )
-        )
-
-        assertEquals(
-            "",
+            "wearos_large_round".uppercase(),
             WearTilePreviewScreenshotIdBuilder(preview).build()
         )
     }
@@ -89,7 +76,7 @@ class WearTileComposablePreviewScreenshotIdTest {
         )
 
         assertEquals(
-            "id:wearos_small_round_FONT_1_2f",
+            "FONT_1_2f",
             WearTilePreviewScreenshotIdBuilder(preview).build()
         )
     }
@@ -103,7 +90,7 @@ class WearTileComposablePreviewScreenshotIdTest {
         )
 
         assertEquals(
-            "id:wearos_small_round_en_US",
+            "en_US",
             WearTilePreviewScreenshotIdBuilder(preview).build()
         )
     }
@@ -131,15 +118,29 @@ class WearTileComposablePreviewScreenshotIdTest {
     }
 
     @Test
-    fun `GIVEN preview with default device WHEN encodeUnsafeCharacters, THEN encode colon`() {
+    fun `GIVEN preview with no device THEN empty value`() {
         val preview = previewBuilder(
             previewInfo = WearTilePreviewInfo()
         )
 
         assertEquals(
-            "id%3Awearos_small_round",
+            "",
             WearTilePreviewScreenshotIdBuilder(preview)
-                .encodeUnsafeCharacters()
+                .build()
+        )
+    }
+
+    @Test
+    fun `GIVEN preview with DEFAULT device THEN DEFAULT value`() {
+        val preview = previewBuilder(
+            previewInfo = WearTilePreviewInfo(
+                device = Devices.DEFAULT
+            )
+        )
+
+        assertEquals(
+            "DEFAULT",
+            WearTilePreviewScreenshotIdBuilder(preview)
                 .build()
         )
     }
@@ -148,11 +149,11 @@ class WearTileComposablePreviewScreenshotIdTest {
         val key: String,
         val previewInfo: WearTilePreviewInfo
     ) {
-        NAME("name", WearTilePreviewInfo(name = "name", device = "")),
-        GROUP("group", WearTilePreviewInfo(group = "group", device = "")),
+        NAME("name", WearTilePreviewInfo(name = "name")),
+        GROUP("group", WearTilePreviewInfo(group = "group")),
         DEVICE("device", WearTilePreviewInfo(device = "id:wearos_small_round")),
-        FONT_SCALE("fontScale", WearTilePreviewInfo(fontScale = 1.5f, device = "")),
-        LOCALE("locale", WearTilePreviewInfo(locale = "de", device = "")),
+        FONT_SCALE("fontScale", WearTilePreviewInfo(fontScale = 1.5f)),
+        LOCALE("locale", WearTilePreviewInfo(locale = "de")),
     }
 
     @Test

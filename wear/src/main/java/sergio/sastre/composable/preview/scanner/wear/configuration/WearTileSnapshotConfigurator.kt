@@ -2,11 +2,9 @@ package sergio.sastre.composable.preview.scanner.wear.configuration
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.Outline
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewOutlineProvider
 import android.widget.FrameLayout
 import androidx.wear.protolayout.DeviceParametersBuilders.DeviceParameters
 import androidx.wear.protolayout.DeviceParametersBuilders.SCREEN_SHAPE_ROUND
@@ -55,14 +53,16 @@ class WearTileSnapshotConfigurator(
         device: String,
         data: TilePreviewData
     ): View {
-
-        val deviceParser = DevicePreviewInfoParser.parse(device) ?: Wear.WEAR_OS_SMALL_ROUND.device
+        val default = Wear.WEAR_OS_SMALL_ROUND.device
+        val deviceParser =
+            DevicePreviewInfoParser.parse(device, default) ?: default
+        val deviceInDp = deviceParser.inDp()
+        val deviceInPx = deviceParser.inPx()
         val isRound = deviceParser.shape == Shape.ROUND
-        val widthDp = deviceParser.dimensions.width
-        val heightDp = deviceParser.dimensions.width
-        val density = context.resources.displayMetrics.density
-        val widthPx = (widthDp * density).toInt()
-        val heightPx = (heightDp * density).toInt()
+        val widthDp = deviceInDp.dimensions.width
+        val heightDp = deviceInDp.dimensions.height
+        val widthPx = deviceInPx.dimensions.width.toInt()
+        val heightPx = deviceInPx.dimensions.height.toInt()
 
         val container = rootView
         container.layoutParams = ViewGroup.LayoutParams(widthPx, heightPx)
@@ -89,15 +89,6 @@ class WearTileSnapshotConfigurator(
             setBackgroundColor(Color.BLACK)
         }
         container.addView(parent)
-
-        if (isRound) {
-            container.outlineProvider = object : ViewOutlineProvider() {
-                override fun getOutline(view: View, outline: Outline) {
-                    outline.setOval(0, 0, view.width, view.height)
-                }
-            }
-            container.clipToOutline = true
-        }
 
         val renderer = createRenderer(data)
 
@@ -142,7 +133,7 @@ class WearTileSnapshotConfigurator(
                 }
             }
             TileRenderer.Builder(context, Runnable::run) { _ -> }
-                .addPlatformDataProvider(provider, *platformDataValues.getAll().keys.toTypedArray())
+                .addPlatformDataProvider(provider, *platformDataValues.all.keys.toTypedArray())
                 .build()
         } ?: TileRenderer(context, Runnable::run) { _ -> /* no-op loader */ }
 }

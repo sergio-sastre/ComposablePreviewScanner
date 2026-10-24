@@ -6,6 +6,8 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.wear.tiles.tooling.preview.TilePreviewData
 import com.github.takahirom.roborazzi.RoborazziActivity
+import com.github.takahirom.roborazzi.RoborazziOptions
+import com.github.takahirom.roborazzi.RoborazziOptions.RecordOptions
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule
 import org.junit.Test
@@ -13,23 +15,24 @@ import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
+import org.robolectric.RuntimeEnvironment.setFontScale
+import org.robolectric.RuntimeEnvironment.setQualifiers
 import org.robolectric.Shadows
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
-import sergio.sastre.composable.preview.scanner.android.device.domain.RobolectricDeviceQualifierBuilder
 import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWithResult
 import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewScanner
 import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewInfo
 import sergio.sastre.composable.preview.scanner.wear.configuration.WearTileSnapshotConfigurator
+import sergio.sastre.composable.preview.scanner.wear.device.domain.RobolectricWearDeviceQualifierBuilder
 import sergio.sastre.composable.preview.scanner.wear.screenshotid.WearTilePreviewScreenshotIdBuilder
 
 /**
  * These tests ensure that the invoke() function of a ComposablePreview works as expected
  * for all the @Composable's in the main source at build time.
  *
- * ./gradlew :tests:recordRoborazziDebug --tests 'RoborazziWearTileComposablePreviewInvokeTests' -Plibrary=roborazzi
+ * ./gradlew :tests:recordRoborazziDebug --tests 'RoborazziWearTilePreviewInvokeTests' -Plibrary=roborazzi
  */
 @RunWith(ParameterizedRobolectricTestRunner::class)
 class RoborazziWearTilePreviewInvokeTests(
@@ -74,6 +77,7 @@ class RoborazziWearTilePreviewInvokeTests(
     fun screenshotName(preview: ComposablePreviewWithResult<WearTilePreviewInfo, TilePreviewData>): String =
         "src/test/screenshots/weartile/${
             WearTilePreviewScreenshotIdBuilder(preview)
+                .doNotIgnoreMethodParametersType()
                 .build()
         }.png"
 
@@ -81,21 +85,24 @@ class RoborazziWearTilePreviewInvokeTests(
     @Config(sdk = [35])
     @Test
     fun snapshot() {
-        // TODO - Remove wear SMALL ROUND from test name, since it is default
-        // TODO - Support
-        // TODO - Put all this in a wear.RobolectricDeviceQualifierBuilder.build
-        RuntimeEnvironment.setQualifiers(
-            "+${RobolectricDeviceQualifierBuilder.build(preview.previewInfo.device)}"
+        setQualifiers(
+            "+${RobolectricWearDeviceQualifierBuilder.build(preview.previewInfo.device)}"
         )
-        RuntimeEnvironment.setQualifiers("+${preview.previewInfo.locale.ifBlank { "en" }}")
-        RuntimeEnvironment.setFontScale(preview.previewInfo.fontScale)
+        setQualifiers("+${preview.previewInfo.locale.ifBlank { "en" }}")
+        setFontScale(preview.previewInfo.fontScale)
 
         val wearView = WearTileSnapshotConfigurator(activityScenarioRule.activity)
-            // TODO - shouldIAllow further config like glance??
             .previewToView(preview)
 
         activityScenarioRule.activity.setContentView(wearView)
 
-        wearView.captureRoboImage(filePath = screenshotName(preview))
+        wearView.captureRoboImage(
+            filePath = screenshotName(preview),
+            // account for round shapes
+            roborazziOptions =
+                RoborazziOptions(
+                    recordOptions = RecordOptions(applyDeviceCrop = true)
+                )
+        )
     }
 }

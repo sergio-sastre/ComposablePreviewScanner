@@ -10,6 +10,8 @@ import com.android.resources.ScreenRatio
 import com.android.resources.ScreenRound
 import com.android.resources.ScreenSize
 import sergio.sastre.composable.preview.scanner.android.device.DevicePreviewInfoParser
+import sergio.sastre.composable.preview.scanner.android.device.domain.Device
+import sergio.sastre.composable.preview.scanner.android.device.types.Wear
 import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewInfo
 
 object DeviceConfigBuilder {
@@ -29,7 +31,10 @@ object DeviceConfigBuilder {
 
     fun build(wearTile: WearTilePreviewInfo): DeviceConfig {
         val parsedDevice =
-            DevicePreviewInfoParser.parse(wearTile.device)?.inPx() ?: return DeviceConfig()
+            DevicePreviewInfoParser.parse(
+                wearTile.device,
+                Wear.WEAR_OS_SMALL_ROUND.device
+            )?.inPx() ?: return DeviceConfig()
 
         return DeviceConfig(
             screenHeight = parsedDevice.dimensions.height.toInt(),

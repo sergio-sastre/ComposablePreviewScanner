@@ -17,7 +17,7 @@ import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWi
 import sergio.sastre.composable.preview.scanner.tests.paparazzi.utils.DeviceConfigBuilder
 
 /**
- * ./gradlew :tests:recordPaparazziDebug --tests 'PaparazziWearTileComposablePreviewInvokeTests' -Plibrary=paparazzi
+ * ./gradlew :tests:recordPaparazziDebug --tests 'PaparazziWearTilePreviewInvokeTests' -Plibrary=paparazzi
  */
 @RunWith(Parameterized::class)
 class PaparazziWearTilePreviewInvokeTests(
@@ -28,6 +28,7 @@ class PaparazziWearTilePreviewInvokeTests(
         private val wearCachedBuildTimePreviews by lazy {
             WearTilePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.wear")
+                .includePrivatePreviews()
                 .getPreviews()
         }
 
@@ -57,8 +58,8 @@ class PaparazziWearTilePreviewInvokeTests(
         paparazzi.snapshot(
             view = wearView,
             name = WearTilePreviewScreenshotIdBuilder(preview)
-                .ignoreClassName()
                 .encodeUnsafeCharacters()
+                .doNotIgnoreMethodParametersType()
                 .build()
                 .replace("sergio.sastre.composable.preview.scanner.", "")
         )

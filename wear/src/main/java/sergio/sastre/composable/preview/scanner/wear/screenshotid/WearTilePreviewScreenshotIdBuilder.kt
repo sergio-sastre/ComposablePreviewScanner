@@ -1,5 +1,7 @@
 package sergio.sastre.composable.preview.scanner.wear.screenshotid
 
+import androidx.wear.tooling.preview.devices.WearDevices
+import sergio.sastre.composable.preview.scanner.android.screenshotid.GetDeviceScreenshotId
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWithResult
 import sergio.sastre.composable.preview.scanner.core.preview.screenshotid.DefaultPreviewInfoParameterToStringConverter
@@ -29,7 +31,10 @@ class WearTilePreviewScreenshotIdBuilder<R>(
         linkedMapOf(
             "name" to genericPreviewInfoConverter.name(wearTilePreviewInfo.name),
             "group" to genericPreviewInfoConverter.group(wearTilePreviewInfo.group),
-            "device" to wearTilePreviewInfo.device,
+            "device" to GetDeviceScreenshotId.getDeviceScreenshotId(
+                wearTilePreviewInfo.device.ifBlank { "DEFAULT" },
+                WearDevices.SMALL_ROUND
+            ),
             "fontScale" to genericPreviewInfoConverter.fontScale(wearTilePreviewInfo.fontScale),
             "locale" to wearTilePreviewInfo.locale,
         )

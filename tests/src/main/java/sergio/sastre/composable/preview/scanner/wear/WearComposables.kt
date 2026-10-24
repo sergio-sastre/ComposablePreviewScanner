@@ -3,6 +3,7 @@ package sergio.sastre.composable.preview.scanner.wear
 import android.content.Context
 import android.graphics.Color.BLACK
 import android.graphics.Color.RED
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.wear.protolayout.ColorBuilders
 import androidx.wear.protolayout.DimensionBuilders
 import androidx.wear.protolayout.LayoutElementBuilders
@@ -27,6 +28,7 @@ import sergio.sastre.composable.preview.scanner.R
 @Preview(device = WearDevices.RECT)
 @Preview(device = WearDevices.SQUARE)
 @Preview(device = "id:pixel_5")
+@Preview(device = Devices.DEFAULT)
 fun wearTilePreview() = TilePreviewData {
     TilePreviewHelper.singleTimelineEntryTileBuilder(
         LayoutElementBuilders.Box.Builder()
@@ -74,7 +76,7 @@ fun statefulTilePreview(context: Context) = TilePreviewData {
     ).build()
 }
 
-@Preview(device = "spec:width=250dp,height=250dp,isRound=true")
+@Preview(device = "spec:width=250px,height=250px,isRound=true")
 @Preview(device = "spec:width=250dp,height=250dp,isRound=false")
 @Preview(locale = "es", fontScale = 2f)
 fun localeTilePreview(context: Context) = TilePreviewData {
