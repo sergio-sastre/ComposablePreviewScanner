@@ -20,11 +20,15 @@ import org.robolectric.RuntimeEnvironment.setQualifiers
 import org.robolectric.Shadows
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import sergio.sastre.composable.preview.scanner.android.device.domain.Shape
 import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWithResult
 import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewScanner
 import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewInfo
+import sergio.sastre.composable.preview.scanner.wear.configuration.TileRoundShapeClipping
+import sergio.sastre.composable.preview.scanner.wear.configuration.TileRoundShapeClipping.Enabled
 import sergio.sastre.composable.preview.scanner.wear.configuration.WearTileSnapshotConfigurator
+import sergio.sastre.composable.preview.scanner.wear.device.WearDevicePreviewInfoParser
 import sergio.sastre.composable.preview.scanner.wear.device.domain.RobolectricWearDeviceQualifierBuilder
 import sergio.sastre.composable.preview.scanner.wear.screenshotid.WearTilePreviewScreenshotIdBuilder
 
@@ -81,6 +85,14 @@ class RoborazziWearTilePreviewInvokeTests(
                 .build()
         }.png"
 
+    private val isRoundWithoutChin : Boolean
+        get() {
+            val device = WearDevicePreviewInfoParser.parse(preview.previewInfo.device)!!
+            val isRound = device.shape == Shape.ROUND
+            val hasChin = device.chinSize.value > 0f
+            return isRound && !hasChin
+        }
+
     @GraphicsMode(GraphicsMode.Mode.NATIVE)
     @Config(sdk = [35])
     @Test
@@ -92,6 +104,7 @@ class RoborazziWearTilePreviewInvokeTests(
         setFontScale(preview.previewInfo.fontScale)
 
         val wearView = WearTileSnapshotConfigurator(activityScenarioRule.activity)
+            .setTileRoundShapeClipping(Enabled.OnlyDevicesWithChin)
             .previewToView(preview)
 
         activityScenarioRule.activity.setContentView(wearView)
@@ -99,13 +112,10 @@ class RoborazziWearTilePreviewInvokeTests(
         wearView.captureRoboImage(
             filePath = screenshotName(preview),
             // account for round shapes
-            /*
             roborazziOptions =
                 RoborazziOptions(
-                    recordOptions = RecordOptions(applyDeviceCrop = true)
+                    recordOptions = RecordOptions(applyDeviceCrop = isRoundWithoutChin)
                 )
-
-             */
         )
     }
 }

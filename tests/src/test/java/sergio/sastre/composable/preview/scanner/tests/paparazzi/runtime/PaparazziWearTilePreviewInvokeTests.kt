@@ -15,6 +15,8 @@ import sergio.sastre.composable.preview.scanner.tests.paparazzi.utils.paparazziT
 import androidx.wear.tiles.tooling.preview.TilePreviewData
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWithResult
 import sergio.sastre.composable.preview.scanner.tests.paparazzi.utils.DeviceConfigBuilder
+import sergio.sastre.composable.preview.scanner.wear.configuration.TileRoundShapeClipping
+import sergio.sastre.composable.preview.scanner.wear.configuration.TileRoundShapeClipping.Enabled
 
 /**
  * ./gradlew :tests:recordPaparazziDebug --tests 'PaparazziWearTilePreviewInvokeTests' -Plibrary=paparazzi
@@ -42,7 +44,7 @@ class PaparazziWearTilePreviewInvokeTests(
     val paparazzi = Paparazzi(
         environment = detectEnvironment().copy(compileSdkVersion = 34),
         deviceConfig = DeviceConfigBuilder
-            .build(preview.previewInfo)
+            .buildWear(preview.previewInfo.device)
             .copy(locale = preview.previewInfo.locale.ifBlank { "en" })
             .copy(fontScale = preview.previewInfo.fontScale),
         theme = "android:Theme.DeviceDefault",
@@ -53,6 +55,7 @@ class PaparazziWearTilePreviewInvokeTests(
     @Test
     fun snapshot() {
         val wearView = WearTileSnapshotConfigurator(paparazzi.context)
+            .setTileRoundShapeClipping(Enabled.OnlyDevicesWithChin)
             .previewToView(preview)
 
         paparazzi.snapshot(

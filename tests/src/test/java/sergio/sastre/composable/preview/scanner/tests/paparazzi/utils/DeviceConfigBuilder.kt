@@ -10,9 +10,9 @@ import com.android.resources.ScreenRatio
 import com.android.resources.ScreenRound
 import com.android.resources.ScreenSize
 import sergio.sastre.composable.preview.scanner.android.device.DevicePreviewInfoParser
-import sergio.sastre.composable.preview.scanner.android.device.domain.Device
 import sergio.sastre.composable.preview.scanner.android.device.types.Wear
 import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewInfo
+import sergio.sastre.composable.preview.scanner.wear.device.WearDevicePreviewInfoParser
 
 object DeviceConfigBuilder {
     fun build(previewDevice: String): DeviceConfig {
@@ -29,12 +29,15 @@ object DeviceConfigBuilder {
         )
     }
 
-    fun build(wearTile: WearTilePreviewInfo): DeviceConfig {
+    fun buildWear(previewDevice: String): DeviceConfig {
         val parsedDevice =
-            DevicePreviewInfoParser.parse(
-                wearTile.device,
-                Wear.WEAR_OS_SMALL_ROUND.device
-            )?.inPx() ?: return DeviceConfig()
+            WearDevicePreviewInfoParser.parse(previewDevice)?.inPx() ?: return DeviceConfig()
+
+        // if chinSize, it has to be NOTROUND & set externally
+        val shape = when (parsedDevice.chinSize.value > 0f) {
+            true -> ScreenRound.NOTROUND
+            false -> ScreenRound.valueOf(parsedDevice.shape.name)
+        }
 
         return DeviceConfig(
             screenHeight = parsedDevice.dimensions.height.toInt(),
@@ -44,7 +47,7 @@ object DeviceConfigBuilder {
             ydpi = parsedDevice.densityDpi, // not 100% precise
             size = ScreenSize.valueOf(parsedDevice.screenSize.name),
             ratio = ScreenRatio.valueOf(parsedDevice.screenRatio.name),
-            //screenRound = ScreenRound.valueOf(parsedDevice.shape.name),
+            screenRound = shape,
             orientation = ScreenOrientation.valueOf(parsedDevice.orientation.name)
         )
     }

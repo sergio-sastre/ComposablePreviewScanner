@@ -3,7 +3,10 @@ package sergio.sastre.composable.preview.scanner.wear.configuration
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -30,18 +33,50 @@ import sergio.sastre.composable.preview.scanner.android.device.types.Wear
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWithResult
 import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewInfo
 
+sealed interface TileRoundShapeClipping {
+    /** Disables all shape & chin clipping (full rectangle) */
+    data object Disabled : TileRoundShapeClipping
+
+    /** Round shape clipping options */
+    sealed interface Enabled : TileRoundShapeClipping {
+        /**
+         * Clips ALL round devices:
+         * - If device has a chin -> Clips circle + flat chin cut.
+         * - If device has no chin -> Clips full circle.
+         */
+        data object AllRoundDevices : Enabled
+
+        /**
+         * Clips ONLY devices that have a chin (circle + flat chin cut).
+         * If the device has no chin (standard round or rectangular), clipping is skipped.
+         *
+         * This is useful for Paparazzi & Roborazzi tests, where using this in combination with setting
+         * the Round shape in the Device Config if is Round Without Chin in Paparazzi
+         * or using RecordOptions(applyDeviceCrop = isRoundWithoutChin) in Roborazzi results into a smaller screenshot image
+         * in disk space
+         */
+        data object OnlyDevicesWithChin : Enabled
+
+        /**
+         * Clips round devices as full circles (ignores chin cut even if device has a chin).
+         */
+        data object IgnoreChin : Enabled
+    }
+}
+
 class WearTileSnapshotConfigurator(
     private val context: Context
 ) {
-    private var ignoreShape: Boolean = false
-    private var ignoreChinSize: Boolean = false
+    private var roundShapeClipping: TileRoundShapeClipping =
+        TileRoundShapeClipping.Enabled.AllRoundDevices
 
-    fun ignoreShape(ignore: Boolean = true) = apply {
-        this.ignoreShape = ignore
-    }
-
-    fun ignoreChinSize(ignore: Boolean = true) = apply {
-        this.ignoreChinSize = ignore
+    /**
+     * Enables or disables round shape clipping.
+     * If not set, the default is [TileRoundShapeClipping.Enabled.AllRoundDevices]
+     * so applies clipping (circle + chin) to all Round devices
+     */
+    fun setTileRoundShapeClipping(mode: TileRoundShapeClipping) = apply {
+        this.roundShapeClipping = mode
     }
 
     fun previewToView(
@@ -69,8 +104,23 @@ class WearTileSnapshotConfigurator(
             DevicePreviewInfoParser.parse(device, default) ?: default
         val deviceInDp = deviceParser.inDp()
         val deviceInPx = deviceParser.inPx()
-        val isRound = if (ignoreShape) false else deviceParser.shape == Shape.ROUND
-        val chinSizePx = if (ignoreChinSize) 0f else deviceInPx.chinSize.value
+
+        val hasChin = deviceParser.shape == Shape.ROUND && deviceInPx.chinSize.value > 0f
+
+        val isRound = when (roundShapeClipping) {
+            TileRoundShapeClipping.Enabled.AllRoundDevices,
+            TileRoundShapeClipping.Enabled.IgnoreChin -> deviceParser.shape == Shape.ROUND
+            TileRoundShapeClipping.Enabled.OnlyDevicesWithChin -> hasChin
+            TileRoundShapeClipping.Disabled -> false
+        }
+
+        val chinSizePx = when (roundShapeClipping) {
+            TileRoundShapeClipping.Enabled.AllRoundDevices,
+            TileRoundShapeClipping.Enabled.OnlyDevicesWithChin -> deviceInPx.chinSize.value
+            TileRoundShapeClipping.Enabled.IgnoreChin,
+            TileRoundShapeClipping.Disabled -> 0f
+        }
+
         val widthDp = deviceInDp.dimensions.width
         val heightDp = deviceInDp.dimensions.height
         val widthPx = deviceInPx.dimensions.width.toInt()
@@ -161,6 +211,10 @@ private class ChinClippedFrameLayout(
     }
 
     private val clipPath = Path()
+    private val outerPath = Path()
+    private val clearPaint = Paint().apply {
+        xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
+    }
     private var lastWidth = -1
     private var lastHeight = -1
 
@@ -196,6 +250,14 @@ private class ChinClippedFrameLayout(
         } else {
             clipPath.addRect(0f, 0f, w.toFloat(), h.toFloat(), Path.Direction.CW)
         }
+
+        outerPath.reset()
+        if (isRound) {
+            val fullRect = Path().apply {
+                addRect(0f, 0f, w.toFloat(), h.toFloat(), Path.Direction.CW)
+            }
+            outerPath.op(fullRect, clipPath, Path.Op.DIFFERENCE)
+        }
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -211,5 +273,9 @@ private class ChinClippedFrameLayout(
         }
         super.dispatchDraw(canvas)
         canvas.restoreToCount(saveCount)
+
+        if (!outerPath.isEmpty) {
+            canvas.drawPath(outerPath, clearPaint)
+        }
     }
 }
