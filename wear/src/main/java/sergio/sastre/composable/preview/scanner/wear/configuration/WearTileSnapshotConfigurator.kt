@@ -1,7 +1,9 @@
 package sergio.sastre.composable.preview.scanner.wear.configuration
 
 import android.content.Context
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Path
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -31,7 +33,16 @@ import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewInfo
 class WearTileSnapshotConfigurator(
     private val context: Context
 ) {
-    private val rootView = FrameLayout(context)
+    private var ignoreShape: Boolean = false
+    private var ignoreChinSize: Boolean = false
+
+    fun ignoreShape(ignore: Boolean = true) = apply {
+        this.ignoreShape = ignore
+    }
+
+    fun ignoreChinSize(ignore: Boolean = true) = apply {
+        this.ignoreChinSize = ignore
+    }
 
     fun previewToView(
         preview: ComposablePreviewWithResult<WearTilePreviewInfo, TilePreviewData>,
@@ -58,13 +69,14 @@ class WearTileSnapshotConfigurator(
             DevicePreviewInfoParser.parse(device, default) ?: default
         val deviceInDp = deviceParser.inDp()
         val deviceInPx = deviceParser.inPx()
-        val isRound = deviceParser.shape == Shape.ROUND
+        val isRound = if (ignoreShape) false else deviceParser.shape == Shape.ROUND
+        val chinSizePx = if (ignoreChinSize) 0f else deviceInPx.chinSize.value
         val widthDp = deviceInDp.dimensions.width
         val heightDp = deviceInDp.dimensions.height
         val widthPx = deviceInPx.dimensions.width.toInt()
         val heightPx = deviceInPx.dimensions.height.toInt()
 
-        val container = rootView
+        val container = ChinClippedFrameLayout(context, isRound, chinSizePx)
         container.layoutParams = ViewGroup.LayoutParams(widthPx, heightPx)
 
         val deviceParams = buildDeviceParameters(widthDp.toInt(), heightDp.toInt(), isRound)
@@ -136,4 +148,68 @@ class WearTileSnapshotConfigurator(
                 .addPlatformDataProvider(provider, *platformDataValues.all.keys.toTypedArray())
                 .build()
         } ?: TileRenderer(context, Runnable::run) { _ -> /* no-op loader */ }
+}
+
+private class ChinClippedFrameLayout(
+    context: Context,
+    private val isRound: Boolean,
+    private val chinSizePx: Float,
+) : FrameLayout(context) {
+
+    init {
+        setWillNotDraw(false)
+    }
+
+    private val clipPath = Path()
+    private var lastWidth = -1
+    private var lastHeight = -1
+
+    private fun updateClipPath(w: Int, h: Int) {
+        if (w <= 0 || h <= 0) return
+        if (w == lastWidth && h == lastHeight) return
+        lastWidth = w
+        lastHeight = h
+
+        clipPath.reset()
+        if (isRound && chinSizePx > 0f) {
+            val enlargedOval = Path().apply {
+                addOval(
+                    0f,
+                    0f,
+                    w.toFloat(),
+                    h.toFloat() + chinSizePx,
+                    Path.Direction.CW,
+                )
+            }
+            val visibleScreenRect = Path().apply {
+                addRect(
+                    0f,
+                    0f,
+                    w.toFloat(),
+                    h.toFloat(),
+                    Path.Direction.CW,
+                )
+            }
+            clipPath.op(enlargedOval, visibleScreenRect, Path.Op.INTERSECT)
+        } else if (isRound) {
+            clipPath.addCircle(w / 2f, h / 2f, w / 2f, Path.Direction.CW)
+        } else {
+            clipPath.addRect(0f, 0f, w.toFloat(), h.toFloat(), Path.Direction.CW)
+        }
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        updateClipPath(w, h)
+    }
+
+    override fun dispatchDraw(canvas: Canvas) {
+        updateClipPath(width, height)
+        val saveCount = canvas.save()
+        if (!clipPath.isEmpty) {
+            canvas.clipPath(clipPath)
+        }
+        super.dispatchDraw(canvas)
+        canvas.restoreToCount(saveCount)
+    }
 }

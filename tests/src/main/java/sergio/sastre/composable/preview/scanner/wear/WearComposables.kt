@@ -76,7 +76,7 @@ fun statefulTilePreview(context: Context) = TilePreviewData {
     ).build()
 }
 
-@Preview(device = "spec:width=250px,height=250px,isRound=true")
+@Preview(device = "spec:width=250px,height=250px,isRound=true, chinSize=15.5px")
 @Preview(device = "spec:width=250dp,height=250dp,isRound=false")
 @Preview(locale = "es", fontScale = 2f)
 fun localeTilePreview(context: Context) = TilePreviewData {

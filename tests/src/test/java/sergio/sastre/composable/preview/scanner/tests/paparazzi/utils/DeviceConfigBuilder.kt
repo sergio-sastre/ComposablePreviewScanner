@@ -44,7 +44,7 @@ object DeviceConfigBuilder {
             ydpi = parsedDevice.densityDpi, // not 100% precise
             size = ScreenSize.valueOf(parsedDevice.screenSize.name),
             ratio = ScreenRatio.valueOf(parsedDevice.screenRatio.name),
-            screenRound = ScreenRound.valueOf(parsedDevice.shape.name),
+            //screenRound = ScreenRound.valueOf(parsedDevice.shape.name),
             orientation = ScreenOrientation.valueOf(parsedDevice.orientation.name)
         )
     }

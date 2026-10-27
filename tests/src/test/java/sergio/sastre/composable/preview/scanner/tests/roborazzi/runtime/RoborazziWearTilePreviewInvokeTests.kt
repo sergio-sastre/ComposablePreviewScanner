@@ -99,10 +99,13 @@ class RoborazziWearTilePreviewInvokeTests(
         wearView.captureRoboImage(
             filePath = screenshotName(preview),
             // account for round shapes
+            /*
             roborazziOptions =
                 RoborazziOptions(
                     recordOptions = RecordOptions(applyDeviceCrop = true)
                 )
+
+             */
         )
     }
 }
