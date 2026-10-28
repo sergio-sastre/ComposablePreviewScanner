@@ -14,8 +14,9 @@ import sergio.sastre.composable.preview.scanner.wear.screenshotid.WearTilePrevie
 import sergio.sastre.composable.preview.scanner.tests.paparazzi.utils.paparazziTestNameSnapshotHandler
 import androidx.wear.tiles.tooling.preview.TilePreviewData
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWithResult
+import sergio.sastre.composable.preview.scanner.core.preview.getAnnotation
 import sergio.sastre.composable.preview.scanner.tests.paparazzi.utils.DeviceConfigBuilder
-import sergio.sastre.composable.preview.scanner.wear.configuration.TileRoundShapeClipping
+import sergio.sastre.composable.preview.scanner.wear.PaparazziConfig
 import sergio.sastre.composable.preview.scanner.wear.configuration.TileRoundShapeClipping.Enabled
 
 /**
@@ -30,6 +31,7 @@ class PaparazziWearTilePreviewInvokeTests(
         private val wearCachedBuildTimePreviews by lazy {
             WearTilePreviewScanner()
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.wear")
+                .includeAnnotationInfoForAllOf(PaparazziConfig::class.java)
                 .includePrivatePreviews()
                 .getPreviews()
         }
@@ -40,6 +42,15 @@ class PaparazziWearTilePreviewInvokeTests(
             wearCachedBuildTimePreviews
     }
 
+    val defaultMaxPercentDifference = 0.0
+    val maxPercentDifference: Double
+        get() = preview.getAnnotation<PaparazziConfig>()?.let { config ->
+            when (config.onlyApplyToDevice == preview.previewInfo.device) {
+                true -> config.maxPercentDifference
+                false -> defaultMaxPercentDifference
+            }
+        } ?: defaultMaxPercentDifference
+
     @get:Rule
     val paparazzi = Paparazzi(
         environment = detectEnvironment().copy(compileSdkVersion = 34),
@@ -49,7 +60,7 @@ class PaparazziWearTilePreviewInvokeTests(
             .copy(fontScale = preview.previewInfo.fontScale),
         theme = "android:Theme.DeviceDefault",
         renderingMode = SessionParams.RenderingMode.NORMAL,
-        snapshotHandler = paparazziTestNameSnapshotHandler()
+        snapshotHandler = paparazziTestNameSnapshotHandler(maxPercentDifference),
     )
 
     @Test

@@ -23,6 +23,11 @@ import androidx.wear.protolayout.ModifiersBuilders.Background
 import androidx.wear.protolayout.ModifiersBuilders.Modifiers
 import sergio.sastre.composable.preview.scanner.R
 
+annotation class PaparazziConfig(
+    val maxPercentDifference: Double,
+    val onlyApplyToDevice: String,
+)
+
 @Preview(device = WearDevices.LARGE_ROUND)
 @Preview(device = WearDevices.SMALL_ROUND)
 @Preview(device = WearDevices.RECT)
@@ -76,7 +81,12 @@ fun statefulTilePreview(context: Context) = TilePreviewData {
     ).build()
 }
 
-@Preview(device = "spec:width=250px,height=250px,isRound=true, chinSize=15.5px")
+private const val chinSizeDevice = "spec:width=250px,height=250px,isRound=true, chinSize=15.5px"
+@PaparazziConfig(
+    maxPercentDifference = 0.00196,
+    onlyApplyToDevice = chinSizeDevice // avoid error in Pipeline
+)
+@Preview(device = chinSizeDevice)
 @Preview(device = "spec:width=250dp,height=250dp,isRound=false")
 @Preview(locale = "es", fontScale = 2f)
 fun localeTilePreview(context: Context) = TilePreviewData {
