@@ -129,7 +129,12 @@ class WearTileSnapshotConfigurator(
         val container = ChinClippedFrameLayout(context, isRound, chinSizePx)
         container.layoutParams = ViewGroup.LayoutParams(widthPx, heightPx)
 
-        val deviceParams = buildDeviceParameters(widthDp.toInt(), heightDp.toInt(), isRound)
+        val deviceParams = buildDeviceParameters(
+            widthDp = widthDp.toInt(),
+            heightDp = heightDp.toInt(),
+            density = deviceParser.densityDpi / 160f,
+            isRound = isRound
+        )
         val tileRequest =
             RequestBuilders.TileRequest.Builder().setDeviceConfiguration(deviceParams).build()
         val tile: TileBuilders.Tile = data.onTileRequest(tileRequest)
@@ -170,12 +175,13 @@ class WearTileSnapshotConfigurator(
     private fun buildDeviceParameters(
         widthDp: Int,
         heightDp: Int,
+        density: Float,
         isRound: Boolean
     ): DeviceParameters {
         return DeviceParameters.Builder()
             .setScreenWidthDp(widthDp)
             .setScreenHeightDp(heightDp)
-            .setScreenDensity(2.0f)
+            .setScreenDensity(density)
             .setScreenShape(
                 if (isRound) SCREEN_SHAPE_ROUND else SCREEN_SHAPE_RECT
             )
