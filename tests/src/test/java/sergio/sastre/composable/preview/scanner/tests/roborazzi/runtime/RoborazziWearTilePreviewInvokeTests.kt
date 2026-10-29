@@ -25,8 +25,8 @@ import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowSta
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWithResult
 import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewScanner
 import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewInfo
-import sergio.sastre.composable.preview.scanner.wear.configuration.TileRoundShapeClipping
-import sergio.sastre.composable.preview.scanner.wear.configuration.TileRoundShapeClipping.Enabled
+import sergio.sastre.composable.preview.scanner.wear.configuration.SkipShapeClipping
+import sergio.sastre.composable.preview.scanner.wear.configuration.SkipShapeClipping.ROUND_WITHOUT_CHIN
 import sergio.sastre.composable.preview.scanner.wear.configuration.WearTileSnapshotConfigurator
 import sergio.sastre.composable.preview.scanner.wear.device.WearDevicePreviewInfoParser
 import sergio.sastre.composable.preview.scanner.wear.device.domain.RobolectricWearDeviceQualifierBuilder
@@ -104,7 +104,7 @@ class RoborazziWearTilePreviewInvokeTests(
         setFontScale(preview.previewInfo.fontScale)
 
         val wearView = WearTileSnapshotConfigurator(activityScenarioRule.activity)
-            .setTileRoundShapeClipping(Enabled.OnlyDevicesWithChin)
+            .skipShapeClipping(ROUND_WITHOUT_CHIN)
             .previewToView(preview)
 
         activityScenarioRule.activity.setContentView(wearView)

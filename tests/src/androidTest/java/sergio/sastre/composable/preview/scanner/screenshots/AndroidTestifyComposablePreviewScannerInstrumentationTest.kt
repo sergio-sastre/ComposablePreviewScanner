@@ -10,7 +10,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import sergio.sastre.composable.preview.scanner.MainActivity
+import sergio.sastre.composable.preview.scanner.ScreenshotTestActivity
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
 import sergio.sastre.composable.preview.scanner.android.screenshotid.AndroidPreviewScreenshotIdBuilder
@@ -26,7 +26,7 @@ import sergio.sastre.uitesting.utils.utils.waitForActivity
 import sergio.sastre.uitesting.utils.utils.waitForComposeView
 
 /**
- * ./gradlew :tests:screenshotRecord -PincludeSourceSetScreenshotTest
+ * ./gradlew :tests:screenshotRecord -PtestClass=sergio.sastre.composable.preview.scanner.screenshots.TestifyComposablePreviewScannerInstrumentationInvokeTest -PincludeSourceSetScreenshotTest
  *
  * if executed without gradle property -PincludeSourceSetScreenshotTest,
  * it should throw ClassInScreenshotTestSourceSetNotFoundException
@@ -84,7 +84,7 @@ class TestifyComposablePreviewScannerInstrumentationInvokeTest(
     val screenshotRule = ScreenshotScenarioRule()
 
     @get:Rule
-    val composableRule = activityScenarioForActivityRule<MainActivity>()
+    val composableRule = activityScenarioForActivityRule<ScreenshotTestActivity>()
 
     @ScreenshotInstrumentation
     @Test
@@ -100,7 +100,10 @@ class TestifyComposablePreviewScannerInstrumentationInvokeTest(
                     .waitForActivity()
                     .waitForComposeView()
             }
-            .configure { captureMethod = ::pixelCopyCapture }
+            .configure {
+                captureMethod = ::pixelCopyCapture
+                hideSoftKeyboard = false
+            }
             .generateDiffs(true)
             .assertSame(
                 name = AndroidPreviewScreenshotIdBuilder(preview)

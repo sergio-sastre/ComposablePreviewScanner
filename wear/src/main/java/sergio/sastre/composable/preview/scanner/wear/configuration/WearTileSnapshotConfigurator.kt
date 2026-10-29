@@ -33,50 +33,38 @@ import sergio.sastre.composable.preview.scanner.android.device.types.Wear
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWithResult
 import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewInfo
 
-sealed interface TileRoundShapeClipping {
-    /** Disables all shape & chin clipping (full rectangle) */
-    data object Disabled : TileRoundShapeClipping
-
-    /** Round shape clipping options */
-    sealed interface Enabled : TileRoundShapeClipping {
-        /**
-         * Clips ALL round devices:
-         * - If device has a chin -> Clips circle + flat chin cut.
-         * - If device has no chin -> Clips full circle.
-         */
-        data object AllRoundDevices : Enabled
-
-        /**
-         * Clips ONLY devices that have a chin (circle + flat chin cut).
-         * If the device has no chin (standard round or rectangular), clipping is skipped.
-         *
-         * This is useful for Paparazzi & Roborazzi tests, where using this in combination with setting
-         * the Round shape in the Device Config if is Round Without Chin in Paparazzi
-         * or using RecordOptions(applyDeviceCrop = isRoundWithoutChin) in Roborazzi results into a smaller screenshot image
-         * in disk space
-         */
-        data object OnlyDevicesWithChin : Enabled
-
-        /**
-         * Clips round devices as full circles (ignores chin cut even if device has a chin).
-         */
-        data object IgnoreChin : Enabled
-    }
+enum class SkipShapeClipping {
+    /** 
+     * Skips custom canvas clipping for round devices WITHOUT a chin. 
+     * Use when the testing library (Roborazzi/Paparazzi) handles standard round devices natively,
+     * WARNING: Ensure the library does not set shape to ROUND if it is a round device with chin
+     */
+    ROUND_WITHOUT_CHIN,
+    
+    /** 
+     * Skips custom canvas clipping (round shape and chin) for ALL devices.
+     */
+    ALWAYS,
+    
+    /** 
+     * NEVER skips custom canvas clipping. All round/chin devices are clipped by the configurator.
+     * Use when the testing library (Testify) does not handle clipping.
+     */
+    NEVER
 }
 
 class WearTileSnapshotConfigurator(
     private val context: Context
 ) {
-    private var roundShapeClipping: TileRoundShapeClipping =
-        TileRoundShapeClipping.Enabled.AllRoundDevices
+    private var skipShapeClipping: SkipShapeClipping = SkipShapeClipping.NEVER
 
     /**
      * Enables or disables round shape clipping.
-     * If not set, the default is [TileRoundShapeClipping.Enabled.AllRoundDevices]
+     * If not set, the default is [SkipShapeClipping.NEVER]
      * so applies clipping (circle + chin) to all Round devices
      */
-    fun setTileRoundShapeClipping(mode: TileRoundShapeClipping) = apply {
-        this.roundShapeClipping = mode
+    fun skipShapeClipping(mode: SkipShapeClipping) = apply {
+        this.skipShapeClipping = mode
     }
 
     fun previewToView(
@@ -107,18 +95,16 @@ class WearTileSnapshotConfigurator(
 
         val hasChin = deviceParser.shape == Shape.ROUND && deviceInPx.chinSize.value > 0f
 
-        val isRound = when (roundShapeClipping) {
-            TileRoundShapeClipping.Enabled.AllRoundDevices,
-            TileRoundShapeClipping.Enabled.IgnoreChin -> deviceParser.shape == Shape.ROUND
-            TileRoundShapeClipping.Enabled.OnlyDevicesWithChin -> hasChin
-            TileRoundShapeClipping.Disabled -> false
+        val isRound = when (skipShapeClipping) {
+            SkipShapeClipping.NEVER -> deviceParser.shape == Shape.ROUND
+            SkipShapeClipping.ROUND_WITHOUT_CHIN -> hasChin
+            SkipShapeClipping.ALWAYS -> false
         }
 
-        val chinSizePx = when (roundShapeClipping) {
-            TileRoundShapeClipping.Enabled.AllRoundDevices,
-            TileRoundShapeClipping.Enabled.OnlyDevicesWithChin -> deviceInPx.chinSize.value
-            TileRoundShapeClipping.Enabled.IgnoreChin,
-            TileRoundShapeClipping.Disabled -> 0f
+        val chinSizePx = when (skipShapeClipping) {
+            SkipShapeClipping.NEVER,
+            SkipShapeClipping.ROUND_WITHOUT_CHIN -> deviceInPx.chinSize.value
+            SkipShapeClipping.ALWAYS -> 0f
         }
 
         val widthDp = deviceInDp.dimensions.width
