@@ -10,7 +10,6 @@ kotlin {
 
 dependencies {
     api(project(":core"))
-    implementation(libs.kotlin.reflect)
     implementation (libs.classgraph)
 }
 
@@ -23,7 +22,7 @@ publishing {
             }
             groupId = "sergio.sastre.composable.preview.scanner"
             artifactId = "android"
-            version = "0.9.3"
+            version = "0.10.0"
         }
     }
 }
