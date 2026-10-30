@@ -96,7 +96,6 @@ testify {
 
 dependencies {
     implementation(project(":android"))
-    implementation(project(":jvm"))
     implementation(project(":custompreviews"))
     implementation(project(":glance"))
     implementation(project(":wear"))

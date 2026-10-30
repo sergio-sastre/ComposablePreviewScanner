@@ -2,7 +2,7 @@
 
 ![composable_preview_scanner_overview_deprecated.png](composable_preview_scanner_overview_deprecated.png)
 > [!WARNING]
-> The `:common` module is not available since 0.10.0 and was deprecated since 0.9.0. The `:jvm` module is deprecated and will be removed in version 0.10.0.
+> The `:common` and `:jvm` modules are not available since 0.10.0 and were deprecated since 0.9.0.
 > Starting with Compose Multiplatform 1.10.0-beta02, Common and Desktop `@Preview` annotations are deprecated in favour of the Android `@Preview` annotation (`androidx.compose.ui.tooling.preview.Preview`), which can be used across `common` and `desktop` platforms as well.
 > After migrating to these Android `@Preview`s, please migrate to using `AndroidComposablePreviewScanner` as described in the main [README.md](README.md).
 
@@ -30,7 +30,7 @@ Assuming that you have:
 
 Here is how you could also run screenshot tests for those Compose Multiplatform `@Previews` together, for instance, with Roborazzi (would also work with Paparazzi or any Instrumentation-based library).
 
-1. Add `:common` dependency for ComposablePreviewScanner (versions 0.9.x and earlier only):
+1. Add `:common` dependency from ComposablePreviewScanner (versions 0.9.x and earlier only):
 ```kotlin
 // Maven Central
 testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:common:<version>")
@@ -47,7 +47,7 @@ You can find [a video on how to set it with Roborazzi here](https://www.youtube.
 Compose-Desktop previews have `AnnotationRetention.SOURCE` and therefore it is not visible to ClassGraph.
 However, it is also possible to workaround this limitation with ComposablePreviewScanner as follows.
 
-1. Add `:jvm` dependency from ComposablePreviewScanner 0.2.0+ and use Roborazzi:
+1. Add `:jvm` dependency from ComposablePreviewScanner (versions 0.2.0+ to 0.9.x only) and use Roborazzi:
 ```kotlin
 // Maven Central
 testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:jvm:<version>")

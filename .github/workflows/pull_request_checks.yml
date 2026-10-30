@@ -20,7 +20,7 @@ jobs:
           - { name: 'paparazziPreviewsSourceSet', command: 'paparazziPreviewsSourceSet -Pverify=true', artifact: 'paparazzi-source-set-reports', path: 'tests/build/paparazzi/' }
           - { name: 'roborazziPreviewsRuntime', command: 'roborazziPreviewsRuntime -Pverify=true', artifact: 'roborazzi-runtime-reports', path: 'tests/build/reports/roborazzi/' }
           - { name: 'roborazziPreviewsSourceSet', command: 'roborazziPreviewsSourceSet -Pverify=true', artifact: 'roborazzi-source-set-reports', path: 'tests/build/reports/roborazzi/' }
-          - { name: 'metalavaCheck', command: 'core:metalavaCheckCompatibility android:metalavaCheckCompatibility glance:metalavaCheckCompatibilityRelease wear:metalavaCheckCompatibilityRelease jvm:metalavaCheckCompatibility --parallel', artifact: '', path: '' }
+          - { name: 'metalavaCheck', command: 'core:metalavaCheckCompatibility android:metalavaCheckCompatibility glance:metalavaCheckCompatibilityRelease wear:metalavaCheckCompatibilityRelease --parallel', artifact: '', path: '' }
     name: ${{ matrix.task.name }}
     steps:
       - uses: actions/checkout@v4
