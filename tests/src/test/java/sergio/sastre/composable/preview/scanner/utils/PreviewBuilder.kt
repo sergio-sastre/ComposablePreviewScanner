@@ -4,7 +4,6 @@ package sergio.sastre.composable.preview.scanner.utils
 import androidx.compose.runtime.Composable
 import io.github.classgraph.AnnotationInfoList
 import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
-import sergio.sastre.composable.preview.scanner.common.CommonPreviewInfo
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWithResult
 import sergio.sastre.composable.preview.scanner.glance.GlancePreviewInfo
@@ -77,24 +76,6 @@ fun previewBuilder(
 )
 
 fun previewBuilder(
-    previewInfo: CommonPreviewInfo = CommonPreviewInfo(),
-    previewIndex: Int? = null,
-    previewParameterDisplayName: String? = null,
-    otherAnnotationsInfo: AnnotationInfoList? = null,
-    declaringClass: String = "",
-    methodName: String = "",
-    methodParameters: String = "",
-): ComposablePreview<CommonPreviewInfo> = createComposablePreview(
-    previewInfo = previewInfo,
-    previewIndex = previewIndex,
-    previewParameterDisplayName = previewParameterDisplayName,
-    otherAnnotationsInfo = otherAnnotationsInfo,
-    declaringClass = declaringClass,
-    methodName = methodName,
-    methodParameters = methodParameters,
-)
-
-fun previewBuilder(
     previewInfo: GlancePreviewInfo = GlancePreviewInfo(),
     previewIndex: Int? = null,
     previewParameterDisplayName: String? = null,
@@ -123,25 +104,6 @@ fun androidPreviewBuilder(
     methodParameters: String = "",
 ): ComposablePreview<AndroidPreviewInfo> = createComposablePreview(
     previewInfo = AndroidPreviewInfo(widthDp = widthDp, heightDp = heightDp),
-    previewIndex = previewIndex,
-    previewParameterDisplayName = previewParameterDisplayName,
-    otherAnnotationsInfo = otherAnnotationsInfo,
-    declaringClass = declaringClass,
-    methodName = methodName,
-    methodParameters = methodParameters,
-)
-
-fun commonPreviewBuilder(
-    widthDp: Int = -1,
-    heightDp: Int = -1,
-    previewIndex: Int? = null,
-    previewParameterDisplayName: String? = null,
-    otherAnnotationsInfo: AnnotationInfoList? = null,
-    declaringClass: String = "",
-    methodName: String = "",
-    methodParameters: String = "",
-): ComposablePreview<CommonPreviewInfo> = createComposablePreview(
-    previewInfo = CommonPreviewInfo(widthDp = widthDp, heightDp = heightDp),
     previewIndex = previewIndex,
     previewParameterDisplayName = previewParameterDisplayName,
     otherAnnotationsInfo = otherAnnotationsInfo,

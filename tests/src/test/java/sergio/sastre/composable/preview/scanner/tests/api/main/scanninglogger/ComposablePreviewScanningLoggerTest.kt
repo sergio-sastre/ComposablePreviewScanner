@@ -13,7 +13,6 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHea
 import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
 import sergio.sastre.composable.preview.scanner.glance.GlanceComposablePreviewScanner
-import sergio.sastre.composable.preview.scanner.common.CommonComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.utils.SystemOutputTestRule
 
 @Suppress("DEPRECATION")
@@ -41,12 +40,6 @@ class ComposablePreviewScanningLoggerTest<T>(
                     Scanner(
                         previewScanner = AndroidComposablePreviewScanner(),
                         annotation = "androidx.compose.ui.tooling.preview.Preview"
-                    )
-                },
-                {
-                    Scanner(
-                        previewScanner = CommonComposablePreviewScanner(),
-                        annotation = "org.jetbrains.compose.ui.tooling.preview.Preview"
                     )
                 },
                 {
