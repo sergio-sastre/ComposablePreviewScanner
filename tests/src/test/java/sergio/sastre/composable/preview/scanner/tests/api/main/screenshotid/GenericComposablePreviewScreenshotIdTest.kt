@@ -10,7 +10,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import sergio.sastre.composable.preview.scanner.core.preview.screenshotid.PreviewScreenshotIdBuilder
 import sergio.sastre.composable.preview.scanner.utils.AndroidScreenshotIdBuilderProvider
-import sergio.sastre.composable.preview.scanner.utils.CommonScreenshotIdBuilderProvider
 import sergio.sastre.composable.preview.scanner.utils.GlanceScreenshotIdBuilderProvider
 import sergio.sastre.composable.preview.scanner.utils.PreviewScreenshotIdBuilderProvider
 import sergio.sastre.composable.preview.scanner.utils.SizedPreviewScreenshotIdBuilderProvider
@@ -23,7 +22,6 @@ class GenericComposablePreviewScreenshotIdTest {
         val provider: PreviewScreenshotIdBuilderProvider<PreviewScreenshotIdBuilder<*>>
     ) {
         ANDROID(AndroidScreenshotIdBuilderProvider),
-        COMMON(CommonScreenshotIdBuilderProvider),
         GLANCE(GlanceScreenshotIdBuilderProvider),
         WEAR_TILE(WearTileScreenshotIdBuilderProvider),
     }
@@ -35,7 +33,6 @@ class GenericComposablePreviewScreenshotIdTest {
         val provider: SizedPreviewScreenshotIdBuilderProvider<PreviewScreenshotIdBuilder<*>>
     ) {
         ANDROID(AndroidScreenshotIdBuilderProvider),
-        COMMON(CommonScreenshotIdBuilderProvider),
         GLANCE(GlanceScreenshotIdBuilderProvider),
     }
 

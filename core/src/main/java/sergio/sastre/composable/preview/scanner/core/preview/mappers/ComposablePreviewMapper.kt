@@ -7,7 +7,6 @@ import java.lang.reflect.Method
 
 /**
  * Used to map @Previews with params passed via @PreviewParameter or the like, so it creates a sequence of executable ComposablePreviews for each value.
- * This is necessary because Android and CommonMain @Previews use different @PreviewParameter (same name but different path).
  *
  * @param previewMethod The method annotated with @Preview
  * @param previewInfo The info passed into the @Preview, like name, group, apiLevel, locale, uiMode...
