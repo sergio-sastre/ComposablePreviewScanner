@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ComposablePreviewScanner</string>
+    <string name="tile_hello">Hello</string>
 </resources>

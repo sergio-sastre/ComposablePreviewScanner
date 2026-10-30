@@ -9,7 +9,7 @@
 
 [![](https://img.shields.io/badge/Kotlin-Multiplatform-%237f52ff?logo=kotlin&logoColor=white)](https://kotlinlang.org/docs/multiplatform.html) [![](https://img.shields.io/badge/Platform-Android-3DDC84?logo=android&logoColor=white)](#) [![](https://img.shields.io/badge/Platform-Desktop-0078D4?logo=openjdk&logoColor=white)](#)<br/>
 
-A Compose Multiplatform friendly library to help auto-generate screenshot tests from Composable Previews (e.g. **Android**, **Glance**) with any screenshot testing library:
+A Compose Multiplatform friendly library to help auto-generate screenshot tests from Composable Previews (e.g. **Android**, **Glance**, **Wear Tiles**) with any screenshot testing library:
 JVM-based (i.e. Paparazzi, Roborazzi) as well as Instrumentation-based (i.e. Shot, Dropshots, Android-Testify, etc.).
 
 > [!IMPORTANT]
@@ -32,7 +32,7 @@ With over **400,000 monthly downloads** (JitPack + Maven Central), Composable Pr
 | Scans previews in different sources sets<sup>2</sup> | ✅&nbsp;main<br/>✅&nbsp;screenshotTest<br/>✅&nbsp;androidTest | ✅&nbsp;main<br/>❌&nbsp;screenshotTest<br/>❌&nbsp;androidTest | ❌&nbsp;main<br/>✅&nbsp;screenshotTest<br/>❌&nbsp;androidTest |
 | Preview Infos available                              | ✅                                                         | ❌<sup>3</sup>                                      | ✅                                           |
 | Specific Config (e.g. for Libs) available            | ✅<sup>4</sup>                                             | ❌                                                  | ⚠️<sup>5</sup>                               |
-| Supported Preview types                              | ✅&nbsp;Android<br/>✅&nbsp;Glance<br/>❌&nbsp;Wear<sup>6</sup> | ✅&nbsp;Android<br/>❌&nbsp;Glance<br/>❌&nbsp;Wear | ✅&nbsp;Android<br/>❌&nbsp;Glance<br/>❌&nbsp;Wear |
+| Supported Preview types                              | ✅&nbsp;Android<br/>✅&nbsp;Glance<br/>✅&nbsp;Wear&nbsp;Tile<sup>6</sup> | ✅&nbsp;Android<br/>❌&nbsp;Glance<br/>❌&nbsp;Wear&nbsp;Tile | ✅&nbsp;Android<br/>❌&nbsp;Glance<br/>❌&nbsp;Wear&nbsp;Tile |
 | Supported Locations in Compose Multiplatform         | ✅&nbsp;Android<br/>✅&nbsp;Desktop/JVM<br/>✅&nbsp;Common | ✅&nbsp;Android<br/>❌&nbsp;Desktop/JVM<sup>7</sup><br/>❌&nbsp;Common | ✅&nbsp;Android<br/>❌&nbsp;Desktop/JVM<br/>❌&nbsp;Common |
 
 <details>
@@ -43,7 +43,7 @@ With over **400,000 monthly downloads** (JitPack + Maven Central), Composable Pr
 <sup>3</sup> Showkase components only hold information about the Composable, but not about the Preview Info (i.e. ApiLevel, Locale, UiMode, FontScale...).<br/><br/>
 <sup>4</sup> ComposablePreviewScanner supports adding extra lib-config (e.g. Paparazzi's Rendering Mode or Roborazzi's compare options) in the form of annotations that are additionally added to the preview. You can check how in the examples below in [Jvm Screenshot Tests](#jvm-screenshot-tests) and [Instrumentation Screenshot Tests](#instrumentation-screenshot-tests) respectively.<br/><br/>
 <sup>5</sup> Compose Preview Screenshot Testing supports *only general tolerance* via gradle plugin from version [0.0.1-alpha06](https://developer.android.com/studio/preview/compose-screenshot-testing#001-alpha06)<br/><br/>
-<sup>6</sup> Wear Previews support is planned<br/><br/>
+<sup>6</sup> Wear Tile Previews (@androidx.wear.tiles.tooling.preview.Preview) are supported since 0.10.0+<br/><br/>
 <sup>7</sup> [Showkase: Compose Multiplatform Support](https://github.com/airbnb/Showkase/issues/364)
 </details><br/>
 
@@ -104,6 +104,10 @@ dependencies {
     // glance previews (androidx.glance.preview.Preview)
     // supported since 0.7.0+ in android target
     testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:glance:<version>")
+
+    // wear tile previews (androidx.wear.tiles.tooling.preview.Preview)
+    // supported since 0.10.0+ in android target
+    testImplementation("io.github.sergio-sastre.ComposablePreviewScanner:wear:<version>")
 }
 ```
 
@@ -126,6 +130,10 @@ dependencies {
     // glance previews (androidx.glance.preview.Preview)
     // supported since 0.7.0+ in android target
     testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:glance:<version>")
+
+    // wear tile previews (androidx.wear.tiles.tooling.preview.Preview)
+    // supported since 0.10.0+ in android target
+    testImplementation("com.github.sergio-sastre.ComposablePreviewScanner:wear:<version>")
 }
 ```
 
@@ -144,14 +152,15 @@ If you encounter any issues when executing the screenshot tests, take a look at 
 
 ### Related
 1. [Glance Previews Support](#glance-previews-support)
-2. [Compose Multiplatform Support](#compose-multiplatform-support)
+2. [Wear Tile Previews Support](#wear-tile-previews-support)
+3. [Compose Multiplatform Support](#compose-multiplatform-support)
 
 ## API   
-`AndroidComposablePreviewScanner` and `GlanceComposablePreviewScanner` have the same API.
+`AndroidComposablePreviewScanner`, `GlanceComposablePreviewScanner` and `WearTilePreviewScanner` share a similar API.
 The API is pretty simple:
 
 ```kotlin
-AndroidComposablePreviewScanner() // or GlanceComposablePreviewScanner()
+AndroidComposablePreviewScanner() // or GlanceComposablePreviewScanner() or WearTilePreviewScanner()
     // Optional to log scanning info like scanning time or amount of previews found
     .enableScanningLogs()
     // Optional to scan previews in compiled classes of other source sets, like "screenshotTest" or "androidTest"
@@ -185,9 +194,9 @@ AndroidComposablePreviewScanner() // or GlanceComposablePreviewScanner()
     )
     // Optional to also provide private Previews
     .includePrivatePreviews()
-    // Optional to filter by any previewInfo: heightDp, widthDp...
+    // Optional to filter by any previewInfo: name, group...
     .filterPreviews {
-        previewInfo ->  previewInfo.heightDP >= 800
+        previewInfo ->  previewInfo.group == "ignore_for_testing"
     }
     // ---
     .getPreviews()
@@ -881,7 +890,7 @@ Let's say we want to enable some custom Dropshots Config for some Previews, for 
 ## Advanced Usage
 ### Screenshot File Names
 ComposablePreviewScanner also provides classes to customize the name of the generated screenshots based on its Preview Info.
-These are `AndroidPreviewScreenshotIdBuilder` and `GlancePreviewScreenshotIdBuilder` respectively, and they both share the same API.
+These are `AndroidPreviewScreenshotIdBuilder`, `GlancePreviewScreenshotIdBuilder` and `WearTilePreviewScreenshotIdBuilder` respectively, and they share the same API.
 By default, these classes do not include the Preview Info in the screenshot file name if it is the same as its default value, but it can be configured to behave differently.
 That means, for @Preview(showBackground = false), showBackground would not be included in the screenshot file name since it is the default.
 
@@ -986,6 +995,30 @@ To write such screenshot tests you have to:
 3. Write the Parameterized screenshot test like in the examples above.
 
 <sup>1</sup> Unfortunately, Paparazzi is not able to always render screenshots accurately for Glance `@Preview`s without `widthDp`.
+</details>
+
+## Wear Tile Previews Support
+You can find executable examples in this repo with different screenshot libraries:
+- [Roborazzi](tests/src/test/java/sergio/sastre/composable/preview/scanner/tests/roborazzi/runtime/RoborazziWearTilePreviewInvokeTests.kt)
+- [Paparazzi](tests/src/test/java/sergio/sastre/composable/preview/scanner/tests/paparazzi/runtime/PaparazziWearTilePreviewInvokeTests.kt)
+- [Android-Testify](tests/src/androidTest/java/sergio/sastre/composable/preview/scanner/screenshots/AndroidTestifyWearTilePreviewScannerInstrumentationTest.kt) (Check the [instrumentation-screenshot-tests](#instrumentation-screenshot-tests) section before)
+
+<details>
+<summary>Click to see Wear Tile implementation details</summary>
+
+To write such screenshot tests you have to:
+1. Add `:wear` dependency for ComposablePreviewScanner e.g. `io.github.sergio-sastre.ComposablePreviewScanner:wear:<version>`. This contains scanner and snapshot configuration utilities for `@androidx.wear.tiles.tooling.preview.Preview`.
+2. Use `WearTilePreviewScanner()` to scan `@androidx.wear.tiles.tooling.preview.Preview` annotations.
+3. Invoking `preview()` on the returned `ComposablePreviewWithResult` provides `TilePreviewData`. Convert it to a `View` using `WearTileSnapshotConfigurator`:
+   ```kotlin
+   val wearView = WearTileSnapshotConfigurator(context)
+       .skipShapeClipping(SkipShapeClipping.ROUND_WITHOUT_CHIN) // Recommended for Paparazzi & Roborazzi
+       .previewToView(preview)
+   ```
+   > [!NOTE]
+   > For instrumentation testing libraries (e.g. Android-Testify, Dropshots, Shot), use `SkipShapeClipping.NEVER` so that `WearTileSnapshotConfigurator` handles device shape and chin clipping natively.
+4. Generate screenshot file names using `WearTilePreviewScreenshotIdBuilder(preview)`.
+5. Write the Parameterized screenshot test like in the executable examples linked above.
 </details>
 
 # Conferences & Community
@@ -1117,7 +1150,7 @@ internal fun MapScreenPreview() {
 </details>
 
 # Roadmap 
-- [ ] **Support for Wear Previews**
+- [x] **Support for Wear Tile Previews**
 - [ ] **Better integration in Gradle tasks**: This helps to speed up the test execution & provide better support for instrumentation testing libraries.
 - [ ] **KSP support**: This enables running Screenshot tests for Previews in `common` on other platforms (e.g. iOS) with libraries that support it (e.g. Roborazzi).
 - [ ] **General speed and memory consumption improvements**

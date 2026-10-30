@@ -57,7 +57,7 @@ class RoborazziGlanceComposablePreviewInvokeTests(
     // This is necessary because Robolectric may not automatically register activities from external libraries
     @get:Rule(order = 0)
     val addActivityToRobolectricRule = object : TestWatcher() {
-        override fun starting(description: Description?) {
+        override fun starting(description: Description) {
             super.starting(description)
             val appContext: Application = getApplicationContext()
             Shadows.shadowOf(appContext.packageManager).addActivityIfNotPresent(
@@ -78,7 +78,6 @@ class RoborazziGlanceComposablePreviewInvokeTests(
             GlancePreviewScreenshotIdBuilder(preview).build()
         }.png"
 
-    @OptIn(ExperimentalRoborazziApi::class)
     @GraphicsMode(GraphicsMode.Mode.NATIVE)
     @Config(sdk = [33], qualifiers = RobolectricDeviceQualifiers.Nexus7)
     @Test
