@@ -39,19 +39,18 @@ android {
 
 dependencies {
     api(project(":core"))
-    api(libs.androidx.ui.tooling.preview)
-    api("androidx.wear.compose:compose-material:1.4.0")
-    api("androidx.wear.compose:compose-ui-tooling:1.4.0")
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation("androidx.wear.compose:compose-material:1.4.0")
+    implementation("androidx.wear.compose:compose-ui-tooling:1.4.0")
     api("androidx.wear.tiles:tiles-tooling-preview:1.6.2")
     debugImplementation("androidx.wear.tiles:tiles-tooling:1.6.2")
-    api("androidx.wear.tiles:tiles-renderer:1.6.2")
-    api("androidx.wear:wear-tooling-preview:1.0.0")
-        api("androidx.wear.protolayout:protolayout:1.2.1")
-    api("androidx.wear.protolayout:protolayout-material:1.2.1")
-    api("androidx.wear.protolayout:protolayout-expression-pipeline:1.2.1")
+    implementation("androidx.wear.tiles:tiles-renderer:1.6.2")
+    implementation("androidx.wear:wear-tooling-preview:1.0.0")
+    implementation("androidx.wear.protolayout:protolayout:1.2.1")
+    implementation("androidx.wear.protolayout:protolayout-material:1.2.1")
+    implementation("androidx.wear.protolayout:protolayout-expression-pipeline:1.2.1")
     
     implementation(libs.classgraph)
-    implementation(libs.kotlin.reflect)
     implementation(libs.androidx.compose.runtime)
     implementation("androidx.compose.ui:ui:1.7.0")
 }
@@ -64,7 +63,7 @@ publishing {
             }
             groupId = "sergio.sastre.composable.preview.scanner"
             artifactId = "wear"
-            version = "0.9.2"
+            version = "0.10.0"
         }
     }
 }
