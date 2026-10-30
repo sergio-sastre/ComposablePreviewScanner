@@ -52,7 +52,6 @@ composablePreviewPaparazzi {
 dependencies {
     // Composable preview scanner
     testImplementation(project(":android"))
-    testImplementation(project(":jvm"))
     implementation(project(":paparazzi-plugin-annotations"))
 
     implementation(platform(libs.androidx.compose.bom))

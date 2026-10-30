@@ -27,7 +27,6 @@ rootProject.name = "ComposablePreviewScanner"
 include(":tests")
 include(":core")
 include(":android")
-include(":jvm")
 include(":custompreviews")
 include(":paparazzi-plugin-tests")
 include(":glance")
