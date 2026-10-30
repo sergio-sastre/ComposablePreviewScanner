@@ -81,6 +81,10 @@ fun checkPerformanceThreshold(jsonFile: File, reportsDir: File, thresholdMs: Dou
             .takeLast(rawValuesCount)
     } else emptyList()
 
+    if (ramValues.isEmpty()) {
+        throw GradleException("No valid RAM allocation measurements")
+    }
+
     val avgRam = if (ramValues.isNotEmpty()) ramValues.average() else 0.0
 
     val speedPassed = score <= thresholdMs
