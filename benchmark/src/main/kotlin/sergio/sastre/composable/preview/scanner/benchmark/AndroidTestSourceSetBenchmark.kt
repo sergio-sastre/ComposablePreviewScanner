@@ -29,6 +29,7 @@ import java.util.Locale
 open class AndroidTestSourceSetBenchmark {
 
     private var bytesBeforeIteration = 0L
+    private var invocationsInIteration = 0L
 
     @Setup(Level.Trial)
     fun setupTrial() {
@@ -40,6 +41,7 @@ open class AndroidTestSourceSetBenchmark {
 
     @Setup(Level.Iteration)
     fun setupIteration() {
+        invocationsInIteration = 0L
         val mxBean = ManagementFactory.getThreadMXBean()
         val threadMXBean = mxBean as? com.sun.management.ThreadMXBean
         bytesBeforeIteration = threadMXBean?.getThreadAllocatedBytes(Thread.currentThread().id) ?: 0L
@@ -48,6 +50,7 @@ open class AndroidTestSourceSetBenchmark {
     @OptIn(RequiresShowStandardStreams::class, RequiresLargeHeap::class)
     @Benchmark
     fun benchmarkScanner(): List<*> {
+        invocationsInIteration++
         val testsModuleBuildDir = File(".").canonicalFile.parentFile.resolve("tests/build").absolutePath
 
         return AndroidComposablePreviewScanner()
@@ -68,8 +71,12 @@ open class AndroidTestSourceSetBenchmark {
         val bytesAfterIteration = threadMXBean?.getThreadAllocatedBytes(Thread.currentThread().id) ?: 0L
 
         if (bytesBeforeIteration > 0L && bytesAfterIteration > 0L) {
-            val allocatedMb = (bytesAfterIteration - bytesBeforeIteration) / (1024.0 * 1024.0)
-            recordRamUsage(allocatedMb)
+            val totalAllocatedBytes = bytesAfterIteration - bytesBeforeIteration
+            if (totalAllocatedBytes > 0L && invocationsInIteration > 0L) {
+                val bytesPerInvocation = totalAllocatedBytes.toDouble() / invocationsInIteration
+                val allocatedMb = bytesPerInvocation / (1024.0 * 1024.0)
+                recordRamUsage(allocatedMb)
+            }
         }
     }
 

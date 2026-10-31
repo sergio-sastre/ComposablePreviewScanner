@@ -1,5 +1,7 @@
 import java.io.File
+import java.net.URI
 import java.util.Locale
+import org.gradle.api.specs.Spec
 
 // ==============================================================================
 // CONFIGURATION THRESHOLDS
@@ -16,6 +18,10 @@ val generateBenchmarkHtmlReport = tasks.register("generateBenchmarkHtmlReport") 
     group = "Verification"
     description = "Generates an interactive Chart.js HTML report from the latest benchmark json results"
 
+    onlyIf(Spec {
+        tasks.named("mainBenchmark").get().state.failure == null
+    })
+
     doLast {
         val reportsDir = layout.buildDirectory.dir("reports/benchmarks").get().asFile
         val jsonFile = findLatestJsonReport(reportsDir)
@@ -29,12 +35,15 @@ val verifyBenchmarkThreshold = tasks.register("verifyBenchmarkThreshold") {
     group = "Verification"
     description = "Fails the build if benchmark speed or RAM allocation exceeds configured thresholds"
 
+    onlyIf(Spec {
+        tasks.named("mainBenchmark").get().state.failure == null
+    })
+
     doLast {
         val reportsDir = layout.buildDirectory.dir("reports/benchmarks").get().asFile
         val jsonFile = findLatestJsonReport(reportsDir)
-        if (jsonFile != null) {
-            checkPerformanceThreshold(jsonFile, reportsDir, maxAllowedScoreMs, maxAllowedRamMb)
-        }
+            ?: throw GradleException("No benchmark JSON report found in ${reportsDir.absolutePath}")
+        checkPerformanceThreshold(jsonFile, reportsDir, maxAllowedScoreMs, maxAllowedRamMb)
     }
 }
 
@@ -50,6 +59,11 @@ afterEvaluate {
         dependsOn(":tests:compileDebugAndroidTestKotlin")
         dependsOn(":custompreviews:compileDebugKotlin")
 
+        doFirst {
+            val reportsDir = layout.buildDirectory.dir("reports/benchmarks").get().asFile
+            reportsDir.walkTopDown().filter { it.extension == "json" }.forEach { it.delete() }
+        }
+
         // Run report generation and threshold verification after benchmark execution
         finalizedBy(generateBenchmarkHtmlReport, verifyBenchmarkThreshold)
     }
@@ -63,10 +77,31 @@ fun findLatestJsonReport(reportsDir: File): File? {
     return jsonFiles.maxByOrNull { it.lastModified() }
 }
 
+fun extractPrimaryMetricScore(jsonText: String): Double {
+    val primaryMetricRegex = Regex(""""primaryMetric"\s*:\s*\{[^}]*?"score"\s*:\s*([^,\s{}]+)""")
+    val match = primaryMetricRegex.find(jsonText)
+        ?: throw GradleException("Invalid benchmark report: 'primaryMetric.score' is missing.")
+
+    val rawGroup = match.groups[1]?.value ?: ""
+    val rawToken = rawGroup.trim()
+
+    if (rawToken.startsWith("\"") || rawToken.endsWith("\"")) {
+        throw GradleException("Invalid benchmark report: 'primaryMetric.score' must be a JSON number, but was quoted: $rawToken")
+    }
+
+    val score = rawToken.toDoubleOrNull()
+        ?: throw GradleException("Invalid benchmark report: 'primaryMetric.score' is not a valid number: $rawToken")
+
+    if (!score.isFinite()) {
+        throw GradleException("Invalid benchmark report: 'primaryMetric.score' must be a finite number, but was: $score")
+    }
+
+    return score
+}
+
 fun checkPerformanceThreshold(jsonFile: File, reportsDir: File, thresholdMs: Double, thresholdRamMb: Double) {
     val jsonText = jsonFile.readText()
-    val scoreMatch = Regex(""""score"\s*:\s*([\d.]+)""").find(jsonText)
-    val score = scoreMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0
+    val score = extractPrimaryMetricScore(jsonText)
 
     val rawDataMatch = Regex(""""rawData"\s*:\s*\[\s*\[([\d.,\s]+)\]\s*\]""").find(jsonText)
     val rawValuesCount = rawDataMatch?.groupValues?.get(1)
@@ -75,17 +110,17 @@ fun checkPerformanceThreshold(jsonFile: File, reportsDir: File, thresholdMs: Dou
 
     // Read recorded RAM allocation data
     val ramFile = File(reportsDir, "ram_usage.txt")
-    val ramValues = if (ramFile.exists()) {
+    val ramValues: List<Double> = if (ramFile.exists()) {
         ramFile.readLines()
             .mapNotNull { it.trim().toDoubleOrNull() }
             .takeLast(rawValuesCount)
     } else emptyList()
 
     if (ramValues.isEmpty()) {
-        throw GradleException("No valid RAM allocation measurements")
+        throw GradleException("No valid RAM allocation samples found in ${ramFile.absolutePath}")
     }
 
-    val avgRam = if (ramValues.isNotEmpty()) ramValues.average() else 0.0
+    val avgRam = ramValues.average()
 
     val speedPassed = score <= thresholdMs
     val ramPassed = avgRam <= thresholdRamMb
@@ -112,8 +147,7 @@ fun buildHtmlReportFile(reportsDir: File, jsonFile: File) {
     val jsonText = jsonFile.readText()
     val reportFile = File(reportsDir, "report.html")
 
-    val scoreMatch = Regex(""""score"\s*:\s*([\d.]+)""").find(jsonText)
-    val score = scoreMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0
+    val score = extractPrimaryMetricScore(jsonText)
 
     val rawDataMatch = Regex(""""rawData"\s*:\s*\[\s*\[([\d.,\s]+)\]\s*\]""").find(jsonText)
     val rawValues = rawDataMatch?.groupValues?.get(1)
@@ -125,7 +159,7 @@ fun buildHtmlReportFile(reportsDir: File, jsonFile: File) {
 
     // Read recorded RAM allocation data
     val ramFile = File(reportsDir, "ram_usage.txt")
-    val ramValues = if (ramFile.exists()) {
+    val ramValues: List<Double> = if (ramFile.exists()) {
         ramFile.readLines()
             .mapNotNull { it.trim().toDoubleOrNull() }
             .takeLast(rawValues.size)
@@ -134,13 +168,28 @@ fun buildHtmlReportFile(reportsDir: File, jsonFile: File) {
     val avgRam = if (ramValues.isNotEmpty()) ramValues.average() else 0.0
     val avgRamFormatted = String.format(Locale.US, "%.2f", avgRam)
 
+    // Ensure pinned local chart.js script is included alongside report.html
+    val chartJsFile = File(reportsDir, "chart.js")
+    if (!chartJsFile.exists()) {
+        try {
+            val chartJsContent = URI("https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js")
+                .toURL()
+                .openStream()
+                .bufferedReader()
+                .use { it.readText() }
+            chartJsFile.writeText(chartJsContent)
+        } catch (e: Exception) {
+            println("Warning: Could not download chart.js locally: ${e.message}")
+        }
+    }
+
     val html = """
     <!DOCTYPE html>
     <html>
     <head>
         <meta charset="UTF-8">
         <title>Benchmark HTML Report</title>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="chart.js"></script>
         <style>
             body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 40px; background: #f8f9fa; color: #333; }
             .card { background: white; padding: 28px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); max-width: 850px; margin: 0 auto 24px auto; }

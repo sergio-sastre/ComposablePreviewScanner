@@ -35,5 +35,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: benchmark-html-report
-          path: benchmark/build/reports/benchmarks/report.html
+          path: |
+            benchmark/build/reports/benchmarks/report.html
+            benchmark/build/reports/benchmarks/chart.js
           retention-days: 7
