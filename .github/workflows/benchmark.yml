@@ -1,0 +1,41 @@
+name: Benchmark & Performance Verification
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  benchmark:
+    name: Benchmark Scanner
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run Benchmark with Baseline + 5% Offset
+        run: ./gradlew :benchmark:benchmark -PexpectedScoreMs=85.0 -PexpectedRamMb=65.0 -PtolerancePercent=5.0
+
+      - name: Upload HTML Benchmark Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-html-report
+          path: |
+            benchmark/build/reports/benchmarks/report.html
+            benchmark/build/reports/benchmarks/chart.js
+          retention-days: 7
