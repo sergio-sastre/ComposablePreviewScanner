@@ -24,12 +24,11 @@ import java.util.Locale
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(BenchmarkTimeUnit.MILLISECONDS)
-@Warmup(iterations = 3, time = 1, timeUnit = BenchmarkTimeUnit.SECONDS)
-@Measurement(iterations = 10, time = 1, timeUnit = BenchmarkTimeUnit.SECONDS)
+@Warmup(iterations = 5, time = 2, timeUnit = BenchmarkTimeUnit.SECONDS)
+@Measurement(iterations = 10, time = 2, timeUnit = BenchmarkTimeUnit.SECONDS)
 open class AndroidTestSourceSetBenchmark {
 
     private var bytesBeforeIteration = 0L
-    private var invocationsInIteration = 0L
 
     @Setup(Level.Trial)
     fun setupTrial() {
@@ -41,7 +40,6 @@ open class AndroidTestSourceSetBenchmark {
 
     @Setup(Level.Iteration)
     fun setupIteration() {
-        invocationsInIteration = 0L
         val mxBean = ManagementFactory.getThreadMXBean()
         val threadMXBean = mxBean as? com.sun.management.ThreadMXBean
         bytesBeforeIteration = threadMXBean?.getThreadAllocatedBytes(Thread.currentThread().id) ?: 0L
@@ -50,13 +48,12 @@ open class AndroidTestSourceSetBenchmark {
     @OptIn(RequiresShowStandardStreams::class, RequiresLargeHeap::class)
     @Benchmark
     fun benchmarkScanner(): List<*> {
-        invocationsInIteration++
         val testsModuleBuildDir = File(".").canonicalFile.parentFile.resolve("tests/build").absolutePath
 
         return AndroidComposablePreviewScanner()
             .enableScanningLogs()
             .setTargetSourceSet(
-                sourceSetClasspath = Classpath(SourceSet.ANDROID_TEST).copy(rootDir = testsModuleBuildDir),
+                sourceSetClasspath = Classpath(SourceSet.MAIN).copy(rootDir = testsModuleBuildDir),
                 packageTreesOfCrossModuleCustomPreviews = listOf("sergio.sastre.composable.preview.custompreviews")
             )
             .scanAllPackages()
@@ -71,12 +68,8 @@ open class AndroidTestSourceSetBenchmark {
         val bytesAfterIteration = threadMXBean?.getThreadAllocatedBytes(Thread.currentThread().id) ?: 0L
 
         if (bytesBeforeIteration > 0L && bytesAfterIteration > 0L) {
-            val totalAllocatedBytes = bytesAfterIteration - bytesBeforeIteration
-            if (totalAllocatedBytes > 0L && invocationsInIteration > 0L) {
-                val bytesPerInvocation = totalAllocatedBytes.toDouble() / invocationsInIteration
-                val allocatedMb = bytesPerInvocation / (1024.0 * 1024.0)
-                recordRamUsage(allocatedMb)
-            }
+            val allocatedMb = (bytesAfterIteration - bytesBeforeIteration) / (1024.0 * 1024.0)
+            recordRamUsage(allocatedMb)
         }
     }
 

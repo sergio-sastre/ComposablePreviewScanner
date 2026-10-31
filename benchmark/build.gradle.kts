@@ -28,7 +28,13 @@ dependencies {
     // Compose dependencies required for MethodFinder reflection on @Composable functions
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.runtime)
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-unit")
     implementation(libs.androidx.ui.tooling.preview)
+
+    // Android framework JVM stubs (required for reflection on Android classes like Path/Context)
+    compileOnly("org.robolectric:android-all:14-robolectric-10818077")
+    runtimeOnly("org.robolectric:android-all:14-robolectric-10818077")
 
     // Ensure scanned classes from :tests and :custompreviews are available on the classpath
     runtimeOnly(files(rootProject.file("tests/build/tmp/kotlin-classes/debug")))

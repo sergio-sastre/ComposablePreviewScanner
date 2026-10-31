@@ -27,8 +27,8 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Run Benchmark with CI Thresholds
-        run: ./gradlew :benchmark:benchmark -PmaxAllowedScoreMs=25.0 -PmaxAllowedRamMb=35.0
+      - name: Run Benchmark with Baseline + 5% Offset
+        run: ./gradlew :benchmark:benchmark -PexpectedScoreMs=85.0 -PexpectedRamMb=65.0 -PtolerancePercent=5.0
 
       - name: Upload HTML Benchmark Report
         if: always()

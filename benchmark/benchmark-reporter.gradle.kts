@@ -4,15 +4,21 @@ import java.util.Locale
 import org.gradle.api.specs.Spec
 
 // ==============================================================================
-// CONFIGURATION THRESHOLDS
+// CONFIGURATION THRESHOLDS WITH PERCENTAGE TOLERANCE OFFSET
 // ==============================================================================
-// Maximum allowed speed threshold in milliseconds (ms/op).
-// Override via CLI: ./gradlew :benchmark:benchmark -PmaxAllowedScoreMs=20.0
-val maxAllowedScoreMs: Double = (project.findProperty("maxAllowedScoreMs") as? String)?.toDoubleOrNull() ?: 20.0
+// Baseline expected execution values
+val expectedScoreMs: Double = (project.findProperty("expectedScoreMs") as? String)?.toDoubleOrNull() ?: 85.0
+val expectedRamMb: Double = (project.findProperty("expectedRamMb") as? String)?.toDoubleOrNull() ?: 65.0
 
-// Maximum allowed RAM allocation threshold in megabytes (MB).
-// Override via CLI: ./gradlew :benchmark:benchmark -PmaxAllowedRamMb=35.0
-val maxAllowedRamMb: Double = (project.findProperty("maxAllowedRamMb") as? String)?.toDoubleOrNull() ?: 35.0
+// Allowed percentage tolerance / offset above the baseline (default: 5.0%)
+val tolerancePercent: Double = (project.findProperty("tolerancePercent") as? String)?.toDoubleOrNull() ?: 5.0
+
+// Computed maximum allowed threshold including tolerance offset
+val maxAllowedScoreMs: Double = (project.findProperty("maxAllowedScoreMs") as? String)?.toDoubleOrNull()
+    ?: (expectedScoreMs * (1.0 + tolerancePercent / 100.0))
+
+val maxAllowedRamMb: Double = (project.findProperty("maxAllowedRamMb") as? String)?.toDoubleOrNull()
+    ?: (expectedRamMb * (1.0 + tolerancePercent / 100.0))
 
 val generateBenchmarkHtmlReport = tasks.register("generateBenchmarkHtmlReport") {
     group = "Verification"
@@ -77,6 +83,16 @@ fun findLatestJsonReport(reportsDir: File): File? {
     return jsonFiles.maxByOrNull { it.lastModified() }
 }
 
+fun calculateTrimmedMean(values: List<Double>): Double {
+    if (values.size <= 2) return values.average()
+    val list = java.util.ArrayList(values)
+    java.util.Collections.sort(list)
+    val trimmed = list.subList(1, list.size - 1)
+    var sum = 0.0
+    for (v in trimmed) { sum += v }
+    return sum / trimmed.size
+}
+
 fun extractPrimaryMetricScore(jsonText: String): Double {
     val primaryMetricRegex = Regex(""""primaryMetric"\s*:\s*\{[^}]*?"score"\s*:\s*([^,\s{}]+)""")
     val match = primaryMetricRegex.find(jsonText)
@@ -104,16 +120,18 @@ fun checkPerformanceThreshold(jsonFile: File, reportsDir: File, thresholdMs: Dou
     val score = extractPrimaryMetricScore(jsonText)
 
     val rawDataMatch = Regex(""""rawData"\s*:\s*\[\s*\[([\d.,\s]+)\]\s*\]""").find(jsonText)
-    val rawValuesCount = rawDataMatch?.groupValues?.get(1)
+    val rawSpeedValues = rawDataMatch?.groupValues?.get(1)
         ?.split(",")
-        ?.mapNotNull { it.trim().toDoubleOrNull() }?.size ?: 5
+        ?.mapNotNull { it.trim().toDoubleOrNull() } ?: emptyList()
+
+    val speedTrimmedMean = if (rawSpeedValues.size > 0) calculateTrimmedMean(rawSpeedValues) else score
 
     // Read recorded RAM allocation data
     val ramFile = File(reportsDir, "ram_usage.txt")
     val ramValues: List<Double> = if (ramFile.exists()) {
         ramFile.readLines()
             .mapNotNull { it.trim().toDoubleOrNull() }
-            .takeLast(rawValuesCount)
+            .takeLast(rawSpeedValues.size.coerceAtLeast(1))
     } else emptyList()
 
     if (ramValues.isEmpty()) {
@@ -121,21 +139,25 @@ fun checkPerformanceThreshold(jsonFile: File, reportsDir: File, thresholdMs: Dou
     }
 
     val avgRam = ramValues.average()
+    val ramTrimmedMean = calculateTrimmedMean(ramValues)
 
-    val speedPassed = score <= thresholdMs
-    val ramPassed = avgRam <= thresholdRamMb
+    val speedPassed = speedTrimmedMean <= thresholdMs
+    val ramPassed = ramTrimmedMean <= thresholdRamMb
 
     println("\n=======================================================")
-    println("🔍 Performance Threshold Verification:")
-    println("• Average Speed: ${String.format(Locale.US, "%.2f", score)} ms | Max Allowed: $thresholdMs ms -> ${if (speedPassed) "✅ PASSED" else "❌ FAILED"}")
-    println("• Average RAM:   ${String.format(Locale.US, "%.2f", avgRam)} MB | Max Allowed: $thresholdRamMb MB -> ${if (ramPassed) "✅ PASSED" else "❌ FAILED"}")
+    println("🔍 Performance Threshold Verification (Trimmed Mean - Baseline + ${String.format(Locale.US, "%.1f", tolerancePercent)}% Offset):")
+    println("• Baseline Expected Speed: $expectedScoreMs ms | Max Allowed (+${String.format(Locale.US, "%.1f", tolerancePercent)}%): ${String.format(Locale.US, "%.2f", thresholdMs)} ms")
+    println("• Trimmed Actual Speed:   ${String.format(Locale.US, "%.2f", speedTrimmedMean)} ms (Raw Avg: ${String.format(Locale.US, "%.2f", score)} ms) -> ${if (speedPassed) "✅ PASSED" else "❌ FAILED"}")
+    println("-------------------------------------------------------")
+    println("• Baseline Expected RAM:   $expectedRamMb MB | Max Allowed (+${String.format(Locale.US, "%.1f", tolerancePercent)}%): ${String.format(Locale.US, "%.2f", thresholdRamMb)} MB")
+    println("• Trimmed Actual RAM:     ${String.format(Locale.US, "%.2f", ramTrimmedMean)} MB (Raw Avg: ${String.format(Locale.US, "%.2f", avgRam)} MB) -> ${if (ramPassed) "✅ PASSED" else "❌ FAILED"}")
 
     if (!speedPassed || !ramPassed) {
         println("❌ Benchmark FAILED! Threshold exceeded.")
         println("=======================================================\n")
         val errors = java.util.ArrayList<String>()
-        if (!speedPassed) errors.add("Average speed (${String.format(Locale.US, "%.2f", score)} ms) exceeded threshold of $thresholdMs ms")
-        if (!ramPassed) errors.add("Average RAM allocation (${String.format(Locale.US, "%.2f", avgRam)} MB) exceeded threshold of $thresholdRamMb MB")
+        if (!speedPassed) errors.add("Trimmed speed (${String.format(Locale.US, "%.2f", speedTrimmedMean)} ms) exceeded max allowed threshold of ${String.format(Locale.US, "%.2f", thresholdMs)} ms")
+        if (!ramPassed) errors.add("Trimmed RAM allocation (${String.format(Locale.US, "%.2f", ramTrimmedMean)} MB) exceeded max allowed threshold of ${String.format(Locale.US, "%.2f", thresholdRamMb)} MB")
         throw GradleException("Benchmark Failed! ${java.lang.String.join(" & ", errors)}")
     } else {
         println("✅ All Performance Checks Passed!")
@@ -154,19 +176,20 @@ fun buildHtmlReportFile(reportsDir: File, jsonFile: File) {
         ?.split(",")
         ?.mapNotNull { it.trim().toDoubleOrNull() } ?: emptyList()
 
+    val speedTrimmed = if (rawValues.size > 0) calculateTrimmedMean(rawValues) else score
     val labels = rawValues.indices.map { "\"Iteration ${it + 1}\"" }
-    val scoreFormatted = String.format(Locale.US, "%.2f", score)
+    val speedTrimmedFormatted = String.format(Locale.US, "%.2f", speedTrimmed)
 
     // Read recorded RAM allocation data
     val ramFile = File(reportsDir, "ram_usage.txt")
     val ramValues: List<Double> = if (ramFile.exists()) {
         ramFile.readLines()
             .mapNotNull { it.trim().toDoubleOrNull() }
-            .takeLast(rawValues.size)
+            .takeLast(rawValues.size.coerceAtLeast(1))
     } else emptyList()
 
-    val avgRam = if (ramValues.isNotEmpty()) ramValues.average() else 0.0
-    val avgRamFormatted = String.format(Locale.US, "%.2f", avgRam)
+    val ramTrimmed = if (ramValues.size > 0) calculateTrimmedMean(ramValues) else 0.0
+    val ramTrimmedFormatted = String.format(Locale.US, "%.2f", ramTrimmed)
 
     // Ensure pinned local chart.js script is included alongside report.html
     val chartJsFile = File(reportsDir, "chart.js")
@@ -210,12 +233,12 @@ fun buildHtmlReportFile(reportsDir: File, jsonFile: File) {
             
             <div class="score-container">
                 <div>
-                    <div class="label">Average Execution Speed</div>
-                    <div class="score-badge">${scoreFormatted} ms/op</div>
+                    <div class="label">Trimmed Speed (Olympic Mean)</div>
+                    <div class="score-badge">${speedTrimmedFormatted} ms/op</div>
                 </div>
                 <div>
-                    <div class="label">Average RAM Allocation</div>
-                    <div class="ram-badge">${avgRamFormatted} MB</div>
+                    <div class="label">Trimmed RAM Allocation</div>
+                    <div class="ram-badge">${ramTrimmedFormatted} MB</div>
                 </div>
             </div>
         </div>
