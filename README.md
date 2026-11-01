@@ -1047,18 +1047,20 @@ The benefits and usage of ComposablePreviewScanner have been featured at major A
 # Engineering Quality
 The core of ComposablePreviewScanner is developed using **Test-Driven Development (TDD)** to ensure maximum stability and reliability across the diverse Compose ecosystem. This rigorous approach is a primary reason for its high adoption rate and minimal bug reports despite handling complex bytecode scanning.
 
-To maintain strict binary compatibility for library consumers, the project uses **Metalava** to track and enforce API standards.
+To maintain strict binary compatibility for library consumers, the project uses **Metalava** to track and enforce public API signatures. Furthermore, performance regressions in speed and RAM allocation are continuously guarded via JetBrains **`kotlinx-benchmark`** using thread-isolated memory tracking (`ThreadMXBean`) and Olympic Mean outlier filtering.
 
 ## Automated Verification
-To ensure continuous quality, the following custom Gradle tasks handle environment prerequisites and integration testing.
+To ensure continuous quality, the following tasks handle environment prerequisites, integration testing, API binary compatibility, and performance verification.
 <details>
 <summary>Click to see the list of custom Gradle tasks</summary>
 
 These tasks are executed locally during development and automatically in our **CI pipeline** for every PR:
-1. API logic tests:`./gradlew :tests:testApi`
+1. API logic tests: `./gradlew :tests:testApi`
 2. SourceSet logic tests: `./gradlew :tests:testSourceSets`
 3. Paparazzi integration tests: `./gradlew :tests:paparazziPreviews` and `./gradlew :tests:paparazziPreviews -Pverify=true`
 4. Roborazzi integration tests: `./gradlew :tests:roborazziPreviews` and `./gradlew :tests:roborazziPreviews -Pverify=true`
+5. API Binary Compatibility (Metalava): `./gradlew apiCheck`
+6. Performance Benchmark & RAM verification: `./gradlew :benchmark:benchmark`
 
 Custom gradle tasks for Android-testify integration tests (i.e. instrumentation screenshot testing libraries) coming soon
 </details>
