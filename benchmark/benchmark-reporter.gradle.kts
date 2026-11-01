@@ -195,9 +195,12 @@ fun buildHtmlReportFile(reportsDir: File, jsonFile: File) {
     val chartJsFile = File(reportsDir, "chart.js")
     if (!chartJsFile.exists()) {
         try {
-            val chartJsContent = URI("https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js")
+            val connection = URI("https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js")
                 .toURL()
-                .openStream()
+                .openConnection()
+            connection.connectTimeout = 10_000
+            connection.readTimeout = 10_000
+            val chartJsContent = connection.getInputStream()
                 .bufferedReader()
                 .use { it.readText() }
             chartJsFile.writeText(chartJsContent)
