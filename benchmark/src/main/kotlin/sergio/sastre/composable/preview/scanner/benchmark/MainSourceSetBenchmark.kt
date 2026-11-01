@@ -26,7 +26,7 @@ import java.util.Locale
 @OutputTimeUnit(BenchmarkTimeUnit.MILLISECONDS)
 @Warmup(iterations = 5, time = 2, timeUnit = BenchmarkTimeUnit.SECONDS)
 @Measurement(iterations = 10, time = 2, timeUnit = BenchmarkTimeUnit.SECONDS)
-open class AndroidTestSourceSetBenchmark {
+open class MainSourceSetBenchmark {
 
     private var bytesBeforeIteration = 0L
 
