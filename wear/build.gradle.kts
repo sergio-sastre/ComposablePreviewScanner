@@ -39,7 +39,6 @@ android {
 
 dependencies {
     api(project(":core"))
-    implementation(libs.androidx.ui.tooling.preview)
     implementation("androidx.wear.compose:compose-material:1.4.0")
     implementation("androidx.wear.compose:compose-ui-tooling:1.4.0")
     api("androidx.wear.tiles:tiles-tooling-preview:1.6.2")
