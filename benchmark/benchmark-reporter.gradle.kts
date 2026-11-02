@@ -52,7 +52,7 @@ val generateBenchmarkHtmlReport = tasks.register("generateBenchmarkHtmlReport") 
 
 val verifyBenchmarkThreshold = tasks.register("verifyBenchmarkThreshold") {
     group = "Verification"
-    description = "Fails the build if benchmark speed or RAM allocation exceeds configured thresholds"
+    description = "Fails the build if benchmark speed or allocated memory per scan exceeds configured thresholds"
 
     dependsOn("mainBenchmark")
 
@@ -162,7 +162,7 @@ fun checkPerformanceThreshold(jsonFile: File, reportsDir: File, thresholdMs: Dou
     } else emptyList()
 
     if (ramValues.isEmpty()) {
-        throw GradleException("No valid RAM allocation samples found in ${ramFile.absolutePath}")
+        throw GradleException("No valid allocated memory samples found in ${ramFile.absolutePath}")
     }
 
     val avgRam = ramValues.average()
@@ -179,15 +179,15 @@ fun checkPerformanceThreshold(jsonFile: File, reportsDir: File, thresholdMs: Dou
     println("• Baseline Expected Speed: ${String.format(Locale.US, "%.2f", expectedScoreMs)} ms | Max Allowed (+${String.format(Locale.US, "%.1f", tolerancePercent)}%): ${String.format(Locale.US, "%.2f", thresholdMs)} ms")
     println("• Trimmed Actual Speed:   ${String.format(Locale.US, "%.2f", speedTrimmedMean)} ms (Raw Avg: ${String.format(Locale.US, "%.2f", score)} ms) [$speedDiffStr vs baseline] -> ${if (speedPassed) "✅ PASSED" else "❌ FAILED"}")
     println("-------------------------------------------------------")
-    println("• Baseline Expected RAM:   ${String.format(Locale.US, "%.2f", expectedRamMb)} MB | Max Allowed (+${String.format(Locale.US, "%.1f", tolerancePercent)}%): ${String.format(Locale.US, "%.2f", thresholdRamMb)} MB")
-    println("• Trimmed Actual RAM:     ${String.format(Locale.US, "%.2f", ramTrimmedMean)} MB (Raw Avg: ${String.format(Locale.US, "%.2f", avgRam)} MB) [$ramDiffStr vs baseline] -> ${if (ramPassed) "✅ PASSED" else "❌ FAILED"}")
+    println("• Baseline Expected Alloc:${String.format(Locale.US, "%.2f", expectedRamMb)} MB | Max Allowed (+${String.format(Locale.US, "%.1f", tolerancePercent)}%): ${String.format(Locale.US, "%.2f", thresholdRamMb)} MB")
+    println("• Trimmed Actual Alloc:${String.format(Locale.US, "%.2f", ramTrimmedMean)} MB (Raw Avg: ${String.format(Locale.US, "%.2f", avgRam)} MB) [$ramDiffStr vs baseline] -> ${if (ramPassed) "✅ PASSED" else "❌ FAILED"}")
 
     if (!speedPassed || !ramPassed) {
         println("❌ Benchmark FAILED! Threshold exceeded.")
         println("=======================================================\n")
         val errors = java.util.ArrayList<String>()
         if (!speedPassed) errors.add("Trimmed speed (${String.format(Locale.US, "%.2f", speedTrimmedMean)} ms, $speedDiffStr vs baseline ${String.format(Locale.US, "%.2f", expectedScoreMs)} ms) exceeded max allowed threshold of ${String.format(Locale.US, "%.2f", thresholdMs)} ms")
-        if (!ramPassed) errors.add("Trimmed RAM allocation (${String.format(Locale.US, "%.2f", ramTrimmedMean)} MB, $ramDiffStr vs baseline ${String.format(Locale.US, "%.2f", expectedRamMb)} MB) exceeded max allowed threshold of ${String.format(Locale.US, "%.2f", thresholdRamMb)} MB")
+        if (!ramPassed) errors.add("Trimmed allocated memory per scan (${String.format(Locale.US, "%.2f", ramTrimmedMean)} MB, $ramDiffStr vs baseline ${String.format(Locale.US, "%.2f", expectedRamMb)} MB) exceeded max allowed threshold of ${String.format(Locale.US, "%.2f", thresholdRamMb)} MB")
         throw GradleException("Benchmark Failed! ${java.lang.String.join(" & ", errors)}")
     } else {
         println("✅ All Performance Checks Passed!")
@@ -282,7 +282,7 @@ fun buildHtmlReportFile(reportsDir: File, jsonFile: File) {
                     <div class="diff-tag ${if (speedPassed) "diff-pass" else "diff-fail"}">${speedDiffStr} vs baseline (${String.format(Locale.US, "%.2f", expectedScoreMs)} ms)</div>
                 </div>
                 <div>
-                    <div class="label">Trimmed RAM Allocation (per scan)</div>
+                    <div class="label">Trimmed Allocated Memory (per scan)</div>
                     <div class="ram-badge">${ramTrimmedFormatted}</div>
                     <div class="diff-tag ${if (ramPassed) "diff-pass" else "diff-fail"}">${ramDiffStr} vs baseline (${String.format(Locale.US, "%.2f", expectedRamMb)} MB)</div>
                 </div>
@@ -295,7 +295,7 @@ fun buildHtmlReportFile(reportsDir: File, jsonFile: File) {
                 <canvas id="speedChart"></canvas>
             </div>
             <div class="card">
-                <h2>💾 RAM Allocation (per scan)</h2>
+                <h2>💾 Allocated Memory (per scan)</h2>
                 <canvas id="ramChart"></canvas>
             </div>
         </div>
@@ -324,13 +324,13 @@ fun buildHtmlReportFile(reportsDir: File, jsonFile: File) {
                 }
             });
 
-            // RAM Chart
+            // Allocated memory chart
             new Chart(document.getElementById('ramChart').getContext('2d'), {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'RAM Allocated (MB)',
+                        label: 'Allocated per scan (MB)',
                         data: [${ramValues.joinToString(", ")}],
                         backgroundColor: 'rgba(5, 150, 105, 0.6)',
                         borderColor: 'rgba(5, 150, 105, 1)',
