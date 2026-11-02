@@ -23,6 +23,11 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.filter.ScanResul
  * @param previewInfoMapper A Mapper that converts an AnnotationParameterValueList into the expected PreviewInfo class, e.g. containing apiLevel, Locale, UiMode, FontScale...
  * @param previewMapperCreator Returns a Mapper that converts a Composable @Preview containing some kind of @PreviewParameter as argument into a Sequence of ComposablePreviews,
  * one for each value provided in that argument
+ *
+ * Note: the underlying previews finder, including the custom preview annotation metadata it loads, is cached
+ * and reused across [findPreviewsFor] calls. The scanner entry points (e.g. scanAllPackages()) refresh it
+ * at the start of each scan. Callers using this class directly, without a scanner, must call one of the
+ * apply... methods (e.g. [applyOverridenClasspath]) to reload the metadata after compiled classes change.
  */
 open class ClasspathPreviewsFinderWithResult<T, R>(
     override val annotationToScanClassName: String,
