@@ -45,7 +45,6 @@ dependencies {
     api(project(":core"))
     api(libs.androidx.glance.appwidget)
     implementation(libs.classgraph)
-    implementation(libs.kotlin.reflect)
 }
 
 //https://www.talentica.com/blogs/publish-your-android-library-on-jitpack-for-better-reachability/
@@ -57,7 +56,7 @@ publishing {
             }
             groupId = "sergio.sastre.composable.preview.scanner"
             artifactId = "glance"
-            version = "0.9.3"
+            version = "0.10.0"
         }
     }
 }
