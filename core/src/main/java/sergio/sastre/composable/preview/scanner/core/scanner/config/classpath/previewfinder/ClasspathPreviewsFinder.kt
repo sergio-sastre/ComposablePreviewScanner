@@ -7,6 +7,7 @@ import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWi
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewInfoMapper
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreator
 import sergio.sastre.composable.preview.scanner.core.preview.mappers.ComposablePreviewMapperCreatorWithResult
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.compiledclass.annotationloader.CustomPreviewAnnotationLoader
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.compiledclass.annotationloader.PackageTreesCustomPreviewAnnotationLoader
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.compiledclass.annotationloader.ScanResultCustomPreviewAnnotationLoader
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.types.buildtime.ComposablePreviewsAtBuildTimeFinderWithResult
@@ -34,33 +35,36 @@ open class ClasspathPreviewsFinderWithResult<T, R>(
 
     private var scanResult: ScanResult? = null
 
-    private val crossModuleCustomPreviewAnnotationLoader by lazy {
+    private var cachedPreviewsFinder: PreviewsFinderWithResult<T, R>? = null
+
+    private val previewsFinder: PreviewsFinderWithResult<T, R>
+        get() = cachedPreviewsFinder ?: createPreviewsFinder().also { cachedPreviewsFinder = it }
+
+    private fun createPreviewsFinder(): PreviewsFinderWithResult<T, R> =
+        overridenClassPath
+            ?.let {
+                ComposablePreviewsInCompiledClassFinderWithResult(
+                    annotationToScanClassName = annotationToScanClassName,
+                    previewInfoMapper = previewInfoMapper,
+                    previewMapperCreator = previewMapperCreator,
+                    classLoader = SourceSetClassLoader(it),
+                    crossModuleCustomPreviewAnnotationLoader = createCustomPreviewAnnotationLoader()
+                )
+            }
+            ?: ComposablePreviewsAtBuildTimeFinderWithResult(
+                annotationToScanClassName = annotationToScanClassName,
+                previewInfoMapper = previewInfoMapper,
+                previewMapperCreator = previewMapperCreator,
+                classLoader = ReflectionClassLoader(),
+            )
+
+    private fun createCustomPreviewAnnotationLoader(): CustomPreviewAnnotationLoader =
         scanResult?.let {
             ScanResultCustomPreviewAnnotationLoader(it, annotationToScanClassName)
         } ?: PackageTreesCustomPreviewAnnotationLoader(
             crossModuleCustomPreviewsPackageTrees,
             annotationToScanClassName
         )
-    }
-
-    private val previewsFinder: PreviewsFinderWithResult<T, R>
-        get() =
-            overridenClassPath
-                ?.let {
-                    ComposablePreviewsInCompiledClassFinderWithResult(
-                        annotationToScanClassName = annotationToScanClassName,
-                        previewInfoMapper = previewInfoMapper,
-                        previewMapperCreator = previewMapperCreator,
-                        classLoader = SourceSetClassLoader(it),
-                        crossModuleCustomPreviewAnnotationLoader = crossModuleCustomPreviewAnnotationLoader
-                    )
-                }
-                ?: ComposablePreviewsAtBuildTimeFinderWithResult(
-                    annotationToScanClassName = annotationToScanClassName,
-                    previewInfoMapper = previewInfoMapper,
-                    previewMapperCreator = previewMapperCreator,
-                    classLoader = ReflectionClassLoader(),
-                )
 
     override fun findPreviewsFor(
         classInfo: ClassInfo,
@@ -70,14 +74,17 @@ open class ClasspathPreviewsFinderWithResult<T, R>(
 
     open fun applyOverridenClasspath(classPath: Classpath): ClasspathPreviewsFinderWithResult<T, R> = apply {
         overridenClassPath = classPath
+        cachedPreviewsFinder = null
     }
 
     open fun applyCustomPreviewsScanResult(customPreviewsScanResult: ScanResult): ClasspathPreviewsFinderWithResult<T, R> = apply {
         this.scanResult = customPreviewsScanResult
+        cachedPreviewsFinder = null
     }
 
     open fun applyCrossModuleCustomPreviewPackageTrees(packageTrees: List<String>): ClasspathPreviewsFinderWithResult<T, R> = apply {
         crossModuleCustomPreviewsPackageTrees.addAll(packageTrees)
+        cachedPreviewsFinder = null
     }
 }
 
