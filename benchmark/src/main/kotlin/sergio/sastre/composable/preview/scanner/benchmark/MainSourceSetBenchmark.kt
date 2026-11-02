@@ -29,12 +29,12 @@ import java.util.Locale
 open class MainSourceSetBenchmark {
 
     private var bytesBeforeIteration = 0L
+    private var scansInIteration = 0L
 
     @Setup(Level.Trial)
     fun setupTrial() {
-        val ramFile = File("build/reports/benchmarks/ram_usage.txt")
-        if (ramFile.exists()) {
-            ramFile.delete()
+        listOf("ram_usage.txt", "ram_per_iteration.txt").forEach {
+            File("build/reports/benchmarks/$it").delete()
         }
     }
 
@@ -43,11 +43,13 @@ open class MainSourceSetBenchmark {
         val mxBean = ManagementFactory.getThreadMXBean()
         val threadMXBean = mxBean as? com.sun.management.ThreadMXBean
         bytesBeforeIteration = threadMXBean?.getThreadAllocatedBytes(Thread.currentThread().id) ?: 0L
+        scansInIteration = 0L
     }
 
     @OptIn(RequiresShowStandardStreams::class, RequiresLargeHeap::class)
     @Benchmark
     fun benchmarkScanner(): List<*> {
+        scansInIteration++
         val testsModuleBuildDir = File(".").canonicalFile.parentFile.resolve("tests/build").absolutePath
 
         return AndroidComposablePreviewScanner()
@@ -67,14 +69,15 @@ open class MainSourceSetBenchmark {
         val threadMXBean = mxBean as? com.sun.management.ThreadMXBean
         val bytesAfterIteration = threadMXBean?.getThreadAllocatedBytes(Thread.currentThread().id) ?: 0L
 
-        if (bytesBeforeIteration > 0L && bytesAfterIteration > 0L) {
-            val allocatedMb = (bytesAfterIteration - bytesBeforeIteration) / (1024.0 * 1024.0)
-            recordRamUsage(allocatedMb)
+        if (bytesBeforeIteration > 0L && bytesAfterIteration > 0L && scansInIteration > 0L) {
+            val allocatedMbPerIteration = (bytesAfterIteration - bytesBeforeIteration) / (1024.0 * 1024.0)
+            recordRamUsage("ram_usage.txt", allocatedMbPerIteration / scansInIteration)
+            recordRamUsage("ram_per_iteration.txt", allocatedMbPerIteration)
         }
     }
 
-    private fun recordRamUsage(memMb: Double) {
-        val ramFile = File("build/reports/benchmarks/ram_usage.txt")
+    private fun recordRamUsage(fileName: String, memMb: Double) {
+        val ramFile = File("build/reports/benchmarks/$fileName")
         ramFile.parentFile?.mkdirs()
         ramFile.appendText("${String.format(Locale.US, "%.2f", memMb)}\n")
     }
