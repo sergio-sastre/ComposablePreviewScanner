@@ -40,6 +40,14 @@ open class ClasspathPreviewsFinderWithResult<T, R>(
     private val previewsFinder: PreviewsFinderWithResult<T, R>
         get() = cachedPreviewsFinder ?: createPreviewsFinder().also { cachedPreviewsFinder = it }
 
+    /**
+     * Drops the cached finder, so the next scan reloads custom preview metadata from current classes.
+     * The finder is still reused within a single scan.
+     */
+    internal fun resetCachedPreviewsFinder() {
+        cachedPreviewsFinder = null
+    }
+
     private fun createPreviewsFinder(): PreviewsFinderWithResult<T, R> =
         overridenClassPath
             ?.let {
