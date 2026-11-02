@@ -18,6 +18,7 @@ roborazzi = "1.60.0"
 roborazziCompose = "1.60.0"
 paparazzi = "1.3.5"
 metalava = "0.5.0"
+kotlinxBenchmark = "0.4.12"
 
 testParameterInjector = "1.18"
 utils = "2.7.0"
@@ -54,6 +55,7 @@ android-ui-testing-utils = { module = "com.github.sergio-sastre.AndroidUiTesting
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "uiTestJunit4" }
+kotlinx-benchmark-runtime = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "kotlinxBenchmark" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -65,3 +67,4 @@ paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
 testify = { id = "dev.testify" , version.ref = "testify"}
 jetbrains-kotlin-plugin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 metalava = { id = "me.tylerbwong.gradle.metalava", version.ref = "metalava"}
+kotlinx-benchmark = { id = "org.jetbrains.kotlinx.benchmark", version.ref = "kotlinxBenchmark" }
