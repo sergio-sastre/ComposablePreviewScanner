@@ -31,7 +31,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Run Benchmark with Baseline + 5% Offset
-        run: ./gradlew :benchmark:benchmark -PexpectedScoreMs=85.0 -PexpectedRamMb=65.0 -PtolerancePercent=5.0
+        run: ./gradlew :benchmark:benchmark -PexpectedScoreMs=85.0 -PexpectedRamMb=3.0 -PtolerancePercent=5.0
 
       - name: Upload HTML Benchmark Report
         if: always()

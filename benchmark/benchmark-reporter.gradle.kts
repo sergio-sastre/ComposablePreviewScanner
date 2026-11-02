@@ -14,7 +14,7 @@ fun readNumericProperty(name: String, default: Double): Double {
 
 // Baseline expected execution values
 val expectedScoreMs: Double = readNumericProperty("expectedScoreMs", 85.0)
-val expectedRamMb: Double = readNumericProperty("expectedRamMb", 65.0)
+val expectedRamMb: Double = readNumericProperty("expectedRamMb", 3.0)
 
 // Allowed percentage tolerance / offset above the baseline (default: 5.0%)
 val tolerancePercent: Double = readNumericProperty("tolerancePercent", 5.0)
@@ -282,7 +282,7 @@ fun buildHtmlReportFile(reportsDir: File, jsonFile: File) {
                     <div class="diff-tag ${if (speedPassed) "diff-pass" else "diff-fail"}">${speedDiffStr} vs baseline (${String.format(Locale.US, "%.2f", expectedScoreMs)} ms)</div>
                 </div>
                 <div>
-                    <div class="label">Trimmed RAM Allocation</div>
+                    <div class="label">Trimmed RAM Allocation (per scan)</div>
                     <div class="ram-badge">${ramTrimmedFormatted}</div>
                     <div class="diff-tag ${if (ramPassed) "diff-pass" else "diff-fail"}">${ramDiffStr} vs baseline (${String.format(Locale.US, "%.2f", expectedRamMb)} MB)</div>
                 </div>
@@ -295,7 +295,7 @@ fun buildHtmlReportFile(reportsDir: File, jsonFile: File) {
                 <canvas id="speedChart"></canvas>
             </div>
             <div class="card">
-                <h2>💾 RAM Allocation</h2>
+                <h2>💾 RAM Allocation (per scan)</h2>
                 <canvas id="ramChart"></canvas>
             </div>
         </div>
