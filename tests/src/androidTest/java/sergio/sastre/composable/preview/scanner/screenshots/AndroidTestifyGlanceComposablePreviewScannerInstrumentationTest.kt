@@ -10,7 +10,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import sergio.sastre.composable.preview.scanner.MainActivity
+import sergio.sastre.composable.preview.scanner.ScreenshotTestActivity
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.MAIN
@@ -24,10 +24,7 @@ import sergio.sastre.uitesting.utils.activityscenario.activityScenarioForActivit
 import sergio.sastre.uitesting.utils.utils.waitForView
 
 /**
- * ./gradlew :tests:screenshotRecord -PincludeSourceSetScreenshotTest
- *
- * if executed without gradle property -PincludeSourceSetScreenshotTest,
- * it should throw ClassInScreenshotTestSourceSetNotFoundException
+ * ./gradlew :tests:screenshotRecord -PtestClass=sergio.sastre.composable.preview.scanner.screenshots.TestifyGlanceComposablePreviewScannerInstrumentationInvokeTest
  */
 @RunWith(Parameterized::class)
 class TestifyGlanceComposablePreviewScannerInstrumentationInvokeTest(
@@ -48,9 +45,6 @@ class TestifyGlanceComposablePreviewScannerInstrumentationInvokeTest(
                 )
                 .includePrivatePreviews()
                 .getPreviews()
-                .apply {
-                    println("Preview count: ${this.size}")
-                }
         }
 
         @JvmStatic
@@ -62,7 +56,7 @@ class TestifyGlanceComposablePreviewScannerInstrumentationInvokeTest(
     val screenshotRule = ScreenshotScenarioRule()
 
     @get:Rule
-    val composableRule = activityScenarioForActivityRule<MainActivity>()
+    val composableRule = activityScenarioForActivityRule<ScreenshotTestActivity>()
 
     @ScreenshotInstrumentation
     @Test
@@ -83,7 +77,10 @@ class TestifyGlanceComposablePreviewScannerInstrumentationInvokeTest(
                     (glanceView as ViewGroup).getChildAt(0)
                 }
             }
-            .configure { captureMethod = ::pixelCopyCapture }
+            .configure {
+                captureMethod = ::pixelCopyCapture
+                hideSoftKeyboard = false
+            }
             .generateDiffs(true)
             .assertSame(
                 name = GlancePreviewScreenshotIdBuilder(preview).build()

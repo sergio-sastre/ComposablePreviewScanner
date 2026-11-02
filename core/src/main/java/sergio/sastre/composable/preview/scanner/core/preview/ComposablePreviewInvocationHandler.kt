@@ -1,6 +1,8 @@
 package sergio.sastre.composable.preview.scanner.core.preview
 
 import androidx.compose.runtime.Composer
+import androidx.compose.runtime.CompositionLocal
+import androidx.compose.runtime.InternalComposeApi
 import androidx.compose.runtime.reflect.asComposableMethod
 import io.github.classgraph.AnnotationClassRef
 import io.github.classgraph.AnnotationInfoList
@@ -29,6 +31,15 @@ internal class ComposablePreviewInvocationHandler(
     override fun invoke(proxy: Any?, method: Method?, args: Array<out Any>?): Any? {
         if (method?.name != "invoke") return method?.invoke(this, *(args ?: emptyArray()))
 
+        val isComposable = composableMethod.parameterTypes.any {
+            it.name == "androidx.compose.runtime.Composer"
+        }
+
+        if (!isComposable) {
+            val composer = args?.getOrNull(args.size - 2) as? Composer
+            return invokeNonComposable(composer)
+        }
+
         // Args of ComposablePreview.invoke() are the compiler-added [Composer, changed] pair.
         val composer = args?.getOrNull(args.size - 2) as? Composer
         val changed = args?.getOrNull(args.size - 1) as? Int ?: 0
@@ -44,6 +55,52 @@ internal class ComposablePreviewInvocationHandler(
                 }
                 wrapMethod!!.invoke(previewWrapperData.first, content, composer, changed)
             }
+        }
+    }
+
+    private fun invokeNonComposable(composer: Composer?): Any? {
+        requirePreviewParameterIsFirstArgument()
+
+        val context = getContextFromComposer(composer)
+        val methodParams = composableMethod.parameterTypes
+
+        val tileArgs = if (methodParams.isNotEmpty() && methodParams.last().name == "android.content.Context") {
+            arrayOf(context)
+        } else if (methodParams.firstOrNull()?.name == "android.content.Context") {
+            arrayOf(context)
+        } else {
+            emptyArray()
+        }
+
+        val safeArgsWithParam = when (parameter) {
+            NoParameter -> tileArgs
+            else -> arrayOf(coerceToParameterType(parameter, methodParams.firstOrNull()), *tileArgs)
+        }
+
+        val receiver = when (Modifier.isStatic(composableMethod.modifiers)) {
+            true -> null
+            false -> composableMethod.declaringClass.getDeclaredConstructor()
+                .apply { isAccessible = true }
+                .newInstance()
+        }
+
+        return composableMethod.invoke(receiver, *safeArgsWithParam)
+    }
+
+    @OptIn(InternalComposeApi::class)
+    private fun getContextFromComposer(composer: Composer?): Any? {
+        if (composer == null) return null
+        return try {
+            val localContextClass = try {
+                Class.forName("androidx.compose.ui.platform.AndroidCompositionLocals_androidKt")
+            } catch (_: Exception) {
+                Class.forName("androidx.compose.ui.platform.LocalContext_androidKt")
+            }
+            val getLocalContext = localContextClass.methods.firstOrNull { it.name == "getLocalContext" }
+            val localContext = getLocalContext?.invoke(null) as? CompositionLocal<*>
+            if (localContext != null) composer.consume(localContext) else null
+        } catch (_: Exception) {
+            null
         }
     }
 

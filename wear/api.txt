@@ -1,0 +1,72 @@
+// Signature format: 4.0
+package sergio.sastre.composable.preview.scanner.wear {
+
+  public final class WearTilePreviewInfo {
+    ctor public WearTilePreviewInfo();
+    ctor public WearTilePreviewInfo(optional String name, optional String group, optional String device, optional float fontScale, optional String locale);
+    method public String component1();
+    method public String component2();
+    method public String component3();
+    method public float component4();
+    method public String component5();
+    method public sergio.sastre.composable.preview.scanner.wear.WearTilePreviewInfo copy(optional String name, optional String group, optional String device, optional float fontScale, optional String locale);
+    method @InaccessibleFromKotlin public String getDevice();
+    method @InaccessibleFromKotlin public float getFontScale();
+    method @InaccessibleFromKotlin public String getGroup();
+    method @InaccessibleFromKotlin public String getLocale();
+    method @InaccessibleFromKotlin public String getName();
+    property public String device;
+    property public float fontScale;
+    property public String group;
+    property public String locale;
+    property public String name;
+  }
+
+  public final class WearTilePreviewScanner extends sergio.sastre.composable.preview.scanner.core.scanner.ComposablePreviewScannerWithResult<sergio.sastre.composable.preview.scanner.wear.WearTilePreviewInfo,androidx.wear.tiles.tooling.preview.TilePreviewData> {
+    ctor public WearTilePreviewScanner();
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.wear.configuration {
+
+  public enum SkipShapeClipping {
+    enum_constant public static final sergio.sastre.composable.preview.scanner.wear.configuration.SkipShapeClipping ALWAYS;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.wear.configuration.SkipShapeClipping NEVER;
+    enum_constant public static final sergio.sastre.composable.preview.scanner.wear.configuration.SkipShapeClipping ROUND_WITHOUT_CHIN;
+  }
+
+  public final class WearTileSnapshotConfigurator {
+    ctor public WearTileSnapshotConfigurator(android.content.Context context);
+    method public android.view.View previewToView(sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWithResult<sergio.sastre.composable.preview.scanner.wear.WearTilePreviewInfo,androidx.wear.tiles.tooling.preview.TilePreviewData> preview);
+    method public sergio.sastre.composable.preview.scanner.wear.configuration.WearTileSnapshotConfigurator skipShapeClipping(sergio.sastre.composable.preview.scanner.wear.configuration.SkipShapeClipping mode);
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.wear.device {
+
+  public final class WearDevicePreviewInfoParser {
+    method public sergio.sastre.composable.preview.scanner.android.device.domain.Device? parse(String device);
+    field public static final sergio.sastre.composable.preview.scanner.wear.device.WearDevicePreviewInfoParser INSTANCE;
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.wear.device.domain {
+
+  public final class RobolectricWearDeviceQualifierBuilder {
+    method public String? build(String previewDevice);
+    field public static final sergio.sastre.composable.preview.scanner.wear.device.domain.RobolectricWearDeviceQualifierBuilder INSTANCE;
+  }
+
+}
+
+package sergio.sastre.composable.preview.scanner.wear.screenshotid {
+
+  public final class WearTilePreviewScreenshotIdBuilder<R> extends sergio.sastre.composable.preview.scanner.core.preview.screenshotid.PreviewScreenshotIdBuilder<sergio.sastre.composable.preview.scanner.wear.WearTilePreviewInfo> {
+    ctor public WearTilePreviewScreenshotIdBuilder(sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWithResult<sergio.sastre.composable.preview.scanner.wear.WearTilePreviewInfo,R> wearComposablePreview);
+  }
+
+}
+

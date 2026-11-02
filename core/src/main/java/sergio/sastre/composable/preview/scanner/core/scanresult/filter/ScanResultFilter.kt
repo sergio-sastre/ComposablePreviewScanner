@@ -2,7 +2,8 @@ package sergio.sastre.composable.preview.scanner.core.scanresult.filter
 
 import io.github.classgraph.ScanResult
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.PreviewsFinder
+import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWithResult
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.previewfinder.PreviewsFinderWithResult
 import sergio.sastre.composable.preview.scanner.core.scanner.logger.PreviewScanningLogger
 import sergio.sastre.composable.preview.scanner.core.scanresult.filter.exceptions.RepeatableAnnotationNotSupportedException
 
@@ -13,38 +14,62 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.filter.exception
  *
  * They are mutually exclusive by their API design
  */
-interface PreviewProvider<T> {
-    fun getPreviews(): List<ComposablePreview<T>>
+interface PreviewProviderWithResult<T, R> {
+    fun getPreviews(): List<ComposablePreviewWithResult<T, R>>
 }
 
-interface GeneralScanResultFilter<T> : PreviewProvider<T> {
-    fun excludeIfAnnotatedWithAnyOf(vararg annotations: Class<out Annotation>): ExclusiveFilter<T>
-    fun includeIfAnnotatedWithAnyOf(vararg annotations: Class<out Annotation>): InclusiveFilter<T>
-    fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): GeneralScanResultFilter<T>
-    fun includePrivatePreviews(): GeneralScanResultFilter<T>
-    fun filterPreviews(predicate: (T) -> Boolean): GeneralScanResultFilter<T>
+interface PreviewProvider<T> : PreviewProviderWithResult<T, Unit> {
+    override fun getPreviews(): List<ComposablePreview<T>>
 }
 
-interface ExclusiveFilter<T> : PreviewProvider<T> {
-    fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): ExclusiveFilter<T>
-    fun includePrivatePreviews(): ExclusiveFilter<T>
-    fun filterPreviews(predicate: (T) -> Boolean): ExclusiveFilter<T>
+interface GeneralScanResultFilterWithResult<T, R> : PreviewProviderWithResult<T, R> {
+    fun excludeIfAnnotatedWithAnyOf(vararg annotations: Class<out Annotation>): ExclusiveFilterWithResult<T, R>
+    fun includeIfAnnotatedWithAnyOf(vararg annotations: Class<out Annotation>): InclusiveFilterWithResult<T, R>
+    fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): GeneralScanResultFilterWithResult<T, R>
+    fun includePrivatePreviews(): GeneralScanResultFilterWithResult<T, R>
+    fun filterPreviews(predicate: (T) -> Boolean): GeneralScanResultFilterWithResult<T, R>
 }
 
-interface InclusiveFilter<T> : PreviewProvider<T> {
-    fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): InclusiveFilter<T>
-    fun includePrivatePreviews(): InclusiveFilter<T>
-    fun filterPreviews(predicate: (T) -> Boolean): InclusiveFilter<T>
+interface GeneralScanResultFilter<T> : GeneralScanResultFilterWithResult<T, Unit>, PreviewProvider<T> {
+    override fun excludeIfAnnotatedWithAnyOf(vararg annotations: Class<out Annotation>): ExclusiveFilter<T>
+    override fun includeIfAnnotatedWithAnyOf(vararg annotations: Class<out Annotation>): InclusiveFilter<T>
+    override fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): GeneralScanResultFilter<T>
+    override fun includePrivatePreviews(): GeneralScanResultFilter<T>
+    override fun filterPreviews(predicate: (T) -> Boolean): GeneralScanResultFilter<T>
+}
+
+interface ExclusiveFilterWithResult<T, R> : PreviewProviderWithResult<T, R> {
+    fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): ExclusiveFilterWithResult<T, R>
+    fun includePrivatePreviews(): ExclusiveFilterWithResult<T, R>
+    fun filterPreviews(predicate: (T) -> Boolean): ExclusiveFilterWithResult<T, R>
+}
+
+interface ExclusiveFilter<T> : ExclusiveFilterWithResult<T, Unit>, PreviewProvider<T> {
+    override fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): ExclusiveFilter<T>
+    override fun includePrivatePreviews(): ExclusiveFilter<T>
+    override fun filterPreviews(predicate: (T) -> Boolean): ExclusiveFilter<T>
+}
+
+interface InclusiveFilterWithResult<T, R> : PreviewProviderWithResult<T, R> {
+    fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): InclusiveFilterWithResult<T, R>
+    fun includePrivatePreviews(): InclusiveFilterWithResult<T, R>
+    fun filterPreviews(predicate: (T) -> Boolean): InclusiveFilterWithResult<T, R>
+}
+
+interface InclusiveFilter<T> : InclusiveFilterWithResult<T, Unit>, PreviewProvider<T> {
+    override fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): InclusiveFilter<T>
+    override fun includePrivatePreviews(): InclusiveFilter<T>
+    override fun filterPreviews(predicate: (T) -> Boolean): InclusiveFilter<T>
 }
 
 /**
  * Filter the ComposablePreviews of a given ScanResult.
  */
-class ScanResultFilter<T> internal constructor(
-    private val scanResult: ScanResult,
-    private val previewsFinder: PreviewsFinder<T>,
-    private val previewScanningLogger: PreviewScanningLogger,
-) : GeneralScanResultFilter<T>, ExclusiveFilter<T>, InclusiveFilter<T> {
+open class ScanResultFilterWithResult<T, R> internal constructor(
+    internal val scanResult: ScanResult,
+    internal val previewsFinder: PreviewsFinderWithResult<T, R>,
+    internal val previewScanningLogger: PreviewScanningLogger,
+) : GeneralScanResultFilterWithResult<T, R>, ExclusiveFilterWithResult<T, R>, InclusiveFilterWithResult<T, R> {
     private var scanResultFilterState = ScanResultFilterState<T>()
 
     /**
@@ -54,7 +79,7 @@ class ScanResultFilter<T> internal constructor(
      */
     override fun excludeIfAnnotatedWithAnyOf(
         vararg annotations: Class<out Annotation>
-    ): ExclusiveFilter<T> {
+    ): ExclusiveFilterWithResult<T, R> {
         require(annotations.isNotEmpty()) {
             "annotations must not be empty. For that, leave it out instead"
         }
@@ -75,7 +100,7 @@ class ScanResultFilter<T> internal constructor(
      */
     override fun includeIfAnnotatedWithAnyOf(
         vararg annotations: Class<out Annotation>
-    ): InclusiveFilter<T> {
+    ): InclusiveFilterWithResult<T, R> {
         require(annotations.isNotEmpty()) {
             "annotations must not be empty. For that, leave it out instead"
         }
@@ -106,7 +131,7 @@ class ScanResultFilter<T> internal constructor(
      *
      * WARNING: throws a [RepeatableAnnotationNotSupportedException] if any of the annotations is repeatable
      */
-    override fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): ScanResultFilter<T> {
+    override fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): ScanResultFilterWithResult<T, R> {
         require(annotations.isNotEmpty()) {
             "annotations must not be empty. For that, leave it out instead"
         }
@@ -123,7 +148,7 @@ class ScanResultFilter<T> internal constructor(
     /**
      * By default, private previews are filtered out. You can use this option to also return them
      */
-    override fun includePrivatePreviews(): ScanResultFilter<T> {
+    override fun includePrivatePreviews(): ScanResultFilterWithResult<T, R> {
         scanResultFilterState = scanResultFilterState.copy(
             includesPrivatePreviews = true
         )
@@ -134,14 +159,14 @@ class ScanResultFilter<T> internal constructor(
      * Filter only previews whose info meets the predicate, for instance
      * apiLevel >= 30 or group == "IncludeForScreenshotTests"
      */
-    override fun filterPreviews(predicate: (T) -> Boolean): ScanResultFilter<T> {
+    override fun filterPreviews(predicate: (T) -> Boolean): ScanResultFilterWithResult<T, R> {
         scanResultFilterState = scanResultFilterState.copy(
             meetsPreviewCriteria = predicate,
         )
         return this
     }
 
-    override fun getPreviews(): List<ComposablePreview<T>> =
+    override fun getPreviews(): List<ComposablePreviewWithResult<T, R>> =
         scanResult.use { scanResult ->
             previewScanningLogger.measureFindPreviewsTimeAndGetResult {
                 scanResult
@@ -173,4 +198,43 @@ class ScanResultFilter<T> internal constructor(
             )
         }
     }
+}
+
+class ScanResultFilter<T> internal constructor(
+    scanResult: ScanResult,
+    previewsFinder: PreviewsFinderWithResult<T, Unit>,
+    previewScanningLogger: PreviewScanningLogger,
+) : ScanResultFilterWithResult<T, Unit>(scanResult, previewsFinder, previewScanningLogger),
+    GeneralScanResultFilter<T>,
+    ExclusiveFilter<T>,
+    InclusiveFilter<T> {
+
+    override fun excludeIfAnnotatedWithAnyOf(vararg annotations: Class<out Annotation>): ExclusiveFilter<T> {
+        super.excludeIfAnnotatedWithAnyOf(*annotations)
+        return this
+    }
+
+    override fun includeIfAnnotatedWithAnyOf(vararg annotations: Class<out Annotation>): InclusiveFilter<T> {
+        super.includeIfAnnotatedWithAnyOf(*annotations)
+        return this
+    }
+
+    override fun includeAnnotationInfoForAllOf(vararg annotations: Class<out Annotation>): ScanResultFilter<T> {
+        super.includeAnnotationInfoForAllOf(*annotations)
+        return this
+    }
+
+    override fun includePrivatePreviews(): ScanResultFilter<T> {
+        super.includePrivatePreviews()
+        return this
+    }
+
+    override fun filterPreviews(predicate: (T) -> Boolean): ScanResultFilter<T> {
+        super.filterPreviews(predicate)
+        return this
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun getPreviews(): List<ComposablePreview<T>> =
+        super.getPreviews() as List<ComposablePreview<T>>
 }

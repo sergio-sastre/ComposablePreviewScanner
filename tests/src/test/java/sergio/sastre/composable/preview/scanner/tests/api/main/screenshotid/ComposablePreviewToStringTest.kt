@@ -4,7 +4,7 @@ import org.junit.Assert
 import org.junit.Assume
 import org.junit.Test
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
-import sergio.sastre.composable.preview.scanner.common.CommonComposablePreviewScanner
+import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewScanner
 
 @Suppress("DEPRECATION")
 class ComposablePreviewToStringTest {
@@ -20,19 +20,6 @@ class ComposablePreviewToStringTest {
 
         assert(androidPreviews.isNotEmpty())
         assert(androidPreviews.all { it.last() != '_' })
-    }
-
-    @Test
-    fun `GIVEN Common previews WHEN toString THEN those preview names do not end with underscore`() {
-        val commonPreviews =
-            CommonComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner")
-                .includePrivatePreviews()
-                .getPreviews()
-                .map { it.toString() }
-
-        assert(commonPreviews.isNotEmpty())
-        assert(commonPreviews.all { it.last() != '_' })
     }
 
     @Test
@@ -56,45 +43,6 @@ class ComposablePreviewToStringTest {
 
         Assert.assertTrue(startWithClassAndMethodPattern)
         Assert.assertTrue(endWithDigits)
-    }
-
-    @Test
-    fun `GIVEN Common previews with @PreviewParameters WHEN toString THEN those preview names start with class, method and method parameters type and end with index`() {
-        val commonPreviews =
-            CommonComposablePreviewScanner()
-                .scanPackageTrees(
-                    "sergio.sastre.composable.preview.scanner.common.withpreviewparameters",
-                )
-                .getPreviews()
-
-        Assume.assumeTrue(commonPreviews.size > 1)
-
-        val startWithClassAndMethodPattern = commonPreviews.all { preview ->
-            val previewString = preview.toString()
-            val expectedPattern = "${preview.declaringClass}_${preview.methodName}_${preview.methodParametersType}"
-            previewString.startsWith(expectedPattern)
-        }
-
-        val endWithDigits = commonPreviews.all { preview ->
-            preview.toString().substringAfterLast('_').all { it.isDigit() }
-        }
-
-        Assert.assertTrue(startWithClassAndMethodPattern)
-        Assert.assertTrue(endWithDigits)
-    }
-
-    @Test
-    fun `GIVEN Common preview WHEN toString THEN those preview names contain class name and method name`() {
-        val commonPreview =
-            CommonComposablePreviewScanner()
-                .scanPackageTrees("sergio.sastre.composable.preview.scanner.common")
-                .getPreviews()
-                .first()
-
-        val previewToString = commonPreview.toString()
-        val expectedPreviewString = "${commonPreview.declaringClass}_${commonPreview.methodName}"
-
-        Assert.assertEquals(expectedPreviewString, previewToString)
     }
 
     @Test
@@ -200,6 +148,22 @@ class ComposablePreviewToStringTest {
         )
 
         Assert.assertTrue(previews.toString(), previews.all { idPattern.matches(it) })
+    }
+
+
+    @Test
+    fun `GIVEN overloaded wear previews WHEN toString THEN each preview includes its parameter type`() {
+        val previews =
+            WearTilePreviewScanner()
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.wear")
+                .getPreviews()
+                .filter { it.methodName == "tilePreviewWithResourcesAndPlatformData" }
+
+        Assert.assertEquals(2, previews.size)
+
+
+        val previewNames = previews.map { it.toString() }.toSet()
+        Assert.assertEquals(2, previewNames.size)
     }
 
     companion object {
