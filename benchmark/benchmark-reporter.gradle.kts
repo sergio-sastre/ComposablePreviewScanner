@@ -12,9 +12,13 @@ fun readNumericProperty(name: String, default: Double): Double {
         ?: throw GradleException("Property '$name' must be a number, but was '$raw'.")
 }
 
-// Baseline expected execution values
+// Baseline expected execution values for MainSourceSetBenchmark
 val expectedScoreMs: Double = readNumericProperty("expectedScoreMs", 85.0)
-val expectedRamMb: Double = readNumericProperty("expectedRamMb", 3.0)
+val expectedRamMb: Double = readNumericProperty("expectedRamMb", 2.50)
+
+// Baseline expected execution values for BuildTimeBenchmark
+val expectedBuildTimeScoreMs: Double = readNumericProperty("expectedBuildTimeScoreMs", 1500.0)
+val expectedBuildTimeRamMb: Double = readNumericProperty("expectedBuildTimeRamMb", 210.0)
 
 // Allowed percentage tolerance / offset above the baseline (default: 5.0%)
 val tolerancePercent: Double = readNumericProperty("tolerancePercent", 5.0)
@@ -25,6 +29,52 @@ val maxAllowedScoreMs: Double = (project.findProperty("maxAllowedScoreMs") as? S
 
 val maxAllowedRamMb: Double = (project.findProperty("maxAllowedRamMb") as? String)?.toDoubleOrNull()
     ?: (expectedRamMb * (1.0 + tolerancePercent / 100.0))
+
+val maxAllowedBuildTimeScoreMs: Double = (project.findProperty("maxAllowedBuildTimeScoreMs") as? String)?.toDoubleOrNull()
+    ?: (expectedBuildTimeScoreMs * (1.0 + tolerancePercent / 100.0))
+
+val maxAllowedBuildTimeRamMb: Double = (project.findProperty("maxAllowedBuildTimeRamMb") as? String)?.toDoubleOrNull()
+    ?: (expectedBuildTimeRamMb * (1.0 + tolerancePercent / 100.0))
+
+data class BenchmarkThresholdConfig(
+    val expectedScoreMs: Double,
+    val maxAllowedScoreMs: Double,
+    val expectedRamMb: Double,
+    val maxAllowedRamMb: Double
+)
+
+fun thresholdConfigFor(simpleClassName: String): BenchmarkThresholdConfig =
+    when (simpleClassName) {
+        "BuildTimeBenchmark" -> BenchmarkThresholdConfig(
+            expectedScoreMs = expectedBuildTimeScoreMs,
+            maxAllowedScoreMs = maxAllowedBuildTimeScoreMs,
+            expectedRamMb = expectedBuildTimeRamMb,
+            maxAllowedRamMb = maxAllowedBuildTimeRamMb
+        )
+        else -> BenchmarkThresholdConfig(
+            expectedScoreMs = expectedScoreMs,
+            maxAllowedScoreMs = maxAllowedScoreMs,
+            expectedRamMb = expectedRamMb,
+            maxAllowedRamMb = maxAllowedRamMb
+        )
+    }
+
+data class BenchmarkEntryResult(
+    val fullName: String,
+    val simpleClassName: String,
+    val methodName: String,
+    val score: Double,
+    val rawSpeedValues: List<Double>,
+    val speedTrimmedMean: Double,
+    val ramValues: List<Double>,
+    val avgRam: Double,
+    val ramTrimmedMean: Double,
+    val thresholdConfig: BenchmarkThresholdConfig
+) {
+    val displayName: String get() = "$simpleClassName.$methodName"
+    val speedPassed: Boolean get() = speedTrimmedMean <= thresholdConfig.maxAllowedScoreMs
+    val ramPassed: Boolean get() = ramValues.isNotEmpty() && ramTrimmedMean <= thresholdConfig.maxAllowedRamMb
+}
 
 val generateBenchmarkHtmlReport = tasks.register("generateBenchmarkHtmlReport") {
     group = "Verification"
@@ -69,20 +119,18 @@ val verifyBenchmarkThreshold = tasks.register("verifyBenchmarkThreshold") {
         val reportsDir = layout.buildDirectory.dir("reports/benchmarks").get().asFile
         val jsonFile = findLatestJsonReport(reportsDir)
             ?: throw GradleException("No benchmark JSON report found in ${reportsDir.absolutePath}")
-        checkPerformanceThreshold(jsonFile, reportsDir, maxAllowedScoreMs, maxAllowedRamMb)
+        checkPerformanceThreshold(jsonFile, reportsDir)
     }
 }
 
 afterEvaluate {
     tasks.named("mainBenchmarkCompile").configure {
         dependsOn(":tests:compileDebugKotlin")
-        dependsOn(":tests:compileDebugAndroidTestKotlin")
         dependsOn(":custompreviews:compileDebugKotlin")
     }
 
     tasks.named("mainBenchmark").configure {
         dependsOn(":tests:compileDebugKotlin")
-        dependsOn(":tests:compileDebugAndroidTestKotlin")
         dependsOn(":custompreviews:compileDebugKotlin")
 
         doFirst {
@@ -120,74 +168,103 @@ fun calculatePercentDiff(actual: Double, baseline: Double): String {
     return "$sign${String.format(Locale.US, "%.2f", diff)}%"
 }
 
-fun extractPrimaryMetricScore(jsonText: String): Double {
-    val primaryMetricRegex = Regex(""""primaryMetric"\s*:\s*\{[^}]*?"score"\s*:\s*([^,\s{}]+)""")
-    val match = primaryMetricRegex.find(jsonText)
-        ?: throw GradleException("Invalid benchmark report: 'primaryMetric.score' is missing.")
-
-    val rawGroup = match.groups[1]?.value ?: ""
-    val rawToken = rawGroup.trim()
-
-    if (rawToken.startsWith("\"") || rawToken.endsWith("\"")) {
-        throw GradleException("Invalid benchmark report: 'primaryMetric.score' must be a JSON number, but was quoted: $rawToken")
+fun parseBenchmarkEntries(jsonText: String, reportsDir: File): List<BenchmarkEntryResult> {
+    val entryRegex = Regex(
+        """"benchmark"\s*:\s*"([^"]+)"[\s\S]*?"primaryMetric"\s*:\s*\{[\s\S]*?"score"\s*:\s*([^,\s{}]+)[\s\S]*?"rawData"\s*:\s*\[\s*\[([\d.,\s]+)\]\s*\]"""
+    )
+    val matches = entryRegex.findAll(jsonText).toList()
+    if (matches.isEmpty()) {
+        throw GradleException("Invalid benchmark report: no benchmark entries with 'primaryMetric.score' found.")
     }
 
-    val score = rawToken.toDoubleOrNull()
-        ?: throw GradleException("Invalid benchmark report: 'primaryMetric.score' is not a valid number: $rawToken")
+    return matches.map { match ->
+        val fullName = match.groupValues[1]
+        val parts = fullName.split(".")
+        val methodName = parts.lastOrNull() ?: fullName
+        val simpleClassName = if (parts.size >= 2) parts[parts.size - 2] else fullName
 
-    if (!score.isFinite()) {
-        throw GradleException("Invalid benchmark report: 'primaryMetric.score' must be a finite number, but was: $score")
+        val rawToken = match.groupValues[2].trim()
+        if (rawToken.startsWith("\"") || rawToken.endsWith("\"")) {
+            throw GradleException("Invalid benchmark report: 'primaryMetric.score' must be a JSON number, but was quoted: $rawToken")
+        }
+        val score = rawToken.toDoubleOrNull()
+            ?: throw GradleException("Invalid benchmark report: 'primaryMetric.score' is not a valid number: $rawToken")
+        if (!score.isFinite()) {
+            throw GradleException("Invalid benchmark report: 'primaryMetric.score' must be a finite number, but was: $score")
+        }
+
+        val rawSpeedValues = match.groupValues[3]
+            .split(",")
+            .mapNotNull { it.trim().toDoubleOrNull() }
+
+        val speedTrimmedMean = if (rawSpeedValues.isNotEmpty()) calculateTrimmedMean(rawSpeedValues) else score
+
+        val classSpecificRamFile = File(reportsDir, "ram_usage_$simpleClassName.txt")
+        val legacyRamFile = File(reportsDir, "ram_usage.txt")
+        val ramFile = if (classSpecificRamFile.exists()) classSpecificRamFile else legacyRamFile
+
+        val ramValues: List<Double> = if (ramFile.exists()) {
+            ramFile.readLines()
+                .mapNotNull { it.trim().toDoubleOrNull() }
+                .takeLast(rawSpeedValues.size.coerceAtLeast(1))
+        } else emptyList()
+
+        val avgRam = if (ramValues.isNotEmpty()) ramValues.average() else 0.0
+        val ramTrimmedMean = if (ramValues.isNotEmpty()) calculateTrimmedMean(ramValues) else 0.0
+
+        BenchmarkEntryResult(
+            fullName = fullName,
+            simpleClassName = simpleClassName,
+            methodName = methodName,
+            score = score,
+            rawSpeedValues = rawSpeedValues,
+            speedTrimmedMean = speedTrimmedMean,
+            ramValues = ramValues,
+            avgRam = avgRam,
+            ramTrimmedMean = ramTrimmedMean,
+            thresholdConfig = thresholdConfigFor(simpleClassName)
+        )
     }
-
-    return score
 }
 
-fun checkPerformanceThreshold(jsonFile: File, reportsDir: File, thresholdMs: Double, thresholdRamMb: Double) {
+fun checkPerformanceThreshold(jsonFile: File, reportsDir: File) {
     val jsonText = jsonFile.readText()
-    val score = extractPrimaryMetricScore(jsonText)
-
-    val rawDataMatch = Regex(""""rawData"\s*:\s*\[\s*\[([\d.,\s]+)\]\s*\]""").find(jsonText)
-    val rawSpeedValues = rawDataMatch?.groupValues?.get(1)
-        ?.split(",")
-        ?.mapNotNull { it.trim().toDoubleOrNull() } ?: emptyList()
-
-    val speedTrimmedMean = if (rawSpeedValues.size > 0) calculateTrimmedMean(rawSpeedValues) else score
-
-    // Read recorded RAM allocation data
-    val ramFile = File(reportsDir, "ram_usage.txt")
-    val ramValues: List<Double> = if (ramFile.exists()) {
-        ramFile.readLines()
-            .mapNotNull { it.trim().toDoubleOrNull() }
-            .takeLast(rawSpeedValues.size.coerceAtLeast(1))
-    } else emptyList()
-
-    if (ramValues.isEmpty()) {
-        throw GradleException("No valid allocated memory samples found in ${ramFile.absolutePath}")
-    }
-
-    val avgRam = ramValues.average()
-    val ramTrimmedMean = calculateTrimmedMean(ramValues)
-
-    val speedPassed = speedTrimmedMean <= thresholdMs
-    val ramPassed = ramTrimmedMean <= thresholdRamMb
-
-    val speedDiffStr = calculatePercentDiff(speedTrimmedMean, expectedScoreMs)
-    val ramDiffStr = calculatePercentDiff(ramTrimmedMean, expectedRamMb)
+    val entries = parseBenchmarkEntries(jsonText, reportsDir)
+    val errors = java.util.ArrayList<String>()
 
     println("\n=======================================================")
     println("🔍 Performance Threshold Verification (Trimmed Mean - Baseline + ${String.format(Locale.US, "%.1f", tolerancePercent)}% Offset):")
-    println("• Baseline Expected Speed: ${String.format(Locale.US, "%.2f", expectedScoreMs)} ms | Max Allowed (+${String.format(Locale.US, "%.1f", tolerancePercent)}%): ${String.format(Locale.US, "%.2f", thresholdMs)} ms")
-    println("• Trimmed Actual Speed:   ${String.format(Locale.US, "%.2f", speedTrimmedMean)} ms (Raw Avg: ${String.format(Locale.US, "%.2f", score)} ms) [$speedDiffStr vs baseline] -> ${if (speedPassed) "✅ PASSED" else "❌ FAILED"}")
-    println("-------------------------------------------------------")
-    println("• Baseline Expected Alloc:${String.format(Locale.US, "%.2f", expectedRamMb)} MB | Max Allowed (+${String.format(Locale.US, "%.1f", tolerancePercent)}%): ${String.format(Locale.US, "%.2f", thresholdRamMb)} MB")
-    println("• Trimmed Actual Alloc:${String.format(Locale.US, "%.2f", ramTrimmedMean)} MB (Raw Avg: ${String.format(Locale.US, "%.2f", avgRam)} MB) [$ramDiffStr vs baseline] -> ${if (ramPassed) "✅ PASSED" else "❌ FAILED"}")
 
-    if (!speedPassed || !ramPassed) {
+    entries.forEachIndexed { index, entry ->
+        if (index > 0) {
+            println("=======================================================")
+        }
+        val cfg = entry.thresholdConfig
+        if (entry.ramValues.isEmpty()) {
+            throw GradleException("No valid allocated memory samples found for ${entry.displayName} in ${reportsDir.absolutePath}")
+        }
+
+        val speedDiffStr = calculatePercentDiff(entry.speedTrimmedMean, cfg.expectedScoreMs)
+        val ramDiffStr = calculatePercentDiff(entry.ramTrimmedMean, cfg.expectedRamMb)
+
+        println("📌 Benchmark: ${entry.displayName}")
+        println("• Baseline Expected Speed: ${String.format(Locale.US, "%.2f", cfg.expectedScoreMs)} ms | Max Allowed (+${String.format(Locale.US, "%.1f", tolerancePercent)}%): ${String.format(Locale.US, "%.2f", cfg.maxAllowedScoreMs)} ms")
+        println("• Trimmed Actual Speed:   ${String.format(Locale.US, "%.2f", entry.speedTrimmedMean)} ms (Raw Avg: ${String.format(Locale.US, "%.2f", entry.score)} ms) [$speedDiffStr vs baseline] -> ${if (entry.speedPassed) "✅ PASSED" else "❌ FAILED"}")
+        println("-------------------------------------------------------")
+        println("• Baseline Expected Alloc:${String.format(Locale.US, "%.2f", cfg.expectedRamMb)} MB | Max Allowed (+${String.format(Locale.US, "%.1f", tolerancePercent)}%): ${String.format(Locale.US, "%.2f", cfg.maxAllowedRamMb)} MB")
+        println("• Trimmed Actual Alloc:   ${String.format(Locale.US, "%.2f", entry.ramTrimmedMean)} MB (Raw Avg: ${String.format(Locale.US, "%.2f", entry.avgRam)} MB) [$ramDiffStr vs baseline] -> ${if (entry.ramPassed) "✅ PASSED" else "❌ FAILED"}")
+
+        if (!entry.speedPassed) {
+            errors.add("[${entry.displayName}] Trimmed speed (${String.format(Locale.US, "%.2f", entry.speedTrimmedMean)} ms, $speedDiffStr vs baseline ${String.format(Locale.US, "%.2f", cfg.expectedScoreMs)} ms) exceeded max allowed threshold of ${String.format(Locale.US, "%.2f", cfg.maxAllowedScoreMs)} ms")
+        }
+        if (!entry.ramPassed) {
+            errors.add("[${entry.displayName}] Trimmed allocated memory per scan (${String.format(Locale.US, "%.2f", entry.ramTrimmedMean)} MB, $ramDiffStr vs baseline ${String.format(Locale.US, "%.2f", cfg.expectedRamMb)} MB) exceeded max allowed threshold of ${String.format(Locale.US, "%.2f", cfg.maxAllowedRamMb)} MB")
+        }
+    }
+
+    if (errors.isNotEmpty()) {
         println("❌ Benchmark FAILED! Threshold exceeded.")
         println("=======================================================\n")
-        val errors = java.util.ArrayList<String>()
-        if (!speedPassed) errors.add("Trimmed speed (${String.format(Locale.US, "%.2f", speedTrimmedMean)} ms, $speedDiffStr vs baseline ${String.format(Locale.US, "%.2f", expectedScoreMs)} ms) exceeded max allowed threshold of ${String.format(Locale.US, "%.2f", thresholdMs)} ms")
-        if (!ramPassed) errors.add("Trimmed allocated memory per scan (${String.format(Locale.US, "%.2f", ramTrimmedMean)} MB, $ramDiffStr vs baseline ${String.format(Locale.US, "%.2f", expectedRamMb)} MB) exceeded max allowed threshold of ${String.format(Locale.US, "%.2f", thresholdRamMb)} MB")
         throw GradleException("Benchmark Failed! ${java.lang.String.join(" & ", errors)}")
     } else {
         println("✅ All Performance Checks Passed!")
@@ -198,34 +275,7 @@ fun checkPerformanceThreshold(jsonFile: File, reportsDir: File, thresholdMs: Dou
 fun buildHtmlReportFile(reportsDir: File, jsonFile: File) {
     val jsonText = jsonFile.readText()
     val reportFile = File(reportsDir, "report.html")
-
-    val score = extractPrimaryMetricScore(jsonText)
-
-    val rawDataMatch = Regex(""""rawData"\s*:\s*\[\s*\[([\d.,\s]+)\]\s*\]""").find(jsonText)
-    val rawValues = rawDataMatch?.groupValues?.get(1)
-        ?.split(",")
-        ?.mapNotNull { it.trim().toDoubleOrNull() } ?: emptyList()
-
-    val speedTrimmed = if (rawValues.size > 0) calculateTrimmedMean(rawValues) else score
-    val labels = rawValues.indices.map { "\"Iteration ${it + 1}\"" }
-    val speedTrimmedFormatted = String.format(Locale.US, "%.2f", speedTrimmed)
-
-    // Read recorded RAM allocation data
-    val ramFile = File(reportsDir, "ram_usage.txt")
-    val ramValues: List<Double> = if (ramFile.exists()) {
-        ramFile.readLines()
-            .mapNotNull { it.trim().toDoubleOrNull() }
-            .takeLast(rawValues.size.coerceAtLeast(1))
-    } else emptyList()
-
-    val ramTrimmed = if (ramValues.size > 0) calculateTrimmedMean(ramValues) else 0.0
-    val ramTrimmedFormatted = if (ramValues.isEmpty()) "N/A" else "${String.format(Locale.US, "%.2f", ramTrimmed)} MB"
-
-    val speedPassed = speedTrimmed <= maxAllowedScoreMs
-    val ramPassed = ramTrimmed <= maxAllowedRamMb
-
-    val speedDiffStr = calculatePercentDiff(speedTrimmed, expectedScoreMs)
-    val ramDiffStr = if (ramValues.isEmpty()) "N/A" else calculatePercentDiff(ramTrimmed, expectedRamMb)
+    val entries = parseBenchmarkEntries(jsonText, reportsDir)
 
     // Ensure pinned local chart.js script is included alongside report.html
     val chartJsFile = File(reportsDir, "chart.js")
@@ -247,6 +297,97 @@ fun buildHtmlReportFile(reportsDir: File, jsonFile: File) {
 
     val chartJsScriptSrc = if (chartJsFile.exists()) "chart.js" else "https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
 
+    val sectionsHtml = StringBuilder()
+    val chartsJs = StringBuilder()
+
+    entries.forEachIndexed { idx, entry ->
+        val cfg = entry.thresholdConfig
+        val speedTrimmedFormatted = String.format(Locale.US, "%.2f", entry.speedTrimmedMean)
+        val ramTrimmedFormatted = if (entry.ramValues.isEmpty()) "N/A" else "${String.format(Locale.US, "%.2f", entry.ramTrimmedMean)} MB"
+        val speedDiffStr = calculatePercentDiff(entry.speedTrimmedMean, cfg.expectedScoreMs)
+        val ramDiffStr = if (entry.ramValues.isEmpty()) "N/A" else calculatePercentDiff(entry.ramTrimmedMean, cfg.expectedRamMb)
+        val labels = entry.rawSpeedValues.indices.map { "\"Iteration ${it + 1}\"" }
+
+        sectionsHtml.append(
+            """
+            <div class="card">
+                <h1>🚀 ComposablePreviewScanner Benchmark Report</h1>
+                <div class="sub">Benchmark: ${entry.displayName}</div>
+                
+                <div class="score-container">
+                    <div>
+                        <div class="label">Trimmed Speed (Olympic Mean)</div>
+                        <div class="score-badge">${speedTrimmedFormatted} ms/op</div>
+                        <div class="diff-tag ${if (entry.speedPassed) "diff-pass" else "diff-fail"}">${speedDiffStr} vs baseline (${String.format(Locale.US, "%.2f", cfg.expectedScoreMs)} ms)</div>
+                    </div>
+                    <div>
+                        <div class="label">Trimmed Allocated Memory (per scan)</div>
+                        <div class="ram-badge">${ramTrimmedFormatted}</div>
+                        <div class="diff-tag ${if (entry.ramPassed) "diff-pass" else "diff-fail"}">${ramDiffStr} vs baseline (${String.format(Locale.US, "%.2f", cfg.expectedRamMb)} MB)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h2>⚡ Execution Speed (${entry.simpleClassName})</h2>
+                    <canvas id="speedChart_$idx"></canvas>
+                </div>
+                <div class="card">
+                    <h2>💾 Allocated Memory per scan (${entry.simpleClassName})</h2>
+                    <canvas id="ramChart_$idx"></canvas>
+                </div>
+            </div>
+            """.trimIndent()
+        )
+        sectionsHtml.append("\n")
+
+        chartsJs.append(
+            """
+            new Chart(document.getElementById('speedChart_$idx').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: [${labels.joinToString(", ")}],
+                    datasets: [{
+                        label: 'Speed (ms)',
+                        data: [${entry.rawSpeedValues.joinToString(", ")}],
+                        backgroundColor: 'rgba(37, 99, 235, 0.6)',
+                        borderColor: 'rgba(37, 99, 235, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true, title: { display: true, text: 'Time (ms)' } }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('ramChart_$idx').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: [${labels.joinToString(", ")}],
+                    datasets: [{
+                        label: 'Allocated per scan (MB)',
+                        data: [${entry.ramValues.joinToString(", ")}],
+                        backgroundColor: 'rgba(5, 150, 105, 0.6)',
+                        borderColor: 'rgba(5, 150, 105, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true, title: { display: true, text: 'Allocation (MB)' } }
+                    }
+                }
+            });
+            """.trimIndent()
+        )
+        chartsJs.append("\n")
+    }
+
     val html = """
     <!DOCTYPE html>
     <html>
@@ -267,83 +408,13 @@ fun buildHtmlReportFile(reportsDir: File, jsonFile: File) {
             .label { font-size: 13px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
             .sub { color: #666; font-size: 14px; margin-bottom: 24px; }
             canvas { max-width: 100%; margin-top: 16px; }
-            .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 850px; margin: 0 auto; }
+            .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 850px; margin: 0 auto 36px auto; }
         </style>
     </head>
     <body>
-        <div class="card">
-            <h1>🚀 ComposablePreviewScanner Benchmark Report</h1>
-            <div class="sub">Benchmark: MainSourceSetBenchmark.benchmarkScanner</div>
-            
-            <div class="score-container">
-                <div>
-                    <div class="label">Trimmed Speed (Olympic Mean)</div>
-                    <div class="score-badge">${speedTrimmedFormatted} ms/op</div>
-                    <div class="diff-tag ${if (speedPassed) "diff-pass" else "diff-fail"}">${speedDiffStr} vs baseline (${String.format(Locale.US, "%.2f", expectedScoreMs)} ms)</div>
-                </div>
-                <div>
-                    <div class="label">Trimmed Allocated Memory (per scan)</div>
-                    <div class="ram-badge">${ramTrimmedFormatted}</div>
-                    <div class="diff-tag ${if (ramPassed) "diff-pass" else "diff-fail"}">${ramDiffStr} vs baseline (${String.format(Locale.US, "%.2f", expectedRamMb)} MB)</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid">
-            <div class="card">
-                <h2>⚡ Execution Speed</h2>
-                <canvas id="speedChart"></canvas>
-            </div>
-            <div class="card">
-                <h2>💾 Allocated Memory (per scan)</h2>
-                <canvas id="ramChart"></canvas>
-            </div>
-        </div>
-
+        $sectionsHtml
         <script>
-            const labels = [${labels.joinToString(", ")}];
-
-            // Speed Chart
-            new Chart(document.getElementById('speedChart').getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Speed (ms)',
-                        data: [${rawValues.joinToString(", ")}],
-                        backgroundColor: 'rgba(37, 99, 235, 0.6)',
-                        borderColor: 'rgba(37, 99, 235, 1)',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: { beginAtZero: true, title: { display: true, text: 'Time (ms)' } }
-                    }
-                }
-            });
-
-            // Allocated memory chart
-            new Chart(document.getElementById('ramChart').getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Allocated per scan (MB)',
-                        data: [${ramValues.joinToString(", ")}],
-                        backgroundColor: 'rgba(5, 150, 105, 0.6)',
-                        borderColor: 'rgba(5, 150, 105, 1)',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: { beginAtZero: true, title: { display: true, text: 'Allocation (MB)' } }
-                    }
-                }
-            });
+            $chartsJs
         </script>
     </body>
     </html>

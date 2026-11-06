@@ -38,8 +38,6 @@ dependencies {
 
     // Ensure scanned classes from :tests and :custompreviews are available on the classpath
     runtimeOnly(files(rootProject.file("tests/build/tmp/kotlin-classes/debug")))
-    runtimeOnly(files(rootProject.file("tests/build/tmp/kotlin-classes/debugAndroidTest")))
-    runtimeOnly(files(rootProject.file("tests/build/kotlin/compileDebugAndroidTestKotlin")))
     runtimeOnly(files(rootProject.file("custompreviews/build/tmp/kotlin-classes/debug")))
 }
 
