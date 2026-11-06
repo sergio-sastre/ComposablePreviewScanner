@@ -190,7 +190,7 @@ afterEvaluate {
 
         doFirst {
             val reportsDir = layout.buildDirectory.dir("reports/benchmarks").get().asFile
-            reportsDir.walkTopDown().filter { it.extension == "json" }.forEach { it.delete() }
+            reportsDir.walkTopDown().filter { it.extension == "json" || it.name.startsWith("ram_") }.forEach { it.delete() }
         }
 
         // Run report generation and threshold verification after benchmark execution
