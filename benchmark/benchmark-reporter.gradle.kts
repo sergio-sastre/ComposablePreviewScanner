@@ -20,6 +20,13 @@ val expectedRamMb: Double = readNumericProperty("expectedRamMb", 2.50)
 val expectedBuildTimeScoreMs: Double = readNumericProperty("expectedBuildTimeScoreMs", 1500.0)
 val expectedBuildTimeRamMb: Double = readNumericProperty("expectedBuildTimeRamMb", 210.0)
 
+// Baseline expected execution values for BuildTimeWithoutPrivatePreviewsBenchmark
+// (Values match the current buildtime scanner by default)
+val expectedBuildTimeWithoutPrivatePreviewsScoreMs: Double =
+    readNumericProperty("expectedBuildTimeWithoutPrivatePreviewsScoreMs", expectedBuildTimeScoreMs)
+val expectedBuildTimeWithoutPrivatePreviewsRamMb: Double =
+    readNumericProperty("expectedBuildTimeWithoutPrivatePreviewsRamMb", expectedBuildTimeRamMb)
+
 // Allowed percentage tolerance / offset above the baseline (default: 5.0%)
 val tolerancePercent: Double = readNumericProperty("tolerancePercent", 5.0)
 
@@ -36,12 +43,56 @@ val maxAllowedBuildTimeScoreMs: Double = (project.findProperty("maxAllowedBuildT
 val maxAllowedBuildTimeRamMb: Double = (project.findProperty("maxAllowedBuildTimeRamMb") as? String)?.toDoubleOrNull()
     ?: (expectedBuildTimeRamMb * (1.0 + tolerancePercent / 100.0))
 
+val maxAllowedBuildTimeWithoutPrivatePreviewsScoreMs: Double =
+    (project.findProperty("maxAllowedBuildTimeWithoutPrivatePreviewsScoreMs") as? String)?.toDoubleOrNull()
+        ?: (expectedBuildTimeWithoutPrivatePreviewsScoreMs * (1.0 + tolerancePercent / 100.0))
+
+val maxAllowedBuildTimeWithoutPrivatePreviewsRamMb: Double =
+    (project.findProperty("maxAllowedBuildTimeWithoutPrivatePreviewsRamMb") as? String)?.toDoubleOrNull()
+        ?: (expectedBuildTimeWithoutPrivatePreviewsRamMb * (1.0 + tolerancePercent / 100.0))
+
 data class BenchmarkThresholdConfig(
     val expectedScoreMs: Double,
     val maxAllowedScoreMs: Double,
     val expectedRamMb: Double,
     val maxAllowedRamMb: Double
 )
+
+enum class BenchmarkGroup(
+    val id: String,
+    val title: String,
+    val description: String,
+    val order: Int
+) {
+    BUILD_TIME(
+        id = "build-time",
+        title = "⚡ Build Time Scanner",
+        description = "Full classpath scanning across all packages",
+        order = 1
+    ),
+    MAIN_SOURCE_SET(
+        id = "main-source-set",
+        title = "📁 Main Source Set Scanner",
+        description = "Targeted scanning of the main source set classpath",
+        order = 2
+    );
+
+    companion object {
+        fun fromClassName(simpleClassName: String): BenchmarkGroup =
+            when {
+                simpleClassName.startsWith("MainSourceSet") -> MAIN_SOURCE_SET
+                else -> BUILD_TIME
+            }
+    }
+}
+
+fun variantLabelFor(simpleClassName: String): String =
+    when (simpleClassName) {
+        "BuildTimeBenchmark" -> "Include Private Previews"
+        "BuildTimeWithoutPrivatePreviewsBenchmark" -> "Without Private Previews"
+        "MainSourceSetBenchmark" -> "Include Private Previews"
+        else -> "Standard"
+    }
 
 fun thresholdConfigFor(simpleClassName: String): BenchmarkThresholdConfig =
     when (simpleClassName) {
@@ -50,6 +101,12 @@ fun thresholdConfigFor(simpleClassName: String): BenchmarkThresholdConfig =
             maxAllowedScoreMs = maxAllowedBuildTimeScoreMs,
             expectedRamMb = expectedBuildTimeRamMb,
             maxAllowedRamMb = maxAllowedBuildTimeRamMb
+        )
+        "BuildTimeWithoutPrivatePreviewsBenchmark" -> BenchmarkThresholdConfig(
+            expectedScoreMs = expectedBuildTimeWithoutPrivatePreviewsScoreMs,
+            maxAllowedScoreMs = maxAllowedBuildTimeWithoutPrivatePreviewsScoreMs,
+            expectedRamMb = expectedBuildTimeWithoutPrivatePreviewsRamMb,
+            maxAllowedRamMb = maxAllowedBuildTimeWithoutPrivatePreviewsRamMb
         )
         else -> BenchmarkThresholdConfig(
             expectedScoreMs = expectedScoreMs,
@@ -71,6 +128,8 @@ data class BenchmarkEntryResult(
     val ramTrimmedMean: Double,
     val thresholdConfig: BenchmarkThresholdConfig
 ) {
+    val group: BenchmarkGroup get() = BenchmarkGroup.fromClassName(simpleClassName)
+    val variantLabel: String get() = variantLabelFor(simpleClassName)
     val displayName: String get() = "$simpleClassName.$methodName"
     val speedPassed: Boolean get() = speedTrimmedMean <= thresholdConfig.maxAllowedScoreMs
     val ramPassed: Boolean get() = ramValues.isNotEmpty() && ramTrimmedMean <= thresholdConfig.maxAllowedRamMb
@@ -84,19 +143,15 @@ val generateBenchmarkHtmlReport = tasks.register("generateBenchmarkHtmlReport") 
 
     onlyIf(Spec {
         val mainState = tasks.named("mainBenchmark").get().state
-        mainState.executed && mainState.failure == null
+        val reportsDir = layout.buildDirectory.dir("reports/benchmarks").get().asFile
+        (mainState.executed && mainState.failure == null) || findLatestJsonReport(reportsDir) != null
     })
 
     doLast {
-        val mainState = tasks.named("mainBenchmark").get().state
-        if (!mainState.executed) {
-            throw GradleException("Cannot generate report: 'mainBenchmark' task has not run in the current build.")
-        }
         val reportsDir = layout.buildDirectory.dir("reports/benchmarks").get().asFile
         val jsonFile = findLatestJsonReport(reportsDir)
-        if (jsonFile != null) {
-            buildHtmlReportFile(reportsDir, jsonFile)
-        }
+            ?: throw GradleException("No benchmark JSON report found in ${reportsDir.absolutePath}")
+        buildHtmlReportFile(reportsDir, jsonFile)
     }
 }
 
@@ -235,46 +290,390 @@ fun checkPerformanceThreshold(jsonFile: File, reportsDir: File) {
     println("\n=======================================================")
     println("🔍 Performance Threshold Verification (Trimmed Mean - Baseline + ${String.format(Locale.US, "%.1f", tolerancePercent)}% Offset):")
 
-    entries.forEachIndexed { index, entry ->
-        if (index > 0) {
-            println("=======================================================")
-        }
-        val cfg = entry.thresholdConfig
-        if (entry.ramValues.isEmpty()) {
-            throw GradleException("No valid allocated memory samples found for ${entry.displayName} in ${reportsDir.absolutePath}")
-        }
+    val grouped = entries.groupBy { it.group }.toList().sortedBy { it.first.order }
 
-        val speedDiffStr = calculatePercentDiff(entry.speedTrimmedMean, cfg.expectedScoreMs)
-        val ramDiffStr = calculatePercentDiff(entry.ramTrimmedMean, cfg.expectedRamMb)
+    grouped.forEach { (group, groupEntries) ->
+        println("\n=======================================================")
+        println("${group.title} (${group.description})")
+        println("=======================================================")
 
-        println("📌 Benchmark: ${entry.displayName}")
-        println("• Baseline Expected Speed: ${String.format(Locale.US, "%.2f", cfg.expectedScoreMs)} ms | Max Allowed (+${String.format(Locale.US, "%.1f", tolerancePercent)}%): ${String.format(Locale.US, "%.2f", cfg.maxAllowedScoreMs)} ms")
-        println("• Trimmed Actual Speed:   ${String.format(Locale.US, "%.2f", entry.speedTrimmedMean)} ms (Raw Avg: ${String.format(Locale.US, "%.2f", entry.score)} ms) [$speedDiffStr vs baseline] -> ${if (entry.speedPassed) "✅ PASSED" else "❌ FAILED"}")
-        println("-------------------------------------------------------")
-        println("• Baseline Expected Alloc:${String.format(Locale.US, "%.2f", cfg.expectedRamMb)} MB | Max Allowed (+${String.format(Locale.US, "%.1f", tolerancePercent)}%): ${String.format(Locale.US, "%.2f", cfg.maxAllowedRamMb)} MB")
-        println("• Trimmed Actual Alloc:   ${String.format(Locale.US, "%.2f", entry.ramTrimmedMean)} MB (Raw Avg: ${String.format(Locale.US, "%.2f", entry.avgRam)} MB) [$ramDiffStr vs baseline] -> ${if (entry.ramPassed) "✅ PASSED" else "❌ FAILED"}")
+        groupEntries.forEachIndexed { index, entry ->
+            if (index > 0) {
+                println("-------------------------------------------------------")
+            }
+            val cfg = entry.thresholdConfig
+            if (entry.ramValues.isEmpty()) {
+                throw GradleException("No valid allocated memory samples found for ${entry.displayName} in ${reportsDir.absolutePath}")
+            }
 
-        if (!entry.speedPassed) {
-            errors.add("[${entry.displayName}] Trimmed speed (${String.format(Locale.US, "%.2f", entry.speedTrimmedMean)} ms, $speedDiffStr vs baseline ${String.format(Locale.US, "%.2f", cfg.expectedScoreMs)} ms) exceeded max allowed threshold of ${String.format(Locale.US, "%.2f", cfg.maxAllowedScoreMs)} ms")
-        }
-        if (!entry.ramPassed) {
-            errors.add("[${entry.displayName}] Trimmed allocated memory per scan (${String.format(Locale.US, "%.2f", entry.ramTrimmedMean)} MB, $ramDiffStr vs baseline ${String.format(Locale.US, "%.2f", cfg.expectedRamMb)} MB) exceeded max allowed threshold of ${String.format(Locale.US, "%.2f", cfg.maxAllowedRamMb)} MB")
+            val speedDiffStr = calculatePercentDiff(entry.speedTrimmedMean, cfg.expectedScoreMs)
+            val ramDiffStr = calculatePercentDiff(entry.ramTrimmedMean, cfg.expectedRamMb)
+
+            println("📌 Benchmark: ${entry.displayName} [${entry.variantLabel}]")
+            println("• Baseline Expected Speed: ${String.format(Locale.US, "%.2f", cfg.expectedScoreMs)} ms | Max Allowed (+${String.format(Locale.US, "%.1f", tolerancePercent)}%): ${String.format(Locale.US, "%.2f", cfg.maxAllowedScoreMs)} ms")
+            println("• Trimmed Actual Speed:   ${String.format(Locale.US, "%.2f", entry.speedTrimmedMean)} ms (Raw Avg: ${String.format(Locale.US, "%.2f", entry.score)} ms) [$speedDiffStr vs baseline] -> ${if (entry.speedPassed) "✅ PASSED" else "❌ FAILED"}")
+            println("• Baseline Expected Alloc:${String.format(Locale.US, "%.2f", cfg.expectedRamMb)} MB | Max Allowed (+${String.format(Locale.US, "%.1f", tolerancePercent)}%): ${String.format(Locale.US, "%.2f", cfg.maxAllowedRamMb)} MB")
+            println("• Trimmed Actual Alloc:   ${String.format(Locale.US, "%.2f", entry.ramTrimmedMean)} MB (Raw Avg: ${String.format(Locale.US, "%.2f", entry.avgRam)} MB) [$ramDiffStr vs baseline] -> ${if (entry.ramPassed) "✅ PASSED" else "❌ FAILED"}")
+
+            if (!entry.speedPassed) {
+                errors.add("[${entry.displayName}] Trimmed speed (${String.format(Locale.US, "%.2f", entry.speedTrimmedMean)} ms, $speedDiffStr vs baseline ${String.format(Locale.US, "%.2f", cfg.expectedScoreMs)} ms) exceeded max allowed threshold of ${String.format(Locale.US, "%.2f", cfg.maxAllowedScoreMs)} ms")
+            }
+            if (!entry.ramPassed) {
+                errors.add("[${entry.displayName}] Trimmed allocated memory per scan (${String.format(Locale.US, "%.2f", entry.ramTrimmedMean)} MB, $ramDiffStr vs baseline ${String.format(Locale.US, "%.2f", cfg.expectedRamMb)} MB) exceeded max allowed threshold of ${String.format(Locale.US, "%.2f", cfg.maxAllowedRamMb)} MB")
+            }
         }
     }
 
     if (errors.isNotEmpty()) {
+        println("\n=======================================================")
         println("❌ Benchmark FAILED! Threshold exceeded.")
         println("=======================================================\n")
         throw GradleException("Benchmark Failed! ${java.lang.String.join(" & ", errors)}")
     } else {
+        println("\n=======================================================")
         println("✅ All Performance Checks Passed!")
         println("=======================================================\n")
     }
 }
 
+fun renderReportHtml(
+    entries: List<BenchmarkEntryResult>,
+    chartJsScriptSrc: String,
+    reportTitle: String,
+    filterGroupId: String? = null
+): String {
+    val displayedEntries = if (filterGroupId != null) {
+        entries.filter { it.group.id == filterGroupId }
+    } else {
+        entries
+    }
+
+    val grouped = displayedEntries.groupBy { it.group }.toList().sortedBy { it.first.order }
+    val allPassed = displayedEntries.all { it.speedPassed && it.ramPassed }
+
+    val sectionsHtml = StringBuilder()
+    val chartsJs = StringBuilder()
+
+    grouped.forEach { (group, groupEntries) ->
+        val groupBannerClass = if (group == BenchmarkGroup.MAIN_SOURCE_SET) "group-banner group-main-source-set" else "group-banner"
+        sectionsHtml.append(
+            """
+            <section class="benchmark-group-section" data-group="${group.id}">
+                <div class="$groupBannerClass card">
+                    <div class="group-banner-content">
+                        <div>
+                            <h2 class="group-title">${group.title}</h2>
+                            <div class="group-desc">${group.description}</div>
+                        </div>
+                        <span class="group-count-badge">${groupEntries.size} ${if (groupEntries.size == 1) "benchmark" else "benchmarks"}</span>
+                    </div>
+                </div>
+            """.trimIndent()
+        )
+        sectionsHtml.append("\n")
+
+        groupEntries.forEach { entry ->
+            val idx = entries.indexOf(entry)
+            val cfg = entry.thresholdConfig
+            val speedTrimmedFormatted = String.format(Locale.US, "%.2f", entry.speedTrimmedMean)
+            val ramTrimmedFormatted = if (entry.ramValues.isEmpty()) "N/A" else "${String.format(Locale.US, "%.2f", entry.ramTrimmedMean)} MB"
+            val speedDiffStr = calculatePercentDiff(entry.speedTrimmedMean, cfg.expectedScoreMs)
+            val ramDiffStr = if (entry.ramValues.isEmpty()) "N/A" else calculatePercentDiff(entry.ramTrimmedMean, cfg.expectedRamMb)
+            val labels = entry.rawSpeedValues.indices.map { "\"Iteration ${it + 1}\"" }
+
+            val variantClass = if (entry.variantLabel.contains("Without", ignoreCase = true)) {
+                "variant-tag variant-no-private"
+            } else {
+                "variant-tag"
+            }
+
+            sectionsHtml.append(
+                """
+                <div class="benchmark-entry">
+                    <div class="card">
+                        <div class="benchmark-header">
+                            <div>
+                                <h3 class="benchmark-name">${entry.displayName}</h3>
+                            </div>
+                            <span class="$variantClass">${entry.variantLabel}</span>
+                        </div>
+                        
+                        <div class="score-container">
+                            <div>
+                                <div class="label">Trimmed Speed (Olympic Mean)</div>
+                                <div class="score-badge">${speedTrimmedFormatted} ms/op</div>
+                                <div class="diff-tag ${if (entry.speedPassed) "diff-pass" else "diff-fail"}">${speedDiffStr} vs baseline (${String.format(Locale.US, "%.2f", cfg.expectedScoreMs)} ms)</div>
+                            </div>
+                            <div>
+                                <div class="label">Trimmed Allocated Memory (per scan)</div>
+                                <div class="ram-badge">${ramTrimmedFormatted}</div>
+                                <div class="diff-tag ${if (entry.ramPassed) "diff-pass" else "diff-fail"}">${ramDiffStr} vs baseline (${String.format(Locale.US, "%.2f", cfg.expectedRamMb)} MB)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid">
+                        <div class="card">
+                            <h4>⚡ Execution Speed (${entry.simpleClassName})</h4>
+                            <canvas id="speedChart_$idx"></canvas>
+                        </div>
+                        <div class="card">
+                            <h4>💾 Allocated Memory per scan (${entry.simpleClassName})</h4>
+                            <canvas id="ramChart_$idx"></canvas>
+                        </div>
+                    </div>
+                </div>
+                """.trimIndent()
+            )
+            sectionsHtml.append("\n")
+
+            chartsJs.append(
+                """
+                new Chart(document.getElementById('speedChart_$idx').getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: [${labels.joinToString(", ")}],
+                        datasets: [{
+                            label: 'Speed (ms)',
+                            data: [${entry.rawSpeedValues.joinToString(", ")}],
+                            backgroundColor: 'rgba(37, 99, 235, 0.6)',
+                            borderColor: 'rgba(37, 99, 235, 1)',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: true, title: { display: true, text: 'Time (ms)' } }
+                        }
+                    }
+                });
+
+                new Chart(document.getElementById('ramChart_$idx').getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: [${labels.joinToString(", ")}],
+                        datasets: [{
+                            label: 'Allocated per scan (MB)',
+                            data: [${entry.ramValues.joinToString(", ")}],
+                            backgroundColor: 'rgba(5, 150, 105, 0.6)',
+                            borderColor: 'rgba(5, 150, 105, 1)',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: true, title: { display: true, text: 'Allocation (MB)' } }
+                        }
+                    }
+                });
+                """.trimIndent()
+            )
+            chartsJs.append("\n")
+        }
+
+        sectionsHtml.append("</section>\n")
+    }
+
+    val filterTabsHtml = if (filterGroupId == null) {
+        val totalCount = entries.size
+        val tabButtons = grouped.joinToString("\n") { (group, groupList) ->
+            """<button class="filter-btn" onclick="filterGroup('${group.id}')">${group.title} (${groupList.size})</button>"""
+        }
+        """
+        <div class="filter-tabs">
+            <button class="filter-btn active" onclick="filterGroup('all')">All Benchmarks ($totalCount)</button>
+            $tabButtons
+        </div>
+        """.trimIndent()
+    } else ""
+
+    return """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>$reportTitle</title>
+        <script src="$chartJsScriptSrc"></script>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                margin: 40px auto;
+                background: #f8fafc;
+                color: #1e293b;
+                max-width: 900px;
+                padding: 0 16px;
+            }
+            .card {
+                background: white;
+                padding: 24px 28px;
+                border-radius: 12px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+                border: 1px solid #e2e8f0;
+                margin-bottom: 24px;
+            }
+            .header-card {
+                border-top: 5px solid #2563eb;
+            }
+            .header-top {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            h1 { margin: 0; color: #0f172a; font-size: 24px; font-weight: 700; }
+            .header-subtitle { color: #64748b; font-size: 14px; margin: 6px 0 0 0; }
+            .filter-tabs {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+                margin-top: 20px;
+                border-top: 1px solid #f1f5f9;
+                padding-top: 16px;
+            }
+            .filter-btn {
+                background: #f1f5f9;
+                border: 1px solid #cbd5e1;
+                color: #475569;
+                padding: 8px 14px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: 600;
+                font-size: 13px;
+                transition: all 0.2s;
+            }
+            .filter-btn:hover {
+                background: #e2e8f0;
+                color: #0f172a;
+            }
+            .filter-btn.active {
+                background: #2563eb;
+                color: white;
+                border-color: #2563eb;
+            }
+            .group-banner {
+                margin-top: 36px;
+                margin-bottom: 20px;
+                border-left: 6px solid #2563eb;
+                background: #f8faff;
+            }
+            .group-banner.group-main-source-set {
+                border-left-color: #059669;
+                background: #f0fdf4;
+            }
+            .group-banner-content {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            .group-title { margin: 0; font-size: 19px; color: #0f172a; }
+            .group-desc { margin-top: 4px; font-size: 13px; color: #64748b; }
+            .group-count-badge {
+                background: #e2e8f0;
+                color: #334155;
+                font-size: 12px;
+                font-weight: 600;
+                padding: 4px 10px;
+                border-radius: 9999px;
+            }
+            .benchmark-entry {
+                margin-bottom: 32px;
+            }
+            .benchmark-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-bottom: 16px;
+                padding-bottom: 12px;
+                border-bottom: 1px solid #f1f5f9;
+            }
+            .benchmark-name {
+                margin: 0;
+                font-size: 16px;
+                font-weight: 600;
+                color: #1e293b;
+                font-family: monospace;
+            }
+            .variant-tag {
+                display: inline-block;
+                font-size: 12px;
+                font-weight: 600;
+                padding: 3px 9px;
+                border-radius: 6px;
+                background: #eff6ff;
+                color: #1d4ed8;
+                border: 1px solid #bfdbfe;
+            }
+            .variant-tag.variant-no-private {
+                background: #fef3c7;
+                color: #92400e;
+                border-color: #fde68a;
+            }
+            .score-container { display: flex; gap: 32px; flex-wrap: wrap; margin-top: 8px; }
+            .score-badge { font-size: 26px; font-weight: 700; color: #2563eb; }
+            .ram-badge { font-size: 26px; font-weight: 700; color: #059669; }
+            .diff-tag { display: inline-block; font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 6px; margin-top: 6px; }
+            .diff-pass { background: #e6f4ea; color: #137333; }
+            .diff-fail { background: #fce8e6; color: #c5221f; }
+            .status-pill { font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 9999px; }
+            .status-pass { background: #dcfce7; color: #15803d; }
+            .status-fail { background: #fee2e2; color: #b91c1c; }
+            .label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+            canvas { max-width: 100%; margin-top: 12px; }
+            .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+            @media (max-width: 700px) {
+                .grid { grid-template-columns: 1fr; }
+            }
+            h4 { margin: 0; font-size: 14px; font-weight: 600; color: #475569; }
+        </style>
+    </head>
+    <body>
+        <div class="header-card card">
+            <div class="header-top">
+                <h1>🚀 $reportTitle</h1>
+                <span class="status-pill ${if (allPassed) "status-pass" else "status-fail"}">
+                    ${if (allPassed) "✅ ALL CHECKS PASSED" else "❌ THRESHOLDS EXCEEDED"}
+                </span>
+            </div>
+            <p class="header-subtitle">Performance & Memory Allocation Verification</p>
+            $filterTabsHtml
+        </div>
+
+        $sectionsHtml
+
+        <script>
+            $chartsJs
+
+            function filterGroup(groupId) {
+                var buttons = document.querySelectorAll('.filter-btn');
+                buttons.forEach(function(btn) { btn.classList.remove('active'); });
+                if (window.event && window.event.target) {
+                    window.event.target.classList.add('active');
+                }
+                var sections = document.querySelectorAll('.benchmark-group-section');
+                sections.forEach(function(section) {
+                    if (groupId === 'all' || section.getAttribute('data-group') === groupId) {
+                        section.style.display = 'block';
+                    } else {
+                        section.style.display = 'none';
+                    }
+                });
+            }
+        </script>
+    </body>
+    </html>
+    """.trimIndent()
+}
+
 fun buildHtmlReportFile(reportsDir: File, jsonFile: File) {
     val jsonText = jsonFile.readText()
-    val reportFile = File(reportsDir, "report.html")
     val entries = parseBenchmarkEntries(jsonText, reportsDir)
 
     // Ensure pinned local chart.js script is included alongside report.html
@@ -297,132 +696,34 @@ fun buildHtmlReportFile(reportsDir: File, jsonFile: File) {
 
     val chartJsScriptSrc = if (chartJsFile.exists()) "chart.js" else "https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
 
-    val sectionsHtml = StringBuilder()
-    val chartsJs = StringBuilder()
+    // 1. Generate full interactive report with all groups
+    val mainReportFile = File(reportsDir, "report.html")
+    val mainHtml = renderReportHtml(entries, chartJsScriptSrc, "ComposablePreviewScanner Benchmark Report")
+    mainReportFile.writeText(mainHtml)
 
-    entries.forEachIndexed { idx, entry ->
-        val cfg = entry.thresholdConfig
-        val speedTrimmedFormatted = String.format(Locale.US, "%.2f", entry.speedTrimmedMean)
-        val ramTrimmedFormatted = if (entry.ramValues.isEmpty()) "N/A" else "${String.format(Locale.US, "%.2f", entry.ramTrimmedMean)} MB"
-        val speedDiffStr = calculatePercentDiff(entry.speedTrimmedMean, cfg.expectedScoreMs)
-        val ramDiffStr = if (entry.ramValues.isEmpty()) "N/A" else calculatePercentDiff(entry.ramTrimmedMean, cfg.expectedRamMb)
-        val labels = entry.rawSpeedValues.indices.map { "\"Iteration ${it + 1}\"" }
-
-        sectionsHtml.append(
-            """
-            <div class="card">
-                <h1>🚀 ComposablePreviewScanner Benchmark Report</h1>
-                <div class="sub">Benchmark: ${entry.displayName}</div>
-                
-                <div class="score-container">
-                    <div>
-                        <div class="label">Trimmed Speed (Olympic Mean)</div>
-                        <div class="score-badge">${speedTrimmedFormatted} ms/op</div>
-                        <div class="diff-tag ${if (entry.speedPassed) "diff-pass" else "diff-fail"}">${speedDiffStr} vs baseline (${String.format(Locale.US, "%.2f", cfg.expectedScoreMs)} ms)</div>
-                    </div>
-                    <div>
-                        <div class="label">Trimmed Allocated Memory (per scan)</div>
-                        <div class="ram-badge">${ramTrimmedFormatted}</div>
-                        <div class="diff-tag ${if (entry.ramPassed) "diff-pass" else "diff-fail"}">${ramDiffStr} vs baseline (${String.format(Locale.US, "%.2f", cfg.expectedRamMb)} MB)</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid">
-                <div class="card">
-                    <h2>⚡ Execution Speed (${entry.simpleClassName})</h2>
-                    <canvas id="speedChart_$idx"></canvas>
-                </div>
-                <div class="card">
-                    <h2>💾 Allocated Memory per scan (${entry.simpleClassName})</h2>
-                    <canvas id="ramChart_$idx"></canvas>
-                </div>
-            </div>
-            """.trimIndent()
-        )
-        sectionsHtml.append("\n")
-
-        chartsJs.append(
-            """
-            new Chart(document.getElementById('speedChart_$idx').getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: [${labels.joinToString(", ")}],
-                    datasets: [{
-                        label: 'Speed (ms)',
-                        data: [${entry.rawSpeedValues.joinToString(", ")}],
-                        backgroundColor: 'rgba(37, 99, 235, 0.6)',
-                        borderColor: 'rgba(37, 99, 235, 1)',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: { beginAtZero: true, title: { display: true, text: 'Time (ms)' } }
-                    }
-                }
-            });
-
-            new Chart(document.getElementById('ramChart_$idx').getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: [${labels.joinToString(", ")}],
-                    datasets: [{
-                        label: 'Allocated per scan (MB)',
-                        data: [${entry.ramValues.joinToString(", ")}],
-                        backgroundColor: 'rgba(5, 150, 105, 0.6)',
-                        borderColor: 'rgba(5, 150, 105, 1)',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: { beginAtZero: true, title: { display: true, text: 'Allocation (MB)' } }
-                    }
-                }
-            });
-            """.trimIndent()
-        )
-        chartsJs.append("\n")
+    // 2. Generate separated group reports
+    val buildTimeEntries = entries.filter { it.group == BenchmarkGroup.BUILD_TIME }
+    if (buildTimeEntries.isNotEmpty()) {
+        val buildTimeReportFile = File(reportsDir, "report-buildtime.html")
+        val buildTimeHtml = renderReportHtml(entries, chartJsScriptSrc, "Build Time Scanner Benchmark Report", filterGroupId = BenchmarkGroup.BUILD_TIME.id)
+        buildTimeReportFile.writeText(buildTimeHtml)
     }
 
-    val html = """
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Benchmark HTML Report</title>
-        <script src="$chartJsScriptSrc"></script>
-        <style>
-            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 40px; background: #f8f9fa; color: #333; }
-            .card { background: white; padding: 28px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); max-width: 850px; margin: 0 auto 24px auto; }
-            h1 { margin-top: 0; color: #111; font-size: 24px; }
-            .score-container { display: flex; gap: 32px; margin: 16px 0; }
-            .score-badge { font-size: 28px; font-weight: bold; color: #2563eb; }
-            .ram-badge { font-size: 28px; font-weight: bold; color: #059669; }
-            .diff-tag { display: inline-block; font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 6px; margin-top: 6px; }
-            .diff-pass { background: #e6f4ea; color: #137333; }
-            .diff-fail { background: #fce8e6; color: #c5221f; }
-            .label { font-size: 13px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
-            .sub { color: #666; font-size: 14px; margin-bottom: 24px; }
-            canvas { max-width: 100%; margin-top: 16px; }
-            .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 850px; margin: 0 auto 36px auto; }
-        </style>
-    </head>
-    <body>
-        $sectionsHtml
-        <script>
-            $chartsJs
-        </script>
-    </body>
-    </html>
-    """.trimIndent()
+    val mainSourceSetEntries = entries.filter { it.group == BenchmarkGroup.MAIN_SOURCE_SET }
+    if (mainSourceSetEntries.isNotEmpty()) {
+        val mainSourceSetReportFile = File(reportsDir, "report-mainsourceset.html")
+        val mainSourceSetHtml = renderReportHtml(entries, chartJsScriptSrc, "Main Source Set Benchmark Report", filterGroupId = BenchmarkGroup.MAIN_SOURCE_SET.id)
+        mainSourceSetReportFile.writeText(mainSourceSetHtml)
+    }
 
-    reportFile.writeText(html)
     println("\n=======================================================")
     println("📊 Local HTML Benchmark Report generated at:")
-    println("file://${reportFile.absolutePath}")
+    println("file://${mainReportFile.absolutePath}")
+    if (buildTimeEntries.isNotEmpty()) {
+        println("file://${File(reportsDir, "report-buildtime.html").absolutePath}")
+    }
+    if (mainSourceSetEntries.isNotEmpty()) {
+        println("file://${File(reportsDir, "report-mainsourceset.html").absolutePath}")
+    }
     println("=======================================================\n")
 }
