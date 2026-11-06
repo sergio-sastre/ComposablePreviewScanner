@@ -66,10 +66,21 @@ interface InclusiveFilter<T> : InclusiveFilterWithResult<T, Unit>, PreviewProvid
  * Filter the ComposablePreviews of a given ScanResult.
  */
 open class ScanResultFilterWithResult<T, R> internal constructor(
-    internal val scanResult: ScanResult,
+    internal val scanResultProvider: (includesPrivatePreviews: Boolean) -> ScanResult,
     internal val previewsFinder: PreviewsFinderWithResult<T, R>,
     internal val previewScanningLogger: PreviewScanningLogger,
 ) : GeneralScanResultFilterWithResult<T, R>, ExclusiveFilterWithResult<T, R>, InclusiveFilterWithResult<T, R> {
+
+    internal constructor(
+        scanResult: ScanResult,
+        previewsFinder: PreviewsFinderWithResult<T, R>,
+        previewScanningLogger: PreviewScanningLogger,
+    ) : this(
+        scanResultProvider = { scanResult },
+        previewsFinder = previewsFinder,
+        previewScanningLogger = previewScanningLogger,
+    )
+
     private var scanResultFilterState = ScanResultFilterState<T>()
 
     /**
@@ -167,7 +178,7 @@ open class ScanResultFilterWithResult<T, R> internal constructor(
     }
 
     override fun getPreviews(): List<ComposablePreviewWithResult<T, R>> =
-        scanResult.use { scanResult ->
+        scanResultProvider(scanResultFilterState.includesPrivatePreviews).use { scanResult ->
             previewScanningLogger.measureFindPreviewsTimeAndGetResult {
                 scanResult
                     .allClasses
@@ -201,13 +212,23 @@ open class ScanResultFilterWithResult<T, R> internal constructor(
 }
 
 class ScanResultFilter<T> internal constructor(
-    scanResult: ScanResult,
+    scanResultProvider: (includesPrivatePreviews: Boolean) -> ScanResult,
     previewsFinder: PreviewsFinderWithResult<T, Unit>,
     previewScanningLogger: PreviewScanningLogger,
-) : ScanResultFilterWithResult<T, Unit>(scanResult, previewsFinder, previewScanningLogger),
+) : ScanResultFilterWithResult<T, Unit>(scanResultProvider, previewsFinder, previewScanningLogger),
     GeneralScanResultFilter<T>,
     ExclusiveFilter<T>,
     InclusiveFilter<T> {
+
+    internal constructor(
+        scanResult: ScanResult,
+        previewsFinder: PreviewsFinderWithResult<T, Unit>,
+        previewScanningLogger: PreviewScanningLogger,
+    ) : this(
+        scanResultProvider = { scanResult },
+        previewsFinder = previewsFinder,
+        previewScanningLogger = previewScanningLogger,
+    )
 
     override fun excludeIfAnnotatedWithAnyOf(vararg annotations: Class<out Annotation>): ExclusiveFilter<T> {
         super.excludeIfAnnotatedWithAnyOf(*annotations)

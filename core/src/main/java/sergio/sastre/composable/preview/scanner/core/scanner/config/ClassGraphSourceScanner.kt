@@ -32,15 +32,19 @@ open class ClassGraphSourceScannerWithResult<T, R>(
      */
     @RequiresLargeHeap
     override fun scanAllPackages(): ScanResultFilterWithResult<T, R> {
-        findComposableWithPreviewsInClass.resetCachedPreviewsFinder()
-        previewScanningLogger.useScanningSourceAllPackages()
-        val scanResult = previewScanningLogger.measureScanningTimeAndGetResult {
-            updatedClassGraph.scan()
-        }
         return ScanResultFilterWithResult(
-            scanResult,
-            findComposableWithPreviewsInClass,
-            previewScanningLogger
+            scanResultProvider = { includesPrivatePreviews ->
+                findComposableWithPreviewsInClass.resetCachedPreviewsFinder()
+                previewScanningLogger.useScanningSourceAllPackages()
+                if (includesPrivatePreviews) {
+                    updatedClassGraph.ignoreMethodVisibility()
+                }
+                previewScanningLogger.measureScanningTimeAndGetResult {
+                    updatedClassGraph.scan()
+                }
+            },
+            previewsFinder = findComposableWithPreviewsInClass,
+            previewScanningLogger = previewScanningLogger
         )
     }
 
@@ -53,16 +57,21 @@ open class ClassGraphSourceScannerWithResult<T, R>(
         require(packageTrees.isNotEmpty()) {
             "packageTrees must not be empty. For that, use scanAllPackages() instead"
         }
-        findComposableWithPreviewsInClass.resetCachedPreviewsFinder()
-        previewScanningLogger.useScanningSourcePackageTrees(*packageTrees)
-        updatedClassGraph = updatedClassGraph.acceptPackages(*packageTrees)
-        val scanResult = previewScanningLogger.measureScanningTimeAndGetResult {
-            updatedClassGraph.scan()
-        }
+        val targetClassGraph = updatedClassGraph.acceptPackages(*packageTrees)
+        updatedClassGraph = targetClassGraph
         return ScanResultFilterWithResult(
-            scanResult,
-            findComposableWithPreviewsInClass,
-            previewScanningLogger
+            scanResultProvider = { includesPrivatePreviews ->
+                findComposableWithPreviewsInClass.resetCachedPreviewsFinder()
+                previewScanningLogger.useScanningSourcePackageTrees(*packageTrees)
+                if (includesPrivatePreviews) {
+                    targetClassGraph.ignoreMethodVisibility()
+                }
+                previewScanningLogger.measureScanningTimeAndGetResult {
+                    targetClassGraph.scan()
+                }
+            },
+            previewsFinder = findComposableWithPreviewsInClass,
+            previewScanningLogger = previewScanningLogger
         )
     }
 
@@ -79,18 +88,23 @@ open class ClassGraphSourceScannerWithResult<T, R>(
         if (include.isEmpty()) {
             throw IllegalArgumentException("include packages must not be empty. For that, use scanAllPackages() instead")
         }
-        findComposableWithPreviewsInClass.resetCachedPreviewsFinder()
-        previewScanningLogger.useScanningSourcePackageTrees(included = include, excluded = exclude)
-        updatedClassGraph = updatedClassGraph
+        val targetClassGraph = updatedClassGraph
             .acceptPackages(*include.toTypedArray())
             .rejectPackages(*exclude.toTypedArray())
-        val scanResult = previewScanningLogger.measureScanningTimeAndGetResult {
-            updatedClassGraph.scan()
-        }
+        updatedClassGraph = targetClassGraph
         return ScanResultFilterWithResult(
-            scanResult,
-            findComposableWithPreviewsInClass,
-            previewScanningLogger
+            scanResultProvider = { includesPrivatePreviews ->
+                findComposableWithPreviewsInClass.resetCachedPreviewsFinder()
+                previewScanningLogger.useScanningSourcePackageTrees(included = include, excluded = exclude)
+                if (includesPrivatePreviews) {
+                    targetClassGraph.ignoreMethodVisibility()
+                }
+                previewScanningLogger.measureScanningTimeAndGetResult {
+                    targetClassGraph.scan()
+                }
+            },
+            previewsFinder = findComposableWithPreviewsInClass,
+            previewScanningLogger = previewScanningLogger
         )
     }
 
@@ -177,7 +191,7 @@ class ClassGraphSourceScanner<T>(
 
     private fun ScanResultFilterWithResult<T, Unit>.toScanResultFilter(): ScanResultFilter<T> =
         ScanResultFilter(
-            scanResult = scanResult,
+            scanResultProvider = scanResultProvider,
             previewsFinder = findComposableWithPreviewsInClass,
             previewScanningLogger = previewScanningLogger
         )

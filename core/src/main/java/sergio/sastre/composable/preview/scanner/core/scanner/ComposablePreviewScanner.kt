@@ -189,7 +189,6 @@ private fun ClasspathPreviewsFinderWithResult<*, *>.applyTargetSourceSet(
 
 private val classgraph
     get() = ClassGraph()
-        .ignoreMethodVisibility()
         .enableClassInfo()
         .enableMethodInfo()
         .enableAnnotationInfo()
