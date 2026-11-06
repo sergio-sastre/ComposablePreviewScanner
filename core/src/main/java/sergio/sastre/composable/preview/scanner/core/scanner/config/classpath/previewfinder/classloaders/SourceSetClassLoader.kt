@@ -12,10 +12,13 @@ internal class SourceSetClassLoader(
 ) : ClassLoader {
     private val buildDir = "build/${classpath.packagePath}"
 
-    override fun loadClass(classInfo: ClassInfo): Class<*> {
+    private val classLoader by lazy {
         val url = File(buildDir).toURI().toURL()
+        URLClassLoader(arrayOf(url), this.javaClass.classLoader)
+    }
+
+    override fun loadClass(classInfo: ClassInfo): Class<*> {
         try {
-            val classLoader = URLClassLoader(arrayOf(url), this.javaClass.classLoader)
             return classLoader.loadClass(classInfo.name)
         } catch (e: ClassNotFoundException) {
             when (!isRunningOnJvm() && classpath.packagePath.lowercase().contains("screenshottest")) {
