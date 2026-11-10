@@ -9,7 +9,8 @@ import java.util.Locale
 
 abstract class BaseRamUsageBenchmark {
 
-    protected abstract val benchmarkName: String
+    protected open val benchmarkName: String
+        get() = this::class.java.simpleName.substringBefore("_jmhType")
 
     private var bytesBeforeIteration = 0L
     private var scansInIteration = 0L
