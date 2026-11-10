@@ -14,12 +14,12 @@ benchmark {
 
             // Allow filtering by task shortcut or command-line property
             val requestedTasks = gradle.startParameter.taskNames
-            val taskFilter = when {
-                requestedTasks.any { it.endsWith("benchmarkMainSourceSet") } -> "MainSourceSetBenchmark"
-                requestedTasks.any { it.endsWith("benchmarkBuildTimeWithoutPrivatePreviews") } -> "BuildTimeWithoutPrivatePreviewsBenchmark"
-                requestedTasks.any { it.endsWith("benchmarkBuildTime") } -> "BuildTimeBenchmark"
-                else -> null
-            }
+            val taskFilter = requestedTasks.mapNotNull { taskName ->
+                val simpleName = taskName.substringAfterLast(":")
+                if (simpleName.startsWith("benchmark") && simpleName != "benchmark") {
+                    simpleName.removePrefix("benchmark") + "Benchmark"
+                } else null
+            }.firstOrNull()
 
             val filterPatterns = buildList {
                 if (taskFilter != null) {
@@ -59,23 +59,20 @@ benchmark {
     }
 }
 
-// Shortcut tasks to run specific benchmarks directly
-tasks.register("benchmarkMainSourceSet") {
-    group = "benchmark"
-    description = "Runs only the MainSourceSet benchmark"
-    dependsOn("benchmark")
-}
-
-tasks.register("benchmarkBuildTime") {
-    group = "benchmark"
-    description = "Runs only the BuildTime benchmark (includes private previews)"
-    dependsOn("benchmark")
-}
-
-tasks.register("benchmarkBuildTimeWithoutPrivatePreviews") {
-    group = "benchmark"
-    description = "Runs only the BuildTime benchmark without private previews"
-    dependsOn("benchmark")
+// Automatically register shortcut tasks for any benchmark class found in the source directory
+fileTree("src/main/kotlin") {
+    include("**/*Benchmark.kt")
+    exclude("**/Base*")
+}.forEach { file ->
+    val benchmarkClassName = file.nameWithoutExtension
+    val shortcutTaskName = "benchmark" + benchmarkClassName.removeSuffix("Benchmark")
+    if (tasks.findByName(shortcutTaskName) == null) {
+        tasks.register(shortcutTaskName) {
+            group = "benchmark"
+            description = "Runs only the $benchmarkClassName benchmark"
+            dependsOn("benchmark")
+        }
+    }
 }
 
 dependencies {

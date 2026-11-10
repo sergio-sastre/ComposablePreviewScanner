@@ -16,8 +16,8 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHea
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(BenchmarkTimeUnit.MILLISECONDS)
-@Warmup(iterations = 5, time = 2, timeUnit = BenchmarkTimeUnit.SECONDS)
-@Measurement(iterations = 10, time = 2, timeUnit = BenchmarkTimeUnit.SECONDS)
+@Warmup(iterations = 7, time = 3, timeUnit = BenchmarkTimeUnit.SECONDS)
+@Measurement(iterations = 15, time = 3, timeUnit = BenchmarkTimeUnit.SECONDS)
 open class BuildTimeBenchmark : BaseRamUsageBenchmark() {
 
     override val benchmarkName: String = "BuildTimeBenchmark"

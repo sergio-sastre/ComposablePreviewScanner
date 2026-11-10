@@ -1,5 +1,6 @@
 package sergio.sastre.composable.preview.scanner.benchmark
 
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import kotlinx.benchmark.Benchmark
 import kotlinx.benchmark.BenchmarkMode
 import kotlinx.benchmark.BenchmarkTimeUnit
@@ -16,11 +17,11 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHea
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(BenchmarkTimeUnit.MILLISECONDS)
-@Warmup(iterations = 5, time = 2, timeUnit = BenchmarkTimeUnit.SECONDS)
-@Measurement(iterations = 10, time = 2, timeUnit = BenchmarkTimeUnit.SECONDS)
-open class BuildTimeWithoutPrivatePreviewsBenchmark : BaseRamUsageBenchmark() {
+@Warmup(iterations = 7, time = 3, timeUnit = BenchmarkTimeUnit.SECONDS)
+@Measurement(iterations = 15, time = 3, timeUnit = BenchmarkTimeUnit.SECONDS)
+open class BuildTimePreviewFiltersBenchmark : BaseRamUsageBenchmark() {
 
-    override val benchmarkName: String = "BuildTimeWithoutPrivatePreviewsBenchmark"
+    override val benchmarkName: String = "BuildTimePreviewFiltersBenchmark"
 
     @OptIn(RequiresShowStandardStreams::class, RequiresLargeHeap::class)
     @Benchmark
@@ -30,6 +31,11 @@ open class BuildTimeWithoutPrivatePreviewsBenchmark : BaseRamUsageBenchmark() {
         return AndroidComposablePreviewScanner()
             .enableScanningLogs()
             .scanAllPackages()
+            // start filter block
+            .excludeIfAnnotatedWithAnyOf(PreviewWrapper::class.java)
+            .filterPreviews { !it.name.contains("private", true) }
+            // .includePrivatePreviews() , commented out -> filtered out
+            // end filter block
             .getPreviews()
     }
 }
