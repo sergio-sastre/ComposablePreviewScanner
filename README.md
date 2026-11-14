@@ -20,6 +20,8 @@ JVM-based (i.e. Paparazzi, Roborazzi) as well as Instrumentation-based (i.e. Sho
 [![](https://img.shields.io/badge/dynamic/xml.svg?color=1f74eb&label=Maven%20Central&query=%2F%2Fmetadata%2Fversioning%2Frelease&url=https%3A%2F%2Frepo.maven.apache.org%2Fmaven2%2Fio%2Fgithub%2Fsergio-sastre%2FComposablePreviewScanner%2Fandroid%2Fmaven-metadata.xml)](https://central.sonatype.com/artifact/io.github.sergio-sastre.ComposablePreviewScanner/android) ![](https://api.scarf.sh/v2/packages/Sergio-sastre/87e0cced-b5ee-4c8a-806c-81bdc43f6ec6/downloads-badge)<br/>
 With over **500,000 monthly downloads** (JitPack + Maven Central), Composable Preview Scanner is a trusted solution for automated visual UI verification in the Compose ecosystem.
 
+> **📺 Watch:** Discover how Preview Screenshot tests and AI can help you build better software faster in my new talk **[Composable Preview Driven Development with AI: TDD-fying your UI pAInlessly!](https://www.youtube.com/watch?v=SDtrO4ddlBA)** *(next.app DevCon Berlin & Droidcon Lisbon 2026)*.
+
 ![composable_preview_scanner_overview.png](composable_preview_scanner_overview.png)
 > [!NOTE]
 > If you are still using the deprecated `org.jetbrains.compose.ui.tooling.preview.Preview`, see [README_DEPRECATED.md](README_DEPRECATED.md)<br/>
@@ -1022,11 +1024,19 @@ To write such screenshot tests you have to:
 </details>
 
 # Conferences & Community
+
+> [!TIP]
+> **🚀 Featured Video: Composable Preview Driven Development with AI**<br/>
+> Discover how Preview Screenshot tests and AI can help you build better software faster, featuring practical tips on TDD-fying your UI pAInlessly!<br/>
+> **[Watch the talk here](https://www.youtube.com/watch?v=SDtrO4ddlBA)** *(Presented at next.app DevCon Berlin & Droidcon Lisbon 2026)*
+
 <details>
-<summary>Click to see talks, blog posts, and books</summary>
+<summary>Click to see more talks, blog posts, and books</summary>
 
 ## Tech talks
 The benefits and usage of ComposablePreviewScanner have been featured at major Android conferences:
+- **next.app DevCon Berlin & Droidcon Lisbon 2026**:<br/>
+  [Composable Preview Driven Development with AI: TDD-fying your UI pAInlessly!](https://www.youtube.com/watch?v=SDtrO4ddlBA) by Sergio Sastre
 - **Droidcon Lisbon & Berlin 2025**:<br/>
   [Let's @Preview the future: Automating Screenshot Testing in Compose Multiplatform](https://www.youtube.com/watch?v=zYsNXrf2-Lo) by Sergio Sastre
 - **Droidcon Lisbon 2024**:<br/>
