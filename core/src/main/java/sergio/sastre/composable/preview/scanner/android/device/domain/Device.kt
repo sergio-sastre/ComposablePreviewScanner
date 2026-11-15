@@ -2,23 +2,7 @@ package sergio.sastre.composable.preview.scanner.android.device.domain
 
 import sergio.sastre.composable.preview.scanner.android.device.domain.Cutout.NONE
 import sergio.sastre.composable.preview.scanner.android.device.domain.Navigation.GESTURE
-import kotlin.math.abs
 import kotlin.math.round
-
-private const val ROUNDING_EPSILON = 1e-9
-
-private fun pxToDp(rawPx: Double, densityDpi: Int): Double =
-    rawPx * 160.0 / densityDpi
-
-private fun dpToPx(rawDp: Double, densityDpi: Int): Double =
-    rawDp * densityDpi / 160.0
-
-private fun roundOrOriginal(value: Double, original: Float?): Float {
-    if (original != null && abs(value - original.toDouble()) < ROUNDING_EPSILON) {
-        return original
-    }
-    return round(value).toFloat()
-}
 
 data class Device(
     val identifier: Identifier?,
@@ -50,53 +34,29 @@ data class Dimensions(
     val width: Float,
     val unit: Unit,
 ) {
-    // Preserves unrounded Double values and initial float values across chained conversions
-    // without changing the public API.
-    private var rawHeight: Double = height.toDouble()
-    private var rawWidth: Double = width.toDouble()
-    private var initialHeight: Float = height
-    private var initialWidth: Float = width
-    private var initialUnit: Unit = unit
+    private var convertedFrom: Dimensions? = null
 
-    fun inDp(densityDpi: Int): Dimensions = when (unit) {
-        Unit.DP -> this
-        Unit.PX -> {
-            val dpHeight = pxToDp(rawHeight, densityDpi)
-            val dpWidth = pxToDp(rawWidth, densityDpi)
-            val origHeight = initialHeight.takeIf { initialUnit == Unit.DP }
-            val origWidth = initialWidth.takeIf { initialUnit == Unit.DP }
-            Dimensions(
-                height = roundOrOriginal(dpHeight, origHeight),
-                width = roundOrOriginal(dpWidth, origWidth),
+    fun inDp(densityDpi: Int): Dimensions {
+        val conversionFactor: Float = densityDpi / 160f
+        return when (unit) {
+            Unit.DP -> this
+            Unit.PX -> convertedFrom ?: Dimensions(
+                height = round(height / conversionFactor),
+                width = round(width / conversionFactor),
                 unit = Unit.DP
-            ).also {
-                it.rawHeight = dpHeight
-                it.rawWidth = dpWidth
-                it.initialHeight = initialHeight
-                it.initialWidth = initialWidth
-                it.initialUnit = initialUnit
-            }
+            ).also { it.convertedFrom = this }
         }
     }
 
-    fun inPx(densityDpi: Int): Dimensions = when (unit) {
-        Unit.PX -> this
-        Unit.DP -> {
-            val pxHeight = dpToPx(rawHeight, densityDpi)
-            val pxWidth = dpToPx(rawWidth, densityDpi)
-            val origHeight = initialHeight.takeIf { initialUnit == Unit.PX }
-            val origWidth = initialWidth.takeIf { initialUnit == Unit.PX }
-            Dimensions(
-                height = roundOrOriginal(pxHeight, origHeight),
-                width = roundOrOriginal(pxWidth, origWidth),
+    fun inPx(densityDpi: Int): Dimensions {
+        val conversionFactor: Float = densityDpi / 160f
+        return when (unit) {
+            Unit.PX -> this
+            Unit.DP -> convertedFrom ?: Dimensions(
+                height = round(height * conversionFactor),
+                width = round(width * conversionFactor),
                 unit = Unit.PX
-            ).also {
-                it.rawHeight = pxHeight
-                it.rawWidth = pxWidth
-                it.initialHeight = initialHeight
-                it.initialWidth = initialWidth
-                it.initialUnit = initialUnit
-            }
+            ).also { it.convertedFrom = this }
         }
     }
 }
@@ -110,41 +70,27 @@ data class ChinSize(
     val value: Float,
     val unit: Unit,
 ) {
-    // Preserves unrounded Double value and initial float value across chained conversions
-    // without changing the public API.
-    private var rawValue: Double = value.toDouble()
-    private var initialValue: Float = value
-    private var initialUnit: Unit = unit
+    private var convertedFrom: ChinSize? = null
 
-    fun inDp(densityDpi: Int): ChinSize = when (unit) {
-        Unit.DP -> this
-        Unit.PX -> {
-            val dpValue = pxToDp(rawValue, densityDpi)
-            val origValue = initialValue.takeIf { initialUnit == Unit.DP }
-            ChinSize(
-                value = roundOrOriginal(dpValue, origValue),
+    fun inDp(densityDpi: Int): ChinSize {
+        val conversionFactor: Float = densityDpi / 160f
+        return when (unit) {
+            Unit.DP -> this
+            Unit.PX -> convertedFrom ?: ChinSize(
+                value = round(value / conversionFactor),
                 unit = Unit.DP
-            ).also {
-                it.rawValue = dpValue
-                it.initialValue = initialValue
-                it.initialUnit = initialUnit
-            }
+            ).also { it.convertedFrom = this }
         }
     }
 
-    fun inPx(densityDpi: Int): ChinSize = when (unit) {
-        Unit.PX -> this
-        Unit.DP -> {
-            val pxValue = dpToPx(rawValue, densityDpi)
-            val origValue = initialValue.takeIf { initialUnit == Unit.PX }
-            ChinSize(
-                value = roundOrOriginal(pxValue, origValue),
+    fun inPx(densityDpi: Int): ChinSize {
+        val conversionFactor: Float = densityDpi / 160f
+        return when (unit) {
+            Unit.PX -> this
+            Unit.DP -> convertedFrom ?: ChinSize(
+                value = round(value * conversionFactor),
                 unit = Unit.PX
-            ).also {
-                it.rawValue = pxValue
-                it.initialValue = initialValue
-                it.initialUnit = initialUnit
-            }
+            ).also { it.convertedFrom = this }
         }
     }
 }
