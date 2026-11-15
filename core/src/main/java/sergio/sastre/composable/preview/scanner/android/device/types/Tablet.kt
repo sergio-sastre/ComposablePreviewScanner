@@ -7,7 +7,9 @@ import sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceB
 import sergio.sastre.composable.preview.scanner.android.device.domain.Identifier
 import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation.LANDSCAPE
 import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation.PORTRAIT
+import sergio.sastre.composable.preview.scanner.android.device.domain.ScreenSize.LARGE
 import sergio.sastre.composable.preview.scanner.android.device.domain.Shape.NOTROUND
+import sergio.sastre.composable.preview.scanner.android.device.domain.Type.PHONE
 import sergio.sastre.composable.preview.scanner.android.device.domain.Type.TABLET
 import sergio.sastre.composable.preview.scanner.android.device.domain.Unit.PX
 
@@ -25,6 +27,7 @@ enum class Tablet(
             ),
             densityDpi = 320,
             orientation = LANDSCAPE,
+            screenSize = LARGE,
             shape = NOTROUND,
             chinSize = ChinSize(0F, PX),
             type = TABLET
@@ -47,6 +50,10 @@ enum class Tablet(
         )
     ),
 
+    @Deprecated(
+        message = "Moved to Phone.PIXEL_9_PRO_FOLD. This will be removed in 0.12.0",
+        replaceWith = ReplaceWith("Phone.PIXEL_9_PRO_FOLD")
+    )
     PIXEL_9_PRO_FOLD(
         Device(
             identifier = Identifier.PIXEL_9_PRO_FOLD,
@@ -55,11 +62,12 @@ enum class Tablet(
                 height = 2152f,
                 unit = PX
             ),
-            densityDpi = 420,
+            densityDpi = 390, // wrong in Android Studio, 420
             orientation = LANDSCAPE,
+            screenSize = LARGE,
             shape = NOTROUND,
             chinSize = ChinSize(0F, PX),
-            type = TABLET
+            type = PHONE
         )
     ),
 
