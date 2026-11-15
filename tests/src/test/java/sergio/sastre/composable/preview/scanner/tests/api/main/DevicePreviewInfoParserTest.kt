@@ -289,6 +289,21 @@ class DevicePreviewInfoParserTest {
         Pixel6a("id:pixel_6a", RobolectricDeviceQualifiers.Pixel6a),
         Pixel7("id:pixel_7", RobolectricDeviceQualifiers.Pixel7),
         Pixel7Pro("id:pixel_7_pro", RobolectricDeviceQualifiers.Pixel7Pro),
+        Pixel7a("id:pixel_7a", RobolectricDeviceQualifiers.Pixel7a),
+        Pixel8("id:pixel_8", RobolectricDeviceQualifiers.Pixel8),
+        Pixel8Pro("id:pixel_8_pro", RobolectricDeviceQualifiers.Pixel8Pro),
+        Pixel8a("id:pixel_8a", RobolectricDeviceQualifiers.Pixel8a),
+        Pixel9("id:pixel_9", RobolectricDeviceQualifiers.Pixel9),
+        Pixel9a("id:pixel_9a", RobolectricDeviceQualifiers.Pixel9a),
+        Pixel9Pro("id:pixel_9_pro", RobolectricDeviceQualifiers.Pixel9Pro),
+        Pixel9ProXL("id:pixel_9_pro_xl", RobolectricDeviceQualifiers.Pixel9ProXL),
+        Pixel9ProFold("id:pixel_9_pro_fold", RobolectricDeviceQualifiers.Pixel9ProFold),
+        PixelFold("id:pixel_fold", RobolectricDeviceQualifiers.PixelFold),
+        PixelTablet("id:pixel_tablet", RobolectricDeviceQualifiers.PixelTablet),
+
+        SmallPhone("id:small_phone", RobolectricDeviceQualifiers.SmallPhone),
+        MediumPhone("id:medium_phone", RobolectricDeviceQualifiers.MediumPhone),
+        MediumTablet("id:medium_tablet", RobolectricDeviceQualifiers.MediumTablet),
 
         WearOSXLRound("id:wearos_xl_round", RobolectricDeviceQualifiers.WearOSXLRound),
         WearOSLargeRound("id:wearos_large_round", RobolectricDeviceQualifiers.WearOSLargeRound),
@@ -300,17 +315,55 @@ class DevicePreviewInfoParserTest {
         SmallDesktop("id:desktop_small", RobolectricDeviceQualifiers.SmallDesktop),
         MediumDesktop("id:desktop_medium", RobolectricDeviceQualifiers.MediumDesktop),
         LargeDesktop("id:desktop_large", RobolectricDeviceQualifiers.LargeDesktop),
+
         Automotive1024pLandscape(
             "id:automotive_1024p_landscape",
             RobolectricDeviceQualifiers.Automotive1024plandscape
         ),
+        Automotive1080pLandscape(
+            "id:automotive_1080p_landscape",
+            RobolectricDeviceQualifiers.Automotive1080plandscape
+        ),
+        Automotive1408pLandscape(
+            "id:automotive_1408p_landscape_with_google_apis",
+            RobolectricDeviceQualifiers.Automotive1408plandscape
+        ),
+        Automotive1408pLandscapeWithGooglePlay(
+            "id:automotive_1408p_landscape_with_play",
+            RobolectricDeviceQualifiers.Automotive1408plandscapewithGooglePlay
+        ),
+        AutomotivePortrait(
+            "id:automotive_portrait",
+            RobolectricDeviceQualifiers.AutomotivePortrait
+        ),
+        AutomotiveLargePortrait(
+            "id:automotive_large_portrait",
+            RobolectricDeviceQualifiers.AutomotiveLargePortrait
+        ),
+        AutomotiveDistantDisplay(
+            "id:automotive_distant_display",
+            RobolectricDeviceQualifiers.AutomotiveDistantDisplay
+        ),
+        AutomotiveDistantDisplayWithGooglePlay(
+            "id:automotive_distant_display_with_play",
+            RobolectricDeviceQualifiers.AutomotiveDistantDisplaywithGooglePlay
+        ),
+        AutomotiveUltrawide(
+            "id:automotive_ultrawide",
+            RobolectricDeviceQualifiers.AutomotiveUltrawide
+        ),
+
+        Television4K("id:tv_4k", RobolectricDeviceQualifiers.Television4K),
+        Television1080p("id:tv_1080p", RobolectricDeviceQualifiers.Television1080p),
+        Television720p("id:tv_720p", RobolectricDeviceQualifiers.Television720p),
 
         XRHeadset("id:xr_headset_device", RobolectricDeviceQualifiers.XRHeadset),
         XRGlasses("id:xr_glasses_device", RobolectricDeviceQualifiers.XRGlasses),
+        AIGlasses("id:ai_glasses_device", RobolectricDeviceQualifiers.AIGlasses),
     }
 
     @Test
-    fun `GIVEN device id, WHEN converted to Dp, has expected Roborazzi height and width with error margin up to 1f`(
+    fun `GIVEN device id, WHEN converted to Dp, has expected Roborazzi height and width with error margin up to 0f`(
         @TestParameter deviceMapping: DeviceIdMapping
     ) {
         val expectedDevice = DevicePreviewInfoParser.parse(deviceMapping.deviceId)!!
@@ -319,12 +372,12 @@ class DevicePreviewInfoParserTest {
         assertEquals(
             expectedDeviceInDp.dimensions.height,
             deviceMapping.roborazziDeviceQualifier.extractHeight(),
-            1f
+            0f
         )
         assertEquals(
             expectedDeviceInDp.dimensions.width,
             deviceMapping.roborazziDeviceQualifier.extractWidth(),
-            1f
+            0f
         )
         assertEquals(
             expectedDevice.screenRatio.name.lowercase(),
@@ -342,13 +395,19 @@ class DevicePreviewInfoParserTest {
     ) {
         Nexus4("id:Nexus 4", DeviceConfig.NEXUS_4),
         Nexus5("id:Nexus 5", DeviceConfig.NEXUS_5),
-        Nexus7("id:Nexus 7", DeviceConfig.NEXUS_7),
-        Nexus7_2012("name:Nexus 7 (2012)", DeviceConfig.NEXUS_7_2012),
+        Nexus7Name("name:Nexus 7", DeviceConfig.NEXUS_7),
+        Nexus7Id("id:Nexus 7 2013", DeviceConfig.NEXUS_7),
+        Nexus7_2012Id("id:Nexus 7", DeviceConfig.NEXUS_7_2012),
+        Nexus7_2012Name("name:Nexus 7 (2012)", DeviceConfig.NEXUS_7_2012),
         Nexus10("id:Nexus 10", DeviceConfig.NEXUS_10),
         Pixel("id:pixel", DeviceConfig.PIXEL),
         PixelXL("id:pixel_xl", DeviceConfig.PIXEL_XL),
         Pixel2("id:pixel_2", DeviceConfig.PIXEL_2),
         Pixel2XL("id:pixel_2_xl", DeviceConfig.PIXEL_2_XL),
+        Pixel3("id:pixel_3", DeviceConfig.PIXEL_3),
+        Pixel3XL("id:pixel_3_xl", DeviceConfig.PIXEL_3_XL),
+        Pixel3A("id:pixel_3a", DeviceConfig.PIXEL_3A),
+        Pixel3AXL("id:pixel_3a_xl", DeviceConfig.PIXEL_3A_XL),
         PixelC("id:pixel_c", DeviceConfig.PIXEL_C),
         Pixel4("id:pixel_4", DeviceConfig.PIXEL_4),
         Pixel4A("id:pixel_4a", DeviceConfig.PIXEL_4A),
@@ -357,14 +416,19 @@ class DevicePreviewInfoParserTest {
         Pixel6("id:pixel_6", DeviceConfig.PIXEL_6),
         Pixel6Pro("id:pixel_6_pro", DeviceConfig.PIXEL_6_PRO),
         WearOSSmallRound("id:wearos_small_round", DeviceConfig.WEAR_OS_SMALL_ROUND),
-        WearOSSquare("id:wearos_square", DeviceConfig.WEAR_OS_SQUARE)
+        // Paparazzi's WEAR_OS_SQUARE uses the legacy 2014 280x280px @ 240dpi dimensions
+        WearOSSquare(
+            "id:wearos_square",
+            DeviceConfig.WEAR_OS_SQUARE.copy(screenHeight = 360, screenWidth = 360)
+        )
     }
 
     @Test
-    fun `GIVEN device id, WHEN converted to Dp, has expected Paparazzi screen ratio`(
+    fun `GIVEN device id, WHEN converted to Dp and back to Px, has expected Paparazzi screen ratio, size, height and width`(
         @TestParameter deviceMapping: DeviceIdPaparazziMapping
     ) {
-        val expectedDevice = DevicePreviewInfoParser.parse(deviceMapping.deviceId)!!
+        val expectedDevice = DevicePreviewInfoParser.parse(deviceMapping.deviceId)!!.inDp()
+            .inPx()
 
         assertEquals(
             expectedDevice.screenRatio.name.lowercase(),
@@ -375,11 +439,20 @@ class DevicePreviewInfoParserTest {
             expectedDevice.screenSize.name.lowercase(),
             deviceMapping.expectedDeviceConfig.size.name.lowercase()
         )
+
+        assertEquals(
+            expectedDevice.dimensions.height,
+            deviceMapping.expectedDeviceConfig.screenHeight.toFloat()
+        )
+        assertEquals(
+            expectedDevice.dimensions.width,
+            deviceMapping.expectedDeviceConfig.screenWidth.toFloat()
+        )
     }
 
     @Test
-    fun `GIVEN device in Px WHEN converted to Dp AND back to Px twice THEN returns original device with error margin up to 2f`() {
-        val marginError = 2f
+    fun `GIVEN device in Px WHEN converted to Dp AND back to Px twice THEN returns original device with error margin up to 0f`() {
+        val marginError = 0f
         val deviceString = "spec:width=300px,height=300px,chinSize=25.5px"
         val originalDeviceInPx =
             DevicePreviewInfoParser.parse(deviceString)
@@ -415,8 +488,8 @@ class DevicePreviewInfoParserTest {
     }
 
     @Test
-    fun `GIVEN device in Dp WHEN converted to Px AND back to Dp twice THEN returns original device with error margin up to 2f`() {
-        val marginError = 2f
+    fun `GIVEN device in Dp WHEN converted to Px AND back to Dp twice THEN returns original device with error margin up to 0f`() {
+        val marginError = 0f
         val deviceString = "spec:width=114.3dp,height=114.3dp,isRound=true,chinSize=9.7dp"
         val originalDeviceInDp =
             DevicePreviewInfoParser.parse(deviceString)
@@ -469,6 +542,21 @@ class DevicePreviewInfoParserTest {
         Pixel6a("name:Pixel 6a", RobolectricDeviceQualifiers.Pixel6a),
         Pixel7("name:Pixel 7", RobolectricDeviceQualifiers.Pixel7),
         Pixel7Pro("name:Pixel 7 Pro", RobolectricDeviceQualifiers.Pixel7Pro),
+        Pixel7a("name:Pixel 7a", RobolectricDeviceQualifiers.Pixel7a),
+        Pixel8("name:Pixel 8", RobolectricDeviceQualifiers.Pixel8),
+        Pixel8Pro("name:Pixel 8 Pro", RobolectricDeviceQualifiers.Pixel8Pro),
+        Pixel8a("name:Pixel 8a", RobolectricDeviceQualifiers.Pixel8a),
+        Pixel9("name:Pixel 9", RobolectricDeviceQualifiers.Pixel9),
+        Pixel9a("name:Pixel 9a", RobolectricDeviceQualifiers.Pixel9a),
+        Pixel9Pro("name:Pixel 9 Pro", RobolectricDeviceQualifiers.Pixel9Pro),
+        Pixel9ProXL("name:Pixel 9 Pro XL", RobolectricDeviceQualifiers.Pixel9ProXL),
+        Pixel9ProFold("name:Pixel 9 Pro Fold", RobolectricDeviceQualifiers.Pixel9ProFold),
+        PixelFold("name:Pixel Fold", RobolectricDeviceQualifiers.PixelFold),
+        PixelTablet("name:Pixel Tablet", RobolectricDeviceQualifiers.PixelTablet),
+
+        SmallPhone("name:Small Phone", RobolectricDeviceQualifiers.SmallPhone),
+        MediumPhone("name:Medium Phone", RobolectricDeviceQualifiers.MediumPhone),
+        MediumTablet("name:Medium Tablet", RobolectricDeviceQualifiers.MediumTablet),
 
         WearOSXLRound("name:Wear OS XL Round", RobolectricDeviceQualifiers.WearOSXLRound),
         WearOSLargeRound("name:Wear OS Large Round", RobolectricDeviceQualifiers.WearOSLargeRound),
@@ -482,17 +570,55 @@ class DevicePreviewInfoParserTest {
         SmallDesktop("name:Small Desktop", RobolectricDeviceQualifiers.SmallDesktop),
         MediumDesktop("name:Medium Desktop", RobolectricDeviceQualifiers.MediumDesktop),
         LargeDesktop("name:Large Desktop", RobolectricDeviceQualifiers.LargeDesktop),
+
         Automotive1024pLandscape(
             "name:Automotive (1024p landscape)",
             RobolectricDeviceQualifiers.Automotive1024plandscape
         ),
+        Automotive1080pLandscape(
+            "name:Automotive (1080p landscape)",
+            RobolectricDeviceQualifiers.Automotive1080plandscape
+        ),
+        Automotive1408pLandscape(
+            "name:Automotive (1408p landscape)",
+            RobolectricDeviceQualifiers.Automotive1408plandscape
+        ),
+        Automotive1408pLandscapeWithGooglePlay(
+            "name:Automotive (1408p landscape) with Google Play",
+            RobolectricDeviceQualifiers.Automotive1408plandscapewithGooglePlay
+        ),
+        AutomotivePortrait(
+            "name:Automotive Portrait",
+            RobolectricDeviceQualifiers.AutomotivePortrait
+        ),
+        AutomotiveLargePortrait(
+            "name:Automotive Large Portrait",
+            RobolectricDeviceQualifiers.AutomotiveLargePortrait
+        ),
+        AutomotiveDistantDisplay(
+            "name:Automotive Distant Display",
+            RobolectricDeviceQualifiers.AutomotiveDistantDisplay
+        ),
+        AutomotiveDistantDisplayWithGooglePlay(
+            "name:Automotive Distant Display with Google Play",
+            RobolectricDeviceQualifiers.AutomotiveDistantDisplaywithGooglePlay
+        ),
+        AutomotiveUltrawide(
+            "name:Automotive Ultrawide",
+            RobolectricDeviceQualifiers.AutomotiveUltrawide
+        ),
+
+        Television4K("name:Television (4K)", RobolectricDeviceQualifiers.Television4K),
+        Television1080p("name:Television (1080p)", RobolectricDeviceQualifiers.Television1080p),
+        Television720p("name:Television (720p)", RobolectricDeviceQualifiers.Television720p),
 
         XRHeadset("name:XR Headset", RobolectricDeviceQualifiers.XRHeadset),
         XRGlasses("name:XR Glasses", RobolectricDeviceQualifiers.XRGlasses),
+        AIGlasses("name:AI Glasses", RobolectricDeviceQualifiers.AIGlasses),
     }
 
     @Test
-    fun `GIVEN device name, WHEN converted to Dp, has expected Roborazzi height and width with error margin up to 1f`(
+    fun `GIVEN device name, WHEN converted to Dp, has expected Roborazzi height and width with error margin up to 0f`(
         @TestParameter deviceMapping: DeviceNameMapping
     ) {
         val expectedDeviceInDp =
@@ -501,12 +627,12 @@ class DevicePreviewInfoParserTest {
         assertEquals(
             expectedDeviceInDp.dimensions.height,
             deviceMapping.roborazziDeviceQualifier.extractHeight(),
-            1f
+            0f
         )
         assertEquals(
             expectedDeviceInDp.dimensions.width,
             deviceMapping.roborazziDeviceQualifier.extractWidth(),
-            1f
+            0f
         )
     }
 
