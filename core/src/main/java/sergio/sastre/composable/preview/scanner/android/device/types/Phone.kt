@@ -11,6 +11,7 @@ import sergio.sastre.composable.preview.scanner.android.device.domain.Orientatio
 import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation.PORTRAIT
 import sergio.sastre.composable.preview.scanner.android.device.domain.ScreenRatio.LONG
 import sergio.sastre.composable.preview.scanner.android.device.domain.ScreenRatio.NOTLONG
+import sergio.sastre.composable.preview.scanner.android.device.domain.ScreenSize.LARGE
 import sergio.sastre.composable.preview.scanner.android.device.domain.ScreenSize.NORMAL
 import sergio.sastre.composable.preview.scanner.android.device.domain.Shape.NOTROUND
 import sergio.sastre.composable.preview.scanner.android.device.domain.Type.PHONE
@@ -92,7 +93,7 @@ enum class Phone(
             identifier = Identifier.NEXUS_5,
             dimensions = Dimensions(
                 width = 1080f,
-                height = 2340f,
+                height = 1920f,
                 unit = PX
             ),
             densityDpi = 480,
@@ -536,12 +537,28 @@ enum class Phone(
         Device(
             identifier = Identifier.PIXEL_9_PRO_XL,
             dimensions = Dimensions(
-                width = 1314f,
+                width = 1344f,
                 height = 2992f,
                 unit = PX
             ),
             densityDpi = 480,
             orientation = PORTRAIT,
+            shape = NOTROUND,
+            chinSize = ChinSize(0F, PX),
+            type = PHONE
+        )
+    ),
+    PIXEL_9_PRO_FOLD(
+        Device(
+            identifier = Identifier.PIXEL_9_PRO_FOLD,
+            dimensions = Dimensions(
+                width = 2076f,
+                height = 2152f,
+                unit = PX
+            ),
+            densityDpi = 390, // wrong in Android Studio, 420
+            orientation = LANDSCAPE,
+            screenSize = LARGE,
             shape = NOTROUND,
             chinSize = ChinSize(0F, PX),
             type = PHONE

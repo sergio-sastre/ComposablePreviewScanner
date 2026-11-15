@@ -6,6 +6,7 @@ import sergio.sastre.composable.preview.scanner.android.device.domain.Dimensions
 import sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceByIdentifier
 import sergio.sastre.composable.preview.scanner.android.device.domain.Identifier
 import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation.LANDSCAPE
+import sergio.sastre.composable.preview.scanner.android.device.domain.ScreenSize.XLARGE
 import sergio.sastre.composable.preview.scanner.android.device.domain.Shape.NOTROUND
 import sergio.sastre.composable.preview.scanner.android.device.domain.Type.TV
 import sergio.sastre.composable.preview.scanner.android.device.domain.Unit.PX
@@ -24,6 +25,7 @@ enum class Television(
             ),
             densityDpi = 640,
             orientation = LANDSCAPE,
+            screenSize = XLARGE,
             shape = NOTROUND,
             chinSize = ChinSize(0F, PX),
             type = TV
@@ -38,7 +40,7 @@ enum class Television(
                 height = 720f,
                 unit = PX,
             ),
-            densityDpi = 220,
+            densityDpi = 213, // wrong in Android Studio, 220
             orientation = LANDSCAPE,
             shape = NOTROUND,
             chinSize = ChinSize(0F, PX),
@@ -56,6 +58,7 @@ enum class Television(
             ),
             densityDpi = 320,
             orientation = LANDSCAPE,
+            screenSize = XLARGE,
             shape = NOTROUND,
             chinSize = ChinSize(0F, PX),
             type = TV
