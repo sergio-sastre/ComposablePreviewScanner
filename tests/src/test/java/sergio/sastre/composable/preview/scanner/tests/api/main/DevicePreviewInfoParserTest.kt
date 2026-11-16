@@ -524,6 +524,35 @@ class DevicePreviewInfoParserTest {
         )
     }
 
+    @Test
+    fun `GIVEN device in Px WHEN converted to Dp, density changed AND converted to Px THEN dimensions scale with new density`() {
+        // deviceAt320Dpi has dimensions 200 × 100 px and chinSize 20 px.
+        val deviceAt320Dpi = DevicePreviewInfoParser
+            .parse("spec:width=100px,height=200px,chinSize=20px,dpi=320")!!
+        val result = deviceAt320Dpi.inDp().copy(densityDpi = 160).inPx()
+
+        // At 320 dpi: 200px -> 100dp height, 100px -> 50dp width, 20px -> 10dp chinSize.
+        // At 160 dpi: 100dp -> 100px height, 50dp -> 50px width, 10dp -> 10px chinSize.
+        // Expected at 160 dpi: 100 × 50 px, chinSize 10 px
+        assertEquals(100f, result.dimensions.height)
+        assertEquals(50f, result.dimensions.width)
+        assertEquals(10f, result.chinSize.value)
+    }
+
+    @Test
+    fun `GIVEN device in Dp WHEN converted to Px, density changed AND converted to Dp THEN dimensions scale with new density`() {
+        // deviceAt160Dpi has dimensions 100 × 50 dp and chinSize 10 dp.
+        val deviceAt160Dpi = DevicePreviewInfoParser.parse("spec:width=50dp,height=100dp,chinSize=10dp,dpi=160")!!
+        val result = deviceAt160Dpi.inPx().copy(densityDpi = 320).inDp()
+
+        // At 160 dpi: 100dp -> 100px height, 50dp -> 50px width, 10dp -> 10px chinSize.
+        // At 320 dpi: 100px -> 50dp height, 50px -> 25dp width, 10px -> 5dp chinSize.
+        // Expected at 320 dpi: 50 × 25 dp, chinSize 5 dp
+        assertEquals(50f, result.dimensions.height)
+        assertEquals(25f, result.dimensions.width)
+        assertEquals(5f, result.chinSize.value)
+    }
+
     enum class DeviceNameMapping(
         val deviceName: String,
         val roborazziDeviceQualifier: String
