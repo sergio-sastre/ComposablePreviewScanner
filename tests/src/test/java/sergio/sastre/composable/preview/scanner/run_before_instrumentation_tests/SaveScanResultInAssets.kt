@@ -14,53 +14,67 @@ class SaveScanResultInAssets {
     @Test
     fun `task -- save scan result in assets`() {
         val scanResultScreenshotTestFileName = "scan_result_screenshot_test.json"
-        val scanResultMainFileName = "scan_result_main.json"
         val scanResultAndroidTestFileName = "scan_result_android_test.json"
+        val scanResultMainAndroidFileName = "scan_result_main_android.json"
+        val scanResultMainGlanceFileName = "scan_result_main_glance.json"
+        val scanResultMainWearFileName = "scan_result_main_wear.json"
+        val customPreviewsFileName = "custom_previews.json"
 
-        ScanResultDumper()
-            .enableScanningLogs()
-            .setTargetSourceSet(Classpath(SCREENSHOT_TEST))
-            .scanPackageTrees("sergio.sastre.composable.preview.scanner")
-            .dumpScanResultToFileInAssets(
-                scanFileName = scanResultScreenshotTestFileName,
-                packageTreesOfCustomPreviews = listOf(
+        data class DumpSpec(
+            val sourceSet: Classpath,
+            val packageTree: String,
+            val fileName: String,
+            val customPreviewPackages: List<String> = emptyList(),
+        )
+
+        val dumpSpecs = listOf(
+            DumpSpec(
+                sourceSet = Classpath(SCREENSHOT_TEST),
+                packageTree = "sergio.sastre.composable.preview.scanner",
+                fileName = scanResultScreenshotTestFileName,
+                customPreviewPackages = listOf(
                     "androidx.compose.ui.tooling.preview",
                     "sergio.sastre.composable.preview.custompreviews"
                 )
-            )
+            ),
+            DumpSpec(
+                sourceSet = Classpath(ANDROID_TEST),
+                packageTree = "sergio.sastre.composable.preview.scanner",
+                fileName = scanResultAndroidTestFileName,
+            ),
+            DumpSpec(
+                sourceSet = Classpath(MAIN),
+                packageTree = "sergio.sastre.composable.preview.scanner.android",
+                fileName = scanResultMainAndroidFileName,
+            ),
+            DumpSpec(
+                sourceSet = Classpath(MAIN),
+                packageTree = "sergio.sastre.composable.preview.scanner.glance",
+                fileName = scanResultMainGlanceFileName,
+            ),
+            DumpSpec(
+                sourceSet = Classpath(MAIN),
+                packageTree = "sergio.sastre.composable.preview.scanner.wear",
+                fileName = scanResultMainWearFileName,
+            ),
+        )
 
-        ScanResultDumper()
-            .enableScanningLogs()
-            .setTargetSourceSet(Classpath(MAIN))
-            .scanPackageTrees("sergio.sastre.composable.preview.scanner")
-            .dumpScanResultToFileInAssets(
-                scanFileName = scanResultMainFileName,
-                packageTreesOfCustomPreviews = listOf(
-                    "androidx.compose.ui.tooling.preview",
-                    "sergio.sastre.composable.preview.custompreviews"
+        dumpSpecs.forEach { spec ->
+            ScanResultDumper()
+                .enableScanningLogs()
+                .setTargetSourceSet(spec.sourceSet)
+                .scanPackageTrees(spec.packageTree)
+                .dumpScanResultToFileInAssets(
+                    scanFileName = spec.fileName,
+                    packageTreesOfCustomPreviews = spec.customPreviewPackages
                 )
-            )
+        }
 
-        ScanResultDumper()
-            .enableScanningLogs()
-            .setTargetSourceSet(Classpath(ANDROID_TEST))
-            .scanPackageTrees("sergio.sastre.composable.preview.scanner")
-            .dumpScanResultToFileInAssets(
-                scanFileName = scanResultAndroidTestFileName,
-                packageTreesOfCustomPreviews = listOf(
-                    "androidx.compose.ui.tooling.preview",
-                    "sergio.sastre.composable.preview.custompreviews"
-                )
-            )
-
-        assert(
-            assetsFilePath(scanResultScreenshotTestFileName).exists()
-        )
-        assert(
-            assetsFilePath(scanResultMainFileName).exists()
-        )
-        assert(
-            assetsFilePath(scanResultAndroidTestFileName).exists()
-        )
+        val expectedFiles = dumpSpecs.map { it.fileName } + customPreviewsFileName
+        expectedFiles.forEach { fileName ->
+            assert(assetsFilePath(fileName).exists()) {
+                "Expected generated asset file to exist: $fileName"
+            }
+        }
     }
 }

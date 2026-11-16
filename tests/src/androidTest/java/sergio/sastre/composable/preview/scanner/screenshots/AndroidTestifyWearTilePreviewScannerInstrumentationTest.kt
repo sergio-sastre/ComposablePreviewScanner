@@ -18,7 +18,6 @@ import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Cl
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.MAIN
 import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewInfo
 import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewScanner
-import sergio.sastre.composable.preview.scanner.wear.configuration.SkipShapeClipping
 import sergio.sastre.composable.preview.scanner.wear.configuration.SkipShapeClipping.NEVER
 import sergio.sastre.composable.preview.scanner.wear.configuration.WearTileSnapshotConfigurator
 import sergio.sastre.composable.preview.scanner.wear.screenshotid.WearTilePreviewScreenshotIdBuilder
@@ -30,10 +29,10 @@ import sergio.sastre.uitesting.utils.common.FontSizeScale
 import sergio.sastre.uitesting.utils.utils.waitForView
 
 /**
- * ./gradlew :tests:screenshotRecord -PtestClass=sergio.sastre.composable.preview.scanner.screenshots.TestifyWearTilePreviewScannerInstrumentationInvokeTest
+ * ./gradlew :tests:screenshotRecord -PtestClass=sergio.sastre.composable.preview.scanner.screenshots.TestifyWearTilePreviewsTest
  */
 @RunWith(Parameterized::class)
-class TestifyWearTilePreviewScannerInstrumentationInvokeTest(
+class TestifyWearTilePreviewsTest(
     private val preview: ComposablePreviewWithResult<WearTilePreviewInfo, TilePreviewData>,
 ) {
 
@@ -46,7 +45,7 @@ class TestifyWearTilePreviewScannerInstrumentationInvokeTest(
             WearTilePreviewScanner()
                 .setTargetSourceSet(Classpath(MAIN))
                 .scanFile(
-                    targetInputStream = assets.open("scan_result_main.json"),
+                    targetInputStream = assets.open("scan_result_main_wear.json"),
                     customPreviewsInfoInputStream = assets.open("custom_previews.json")
                 )
                 .includePrivatePreviews()
@@ -95,7 +94,9 @@ class TestifyWearTilePreviewScannerInstrumentationInvokeTest(
             }
             .generateDiffs(true)
             .assertSame(
-                name = WearTilePreviewScreenshotIdBuilder(preview).build()
+                name = WearTilePreviewScreenshotIdBuilder(preview)
+                    .build()
+                    .replace("sergio.sastre.composable.preview.scanner.", "")
             )
     }
 }

@@ -22,12 +22,13 @@ import sergio.sastre.uitesting.android_testify.screenshotscenario.assertSame
 import sergio.sastre.uitesting.android_testify.screenshotscenario.generateDiffs
 import sergio.sastre.uitesting.utils.activityscenario.activityScenarioForActivityRule
 import sergio.sastre.uitesting.utils.utils.waitForView
+import kotlin.text.replace
 
 /**
- * ./gradlew :tests:screenshotRecord -PtestClass=sergio.sastre.composable.preview.scanner.screenshots.TestifyGlanceComposablePreviewScannerInstrumentationInvokeTest
+ * ./gradlew :tests:screenshotRecord -PtestClass=sergio.sastre.composable.preview.scanner.screenshots.TestifyGlancePreviewsTest
  */
 @RunWith(Parameterized::class)
-class TestifyGlanceComposablePreviewScannerInstrumentationInvokeTest(
+class TestifyGlancePreviewsTest(
     private val preview: ComposablePreview<GlancePreviewInfo>,
 ) {
 
@@ -40,7 +41,7 @@ class TestifyGlanceComposablePreviewScannerInstrumentationInvokeTest(
             GlanceComposablePreviewScanner()
                 .setTargetSourceSet(Classpath(MAIN))
                 .scanFile(
-                    targetInputStream = assets.open("scan_result_main.json"),
+                    targetInputStream = assets.open("scan_result_main_glance.json"),
                     customPreviewsInfoInputStream = assets.open("custom_previews.json")
                 )
                 .includePrivatePreviews()
@@ -83,7 +84,9 @@ class TestifyGlanceComposablePreviewScannerInstrumentationInvokeTest(
             }
             .generateDiffs(true)
             .assertSame(
-                name = GlancePreviewScreenshotIdBuilder(preview).build()
+                name = GlancePreviewScreenshotIdBuilder(preview)
+                    .build()
+                    .replace("sergio.sastre.composable.preview.scanner.", "")
             )
     }
 }

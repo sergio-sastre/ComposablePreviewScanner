@@ -20,6 +20,9 @@ jobs:
           - { name: 'paparazziPreviewsSourceSet', command: 'paparazziPreviewsSourceSet -Pverify=true', artifact: 'paparazzi-source-set-reports', path: 'tests/build/paparazzi/' }
           - { name: 'roborazziPreviewsRuntime', command: 'roborazziPreviewsRuntime -Pverify=true', artifact: 'roborazzi-runtime-reports', path: 'tests/build/reports/roborazzi/' }
           - { name: 'roborazziPreviewsSourceSet', command: 'roborazziPreviewsSourceSet -Pverify=true', artifact: 'roborazzi-source-set-reports', path: 'tests/build/reports/roborazzi/' }
+          - { name: 'testifyAndroidPreviews', command: 'testifyAndroidPreviews -Pverify=true -PnumShards=3', artifact: 'testify-android-reports', path: 'tests/build/reports/androidTests/managedDevice/' }
+          - { name: 'testifyGlancePreviews', command: 'testifyGlancePreviews -Pverify=true', artifact: 'testify-glance-reports', path: 'tests/build/reports/androidTests/managedDevice/' }
+          - { name: 'testifyWearTilePreviews', command: 'testifyWearTilePreviews -Pverify=true', artifact: 'testify-wear-reports', path: 'tests/build/reports/androidTests/managedDevice/' }
           - { name: 'metalavaCheck', command: 'core:metalavaCheckCompatibility android:metalavaCheckCompatibility glance:metalavaCheckCompatibilityRelease wear:metalavaCheckCompatibilityRelease --parallel', artifact: '', path: '' }
     name: ${{ matrix.task.name }}
     steps:
@@ -34,6 +37,13 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Enable KVM for Emulator
+        if: contains(matrix.task.name, 'testify') || contains(matrix.task.name, 'Testify')
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
       - name: Run ${{ matrix.task.name }}
         run: ./gradlew ${{ matrix.task.command }}
 
@@ -43,7 +53,7 @@ jobs:
         with:
           name: ${{ matrix.task.artifact }}
           path: ${{ matrix.task.path }}
-          retention-days: 7
+          retention-days: 30
 
       - name: Upload metalava reports
         if: failure() && matrix.task.name == 'metalavaCheck'
@@ -52,4 +62,12 @@ jobs:
           name: metalava-compatibility-reports
           path: |
             **/build/metalava/
+          retention-days: 7
+
+      - name: Upload Testify failure screenshots and diffs
+        if: failure() && (contains(matrix.task.name, 'testify') || contains(matrix.task.name, 'Testify'))
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.task.name }}-failure-outputs
+          path: tests/build/outputs/managed_device_android_test_additional_output/
           retention-days: 7

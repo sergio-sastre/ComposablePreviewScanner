@@ -26,13 +26,13 @@ import sergio.sastre.uitesting.utils.utils.waitForActivity
 import sergio.sastre.uitesting.utils.utils.waitForComposeView
 
 /**
- * ./gradlew :tests:screenshotRecord -PtestClass=sergio.sastre.composable.preview.scanner.screenshots.TestifyComposablePreviewScannerInstrumentationInvokeTest -PincludeSourceSetScreenshotTest
+ * ./gradlew :tests:screenshotRecord -PtestClass=sergio.sastre.composable.preview.scanner.screenshots.TestifyComposablePreviewsTest -PincludeSourceSetScreenshotTest
  *
  * if executed without gradle property -PincludeSourceSetScreenshotTest,
  * it should throw ClassInScreenshotTestSourceSetNotFoundException
  */
 @RunWith(Parameterized::class)
-class TestifyComposablePreviewScannerInstrumentationInvokeTest(
+class TestifyComposablePreviewsTest(
     private val preview: ComposablePreview<AndroidPreviewInfo>,
 ) {
 
@@ -45,7 +45,7 @@ class TestifyComposablePreviewScannerInstrumentationInvokeTest(
             AndroidComposablePreviewScanner()
                 .setTargetSourceSet(Classpath(MAIN))
                 .scanFile(
-                    targetInputStream = assets.open("scan_result_main.json"),
+                    targetInputStream = assets.open("scan_result_main_android.json"),
                     customPreviewsInfoInputStream = assets.open("custom_previews.json")
                 )
                 .includePrivatePreviews()
@@ -110,6 +110,7 @@ class TestifyComposablePreviewScannerInstrumentationInvokeTest(
                     .doNotIgnoreMethodParametersType()
                     .encodeUnsafeCharacters()
                     .build()
+                    .replace("sergio.sastre.composable.preview.scanner.", "")
             )
     }
 }
