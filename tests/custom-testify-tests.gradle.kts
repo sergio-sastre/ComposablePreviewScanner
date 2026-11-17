@@ -41,13 +41,28 @@ fun runTestifyGmd(
 ) {
     val verifyProperty = project.findProperty("verify")?.toString()
     val isVerify = verifyProperty?.equals("true", ignoreCase = true) ?: false
-    val numShards = project.findProperty("numShards")?.toString()?.toIntOrNull() ?: defaultShards
+
+    val shardIndex = project.findProperty("shardIndex")?.toString()?.toIntOrNull()
+        ?: project.findProperty("android.testInstrumentationRunnerArguments.shardIndex")?.toString()?.toIntOrNull()
+
+    val numShards = project.findProperty("numShards")?.toString()?.toIntOrNull()
+        ?: project.findProperty("android.testInstrumentationRunnerArguments.numShards")?.toString()?.toIntOrNull()
+        ?: defaultShards
+
+    val gpu = project.findProperty("android.testoptions.manageddevices.emulator.gpu")?.toString()
 
     val commonArgs = buildList {
         add("-PincludeSourceSetScreenshotTest")
         add("-PuseTestStorage")
         add("-Pverify=$isVerify")
-        if (numShards != null && numShards > 1) {
+        if (gpu != null) {
+            add("-Pandroid.testoptions.manageddevices.emulator.gpu=$gpu")
+        }
+        if (shardIndex != null) {
+            val totalShards = numShards ?: 3
+            add("-Pandroid.testInstrumentationRunnerArguments.numShards=$totalShards")
+            add("-Pandroid.testInstrumentationRunnerArguments.shardIndex=$shardIndex")
+        } else if (numShards != null && numShards > 1) {
             add("-Pandroid.experimental.androidTest.numManagedDeviceShards=$numShards")
         }
     }
@@ -80,10 +95,10 @@ fun runTestifyGmd(
     }
 }
 
-// record: ./gradlew testifyAndroidPreviews [-PnumShards=3]
-// verify: ./gradlew testifyAndroidPreviews -Pverify=true [-PnumShards=3]
+// record: ./gradlew testifyAndroidPreviews [-PnumShards=3] [-PshardIndex=0]
+// verify: ./gradlew testifyAndroidPreviews -Pverify=true [-PnumShards=3] [-PshardIndex=0]
 tasks.register("testifyAndroidPreviews") {
-    description = "Records/verifies Android Composable screenshots with Android-Testify on Phone GMD (pixel3api34, 3 shards)"
+    description = "Records/verifies Android Composable screenshots with Android-Testify on Phone GMD (pixel3api34)"
     group = "Verification"
 
     dependsOn("saveScanResultInAssets")
@@ -92,7 +107,7 @@ tasks.register("testifyAndroidPreviews") {
         runTestifyGmd(
             gmdTask = ":tests:pixel3api34DebugAndroidTest",
             testClass = "$screenshotsPkg.TestifyComposablePreviewsTest",
-            defaultShards = 3
+            defaultShards = null
         )
     }
 
@@ -155,7 +170,7 @@ tasks.register("testifyPreviews") {
         runTestifyGmd(
             gmdTask = ":tests:pixel3api34DebugAndroidTest",
             testClass = "$screenshotsPkg.TestifyComposablePreviewsTest",
-            defaultShards = 3
+            defaultShards = null
         )
         runTestifyGmd(
             gmdTask = ":tests:pixel3api34DebugAndroidTest",
