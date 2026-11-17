@@ -50,11 +50,16 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Record Screenshots
+        env:
+          SHARDS: ${{ github.event.inputs.num_shards || '3' }}
         run: |
-          SHARDS="${{ github.event.inputs.num_shards || '3' }}"
+          if [[ ! "$SHARDS" =~ ^[0-9]+$ || ! "$SHARDS" =~ [1-9] ]]; then
+            echo "num_shards must be a positive integer" >&2
+            exit 1
+          fi
           case "${{ github.event.inputs.target || 'all' }}" in
             android)
-              ./gradlew testifyAndroidPreviews -PnumShards=$SHARDS
+              ./gradlew testifyAndroidPreviews "-PnumShards=$SHARDS"
               ;;
             glance)
               ./gradlew testifyGlancePreviews
@@ -63,7 +68,7 @@ jobs:
               ./gradlew testifyWearTilePreviews
               ;;
             all)
-              ./gradlew testifyPreviews -PnumShards=$SHARDS
+              ./gradlew testifyPreviews "-PnumShards=$SHARDS"
               ;;
           esac
 

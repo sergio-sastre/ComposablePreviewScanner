@@ -25,7 +25,9 @@ abstract class BasePreviewScannerProvider<T, R>(
     private val packageTree: String,
     private val scanFileName: String,
     private val customPreviewsFileName: String = "custom_previews.json",
-    private val mapPreview: (ComposablePreviewWithResult<T, R>) -> String = { it.previewInfo.toString() },
+    private val mapPreview: (ComposablePreviewWithResult<T, R>) -> String = {
+        it.previewInfo.toString() + it.identity()
+    },
 ) : PreviewScannerProvider {
 
     @OptIn(RequiresShowStandardStreams::class)
@@ -70,6 +72,10 @@ data object WearTilePreviewScannerProvider : BasePreviewScannerProvider<WearTile
     packageTree = "sergio.sastre.composable.preview.scanner.wear",
     scanFileName = "scan_result_main_wear.json",
     mapPreview = { preview ->
-        preview.previewInfo.copy(device = preview.previewInfo.device.ifEmpty { "id:wearos_small_round" }).toString()
+        preview.previewInfo.copy(device = preview.previewInfo.device.ifEmpty { "id:wearos_small_round" }).toString() +
+            preview.identity()
     }
 )
+
+private fun ComposablePreviewWithResult<*, *>.identity(): String =
+    "|$declaringClass|$methodName|$methodParametersType|$previewIndex"
