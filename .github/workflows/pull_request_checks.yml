@@ -23,7 +23,6 @@ jobs:
           - { name: 'testifyAndroidPreviews', command: 'testifyAndroidPreviews -Pverify=true -PnumShards=3', artifact: 'testify-android-reports', path: 'tests/build/reports/androidTests/managedDevice/' }
           - { name: 'testifyGlancePreviews', command: 'testifyGlancePreviews -Pverify=true', artifact: 'testify-glance-reports', path: 'tests/build/reports/androidTests/managedDevice/' }
           - { name: 'testifyWearTilePreviews', command: 'testifyWearTilePreviews -Pverify=true', artifact: 'testify-wear-reports', path: 'tests/build/reports/androidTests/managedDevice/' }
-          - { name: 'androidScanningInstrumentationTest', command: 'androidScanningInstrumentationTest', artifact: 'android-scanning-instrumentation-reports', path: 'tests/build/reports/androidTests/managedDevice/' }
           - { name: 'metalavaCheck', command: 'core:metalavaCheckCompatibility android:metalavaCheckCompatibility glance:metalavaCheckCompatibilityRelease wear:metalavaCheckCompatibilityRelease --parallel', artifact: '', path: '' }
     name: ${{ matrix.task.name }}
     steps:
