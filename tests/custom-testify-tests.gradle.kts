@@ -43,9 +43,6 @@ fun runTestifyGmd(
     val isVerify = verifyProperty?.equals("true", ignoreCase = true) ?: false
     val numShards = project.findProperty("numShards")?.toString()?.toIntOrNull() ?: defaultShards
 
-    val isWindows = System.getProperty("os.name").lowercase().contains("windows")
-    val gradleCommand = if (isWindows) "gradlew.bat" else "./gradlew"
-
     val commonArgs = buildList {
         add("-PincludeSourceSetScreenshotTest")
         add("-PuseTestStorage")
@@ -58,7 +55,7 @@ fun runTestifyGmd(
     project.exec {
         workingDir(project.rootDir)
         commandLine(
-            listOf(gradleCommand, gmdTask) +
+            listOf("./gradlew", gmdTask) +
                 commonArgs +
                 "-Pandroid.testInstrumentationRunnerArguments.class=$testClass"
         )
@@ -170,6 +167,38 @@ tasks.register("testifyPreviews") {
             testClass = "$screenshotsPkg.TestifyWearTilePreviewsTest",
             defaultShards = null
         )
+    }
+
+    finalizedBy("cleanTestsBuildFolder")
+}
+
+val scanningPkg = "sergio.sastre.composable.preview.scanner.scanning"
+
+tasks.register("androidScanningInstrumentationTest") {
+    description = "Runs Android scanning instrumentation tests on Phone GMD (pixel3api34)"
+    group = "Verification"
+
+    dependsOn("saveScanResultInAssets")
+
+    doLast {
+        val numShards = project.findProperty("numShards")?.toString()?.toIntOrNull()
+        val shardArgs = if (numShards != null && numShards > 1) {
+            listOf("-Pandroid.experimental.androidTest.numManagedDeviceShards=$numShards")
+        } else {
+            emptyList()
+        }
+
+        project.exec {
+            workingDir(project.rootDir)
+            commandLine(
+                listOf(
+                    "./gradlew",
+                    ":tests:pixel3api34DebugAndroidTest",
+                    "-PincludeSourceSetScreenshotTest",
+                    "-Pandroid.testInstrumentationRunnerArguments.class=$scanningPkg.AndroidScanningInstrumentationTest"
+                ) + shardArgs
+            )
+        }
     }
 
     finalizedBy("cleanTestsBuildFolder")
