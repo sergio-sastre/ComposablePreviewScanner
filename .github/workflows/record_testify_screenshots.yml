@@ -18,6 +18,9 @@ on:
         required: false
         type: string
         default: '3'
+  push:
+    branches:
+      - feature/add_android_testify_job
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -26,7 +29,7 @@ concurrency:
 jobs:
   record:
     runs-on: ubuntu-latest
-    name: Record Testify Screenshots (${{ github.event.inputs.target }})
+    name: Record Testify Screenshots (${{ github.event.inputs.target || 'all' }})
     steps:
       - uses: actions/checkout@v4
 
@@ -49,7 +52,7 @@ jobs:
       - name: Record Screenshots
         run: |
           SHARDS="${{ github.event.inputs.num_shards || '3' }}"
-          case "${{ github.event.inputs.target }}" in
+          case "${{ github.event.inputs.target || 'all' }}" in
             android)
               ./gradlew testifyAndroidPreviews -PnumShards=$SHARDS
               ;;
