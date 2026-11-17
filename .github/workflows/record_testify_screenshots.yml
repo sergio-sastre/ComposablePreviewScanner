@@ -7,12 +7,17 @@ on:
         description: 'Which preview suite to record'
         required: true
         type: choice
-        default: 'all'
+        default: 'android'
         options:
-          - 'all'
           - 'android'
           - 'glance'
           - 'wear'
+          - 'all'
+      num_shards:
+        description: 'Number of shards for Android tests (default: 3)'
+        required: false
+        type: string
+        default: '3'
   push:
     branches:
       - feature/add_android_testify_job
@@ -24,32 +29,7 @@ concurrency:
 jobs:
   record:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        task:
-          - id: 'android-shard-1'
-            name: 'Record Android Previews (1/3)'
-            suite: 'android'
-            command: 'testifyAndroidPreviews -PnumShards=3 -PshardIndex=0 -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect'
-          - id: 'android-shard-2'
-            name: 'Record Android Previews (2/3)'
-            suite: 'android'
-            command: 'testifyAndroidPreviews -PnumShards=3 -PshardIndex=1 -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect'
-          - id: 'android-shard-3'
-            name: 'Record Android Previews (3/3)'
-            suite: 'android'
-            command: 'testifyAndroidPreviews -PnumShards=3 -PshardIndex=2 -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect'
-          - id: 'glance'
-            name: 'Record Glance Previews'
-            suite: 'glance'
-            command: 'testifyGlancePreviews -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect'
-          - id: 'wear'
-            name: 'Record Wear Tile Previews'
-            suite: 'wear'
-            command: 'testifyWearTilePreviews -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect'
-    name: ${{ matrix.task.name }}
-    if: github.event_name == 'push' || github.event.inputs.target == 'all' || github.event.inputs.target == matrix.task.suite
+    name: Record Testify Screenshots (${{ github.event.inputs.target || 'all' }})
     steps:
       - uses: actions/checkout@v4
 
@@ -70,41 +50,40 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Record Screenshots
-        run: ./gradlew ${{ matrix.task.command }}
+        env:
+          SHARDS: ${{ github.event.inputs.num_shards || '3' }}
+        run: |
+          if [[ ! "$SHARDS" =~ ^[0-9]+$ || ! "$SHARDS" =~ [1-9] ]]; then
+            echo "num_shards must be a positive integer" >&2
+            exit 1
+          fi
+          case "${{ github.event.inputs.target || 'all' }}" in
+            android)
+              ./gradlew testifyAndroidPreviews "-PnumShards=$SHARDS"
+              ;;
+            glance)
+              ./gradlew testifyGlancePreviews
+              ;;
+            wear)
+              ./gradlew testifyWearTilePreviews
+              ;;
+            all)
+              ./gradlew testifyPreviews "-PnumShards=$SHARDS"
+              ;;
+          esac
 
-      - name: Upload Recorded Screenshots Shard
+      - name: Upload Recorded Screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: testify-screenshots-${{ matrix.task.id }}
+          name: testify-recorded-screenshots
           path: tests/src/androidTest/assets/screenshots/
-          if-no-files-found: ignore
-          retention-days: 1
+          retention-days: 30
 
       - name: Upload failure outputs
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: testify-failure-${{ matrix.task.id }}
+          name: testify-failure-outputs
           path: tests/build/outputs/managed_device_android_test_additional_output/
-          if-no-files-found: ignore
           retention-days: 7
-
-  combine-screenshots:
-    needs: record
-    if: success()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download all screenshot shards
-        uses: actions/download-artifact@v4
-        with:
-          pattern: testify-screenshots-*
-          merge-multiple: true
-          path: combined-screenshots
-
-      - name: Upload combined recorded screenshots
-        uses: actions/upload-artifact@v4
-        with:
-          name: testify-recorded-screenshots
-          path: combined-screenshots/
-          retention-days: 30
