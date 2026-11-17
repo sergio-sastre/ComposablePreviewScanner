@@ -23,6 +23,7 @@ jobs:
           - { name: 'testifyAndroidPreviews', command: 'testifyAndroidPreviews -Pverify=true -PnumShards=3', artifact: 'testify-android-reports', path: 'tests/build/reports/androidTests/managedDevice/' }
           - { name: 'testifyGlancePreviews', command: 'testifyGlancePreviews -Pverify=true', artifact: 'testify-glance-reports', path: 'tests/build/reports/androidTests/managedDevice/' }
           - { name: 'testifyWearTilePreviews', command: 'testifyWearTilePreviews -Pverify=true', artifact: 'testify-wear-reports', path: 'tests/build/reports/androidTests/managedDevice/' }
+          - { name: 'androidScanningInstrumentationTest', command: 'androidScanningInstrumentationTest', artifact: 'android-scanning-instrumentation-reports', path: 'tests/build/reports/androidTests/managedDevice/' }
           - { name: 'metalavaCheck', command: 'core:metalavaCheckCompatibility android:metalavaCheckCompatibility glance:metalavaCheckCompatibilityRelease wear:metalavaCheckCompatibilityRelease --parallel', artifact: '', path: '' }
     name: ${{ matrix.task.name }}
     steps:
@@ -38,7 +39,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Enable KVM for Emulator
-        if: contains(matrix.task.name, 'testify') || contains(matrix.task.name, 'Testify')
+        if: contains(matrix.task.path, 'managedDevice') || contains(matrix.task.name, 'testify') || contains(matrix.task.name, 'Testify')
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
