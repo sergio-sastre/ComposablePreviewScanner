@@ -1,5 +1,6 @@
 package sergio.sastre.composable.preview.scanner.run_before_instrumentation_tests
 
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
@@ -8,6 +9,7 @@ import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.So
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.SCREENSHOT_TEST
 import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper
 import sergio.sastre.composable.preview.scanner.core.utils.assetsFilePath
+import sergio.sastre.composable.preview.scanner.tests.api.sourcesets.MainSourceSetAndBuildTimeParityTest.AnyProvider
 
 class SaveScanResultInAssets {
     @OptIn(RequiresShowStandardStreams::class)
@@ -46,6 +48,10 @@ class SaveScanResultInAssets {
                 sourceSet = Classpath(MAIN),
                 packageTree = "sergio.sastre.composable.preview.scanner.android",
                 fileName = scanResultMainAndroidFileName,
+                customPreviewPackages = listOf(
+                    "androidx.compose.ui.tooling.preview",
+                    "sergio.sastre.composable.preview.custompreviews"
+                )
             ),
             DumpSpec(
                 sourceSet = Classpath(MAIN),
@@ -75,6 +81,26 @@ class SaveScanResultInAssets {
             assert(assetsFilePath(fileName).exists()) {
                 "Expected generated asset file to exist: $fileName"
             }
+        }
+
+        validateParityWithBuildTime()
+    }
+
+    private fun validateParityWithBuildTime() {
+        AnyProvider.values().forEach { anyProvider ->
+            val buildTimePreviews = anyProvider.provider.scanBuildTime()
+            val mainSourceSetPreviews = anyProvider.provider.scanMainSourceSet()
+
+            assertEquals(
+                "Mismatch in preview count between buildTime and mainSourceSet for ${anyProvider.name}",
+                buildTimePreviews.size,
+                mainSourceSetPreviews.size
+            )
+            assertEquals(
+                "Mismatch between buildTime and mainSourceSet previews for ${anyProvider.name}",
+                buildTimePreviews,
+                mainSourceSetPreviews
+            )
         }
     }
 }
