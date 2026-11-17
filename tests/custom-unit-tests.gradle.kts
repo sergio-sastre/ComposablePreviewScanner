@@ -25,6 +25,8 @@ tasks.register<Test>("testSourceSets") {
     maxHeapSize = "4g"
     maxParallelForks = 1
 
+    dependsOn("saveScanResultInAssets")
+
     // source sets classes need to exist before executing these tests, otherwise they're skipped
     tasks.findByName("compileReleaseKotlin")?.let { dependsOn(it) }
     tasks.findByName("compileDebugScreenshotTestKotlin")?.let { dependsOn(it) }
