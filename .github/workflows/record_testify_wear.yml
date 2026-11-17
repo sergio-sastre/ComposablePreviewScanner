@@ -1,0 +1,55 @@
+name: Record Testify Wear Tile Screenshots
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/add_android_testify_job
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  record-wear:
+    runs-on: ubuntu-latest
+    name: Record Wear Tile Previews
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Enable KVM for Emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Record Wear Tile Screenshots
+        run: ./gradlew testifyWearTilePreviews -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
+
+      - name: Upload Recorded Wear Tile Screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testify-recorded-wear-screenshots
+          path: tests/src/androidTest/assets/screenshots/
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Upload failure outputs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testify-wear-failure-outputs
+          path: tests/build/outputs/managed_device_android_test_additional_output/
+          if-no-files-found: ignore
+          retention-days: 7

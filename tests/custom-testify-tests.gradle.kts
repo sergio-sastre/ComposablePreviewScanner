@@ -41,12 +41,22 @@ fun runTestifyGmd(
 ) {
     val verifyProperty = project.findProperty("verify")?.toString()
     val isVerify = verifyProperty?.equals("true", ignoreCase = true) ?: false
-    val numShards = project.findProperty("numShards")?.toString()?.toIntOrNull() ?: defaultShards
+    val rawNumShards = if (defaultShards != null) {
+        project.findProperty("numShards")?.toString()?.toIntOrNull() ?: defaultShards
+    } else {
+        null
+    }
+    val numShards = rawNumShards?.let { minOf(it, 2) }
+
+    val gpu = project.findProperty("android.testoptions.manageddevices.emulator.gpu")?.toString()
 
     val commonArgs = buildList {
         add("-PincludeSourceSetScreenshotTest")
         add("-PuseTestStorage")
         add("-Pverify=$isVerify")
+        if (gpu != null) {
+            add("-Pandroid.testoptions.manageddevices.emulator.gpu=$gpu")
+        }
         if (numShards != null && numShards > 1) {
             add("-Pandroid.experimental.androidTest.numManagedDeviceShards=$numShards")
         }
@@ -80,10 +90,10 @@ fun runTestifyGmd(
     }
 }
 
-// record: ./gradlew testifyAndroidPreviews [-PnumShards=3]
-// verify: ./gradlew testifyAndroidPreviews -Pverify=true [-PnumShards=3]
+// record: ./gradlew testifyAndroidPreviews [-PnumShards=2]
+// verify: ./gradlew testifyAndroidPreviews -Pverify=true [-PnumShards=2]
 tasks.register("testifyAndroidPreviews") {
-    description = "Records/verifies Android Composable screenshots with Android-Testify on Phone GMD (pixel3api34, 3 shards)"
+    description = "Records/verifies Android Composable screenshots with Android-Testify on Phone GMD (pixel3api34, 2 shards)"
     group = "Verification"
 
     dependsOn("saveScanResultInAssets")
@@ -92,7 +102,7 @@ tasks.register("testifyAndroidPreviews") {
         runTestifyGmd(
             gmdTask = ":tests:pixel3api34DebugAndroidTest",
             testClass = "$screenshotsPkg.TestifyComposablePreviewsTest",
-            defaultShards = 3
+            defaultShards = 2
         )
     }
 
@@ -155,7 +165,7 @@ tasks.register("testifyPreviews") {
         runTestifyGmd(
             gmdTask = ":tests:pixel3api34DebugAndroidTest",
             testClass = "$screenshotsPkg.TestifyComposablePreviewsTest",
-            defaultShards = 3
+            defaultShards = 2
         )
         runTestifyGmd(
             gmdTask = ":tests:pixel3api34DebugAndroidTest",
