@@ -14,6 +14,6 @@ jobs:
       tasks-json: >-
         [
           {"name": "testSourceSets", "command": ":tests:testSourceSets", "artifact": "test-source-sets-reports", "path": "tests/build/reports/tests/"},
-          {"name": "paparazziPreviewsSourceSet", "command": "paparazziPreviewsSourceSet -Pverify=true", "artifact": "paparazzi-source-set-reports", "path": "tests/build/paparazzi/"},
-          {"name": "roborazziPreviewsSourceSet", "command": "roborazziPreviewsSourceSet -Pverify=true", "artifact": "roborazzi-source-set-reports", "path": "tests/build/reports/roborazzi/"}
+          {"name": "paparazziPreviewsSourceSet", "command": "paparazziPreviewsSourceSet -Pverify=true", "artifact": "paparazzi-source-set-reports", "path": "tests/build/paparazzi/\ntests/build/reports/paparazzi/"},
+          {"name": "roborazziPreviewsSourceSet", "command": "roborazziPreviewsSourceSet -Pverify=true", "artifact": "roborazzi-source-set-reports", "path": "tests/build/reports/roborazzi/\ntests/build/outputs/roborazzi/"}
         ]

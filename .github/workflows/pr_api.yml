@@ -14,6 +14,6 @@ jobs:
       tasks-json: >-
         [
           {"name": "testApi", "command": ":tests:testApi", "artifact": "test-api-reports", "path": "tests/build/reports/tests/"},
-          {"name": "paparazziPreviewsRuntime", "command": "paparazziPreviewsRuntime -Pverify=true", "artifact": "paparazzi-runtime-reports", "path": "tests/build/paparazzi/"},
-          {"name": "roborazziPreviewsRuntime", "command": "roborazziPreviewsRuntime -Pverify=true", "artifact": "roborazzi-runtime-reports", "path": "tests/build/reports/roborazzi/"}
+          {"name": "paparazziPreviewsRuntime", "command": "paparazziPreviewsRuntime -Pverify=true", "artifact": "paparazzi-runtime-reports", "path": "tests/build/paparazzi/\ntests/build/reports/paparazzi/"},
+          {"name": "roborazziPreviewsRuntime", "command": "roborazziPreviewsRuntime -Pverify=true", "artifact": "roborazzi-runtime-reports", "path": "tests/build/reports/roborazzi/\ntests/build/outputs/roborazzi/"}
         ]

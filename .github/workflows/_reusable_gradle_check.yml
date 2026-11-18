@@ -61,6 +61,7 @@ jobs:
         with:
           name: ${{ matrix.task.artifact }}
           path: ${{ matrix.task.path }}
+          if-no-files-found: ignore
           retention-days: 30
 
       - name: Upload metalava reports
