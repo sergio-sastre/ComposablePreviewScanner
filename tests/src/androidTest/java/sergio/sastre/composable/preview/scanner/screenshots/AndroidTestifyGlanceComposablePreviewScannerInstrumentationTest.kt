@@ -85,6 +85,8 @@ class TestifyGlancePreviewsTest(
             .generateDiffs(true)
             .assertSame(
                 name = GlancePreviewScreenshotIdBuilder(preview)
+                    .doNotIgnoreMethodParametersType()
+                    .encodeUnsafeCharacters()
                     .build()
                     .replace("sergio.sastre.composable.preview.scanner.", "")
             )

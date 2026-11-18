@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.wear.tiles.tooling.preview.TilePreviewData
 import dev.testify.annotation.ScreenshotInstrumentation
-import dev.testify.core.processor.capture.pixelCopyCapture
+import dev.testify.core.processor.capture.canvasCapture
 import dev.testify.scenario.ScreenshotScenarioRule
 import org.junit.Rule
 import org.junit.Test
@@ -77,27 +77,25 @@ class TestifyWearTilePreviewsTest(
         screenshotRule
             .withScenario(composableRule.activityScenario)
             .setScreenshotViewProvider {
-                var wearView: View? = null
-                composableRule
-                    .activityScenario.onActivity { activity ->
-                        wearView = WearTileSnapshotConfigurator(activity)
-                            .skipShapeClipping(NEVER)
-                            .previewToView(preview)
-                        activity.setContentView(wearView)
-                    }
-                    .waitForActivity()
                 waitForView {
-                    val composeView = wearView as? ViewGroup
-                    composeView!!.getChildAt(0)
+                    val activity = composableRule.activity
+                    val view = WearTileSnapshotConfigurator(activity)
+                        .skipShapeClipping(NEVER)
+                        .previewToView(preview)
+                    activity.setContentView(view)
+
+                    (view as ViewGroup).getChildAt(0)
                 }
             }
             .configure {
-                captureMethod = ::pixelCopyCapture
+                captureMethod = ::canvasCapture
                 hideSoftKeyboard = false // avoid error on wear devices
             }
             .generateDiffs(true)
             .assertSame(
                 name = WearTilePreviewScreenshotIdBuilder(preview)
+                    .doNotIgnoreMethodParametersType()
+                    .encodeUnsafeCharacters()
                     .build()
                     .replace("sergio.sastre.composable.preview.scanner.", "")
             )
