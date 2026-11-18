@@ -41,6 +41,15 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      - name: Cache AVD System Images
+        if: contains(matrix.task.path, 'managedDevice') || contains(matrix.task.name, 'testify') || contains(matrix.task.name, 'Testify')
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.ANDROID_HOME }}/system-images
+          key: android-system-images-${{ runner.os }}-${{ matrix.task.name }}
+          restore-keys: |
+            android-system-images-${{ runner.os }}-
+
       - name: Run ${{ matrix.task.name }}
         run: ./gradlew ${{ matrix.task.command }}
 

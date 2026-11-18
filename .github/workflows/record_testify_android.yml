@@ -33,6 +33,14 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      - name: Cache AVD System Images
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.ANDROID_HOME }}/system-images/android-34/default
+          key: android-system-images-${{ runner.os }}-api34-default
+          restore-keys: |
+            android-system-images-${{ runner.os }}-api34-default
+
       - name: Record Android Screenshots
         run: ./gradlew testifyAndroidPreviews -PnumShards=2 -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
 

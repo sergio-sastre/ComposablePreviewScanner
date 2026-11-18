@@ -33,6 +33,14 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      - name: Cache AVD System Images
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.ANDROID_HOME }}/system-images/android-34/android-wear
+          key: android-system-images-${{ runner.os }}-api34-wear
+          restore-keys: |
+            android-system-images-${{ runner.os }}-api34-wear
+
       - name: Record Wear Tile Screenshots
         run: ./gradlew testifyWearTilePreviews -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
 
