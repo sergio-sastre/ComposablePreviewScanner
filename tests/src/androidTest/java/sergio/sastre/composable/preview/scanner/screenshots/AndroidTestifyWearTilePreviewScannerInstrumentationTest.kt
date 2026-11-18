@@ -26,6 +26,7 @@ import sergio.sastre.uitesting.android_testify.screenshotscenario.waitForIdleSyn
 import sergio.sastre.uitesting.utils.activityscenario.ActivityConfigItem
 import sergio.sastre.uitesting.utils.activityscenario.activityScenarioForActivityRule
 import sergio.sastre.uitesting.utils.common.FontSizeScale
+import sergio.sastre.uitesting.utils.testrules.animations.DisableAnimationsRule
 import sergio.sastre.uitesting.utils.utils.waitForView
 
 /**
@@ -58,10 +59,14 @@ class TestifyWearTilePreviewsTest(
             cachedMainPreviews
     }
 
-    @get:Rule
-    val screenshotRule = ScreenshotScenarioRule()
+    @get:Rule(order = 1)
+    val disableAnimations = DisableAnimationsRule()
 
-    @get:Rule
+    @get:Rule(order = 2)
+    val screenshotRule = ScreenshotScenarioRule()
+    
+
+    @get:Rule(order = 3)
     val composableRule = activityScenarioForActivityRule<ScreenshotTestWearActivity>(
         config = ActivityConfigItem(
             fontSize = FontSizeScale.Value(preview.previewInfo.fontScale),
