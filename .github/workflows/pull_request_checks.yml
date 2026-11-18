@@ -20,6 +20,9 @@ jobs:
           - { name: 'paparazziPreviewsSourceSet', command: 'paparazziPreviewsSourceSet -Pverify=true', artifact: 'paparazzi-source-set-reports', path: 'tests/build/paparazzi/' }
           - { name: 'roborazziPreviewsRuntime', command: 'roborazziPreviewsRuntime -Pverify=true', artifact: 'roborazzi-runtime-reports', path: 'tests/build/reports/roborazzi/' }
           - { name: 'roborazziPreviewsSourceSet', command: 'roborazziPreviewsSourceSet -Pverify=true', artifact: 'roborazzi-source-set-reports', path: 'tests/build/reports/roborazzi/' }
+          - { name: 'testifyAndroidPreviews', command: 'testifyAndroidPreviews -Pverify=true -PnumShards=2 -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect', artifact: 'testify-android-reports', path: 'tests/build/reports/androidTests/managedDevice/' }
+          - { name: 'testifyGlancePreviews', command: 'testifyGlancePreviews -Pverify=true -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect', artifact: 'testify-glance-reports', path: 'tests/build/reports/androidTests/managedDevice/' }
+          - { name: 'testifyWearTilePreviews', command: 'testifyWearTilePreviews -Pverify=true -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect', artifact: 'testify-wear-reports', path: 'tests/build/reports/androidTests/managedDevice/' }
           - { name: 'metalavaCheck', command: 'core:metalavaCheckCompatibility android:metalavaCheckCompatibility glance:metalavaCheckCompatibilityRelease wear:metalavaCheckCompatibilityRelease --parallel', artifact: '', path: '' }
     name: ${{ matrix.task.name }}
     steps:
