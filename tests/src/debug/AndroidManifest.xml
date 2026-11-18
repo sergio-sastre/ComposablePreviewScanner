@@ -6,6 +6,10 @@
             android:name="sergio.sastre.composable.preview.scanner.ScreenshotTestActivity"
             android:exported="false"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
+        <activity
+            android:name="sergio.sastre.composable.preview.scanner.ScreenshotTestWearActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ScreenshotTestWearActivity" />
     </application>
 
 </manifest>

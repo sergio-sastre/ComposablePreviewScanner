@@ -12,7 +12,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import sergio.sastre.composable.preview.scanner.ScreenshotTestActivity
+import sergio.sastre.composable.preview.scanner.ScreenshotTestWearActivity
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWithResult
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.MAIN
@@ -26,6 +26,7 @@ import sergio.sastre.uitesting.android_testify.screenshotscenario.generateDiffs
 import sergio.sastre.uitesting.utils.activityscenario.ActivityConfigItem
 import sergio.sastre.uitesting.utils.activityscenario.activityScenarioForActivityRule
 import sergio.sastre.uitesting.utils.common.FontSizeScale
+import sergio.sastre.uitesting.utils.utils.waitForActivity
 import sergio.sastre.uitesting.utils.utils.waitForView
 
 /**
@@ -62,7 +63,7 @@ class TestifyWearTilePreviewsTest(
     val screenshotRule = ScreenshotScenarioRule()
 
     @get:Rule
-    val composableRule = activityScenarioForActivityRule<ScreenshotTestActivity>(
+    val composableRule = activityScenarioForActivityRule<ScreenshotTestWearActivity>(
         config = ActivityConfigItem(
             fontSize = FontSizeScale.Value(preview.previewInfo.fontScale),
             systemLocale = preview.previewInfo.locale
@@ -77,12 +78,14 @@ class TestifyWearTilePreviewsTest(
             .withScenario(composableRule.activityScenario)
             .setScreenshotViewProvider {
                 var wearView: View? = null
-                composableRule.activityScenario.onActivity { activity ->
-                    wearView = WearTileSnapshotConfigurator(activity)
-                        .skipShapeClipping(NEVER)
-                        .previewToView(preview)
-                    activity.setContentView(wearView)
-                }
+                composableRule
+                    .activityScenario.onActivity { activity ->
+                        wearView = WearTileSnapshotConfigurator(activity)
+                            .skipShapeClipping(NEVER)
+                            .previewToView(preview)
+                        activity.setContentView(wearView)
+                    }
+                    .waitForActivity()
                 waitForView {
                     val composeView = wearView as? ViewGroup
                     composeView!!.getChildAt(0)
