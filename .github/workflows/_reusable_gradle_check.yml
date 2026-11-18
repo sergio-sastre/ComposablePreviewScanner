@@ -77,5 +77,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.task.name }}-failure-outputs
-          path: tests/build/outputs/managed_device_android_test_additional_output/
+          path: |
+            tests/build/outputs/managed_device_android_test_additional_output/
+            tests/build/intermediates/managed_device_android_test_additional_output/
+          if-no-files-found: ignore
           retention-days: 7
