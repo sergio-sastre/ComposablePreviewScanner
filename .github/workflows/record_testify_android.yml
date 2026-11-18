@@ -2,9 +2,6 @@ name: Record Testify Android Screenshots
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - feature/add_android_testify_job
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
