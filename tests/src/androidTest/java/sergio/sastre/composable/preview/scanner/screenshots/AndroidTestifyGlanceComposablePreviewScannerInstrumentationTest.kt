@@ -20,6 +20,7 @@ import sergio.sastre.composable.preview.scanner.glance.configuration.GlanceSnaps
 import sergio.sastre.composable.preview.scanner.glance.screenshotid.GlancePreviewScreenshotIdBuilder
 import sergio.sastre.uitesting.android_testify.screenshotscenario.assertSame
 import sergio.sastre.uitesting.android_testify.screenshotscenario.generateDiffs
+import sergio.sastre.uitesting.android_testify.screenshotscenario.waitForIdleSync
 import sergio.sastre.uitesting.utils.activityscenario.activityScenarioForActivityRule
 import sergio.sastre.uitesting.utils.utils.waitForView
 import kotlin.text.replace
@@ -83,6 +84,7 @@ class TestifyGlancePreviewsTest(
                 hideSoftKeyboard = false
             }
             .generateDiffs(true)
+            .waitForIdleSync()
             .assertSame(
                 name = GlancePreviewScreenshotIdBuilder(preview)
                     .doNotIgnoreMethodParametersType()

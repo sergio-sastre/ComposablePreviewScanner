@@ -1,7 +1,6 @@
 package sergio.sastre.composable.preview.scanner.screenshots
 
 import android.content.res.AssetManager
-import android.view.View
 import android.view.ViewGroup
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.wear.tiles.tooling.preview.TilePreviewData
@@ -23,10 +22,10 @@ import sergio.sastre.composable.preview.scanner.wear.configuration.WearTileSnaps
 import sergio.sastre.composable.preview.scanner.wear.screenshotid.WearTilePreviewScreenshotIdBuilder
 import sergio.sastre.uitesting.android_testify.screenshotscenario.assertSame
 import sergio.sastre.uitesting.android_testify.screenshotscenario.generateDiffs
+import sergio.sastre.uitesting.android_testify.screenshotscenario.waitForIdleSync
 import sergio.sastre.uitesting.utils.activityscenario.ActivityConfigItem
 import sergio.sastre.uitesting.utils.activityscenario.activityScenarioForActivityRule
 import sergio.sastre.uitesting.utils.common.FontSizeScale
-import sergio.sastre.uitesting.utils.utils.waitForActivity
 import sergio.sastre.uitesting.utils.utils.waitForView
 
 /**
@@ -92,6 +91,7 @@ class TestifyWearTilePreviewsTest(
                 hideSoftKeyboard = false // avoid error on wear devices
             }
             .generateDiffs(true)
+            .waitForIdleSync()
             .assertSame(
                 name = WearTilePreviewScreenshotIdBuilder(preview)
                     .doNotIgnoreMethodParametersType()

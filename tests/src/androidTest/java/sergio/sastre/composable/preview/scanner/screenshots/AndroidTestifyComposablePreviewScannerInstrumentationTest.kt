@@ -21,6 +21,7 @@ import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.So
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.SCREENSHOT_TEST
 import sergio.sastre.uitesting.android_testify.screenshotscenario.assertSame
 import sergio.sastre.uitesting.android_testify.screenshotscenario.generateDiffs
+import sergio.sastre.uitesting.android_testify.screenshotscenario.waitForIdleSync
 import sergio.sastre.uitesting.utils.activityscenario.activityScenarioForActivityRule
 import sergio.sastre.uitesting.utils.utils.waitForActivity
 import sergio.sastre.uitesting.utils.utils.waitForComposeView
@@ -105,6 +106,7 @@ class TestifyComposablePreviewsTest(
                 hideSoftKeyboard = false
             }
             .generateDiffs(true)
+            .waitForIdleSync()
             .assertSame(
                 name = AndroidPreviewScreenshotIdBuilder(preview)
                     .doNotIgnoreMethodParametersType()
