@@ -52,9 +52,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.ANDROID_HOME }}/system-images
-          key: android-system-images-${{ runner.os }}-${{ matrix.task.name }}
-          restore-keys: |
-            android-system-images-${{ runner.os }}-
+          key: android-system-images-v2-${{ runner.os }}-${{ matrix.task.name }}
 
       - name: Run ${{ matrix.task.name }}
         run: ./gradlew ${{ matrix.task.command }}
