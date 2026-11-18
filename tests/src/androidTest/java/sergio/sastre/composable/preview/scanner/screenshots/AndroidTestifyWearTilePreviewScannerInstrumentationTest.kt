@@ -64,7 +64,6 @@ class TestifyWearTilePreviewsTest(
 
     @get:Rule(order = 2)
     val screenshotRule = ScreenshotScenarioRule()
-    
 
     @get:Rule(order = 3)
     val composableRule = activityScenarioForActivityRule<ScreenshotTestWearActivity>(
