@@ -30,6 +30,9 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      - name: Export Android SDK path
+        run: echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
+
       - name: Cache AVD System Images
         uses: actions/cache@v4
         with:
