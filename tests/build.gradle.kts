@@ -81,6 +81,7 @@ android {
 
     @Suppress("UnstableApiUsage")
     testOptions {
+        animationsDisabled = true
         managedDevices {
             allDevices {
                 create<com.android.build.api.dsl.ManagedVirtualDevice>("pixel3api34") {
