@@ -5,7 +5,7 @@
         <activity
             android:name="sergio.sastre.composable.preview.scanner.ScreenshotTestActivity"
             android:exported="false"
-            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
+            android:theme="@style/Theme.ScreenshotTestActivity" />
     </application>
 
 </manifest>
