@@ -1,3 +1,13 @@
+import javax.inject.Inject
+import org.gradle.process.ExecOperations
+
+interface TestifyInjectedExecOps {
+    @get:Inject
+    val execOperations: ExecOperations
+}
+
+val testifyInjectedExecOps = project.objects.newInstance<TestifyInjectedExecOps>()
+
 tasks.register<Test>("saveScanResultInAssets") {
     description = "Dumps scan results into androidTest assets for instrumentation screenshot tests"
     group = "Verification"
@@ -62,7 +72,7 @@ fun runTestifyGmd(
         }
     }
 
-    project.exec {
+    testifyInjectedExecOps.execOperations.exec {
         workingDir(project.rootDir)
         commandLine(
             listOf("./gradlew", gmdTask) +
@@ -198,7 +208,7 @@ tasks.register("androidScanningInstrumentationTest") {
             emptyList()
         }
 
-        project.exec {
+        testifyInjectedExecOps.execOperations.exec {
             workingDir(project.rootDir)
             commandLine(
                 listOf(
