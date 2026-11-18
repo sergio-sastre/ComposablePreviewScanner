@@ -1,0 +1,87 @@
+name: Reusable PR Gradle Check
+
+on:
+  workflow_call:
+    inputs:
+      tasks-json:
+        required: true
+        type: string
+      is-testify:
+        required: false
+        type: boolean
+        default: false
+      upload-metalava-reports:
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        task: ${{ fromJson(inputs.tasks-json) }}
+    name: ${{ matrix.task.name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Enable KVM for Emulator
+        if: ${{ inputs.is-testify }}
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Export Android SDK path
+        if: ${{ inputs.is-testify }}
+        run: echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
+
+      - name: Cache AVD System Images
+        if: ${{ inputs.is-testify }}
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.ANDROID_HOME }}/system-images
+          key: android-system-images-v2-${{ runner.os }}-${{ matrix.task.name }}
+
+      - name: Run ${{ matrix.task.name }}
+        run: ./gradlew ${{ matrix.task.command }}
+
+      - name: Upload reports
+        if: ${{ always() && matrix.task.artifact != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.task.artifact }}
+          path: ${{ matrix.task.path }}
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Upload metalava reports
+        if: ${{ failure() && inputs.upload-metalava-reports }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: metalava-compatibility-reports
+          path: |
+            **/build/metalava/
+          retention-days: 7
+
+      - name: Upload Testify failure screenshots and diffs
+        if: ${{ failure() && inputs.is-testify }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.task.name }}-failure-outputs
+          path: |
+            tests/build/outputs/managed_device_android_test_additional_output/
+            tests/build/intermediates/managed_device_android_test_additional_output/
+          if-no-files-found: ignore
+          retention-days: 7

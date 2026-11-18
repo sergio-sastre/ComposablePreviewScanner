@@ -1,0 +1,20 @@
+name: PR - Testify Checks
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  testify:
+    uses: ./.github/workflows/_reusable_gradle_check.yml
+    with:
+      is-testify: true
+      tasks-json: >-
+        [
+          {"name": "testifyAndroidPreviews", "command": "testifyAndroidPreviews -Pverify=true -PnumShards=2 -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect", "artifact": "testify-android-reports", "path": "tests/build/reports/androidTests/managedDevice/"},
+          {"name": "testifyGlancePreviews", "command": "testifyGlancePreviews -Pverify=true -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect", "artifact": "testify-glance-reports", "path": "tests/build/reports/androidTests/managedDevice/"},
+          {"name": "testifyWearTilePreviews", "command": "testifyWearTilePreviews -Pverify=true -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect", "artifact": "testify-wear-reports", "path": "tests/build/reports/androidTests/managedDevice/"}
+        ]

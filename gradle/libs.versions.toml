@@ -23,6 +23,8 @@ kotlinxBenchmark = "0.4.12"
 testParameterInjector = "1.18"
 utils = "2.7.0"
 testify = "3.2.2"
+testifyLib = "3.2.3"
+testServices = "1.6.0"
 espressoCore = "3.6.1"
 junitKtx = "1.2.1"
 uiTestJunit4 = "1.10.0"
@@ -56,6 +58,8 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "uiTestJunit4" }
 kotlinx-benchmark-runtime = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "kotlinxBenchmark" }
+androidx-test-services = { module = "androidx.test.services:test-services", version.ref = "testServices" }
+testify-lib = { module = "dev.testify:testify", version.ref = "testifyLib" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

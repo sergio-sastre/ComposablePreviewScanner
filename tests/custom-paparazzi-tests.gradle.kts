@@ -1,4 +1,14 @@
 
+import javax.inject.Inject
+import org.gradle.process.ExecOperations
+
+interface PaparazziInjectedExecOps {
+    @get:Inject
+    val execOperations: ExecOperations
+}
+
+val paparazziInjectedExecOps = project.objects.newInstance<PaparazziInjectedExecOps>()
+
 // record: ./gradlew paparazziPreviewsSourceSet
 // verify: ./gradlew paparazziPreviewsSourceSet -Pverify=true
 tasks.register("paparazziPreviewsSourceSet") {
@@ -15,7 +25,7 @@ tasks.register("paparazziPreviewsSourceSet") {
 
         val command = if (isVerify) "verify" else "record"
         // Use the Gradle exec API to run a gradle command programmatically
-        project.exec {
+        paparazziInjectedExecOps.execOperations.exec {
             workingDir(project.rootDir)
 
             // Build the command with proper executable for the OS
@@ -48,7 +58,7 @@ tasks.register("paparazziPreviewsRuntime") {
 
         val command = if (isVerify) "verify" else "record"
         // Use the Gradle exec API to run a gradle command programmatically
-        project.exec {
+        paparazziInjectedExecOps.execOperations.exec {
             workingDir(project.rootDir)
 
             // Build the command with proper executable for the OS

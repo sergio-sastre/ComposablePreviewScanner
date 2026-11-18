@@ -47,7 +47,7 @@ class AndroidScanningInstrumentationTest {
         val assets = getInstrumentation().context.assets
         AndroidComposablePreviewScanner()
             .scanFile(
-                targetInputStream = assets.open("scan_result_main.json"),
+                targetInputStream = assets.open("scan_result_main_android.json"),
                 customPreviewsInfoInputStream = assets.open("custom_previews.json")
             )
             .getPreviews()

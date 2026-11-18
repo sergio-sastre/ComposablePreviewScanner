@@ -20,6 +20,7 @@ if (project.hasProperty("library")) {
 apply(from = "custom-unit-tests.gradle.kts")
 apply(from = "custom-paparazzi-tests.gradle.kts")
 apply(from = "custom-roborazzi-tests.gradle.kts")
+apply(from = "custom-testify-tests.gradle.kts")
 
 android {
     namespace = "sergio.sastre.composable.preview.scanner"
@@ -38,6 +39,7 @@ android {
         android.buildFeatures.buildConfig = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["useTestStorageService"] = "true"
     }
 
     buildTypes {
@@ -77,13 +79,31 @@ android {
 
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
 
-    testOptions.unitTests {
-        isIncludeAndroidResources = true
-        all { test ->
-            test.jvmArgs("-Xmx4g")
-            test.testLogging { showStandardStreams = true }
-            if (project.hasProperty("maxParallelForks")) {
-                test.maxParallelForks = (project.property("maxParallelForks") as String).toInt()
+    @Suppress("UnstableApiUsage")
+    testOptions {
+        animationsDisabled = true
+        managedDevices {
+            allDevices {
+                create<com.android.build.api.dsl.ManagedVirtualDevice>("pixel3api34") {
+                    device = "Pixel 3"
+                    apiLevel = 34
+                    systemImageSource = "aosp"
+                }
+                create<com.android.build.api.dsl.ManagedVirtualDevice>("wearoslargeapi34") {
+                    device = "Wear OS Large Round"
+                    apiLevel = 34
+                    systemImageSource = "aosp"
+                }
+            }
+        }
+        unitTests {
+            isIncludeAndroidResources = true
+            all { test ->
+                test.jvmArgs("-Xmx4g")
+                test.testLogging { showStandardStreams = true }
+                if (project.hasProperty("maxParallelForks")) {
+                    test.maxParallelForks = (project.property("maxParallelForks") as String).toInt()
+                }
             }
         }
     }
@@ -92,6 +112,9 @@ android {
 testify {
     moduleName = ":tests"
     applicationPackageId = "composable.preview.scanner"
+    useTestStorage = project.hasProperty("useTestStorage")
+    val isVerify = project.findProperty("verify")?.toString()?.equals("true", ignoreCase = true) ?: false
+    isRecordMode = !isVerify
 }
 
 dependencies {
@@ -142,6 +165,8 @@ dependencies {
     debugImplementation(libs.android.ui.testing.utils)
     androidTestImplementation(libs.androidx.navigation.compose)
     androidTestImplementation(libs.android.testify)
+    androidTestImplementation(libs.testify.lib)
+    androidTestUtil(libs.androidx.test.services)
 }
 
 // Provide a no-op placeholder for the lintVital task that AGP would normally create for release

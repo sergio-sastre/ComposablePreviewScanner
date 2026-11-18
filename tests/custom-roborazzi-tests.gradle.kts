@@ -1,4 +1,14 @@
 
+import javax.inject.Inject
+import org.gradle.process.ExecOperations
+
+interface RoborazziInjectedExecOps {
+    @get:Inject
+    val execOperations: ExecOperations
+}
+
+val roborazziInjectedExecOps = project.objects.newInstance<RoborazziInjectedExecOps>()
+
 // record: ./gradlew roborazziPreviewsSourceSet
 // verify: ./gradlew roborazziPreviewsSourceSet -Pverify=true
 tasks.register("roborazziPreviewsSourceSet") {
@@ -15,7 +25,7 @@ tasks.register("roborazziPreviewsSourceSet") {
 
         val command = if (isVerify) "verify" else "record"
         // Use the Gradle exec API to run a gradle command programmatically
-        project.exec {
+        roborazziInjectedExecOps.execOperations.exec {
             workingDir(project.rootDir)
 
             // Build the command with proper executable for the OS
@@ -48,7 +58,7 @@ tasks.register("roborazziPreviewsRuntime") {
 
         val command = if (isVerify) "verify" else "record"
         // Use the Gradle exec API to run a gradle command programmatically
-        project.exec {
+        roborazziInjectedExecOps.execOperations.exec {
             workingDir(project.rootDir)
 
             // Build the command with proper executable for the OS
