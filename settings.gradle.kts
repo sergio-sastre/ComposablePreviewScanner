@@ -8,6 +8,12 @@ pluginManagement {
             }
         }
         mavenCentral()
+        maven {
+            url = uri("https://central.sonatype.com/repository/maven-snapshots/")
+            mavenContent {
+                snapshotsOnly()
+            }
+        }
         maven { url = uri("https://maven-central.storage-download.googleapis.com/maven2") }
         gradlePluginPortal()
     }
@@ -20,6 +26,12 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url = uri("https://central.sonatype.com/repository/maven-snapshots/")
+            mavenContent {
+                snapshotsOnly()
+            }
+        }
         maven { url = uri("https://maven-central.storage-download.googleapis.com/maven2") }
         maven { url = uri("https://jitpack.io") }
     }
