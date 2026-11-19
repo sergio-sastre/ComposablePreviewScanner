@@ -2,11 +2,12 @@ package sergio.sastre.composable.preview.scanner.dumper.cli
 
 import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
-import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.MAIN
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet
 import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper
 import java.io.File
 
 private data class DumpSpec(
+    val sourceSet: SourceSet,
     val packageTree: String,
     val scanFileName: String,
     val customPreviewPackages: List<String>,
@@ -22,14 +23,14 @@ private data class CliArgs(
 fun main(args: Array<String>) {
     val cliArgs = parseArgs(args)
     require(cliArgs.specs.isNotEmpty()) {
-        "At least one --spec <packageTree>|<scanFileName>|<commaSeparatedCustomPackages>|<customPreviewsFileName> argument is required"
+        "At least one --spec <sourceSet>|<packageTree>|<scanFileName>|<commaSeparatedCustomPackages>|<customPreviewsFileName> argument is required"
     }
 
     cliArgs.specs.forEach { spec ->
         ScanResultDumper()
             .enableScanningLogs()
             .setCustomPreviewsClasspath(cliArgs.customPreviewsClasspath)
-            .setTargetSourceSet(Classpath(MAIN))
+            .setTargetSourceSet(Classpath(spec.sourceSet))
             .scanPackageTrees(spec.packageTree)
             .dumpScanResultToFileInAssets(
                 scanFileName = spec.scanFileName,
@@ -48,18 +49,19 @@ private fun parseArgs(args: Array<String>): CliArgs {
             "--spec" -> {
                 require(index + 1 < args.size) { "Missing value after --spec" }
                 val parts = args[index + 1].split("|")
-                require(parts.size == 4) {
-                    "Invalid --spec format: '${args[index + 1]}'. Expected <packageTree>|<scanFileName>|<commaSeparatedCustomPackages>|<customPreviewsFileName>"
+                require(parts.size == 5) {
+                    "Invalid --spec format: '${args[index + 1]}'. Expected <sourceSet>|<packageTree>|<scanFileName>|<commaSeparatedCustomPackages>|<customPreviewsFileName>"
                 }
-                val customPackages = parts[2]
+                val customPackages = parts[3]
                     .split(",")
                     .map { it.trim() }
                     .filter { it.isNotEmpty() }
                 specs += DumpSpec(
-                    packageTree = parts[0].trim(),
-                    scanFileName = parts[1].trim(),
+                    sourceSet = SourceSet.valueOf(parts[0].trim()),
+                    packageTree = parts[1].trim(),
+                    scanFileName = parts[2].trim(),
                     customPreviewPackages = customPackages,
-                    customPreviewsFileName = parts[3].trim(),
+                    customPreviewsFileName = parts[4].trim(),
                 )
                 index += 2
             }
