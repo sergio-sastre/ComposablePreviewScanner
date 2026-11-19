@@ -1,3 +1,7 @@
+import java.io.File
+import org.gradle.api.attributes.Attribute
+import org.gradle.process.CommandLineArgumentProvider
+
 val scanResultDumperClasspath by configurations.creating
 
 dependencies {
@@ -16,7 +20,13 @@ tasks.register<JavaExec>("dumpMainSourceSetScanResult") {
     // Source set classes must exist before dumping scan results
     tasks.findByName("compileDebugKotlin")?.let { dependsOn(it) }
 
+    val debugCompileJars = configurations.getByName("debugCompileClasspath").incoming.artifactView {
+        attributes {
+            attribute(Attribute.of("artifactType", String::class.java), "android-classes-jar")
+        }
+    }.files
     inputs.dir(project.layout.buildDirectory.dir("tmp/kotlin-classes/debug"))
+    inputs.files(debugCompileJars)
 
     outputs.files(
         project.file("src/androidTest/assets/scan_result_gradle_main_android.json"),
@@ -33,5 +43,14 @@ tasks.register<JavaExec>("dumpMainSourceSetScanResult") {
         "sergio.sastre.composable.preview.scanner.glance|scan_result_gradle_main_glance.json||custom_previews_gradle.json",
         "--spec",
         "sergio.sastre.composable.preview.scanner.wear|scan_result_gradle_main_wear.json||custom_previews_gradle.json"
+    )
+
+    argumentProviders.add(
+        CommandLineArgumentProvider {
+            listOf(
+                "--custom-previews-classpath",
+                debugCompileJars.files.joinToString(File.pathSeparator) { it.absolutePath }
+            )
+        }
     )
 }

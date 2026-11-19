@@ -26,6 +26,7 @@ class ScanResultDumper {
         .enableMemoryMapping()
 
     private val scanResultLogger = ScanResultLogger()
+    private var customPreviewsClasspath: List<File> = emptyList()
 
     /**
      * Enables logging of the scanning process, like the time it takes to scan and dump the results among others
@@ -33,6 +34,17 @@ class ScanResultDumper {
     @RequiresShowStandardStreams
     fun enableScanningLogs() = apply {
         scanResultLogger.enableLogging(true)
+    }
+
+    /**
+     * Overrides the classpath used to scan `packageTreesOfCustomPreviews` when dumping scan results.
+     * Useful when running [ScanResultDumper] from a Gradle task whose runtime classpath does not
+     * include the target module's dependencies.
+     */
+    fun setCustomPreviewsClasspath(
+        classpath: List<File>,
+    ) = apply {
+        customPreviewsClasspath = classpath
     }
 
     /**
@@ -120,6 +132,11 @@ class ScanResultDumper {
 
                 if (packageTreesOfCustomPreviews.isNotEmpty()) {
                     val customPreviewsScanResult = ClassGraph()
+                        .apply {
+                            if (customPreviewsClasspath.isNotEmpty()) {
+                                overrideClasspath(customPreviewsClasspath)
+                            }
+                        }
                         .acceptPackages(*packageTreesOfCustomPreviews.toTypedArray())
                         .enableAnnotationInfo()
                         .scan()
