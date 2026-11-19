@@ -12,6 +12,7 @@ import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Cl
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.MAIN
 import sergio.sastre.composable.preview.scanner.core.utils.assetsFilePath
 import sergio.sastre.composable.preview.scanner.glance.GlanceComposablePreviewScanner
+import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewInfo
 import sergio.sastre.composable.preview.scanner.wear.WearTilePreviewScanner
 
 @RunWith(TestParameterInjector::class)
@@ -42,13 +43,15 @@ class GradleTaskMainSourceSetAndBuildTimeParityTest {
             scanFileName = "scan_result_gradle_main_wear.json",
         );
 
-        fun scanBuildTime(): List<ComposablePreviewWithResult<*,*>> =
+        fun scanBuildTime(): List<String> =
             buildTimeScanner()
                 .scanPackageTrees(packageTree)
                 .includePrivatePreviews()
                 .getPreviews()
+                .map { it.toComparableString() }
+                .sorted()
 
-        fun scanFromGradleTaskOutput(): List<ComposablePreviewWithResult<*,*>> =
+        fun scanFromGradleTaskOutput(): List<String> =
             gradleTaskScanner()
                 .scanFile(
                     targetInputStream = assetsFilePath(scanFileName).inputStream(),
@@ -56,6 +59,17 @@ class GradleTaskMainSourceSetAndBuildTimeParityTest {
                 )
                 .includePrivatePreviews()
                 .getPreviews()
+                .map { it.toComparableString() }
+                .sorted()
+
+        private fun ComposablePreviewWithResult<*, *>.toComparableString(): String {
+            val info = when (val previewInfo = previewInfo) {
+                is WearTilePreviewInfo ->
+                    previewInfo.copy(device = previewInfo.device.ifEmpty { "id:wearos_small_round" })
+                else -> previewInfo
+            }
+            return "$info|$declaringClass|$methodName|$methodParametersType|$previewIndex"
+        }
     }
 
     @Test
@@ -69,6 +83,12 @@ class GradleTaskMainSourceSetAndBuildTimeParityTest {
             "Mismatch in preview count between buildTime and gradleTask mainSourceSet for ${provider.name}",
             buildTimePreviews.size,
             gradleTaskPreviews.size
+        )
+
+        assertEquals(
+            "Mismatch between buildTime and gradleTask mainSourceSet previews for ${provider.name}",
+            buildTimePreviews,
+            gradleTaskPreviews
         )
     }
 }
