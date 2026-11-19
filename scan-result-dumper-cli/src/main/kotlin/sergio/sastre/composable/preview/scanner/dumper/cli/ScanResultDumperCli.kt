@@ -4,6 +4,7 @@ import sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowSta
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.MAIN
 import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper
+import java.io.File
 
 private data class DumpSpec(
     val packageTree: String,
@@ -12,16 +13,22 @@ private data class DumpSpec(
     val customPreviewsFileName: String,
 )
 
+private data class CliArgs(
+    val specs: List<DumpSpec>,
+    val customPreviewsClasspath: List<File>,
+)
+
 @OptIn(RequiresShowStandardStreams::class)
 fun main(args: Array<String>) {
-    val specs = parseSpecs(args)
-    require(specs.isNotEmpty()) {
+    val cliArgs = parseArgs(args)
+    require(cliArgs.specs.isNotEmpty()) {
         "At least one --spec <packageTree>|<scanFileName>|<commaSeparatedCustomPackages>|<customPreviewsFileName> argument is required"
     }
 
-    specs.forEach { spec ->
+    cliArgs.specs.forEach { spec ->
         ScanResultDumper()
             .enableScanningLogs()
+            .setCustomPreviewsClasspath(cliArgs.customPreviewsClasspath)
             .setTargetSourceSet(Classpath(MAIN))
             .scanPackageTrees(spec.packageTree)
             .dumpScanResultToFileInAssets(
@@ -32,30 +39,46 @@ fun main(args: Array<String>) {
     }
 }
 
-private fun parseSpecs(args: Array<String>): List<DumpSpec> {
+private fun parseArgs(args: Array<String>): CliArgs {
     val specs = mutableListOf<DumpSpec>()
+    var customPreviewsClasspath: List<File> = emptyList()
     var index = 0
     while (index < args.size) {
-        if (args[index] == "--spec") {
-            require(index + 1 < args.size) { "Missing value after --spec" }
-            val parts = args[index + 1].split("|")
-            require(parts.size == 4) {
-                "Invalid --spec format: '${args[index + 1]}'. Expected <packageTree>|<scanFileName>|<commaSeparatedCustomPackages>|<customPreviewsFileName>"
+        when (args[index]) {
+            "--spec" -> {
+                require(index + 1 < args.size) { "Missing value after --spec" }
+                val parts = args[index + 1].split("|")
+                require(parts.size == 4) {
+                    "Invalid --spec format: '${args[index + 1]}'. Expected <packageTree>|<scanFileName>|<commaSeparatedCustomPackages>|<customPreviewsFileName>"
+                }
+                val customPackages = parts[2]
+                    .split(",")
+                    .map { it.trim() }
+                    .filter { it.isNotEmpty() }
+                specs += DumpSpec(
+                    packageTree = parts[0].trim(),
+                    scanFileName = parts[1].trim(),
+                    customPreviewPackages = customPackages,
+                    customPreviewsFileName = parts[3].trim(),
+                )
+                index += 2
             }
-            val customPackages = parts[2]
-                .split(",")
-                .map { it.trim() }
-                .filter { it.isNotEmpty() }
-            specs += DumpSpec(
-                packageTree = parts[0].trim(),
-                scanFileName = parts[1].trim(),
-                customPreviewPackages = customPackages,
-                customPreviewsFileName = parts[3].trim(),
-            )
-            index += 2
-        } else {
-            throw IllegalArgumentException("Unknown argument: ${args[index]}")
+
+            "--custom-previews-classpath" -> {
+                require(index + 1 < args.size) { "Missing value after --custom-previews-classpath" }
+                customPreviewsClasspath = args[index + 1]
+                    .split(File.pathSeparator)
+                    .map { it.trim() }
+                    .filter { it.isNotEmpty() }
+                    .map(::File)
+                index += 2
+            }
+
+            else -> throw IllegalArgumentException("Unknown argument: ${args[index]}")
         }
     }
-    return specs
+    return CliArgs(
+        specs = specs,
+        customPreviewsClasspath = customPreviewsClasspath,
+    )
 }
