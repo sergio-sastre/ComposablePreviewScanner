@@ -1,5 +1,6 @@
 package sergio.sastre.composable.preview.scanner.tests.api.main
 
+import org.junit.Assert.assertEquals
 import org.junit.Assume.assumeFalse
 import org.junit.Test
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
@@ -143,6 +144,52 @@ class ScanResultDumperTest {
                 fileName = "custom_previews.json",
                 variantName = "debug"
             ).delete()
+        }
+    }
+
+    @Test
+    fun `GIVEN wear compose previews WHEN scan result is dumped with default custom previews THEN scanFile finds all of them`() {
+        val scanResultFile = assetsFilePath(
+            fileName = ScanResultFileName.SCAN_RESULT_DUMPER_TEST,
+            variantName = "debug"
+        )
+        val customPreviewsFile = assetsFilePath(
+            fileName = "custom_previews.json",
+            variantName = "debug"
+        )
+        scanResultFile.delete()
+        customPreviewsFile.delete()
+        assumeFalse(scanResultFile.exists())
+
+        val wearPackage = "sergio.sastre.composable.preview.scanner.android.multiplepreviews.wear"
+        try {
+            ScanResultDumper()
+                .setTargetSourceSet(Classpath(MAIN))
+                .scanPackageTrees(wearPackage)
+                .dumpScanResultToFileInAssets(
+                    scanFileName = ScanResultFileName.SCAN_RESULT_DUMPER_TEST,
+                    variantName = "debug"
+                )
+
+            val expectedPreviews = AndroidComposablePreviewScanner()
+                .scanPackageTrees(wearPackage)
+                .getPreviews()
+
+            val previewsFromFile = AndroidComposablePreviewScanner()
+                .setTargetSourceSet(Classpath(MAIN))
+                .scanFile(
+                    targetInputStream = scanResultFile.inputStream(),
+                    customPreviewsInfoInputStream = customPreviewsFile.inputStream()
+                )
+                .getPreviews()
+
+            assertEquals(
+                expectedPreviews.map { "${it.previewInfo}|${it.declaringClass}|${it.methodName}" }.sorted(),
+                previewsFromFile.map { "${it.previewInfo}|${it.declaringClass}|${it.methodName}" }.sorted()
+            )
+        } finally {
+            scanResultFile.delete()
+            customPreviewsFile.delete()
         }
     }
 }
