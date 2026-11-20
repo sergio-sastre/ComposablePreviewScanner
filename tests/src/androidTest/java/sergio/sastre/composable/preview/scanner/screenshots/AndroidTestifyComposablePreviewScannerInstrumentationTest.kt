@@ -2,6 +2,11 @@ package sergio.sastre.composable.preview.scanner.screenshots
 
 import android.content.res.AssetManager
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.core.processor.capture.pixelCopyCapture
@@ -96,7 +101,12 @@ class TestifyComposablePreviewsTest(
             .setScreenshotViewProvider {
                 composableRule
                     .activityScenario.onActivity {
-                        it.setContent { preview() }
+                        it.setContent {
+                            PreviewWearBackground(
+                                showBackground = preview.previewInfo.showBackground,
+                                backgroundColor = preview.previewInfo.backgroundColor
+                            ) { preview() }
+                        }
                     }
                     .waitForActivity()
                     .waitForComposeView()
@@ -114,5 +124,26 @@ class TestifyComposablePreviewsTest(
                     .build()
                     .replace("sergio.sastre.composable.preview.scanner.", "")
             )
+    }
+}
+
+// Additional to support @Preview's 'showBackground' and 'backgroundColor' properties
+@Composable
+private fun PreviewWearBackground(
+    showBackground: Boolean,
+    backgroundColor: Long,
+    content: @Composable () -> Unit
+) {
+    when (showBackground) {
+        false -> content()
+        true -> {
+            val color = when (backgroundColor != 0L) {
+                true -> Color(backgroundColor)
+                false -> Color.Black
+            }
+            Box(Modifier.background(color)) {
+                content()
+            }
+        }
     }
 }

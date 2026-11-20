@@ -36,6 +36,7 @@ class SaveScanResultInAssets {
                 fileName = scanResultScreenshotTestFileName,
                 customPreviewPackages = listOf(
                     "androidx.compose.ui.tooling.preview",
+                    "androidx.wear.compose.ui.tooling.preview",
                     "sergio.sastre.composable.preview.custompreviews"
                 )
             ),
@@ -50,6 +51,7 @@ class SaveScanResultInAssets {
                 fileName = scanResultMainAndroidFileName,
                 customPreviewPackages = listOf(
                     "androidx.compose.ui.tooling.preview",
+                    "androidx.wear.compose.ui.tooling.preview",
                     "sergio.sastre.composable.preview.custompreviews"
                 )
             ),

@@ -24,14 +24,8 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Enable KVM for Emulator
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-
-      - name: Export Android SDK path
-        run: echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
+      - name: Setup Android Emulator
+        uses: ./.github/actions/setup-android-emulator
 
       - name: Cache AVD System Images
         uses: actions/cache@v4
@@ -42,7 +36,7 @@ jobs:
             android-system-images-${{ runner.os }}-api34-wear
 
       - name: Record Wear Tile Screenshots
-        run: ./gradlew testifyWearTilePreviews -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
+        run: ./gradlew testifyWearTilePreviews -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect --stacktrace
 
       - name: Upload Recorded Wear Tile Screenshots
         if: always()
