@@ -1,7 +1,6 @@
 package sergio.sastre.composable.preview.scanner.screenshots
 
 import android.content.res.AssetManager
-import android.view.ViewGroup
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.wear.tiles.tooling.preview.TilePreviewData
 import dev.testify.annotation.ScreenshotInstrumentation
@@ -27,7 +26,8 @@ import sergio.sastre.uitesting.utils.activityscenario.ActivityConfigItem
 import sergio.sastre.uitesting.utils.activityscenario.activityScenarioForActivityRule
 import sergio.sastre.uitesting.utils.common.FontSizeScale
 import sergio.sastre.uitesting.utils.testrules.animations.DisableAnimationsRule
-import sergio.sastre.uitesting.utils.utils.waitForView
+import sergio.sastre.uitesting.utils.utils.waitForActivity
+import sergio.sastre.uitesting.utils.utils.waitForComposeView
 
 /**
  * ./gradlew :tests:screenshotRecord -PtestClass=sergio.sastre.composable.preview.scanner.screenshots.TestifyWearTilePreviewsTest
@@ -80,15 +80,15 @@ class TestifyWearTilePreviewsTest(
         screenshotRule
             .withScenario(composableRule.activityScenario)
             .setScreenshotViewProvider {
-                waitForView {
-                    val activity = composableRule.activity
-                    val view = WearTileSnapshotConfigurator(activity)
-                        .skipShapeClipping(NEVER)
-                        .previewToView(preview)
-                    activity.setContentView(view)
-
-                    (view as ViewGroup).getChildAt(0)
-                }
+                composableRule
+                    .activityScenario.onActivity { activity ->
+                        val view = WearTileSnapshotConfigurator(activity)
+                            .skipShapeClipping(NEVER)
+                            .previewToView(preview)
+                        activity.setContentView(view)
+                    }
+                    .waitForActivity()
+                    .waitForComposeView()
             }
             .configure {
                 captureMethod = ::canvasCapture

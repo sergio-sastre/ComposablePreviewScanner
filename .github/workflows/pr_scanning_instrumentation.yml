@@ -1,0 +1,18 @@
+name: PR - Scanning Instrumentation Checks
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scanning-instrumentation:
+    uses: ./.github/workflows/_reusable_gradle_check.yml
+    with:
+      is-testify: true
+      tasks-json: >-
+        [
+          {"name": "scanningInstrumentationTest", "command": ":tests:scanningInstrumentationTest -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect", "artifact": "scanning-instrumentation-reports", "path": "tests/build/reports/androidTests/managedDevice/"}
+        ]
