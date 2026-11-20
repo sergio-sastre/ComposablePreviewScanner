@@ -1,2 +1,3 @@
 /build
 *.json
+expected_build_time_previews_*.txt
