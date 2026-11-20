@@ -234,7 +234,7 @@ class ScanResultDumperTest {
             System.setProperty("user.dir", simulatedGradleRootDir.absolutePath)
 
             ScanResultDumper()
-                .setTargetSourceSet(Classpath(MAIN))
+                .setTargetSourceSet(Classpath(MAIN, rootDir = "$originalUserDir/build"))
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.androidvals")
                 .dumpScanResultToFile(scanResultFile)
 
