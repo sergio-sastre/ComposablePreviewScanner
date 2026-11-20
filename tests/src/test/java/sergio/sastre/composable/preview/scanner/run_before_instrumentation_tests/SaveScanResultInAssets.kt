@@ -103,6 +103,13 @@ class SaveScanResultInAssets {
                 buildTimePreviews,
                 mainSourceSetPreviews
             )
+
+            // Persist the host build-time preview list into androidTest assets so on-device
+            // instrumentation tests (where scanPackageTrees throws ScanSourceNotSupported) can
+            // assert exact parity against assets.open(...) on ART without hardcoding counts.
+            // See AssetsBuildTimeParityInstrumentationTest and MainSourceSetAndBuildTimeParityTest.
+            assetsFilePath("expected_build_time_previews_${anyProvider.name.lowercase()}.txt")
+                .writeText(buildTimePreviews.joinToString("\n"))
         }
     }
 }
