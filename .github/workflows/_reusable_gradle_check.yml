@@ -54,8 +54,19 @@ jobs:
           path: ${{ env.ANDROID_HOME }}/system-images
           key: android-system-images-v2-${{ runner.os }}-${{ matrix.task.name }}
 
+      - name: Accept Android SDK licenses & ensure emulator is installed
+        if: ${{ inputs.is-testify }}
+        run: |
+          SDKMANAGER=$(command -v sdkmanager || find "$ANDROID_HOME/cmdline-tools" -name sdkmanager -type f 2>/dev/null | head -n 1)
+          if [ -z "$SDKMANAGER" ]; then
+            echo "sdkmanager not found under $ANDROID_HOME" >&2
+            exit 1
+          fi
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" "emulator"
+
       - name: Run ${{ matrix.task.name }}
-        run: ./gradlew ${{ matrix.task.command }}
+        run: ./gradlew ${{ matrix.task.command }} --stacktrace
 
       - name: Upload reports
         if: ${{ always() && matrix.task.artifact != '' }}
