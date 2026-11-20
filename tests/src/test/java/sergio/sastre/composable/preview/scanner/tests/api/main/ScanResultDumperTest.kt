@@ -11,6 +11,8 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultD
 import sergio.sastre.composable.preview.scanner.core.utils.assetsFilePath
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
 import sergio.sastre.composable.preview.scanner.utils.ScanResultFileName
+import java.io.File
+import java.nio.file.Files
 
 class ScanResultDumperTest {
 
@@ -190,6 +192,27 @@ class ScanResultDumperTest {
         } finally {
             scanResultFile.delete()
             customPreviewsFile.delete()
+        }
+    }
+
+    @Test
+    fun `GIVEN custom assets directory WHEN dumping scan result to file THEN custom_previews is also dumped in that directory`() {
+        val customAssetsDir = Files.createTempDirectory("custom-assets-dir").toFile()
+        val scanResultFile = File(customAssetsDir, ScanResultFileName.SCAN_RESULT_DUMPER_TEST)
+        val customPreviewsFile = File(customAssetsDir, "custom_previews.json")
+
+        try {
+            ScanResultDumper()
+                .setTargetSourceSet(Classpath(MAIN))
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.multiplepreviewscrossmodule")
+                .dumpScanResultToFile(scanResultFile)
+
+            assert(scanResultFile.exists())
+            assert(customPreviewsFile.exists()) {
+                "Expected custom_previews.json in custom assets dir (${customAssetsDir.absolutePath}), but it was not created"
+            }
+        } finally {
+            customAssetsDir.deleteRecursively()
         }
     }
 }
