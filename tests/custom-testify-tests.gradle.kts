@@ -194,36 +194,6 @@ tasks.register("testifyPreviews") {
 
 val scanningPkg = "sergio.sastre.composable.preview.scanner.scanning"
 
-tasks.register("androidScanningInstrumentationTest") {
-    description = "Runs Android scanning instrumentation tests on Phone GMD (pixel3api34)"
-    group = "Verification"
-
-    dependsOn("saveScanResultInAssets")
-
-    doLast {
-        val numShards = project.findProperty("numShards")?.toString()?.toIntOrNull()
-        val shardArgs = if (numShards != null && numShards > 1) {
-            listOf("-Pandroid.experimental.androidTest.numManagedDeviceShards=$numShards")
-        } else {
-            emptyList()
-        }
-
-        testifyInjectedExecOps.execOperations.exec {
-            workingDir(project.rootDir)
-            commandLine(
-                listOf(
-                    "./gradlew",
-                    ":tests:pixel3api34DebugAndroidTest",
-                    "-PincludeSourceSetScreenshotTest",
-                    "-Pandroid.testInstrumentationRunnerArguments.class=$scanningPkg.AndroidScanningInstrumentationTest"
-                ) + shardArgs
-            )
-        }
-    }
-
-    finalizedBy("cleanTestsBuildFolder")
-}
-
 tasks.register("scanningInstrumentationTest") {
     description = "Runs instrumentation tests under the scanning package on Phone GMD (pixel3api34) without screenshotTest sourceSet"
     group = "Verification"
