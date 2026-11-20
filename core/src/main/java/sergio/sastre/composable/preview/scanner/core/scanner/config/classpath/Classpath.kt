@@ -29,6 +29,19 @@ data class Classpath(
         }
     )
 
+    constructor(
+        sourceSet: SourceSet,
+        variantName: String = "debug",
+        rootDir: String,
+    ) : this(
+        packagePath = when (sourceSet) {
+            SourceSet.MAIN -> getMainSourceSetPath(variantName)
+            SourceSet.ANDROID_TEST -> getAndroidTestSourceSetPath(variantName)
+            SourceSet.SCREENSHOT_TEST -> getScreenshotTestSourceSetPath(variantName)
+        },
+        rootDir = rootDir,
+    )
+
     /**
      * Creates a Classpath for the given SourceSet and variant
      *
