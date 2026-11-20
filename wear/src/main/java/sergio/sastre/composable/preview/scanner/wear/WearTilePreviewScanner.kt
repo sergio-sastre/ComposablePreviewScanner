@@ -33,7 +33,7 @@ class WearTilePreviewScanner: ComposablePreviewScannerWithResult<WearTilePreview
                 group = parameters.valueForKey("group") ?: "",
                 locale = parameters.valueForKey("locale") ?: "",
                 fontScale = parameters.valueForKey("fontScale") ?: 1f,
-                device = parameters.valueForKey("device") ?: "",
+                device = parameters.valueForKey("device") ?: "id:wearos_small_round",
             )
 
         @Suppress("UNCHECKED_CAST")

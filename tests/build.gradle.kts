@@ -83,11 +83,16 @@ android {
     testOptions {
         animationsDisabled = true
         managedDevices {
+            val hostAbi = when (System.getProperty("os.arch")) {
+                "aarch64", "arm64" -> "arm64-v8a"
+                else -> "x86_64"
+            }
             allDevices {
                 create<com.android.build.api.dsl.ManagedVirtualDevice>("pixel3api34") {
                     device = "Pixel 3"
                     apiLevel = 34
                     systemImageSource = "aosp"
+                    testedAbi = hostAbi
                 }
                 create<com.android.build.api.dsl.ManagedVirtualDevice>("wearoslargeapi34") {
                     device = "Wear OS Large Round"
