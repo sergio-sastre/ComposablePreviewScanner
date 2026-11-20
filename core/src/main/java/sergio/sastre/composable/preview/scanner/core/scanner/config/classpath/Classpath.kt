@@ -29,6 +29,16 @@ data class Classpath(
         }
     )
 
+    /**
+     * Creates a Classpath for the given SourceSet, variant, and module build directory.
+     *
+     * Useful when running from a Gradle task or plugin where `System.getProperty("user.dir")`
+     * points to the root project directory rather than the target module's directory.
+     *
+     * @param sourceSet The sourceSet whose packagePath is known
+     * @param variantName The variant of the sourceSet, usually "debug" or "release"
+     * @param rootDir Path to the module's "build" directory (e.g. `layout.buildDirectory.get().asFile.absolutePath`)
+     */
     constructor(
         sourceSet: SourceSet,
         variantName: String = "debug",

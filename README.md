@@ -718,7 +718,75 @@ Therefore, the current way to support instrumentation tests, is by previously du
 <details>
 <summary>Click to see Instrumentation implementation details</summary>
 
-1. run the scan in a unit test & save it in a file accessible by instrumentation tests e.g. in assets
+1. Dump the scan result via a custom Gradle task in your module's `build.gradle.kts` (recommended) so it is always up-to-date before executing instrumentation screenshot tests:
+
+```kotlin
+// At the top of your module's build.gradle.kts (above plugins { ... })
+buildscript {
+    repositories {
+        maven("https://jitpack.io")
+    }
+    dependencies {
+        classpath("com.github.sergio-sastre.ComposablePreviewScanner:core:<version>")
+    }
+}
+
+import org.gradle.api.attributes.Attribute
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
+import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet
+import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper
+
+abstract class DumpPreviewsTask : DefaultTask() {
+    @get:InputDirectory
+    abstract val compiledClassesDir: DirectoryProperty
+
+    @get:Internal
+    abstract val moduleBuildDir: DirectoryProperty
+
+    @get:org.gradle.api.tasks.Classpath
+    abstract val customPreviewsClasspath: ConfigurableFileCollection
+
+    @get:OutputDirectory
+    abstract val outputAssetsDir: DirectoryProperty
+
+    @TaskAction
+    fun dump() {
+        ScanResultDumper()
+            .setCustomPreviewsClasspath(customPreviewsClasspath.files.toList())
+            .setTargetSourceSet(
+                Classpath(
+                    sourceSet = SourceSet.MAIN,
+                    variantName = "debug",
+                    rootDir = moduleBuildDir.get().asFile.absolutePath,
+                )
+            )
+            .scanPackageTrees("my.package")
+            .dumpScanResultToFileInAssets(
+                assetsDir = outputAssetsDir.get().asFile,
+                scanFileName = "scan_result.json",
+            )
+    }
+}
+
+val dumpPreviews by tasks.registering(DumpPreviewsTask::class) {
+    dependsOn("compileDebugKotlin")
+    compiledClassesDir.set(layout.buildDirectory.dir("tmp/kotlin-classes/debug"))
+    moduleBuildDir.set(layout.buildDirectory)
+    outputAssetsDir.set(layout.projectDirectory.dir("src/androidTest/assets"))
+    customPreviewsClasspath.from(
+        configurations.getByName("debugCompileClasspath").incoming.artifactView {
+            attributes {
+                attribute(Attribute.of("artifactType", String::class.java), "android-classes-jar")
+            }
+        }.files
+    )
+}
+```
+
+> **Note:** You can also point `outputAssetsDir` to `layout.buildDirectory.dir("generated/scan-assets")` and register it via `androidComponents` (`variant.androidTest?.sources?.assets?.addGeneratedSourceDirectory(...)`) to avoid writing into `src/`.
+
+<details>
+<summary>Alternative: Run the scan in a unit test</summary>
 
 ```kotlin
 class SaveScanResultInAssets {
@@ -729,7 +797,7 @@ class SaveScanResultInAssets {
         ScanResultDumper()
             .scanPackageTrees("my.package")
             .dumpScanResultToFileInAssets(
-                fileName = scanResultFileName
+                scanFileName = scanResultFileName
             )
 
         assert(
@@ -740,10 +808,24 @@ class SaveScanResultInAssets {
 }
 ```
 
-Ensure that the .json with the scan result is up-to-date before executing the instrumentation screenshot tests. For instance, execute that test always before your instrumentation screenshot tests.
-Ideally, this scanning could be done via a Gradle Plugin in the future instead of by running it in a unit test.
+Ensure that the `.json` with the scan result is up-to-date before executing the instrumentation screenshot tests (for instance, run this unit test before your instrumentation tests).
 
-2. Now proceed to prepare your Composable Preview Tests with, for instance, Dropshots.
+</details>
+
+2. In your instrumentation test, read both files from `assets`:
+
+```kotlin
+val assets = getInstrumentation().context.assets
+val previews = AndroidComposablePreviewScanner()
+    .setTargetSourceSet(Classpath(SourceSet.MAIN))
+    .scanFile(
+        targetInputStream = assets.open("scan_result.json"),
+        customPreviewsInfoInputStream = assets.open("custom_previews.json"),
+    )
+    .getPreviews()
+```
+
+3. Now proceed to prepare your Composable Preview Tests with, for instance, Dropshots.
 Let's say we want to enable some custom Dropshots Config for some Previews, for instance a maxPercentDifferent value.
    - Define your own annotation
       ```kotlin
