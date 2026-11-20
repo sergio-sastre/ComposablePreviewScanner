@@ -222,4 +222,33 @@ class ScanResultDumperTest {
             customAssetsDir.deleteRecursively()
         }
     }
+
+    @Test
+    fun `GIVEN user_dir differs from module dir WHEN using Classpath(MAIN) THEN ScanResultDumper still finds previews`() {
+        val originalUserDir = System.getProperty("user.dir")
+        val simulatedGradleRootDir = Files.createTempDirectory("simulated-gradle-root").toFile()
+        val outputDir = Files.createTempDirectory("scan-output").toFile()
+        val scanResultFile = File(outputDir, ScanResultFileName.SCAN_RESULT_DUMPER_TEST)
+
+        try {
+            System.setProperty("user.dir", simulatedGradleRootDir.absolutePath)
+
+            ScanResultDumper()
+                .setTargetSourceSet(Classpath(MAIN))
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.androidvals")
+                .dumpScanResultToFile(scanResultFile)
+
+            val previewsFromFile = AndroidComposablePreviewScanner()
+                .scanFile(scanResultFile)
+                .getPreviews()
+
+            assert(previewsFromFile.isNotEmpty()) {
+                "Expected previews from MAIN source set, but got 0 because Classpath(MAIN) resolved against user.dir (${simulatedGradleRootDir.absolutePath})"
+            }
+        } finally {
+            System.setProperty("user.dir", originalUserDir)
+            simulatedGradleRootDir.deleteRecursively()
+            outputDir.deleteRecursively()
+        }
+    }
 }
