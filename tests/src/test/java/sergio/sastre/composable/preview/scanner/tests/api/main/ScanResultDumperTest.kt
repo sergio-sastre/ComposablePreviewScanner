@@ -205,7 +205,14 @@ class ScanResultDumperTest {
             ScanResultDumper()
                 .setTargetSourceSet(Classpath(MAIN))
                 .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.multiplepreviewscrossmodule")
-                .dumpScanResultToFile(scanResultFile)
+                .dumpScanResultToFileInAssets(
+                    assetsDir = customAssetsDir,
+                    scanFileName = ScanResultFileName.SCAN_RESULT_DUMPER_TEST,
+                    packageTreesOfCustomPreviews = listOf(
+                        "androidx.compose.ui.tooling.preview",
+                        "sergio.sastre.composable.preview.custompreviews"
+                    )
+                )
 
             assert(scanResultFile.exists())
             assert(customPreviewsFile.exists()) {
