@@ -1,6 +1,5 @@
 package sergio.sastre.composable.preview.scanner.scanning
 
-import androidx.activity.compose.setContent
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import org.junit.Rule
 import org.junit.Test
@@ -13,8 +12,6 @@ import sergio.sastre.composable.preview.scanner.core.scanner.exceptions.ScanSour
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
 import sergio.sastre.uitesting.utils.activityscenario.activityScenarioForActivityRule
-import sergio.sastre.uitesting.utils.utils.waitForActivity
-import sergio.sastre.uitesting.utils.utils.waitForComposeView
 
 class AndroidScanningInstrumentationTest {
 
