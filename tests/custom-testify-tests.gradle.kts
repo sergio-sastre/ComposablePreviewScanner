@@ -194,8 +194,8 @@ tasks.register("testifyPreviews") {
 
 val scanningPkg = "sergio.sastre.composable.preview.scanner.scanning"
 
-tasks.register("androidScanningInstrumentationTest") {
-    description = "Runs Android scanning instrumentation tests on Phone GMD (pixel3api34)"
+tasks.register("scanningInstrumentationTest") {
+    description = "Runs instrumentation tests under the scanning package on Phone GMD (pixel3api34) without screenshotTest sourceSet"
     group = "Verification"
 
     dependsOn("saveScanResultInAssets")
@@ -214,8 +214,7 @@ tasks.register("androidScanningInstrumentationTest") {
                 listOf(
                     "./gradlew",
                     ":tests:pixel3api34DebugAndroidTest",
-                    "-PincludeSourceSetScreenshotTest",
-                    "-Pandroid.testInstrumentationRunnerArguments.class=$scanningPkg.AndroidScanningInstrumentationTest"
+                    "-Pandroid.testInstrumentationRunnerArguments.package=$scanningPkg"
                 ) + shardArgs
             )
         }

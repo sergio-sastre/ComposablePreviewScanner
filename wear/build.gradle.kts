@@ -62,7 +62,7 @@ publishing {
             }
             groupId = "sergio.sastre.composable.preview.scanner"
             artifactId = "wear"
-            version = "0.10.0"
+            version = "0.10.1"
         }
     }
 }

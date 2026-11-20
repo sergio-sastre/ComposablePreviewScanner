@@ -36,16 +36,9 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Enable KVM for Emulator
+      - name: Setup Android Emulator
         if: ${{ inputs.is-testify }}
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-
-      - name: Export Android SDK path
-        if: ${{ inputs.is-testify }}
-        run: echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
+        uses: ./.github/actions/setup-android-emulator
 
       - name: Cache AVD System Images
         if: ${{ inputs.is-testify }}
@@ -54,8 +47,19 @@ jobs:
           path: ${{ env.ANDROID_HOME }}/system-images
           key: android-system-images-v2-${{ runner.os }}-${{ matrix.task.name }}
 
+      - name: Accept Android SDK licenses & ensure emulator is installed
+        if: ${{ inputs.is-testify }}
+        run: |
+          SDKMANAGER=$(command -v sdkmanager || find "$ANDROID_HOME/cmdline-tools" -name sdkmanager -type f 2>/dev/null | head -n 1)
+          if [ -z "$SDKMANAGER" ]; then
+            echo "sdkmanager not found under $ANDROID_HOME" >&2
+            exit 1
+          fi
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" "emulator"
+
       - name: Run ${{ matrix.task.name }}
-        run: ./gradlew ${{ matrix.task.command }}
+        run: ./gradlew ${{ matrix.task.command }} --stacktrace
 
       - name: Upload reports
         if: ${{ always() && matrix.task.artifact != '' }}

@@ -21,7 +21,10 @@ class AndroidComposablePreviewScanner : ComposablePreviewScanner<AndroidPreviewI
         previewInfoMapper = AndroidComposablePreviewInfoMapper(),
         previewMapperCreator = AndroidPreviewMapperCreator(),
     ),
-    defaultPackageTreesOfCrossModuleCustomPreviews = listOf("androidx.compose.ui.tooling.preview")
+    defaultPackageTreesOfCrossModuleCustomPreviews = listOf(
+        "androidx.compose.ui.tooling.preview",
+        "androidx.wear.compose.ui.tooling.preview",
+    )
 ) {
 
     private class AndroidComposablePreviewInfoMapper :
