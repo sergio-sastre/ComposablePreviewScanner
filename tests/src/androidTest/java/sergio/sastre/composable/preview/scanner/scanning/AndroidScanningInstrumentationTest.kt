@@ -8,6 +8,7 @@ import sergio.sastre.composable.preview.scanner.MainActivity
 import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet
+import sergio.sastre.composable.preview.scanner.core.scanner.exceptions.ClassNotFoundInSourceSetException
 import sergio.sastre.composable.preview.scanner.core.scanner.exceptions.ScanSourceNotSupported
 import sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
@@ -53,23 +54,15 @@ class AndroidScanningInstrumentationTest {
             .getPreviews()
     }
 
-    @Test
-    fun WHEN_error() {
+    @Test(expected = ClassNotFoundInSourceSetException::class)
+    fun WHEN_scanFile_for_screenshotTest_without_sourceSet_included_THEN_throw_ClassNotFoundInSourceSetException() {
         val assets = getInstrumentation().context.assets
-        val previews = AndroidComposablePreviewScanner()
+        AndroidComposablePreviewScanner()
             .setTargetSourceSet(Classpath(SourceSet.SCREENSHOT_TEST))
             .scanFile(
                 targetInputStream = assets.open("scan_result_screenshot_test.json"),
                 customPreviewsInfoInputStream = assets.open("custom_previews.json")
             )
             .getPreviews()
-            .take(1)
-
-        composableRule
-            .activityScenario.onActivity {
-                it.setContent { previews.first().invoke() }
-            }
-            .waitForActivity()
-            .waitForComposeView()
     }
 }
