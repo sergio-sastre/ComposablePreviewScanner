@@ -14,7 +14,7 @@ tasks.register<JavaExec>("dumpMainSourceSetScanResult") {
 
     classpath = scanResultDumperClasspath
     mainClass.set("sergio.sastre.composable.preview.scanner.dumper.cli.ScanResultDumperCliKt")
-    workingDir = project.projectDir
+    workingDir = rootProject.projectDir
     maxHeapSize = "4g"
 
     // Source set classes must exist before dumping scan results
