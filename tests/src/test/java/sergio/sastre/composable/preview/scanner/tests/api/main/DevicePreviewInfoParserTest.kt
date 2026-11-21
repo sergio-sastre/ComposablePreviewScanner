@@ -26,6 +26,7 @@ import sergio.sastre.composable.preview.scanner.android.device.domain.Type.PHONE
 import sergio.sastre.composable.preview.scanner.android.device.domain.Type.TABLET
 import sergio.sastre.composable.preview.scanner.android.device.domain.Unit.DP
 import sergio.sastre.composable.preview.scanner.android.device.domain.Unit.PX
+import sergio.sastre.composable.preview.scanner.android.device.domain.WindowPosture
 import sergio.sastre.composable.preview.scanner.android.device.types.Phone
 import sergio.sastre.composable.preview.scanner.android.device.types.XR
 
@@ -223,6 +224,28 @@ class DevicePreviewInfoParserTest {
 
         assert(
             expectedDevice.navigation == customNavigation.expectedNavigationValue
+        )
+    }
+
+    enum class CustomWindowPosture(
+        val deviceSpec: String,
+        val expectedValue: WindowPosture
+    ) {
+        None("spec:height=200dp,width=100dp", WindowPosture.FLAT),
+        Flat("spec:windowPosture=flat$DIMENS_DP", WindowPosture.FLAT),
+        Tabletop("spec:windowPosture=tabletop$DIMENS_DP", WindowPosture.TABLETOP),
+        Book("spec:windowPosture=book$DIMENS_DP", WindowPosture.BOOK),
+    }
+
+    @Test
+    fun `GIVEN Window posture, extract its value`(
+        @TestParameter customWindowPosture: CustomWindowPosture
+    ) {
+        val expectedDevice =
+            DevicePreviewInfoParser.parse(customWindowPosture.deviceSpec)!!
+
+        assert(
+            expectedDevice.windowPosture == customWindowPosture.expectedValue
         )
     }
 

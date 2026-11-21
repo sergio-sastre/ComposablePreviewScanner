@@ -17,6 +17,7 @@ data class Device(
     val screenSize: ScreenSize = ScreenSizeCalculator.calculateFor(dimensions, densityDpi),
     val cutout: Cutout = NONE,
     val navigation: Navigation = GESTURE,
+    val windowPosture: WindowPosture = WindowPosture.FLAT
 ) {
 
     fun inDp(): Device = this.copy(
@@ -119,3 +120,9 @@ enum class Navigation(val value: String) {
 }
 
 enum class Type { PHONE, TABLET, DESKTOP, FOLDABLE, WEAR, CAR, TV, XR }
+
+enum class WindowPosture(val value: String) {
+    FLAT("flat"),
+    TABLETOP("tabletop"),
+    BOOK("book")
+}
