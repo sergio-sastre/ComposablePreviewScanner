@@ -2,8 +2,7 @@ package sergio.sastre.composable.preview.scanner.android.device.domain
 
 import sergio.sastre.composable.preview.scanner.android.device.domain.Cutout.NONE
 import sergio.sastre.composable.preview.scanner.android.device.domain.Navigation.GESTURE
-import kotlin.math.ceil
-import kotlin.math.floor
+import kotlin.math.round
 
 data class Device(
     val identifier: Identifier?,
@@ -30,33 +29,48 @@ data class Device(
     )
 }
 
+private data class ConversionSource<T>(
+    val value: T,
+    val densityDpi: Int,
+)
+
+private inline fun <T> ConversionSource<T>?.orConvert(
+    densityDpi: Int,
+    convert: () -> T,
+): T = takeIf { it?.densityDpi == densityDpi }?.value ?: convert()
+
 data class Dimensions(
     val height: Float,
     val width: Float,
     val unit: Unit,
 ) {
-    fun inDp(densityDpi: Int): Dimensions {
-        val conversionFactor: Float = densityDpi / 160f
-        return when (unit) {
-            Unit.DP -> this
-            Unit.PX -> Dimensions(
-                height = floor(height / conversionFactor),
-                width = floor(width / conversionFactor),
-                unit = Unit.DP
-            )
+    private var convertedFrom: ConversionSource<Dimensions>? = null
+
+    fun inDp(densityDpi: Int): Dimensions = when (unit) {
+        Unit.DP -> this
+        Unit.PX -> convertedFrom.orConvert(densityDpi) {
+            val conversionFactor = densityDpi / 160f
+            Dimensions(
+                height = round(height / conversionFactor),
+                width = round(width / conversionFactor),
+                unit = Unit.DP,
+            ).also {
+                it.convertedFrom = ConversionSource(this, densityDpi)
+            }
         }
     }
 
-    fun inPx(densityDpi: Int): Dimensions {
-        val conversionFactor: Float = densityDpi / 160f
-        return when (unit) {
-            Unit.PX -> this
-            Unit.DP ->
-                Dimensions(
-                    height = ceil(height * conversionFactor),
-                    width = ceil(width * conversionFactor),
-                    unit = Unit.PX
-                )
+    fun inPx(densityDpi: Int): Dimensions = when (unit) {
+        Unit.PX -> this
+        Unit.DP -> convertedFrom.orConvert(densityDpi) {
+            val conversionFactor = densityDpi / 160f
+            Dimensions(
+                height = round(height * conversionFactor),
+                width = round(width * conversionFactor),
+                unit = Unit.PX,
+            ).also {
+                it.convertedFrom = ConversionSource(this, densityDpi)
+            }
         }
     }
 }
@@ -70,26 +84,31 @@ data class ChinSize(
     val value: Float,
     val unit: Unit,
 ) {
-    fun inDp(densityDpi: Int): ChinSize {
-        val conversionFactor: Float = densityDpi / 160f
-        return when (unit) {
-            Unit.DP -> this
-            Unit.PX -> ChinSize(
-                value = floor(value / conversionFactor),
-                unit = Unit.DP
-            )
+    private var convertedFrom: ConversionSource<ChinSize>? = null
+
+    fun inDp(densityDpi: Int): ChinSize = when (unit) {
+        Unit.DP -> this
+        Unit.PX -> convertedFrom.orConvert(densityDpi) {
+            val conversionFactor = densityDpi / 160f
+            ChinSize(
+                value = round(value / conversionFactor),
+                unit = Unit.DP,
+            ).also {
+                it.convertedFrom = ConversionSource(this, densityDpi)
+            }
         }
     }
 
-    fun inPx(densityDpi: Int): ChinSize {
-        val conversionFactor: Float = densityDpi / 160f
-        return when (unit) {
-            Unit.PX -> this
-            Unit.DP ->
-                ChinSize(
-                    value = ceil(value * conversionFactor),
-                    unit = Unit.PX
-                )
+    fun inPx(densityDpi: Int): ChinSize = when (unit) {
+        Unit.PX -> this
+        Unit.DP -> convertedFrom.orConvert(densityDpi) {
+            val conversionFactor = densityDpi / 160f
+            ChinSize(
+                value = round(value * conversionFactor),
+                unit = Unit.PX,
+            ).also {
+                it.convertedFrom = ConversionSource(this, densityDpi)
+            }
         }
     }
 }

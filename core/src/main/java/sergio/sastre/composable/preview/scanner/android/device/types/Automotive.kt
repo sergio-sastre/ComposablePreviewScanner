@@ -7,6 +7,7 @@ import sergio.sastre.composable.preview.scanner.android.device.domain.GetDeviceB
 import sergio.sastre.composable.preview.scanner.android.device.domain.Identifier
 import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation.LANDSCAPE
 import sergio.sastre.composable.preview.scanner.android.device.domain.Orientation.PORTRAIT
+import sergio.sastre.composable.preview.scanner.android.device.domain.ScreenRatio.NOTLONG
 import sergio.sastre.composable.preview.scanner.android.device.domain.ScreenSize.NORMAL
 import sergio.sastre.composable.preview.scanner.android.device.domain.Shape.NOTROUND
 import sergio.sastre.composable.preview.scanner.android.device.domain.Type.CAR
@@ -26,6 +27,7 @@ enum class Automotive(
             ),
             densityDpi = 160,
             orientation = LANDSCAPE,
+            screenRatio = NOTLONG,
             screenSize = NORMAL,
             shape = NOTROUND,
             chinSize = ChinSize(0F, PX),
@@ -43,6 +45,7 @@ enum class Automotive(
             ),
             densityDpi = 120,
             orientation = LANDSCAPE,
+            screenRatio = NOTLONG,
             screenSize = NORMAL,
             shape = NOTROUND,
             chinSize = ChinSize(0F, PX),
@@ -60,6 +63,7 @@ enum class Automotive(
             ),
             densityDpi = 160,
             orientation = LANDSCAPE,
+            screenRatio = NOTLONG,
             screenSize = NORMAL,
             shape = NOTROUND,
             chinSize = ChinSize(0F, PX),
@@ -77,6 +81,7 @@ enum class Automotive(
             ),
             densityDpi = 160,
             orientation = LANDSCAPE,
+            screenRatio = NOTLONG,
             screenSize = NORMAL,
             shape = NOTROUND,
             chinSize = ChinSize(0F, PX),
@@ -94,6 +99,7 @@ enum class Automotive(
             ),
             densityDpi = 120,
             orientation = LANDSCAPE,
+            screenRatio = NOTLONG,
             screenSize = NORMAL,
             shape = NOTROUND,
             chinSize = ChinSize(0F, PX),
@@ -111,6 +117,7 @@ enum class Automotive(
             ),
             densityDpi = 120,
             orientation = LANDSCAPE,
+            screenRatio = NOTLONG,
             screenSize = NORMAL,
             shape = NOTROUND,
             chinSize = ChinSize(0F, PX),
@@ -128,6 +135,7 @@ enum class Automotive(
             ),
             densityDpi = 120,
             orientation = PORTRAIT,
+            screenRatio = NOTLONG,
             screenSize = NORMAL,
             shape = NOTROUND,
             chinSize = ChinSize(0F, PX),
@@ -145,6 +153,7 @@ enum class Automotive(
             ),
             densityDpi = 160,
             orientation = PORTRAIT,
+            screenRatio = NOTLONG,
             screenSize = NORMAL,
             shape = NOTROUND,
             chinSize = ChinSize(0F, PX),
@@ -162,6 +171,7 @@ enum class Automotive(
             ),
             densityDpi = 240,
             orientation = LANDSCAPE,
+            screenRatio = NOTLONG,
             screenSize = NORMAL,
             shape = NOTROUND,
             chinSize = ChinSize(0F, PX),
