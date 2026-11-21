@@ -49,6 +49,27 @@ tasks.register<Test>("testSourceSets") {
     finalizedBy("cleanTestsBuildFolder")
 }
 
+tasks.register<Test>("testGradleMainSourceSetParity") {
+    description = "Runs parity tests comparing Gradle-task dumped MAIN source set scan results with build-time scans"
+    group = "Verification"
+    maxHeapSize = "4g"
+    maxParallelForks = 1
+
+    dependsOn("dumpMainSourceSetScanResult")
+
+    val testDebugTask = tasks.getByName("testDebugUnitTest") as Test
+    testClassesDirs = testDebugTask.testClassesDirs
+    classpath = testDebugTask.classpath
+
+    filter {
+        includeTestsMatching("sergio.sastre.composable.preview.scanner.tests.api.gradle.*")
+    }
+
+    testLogging {
+        events("passed", "skipped", "failed", "standardOut")
+    }
+}
+
 tasks.register<Delete>("cleanTestsBuildFolder") {
     description = "Deletes the build directory of the tests module"
     group = "Cleanup"

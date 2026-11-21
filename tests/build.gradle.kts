@@ -18,6 +18,7 @@ if (project.hasProperty("library")) {
 }
 
 apply(from = "custom-unit-tests.gradle.kts")
+apply(from = "custom-dump-task.gradle.kts")
 apply(from = "custom-paparazzi-tests.gradle.kts")
 apply(from = "custom-roborazzi-tests.gradle.kts")
 apply(from = "custom-testify-tests.gradle.kts")
