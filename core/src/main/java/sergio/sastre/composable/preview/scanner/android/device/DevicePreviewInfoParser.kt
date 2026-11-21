@@ -15,6 +15,8 @@ import sergio.sastre.composable.preview.scanner.android.device.domain.Orientatio
 import sergio.sastre.composable.preview.scanner.android.device.domain.Shape
 import sergio.sastre.composable.preview.scanner.android.device.domain.Type
 import sergio.sastre.composable.preview.scanner.android.device.domain.Unit
+import sergio.sastre.composable.preview.scanner.android.device.domain.WindowPosture
+import sergio.sastre.composable.preview.scanner.android.device.domain.WindowPosture.FLAT
 import sergio.sastre.composable.preview.scanner.android.device.types.DEFAULT
 import sergio.sastre.composable.preview.scanner.android.device.types.Automotive
 import sergio.sastre.composable.preview.scanner.android.device.types.Desktop
@@ -146,6 +148,10 @@ private object GetCustomDevice {
         val cutout = spec["cutout"]
         val cutoutValue = cutout?.let { Cutout.entries.find { it.value == cutout } } ?: NONE
 
+        val windowPosture = spec["windowPosture"]
+        val windowPostureValue = windowPosture
+            ?.let { WindowPosture.entries.find { it.value == windowPosture } } ?: FLAT
+
         return Device(
             identifier = null,
             dimensions = dimensions,
@@ -156,6 +162,7 @@ private object GetCustomDevice {
             chinSize = chinSize,
             navigation = navigationValue,
             cutout = cutoutValue,
+            windowPosture = windowPostureValue
         )
     }
 
