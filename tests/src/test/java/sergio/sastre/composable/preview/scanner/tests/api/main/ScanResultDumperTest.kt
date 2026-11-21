@@ -11,6 +11,8 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultD
 import sergio.sastre.composable.preview.scanner.core.utils.assetsFilePath
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
 import sergio.sastre.composable.preview.scanner.utils.ScanResultFileName
+import java.io.File
+import java.nio.file.Files
 
 class ScanResultDumperTest {
 
@@ -190,6 +192,63 @@ class ScanResultDumperTest {
         } finally {
             scanResultFile.delete()
             customPreviewsFile.delete()
+        }
+    }
+
+    @Test
+    fun `GIVEN custom assets directory WHEN dumping scan result to file THEN custom_previews is also dumped in that directory`() {
+        val customAssetsDir = Files.createTempDirectory("custom-assets-dir").toFile()
+        val scanResultFile = File(customAssetsDir, ScanResultFileName.SCAN_RESULT_DUMPER_TEST)
+        val customPreviewsFile = File(customAssetsDir, "custom_previews.json")
+
+        try {
+            ScanResultDumper()
+                .setTargetSourceSet(Classpath(MAIN))
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.multiplepreviewscrossmodule")
+                .dumpScanResultToFileInAssets(
+                    assetsDir = customAssetsDir,
+                    scanFileName = ScanResultFileName.SCAN_RESULT_DUMPER_TEST,
+                    packageTreesOfCustomPreviews = listOf(
+                        "androidx.compose.ui.tooling.preview",
+                        "sergio.sastre.composable.preview.custompreviews"
+                    )
+                )
+
+            assert(scanResultFile.exists())
+            assert(customPreviewsFile.exists()) {
+                "Expected custom_previews.json in custom assets dir (${customAssetsDir.absolutePath}), but it was not created"
+            }
+        } finally {
+            customAssetsDir.deleteRecursively()
+        }
+    }
+
+    @Test
+    fun `GIVEN user_dir differs from module dir WHEN using Classpath(MAIN) THEN ScanResultDumper still finds previews`() {
+        val originalUserDir = System.getProperty("user.dir")
+        val simulatedGradleRootDir = Files.createTempDirectory("simulated-gradle-root").toFile()
+        val outputDir = Files.createTempDirectory("scan-output").toFile()
+        val scanResultFile = File(outputDir, ScanResultFileName.SCAN_RESULT_DUMPER_TEST)
+
+        try {
+            System.setProperty("user.dir", simulatedGradleRootDir.absolutePath)
+
+            ScanResultDumper()
+                .setTargetSourceSet(Classpath(MAIN, rootDir = "$originalUserDir/build"))
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.androidvals")
+                .dumpScanResultToFile(scanResultFile)
+
+            val previewsFromFile = AndroidComposablePreviewScanner()
+                .scanFile(scanResultFile)
+                .getPreviews()
+
+            assert(previewsFromFile.isNotEmpty()) {
+                "Expected previews from MAIN source set, but got 0 because Classpath(MAIN) resolved against user.dir (${simulatedGradleRootDir.absolutePath})"
+            }
+        } finally {
+            System.setProperty("user.dir", originalUserDir)
+            simulatedGradleRootDir.deleteRecursively()
+            outputDir.deleteRecursively()
         }
     }
 }
