@@ -10,7 +10,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import sergio.sastre.composable.preview.scanner.ScreenshotTestWearActivity
 import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreviewWithResult
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath
 import sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet.MAIN
@@ -22,12 +21,10 @@ import sergio.sastre.composable.preview.scanner.wear.screenshotid.WearTilePrevie
 import sergio.sastre.uitesting.android_testify.screenshotscenario.assertSame
 import sergio.sastre.uitesting.android_testify.screenshotscenario.generateDiffs
 import sergio.sastre.uitesting.android_testify.screenshotscenario.waitForIdleSync
-import sergio.sastre.uitesting.utils.activityscenario.ActivityConfigItem
-import sergio.sastre.uitesting.utils.activityscenario.activityScenarioForActivityRule
+import sergio.sastre.uitesting.utils.activityscenario.ActivityScenarioForComposableRule
+import sergio.sastre.uitesting.utils.activityscenario.ComposableConfigItem
 import sergio.sastre.uitesting.utils.common.FontSizeScale
 import sergio.sastre.uitesting.utils.testrules.animations.DisableAnimationsRule
-import sergio.sastre.uitesting.utils.utils.waitForActivity
-import sergio.sastre.uitesting.utils.utils.waitForComposeView
 
 /**
  * ./gradlew :tests:screenshotRecord -PtestClass=sergio.sastre.composable.preview.scanner.screenshots.TestifyWearTilePreviewsTest
@@ -66,10 +63,10 @@ class TestifyWearTilePreviewsTest(
     val screenshotRule = ScreenshotScenarioRule()
 
     @get:Rule(order = 3)
-    val composableRule = activityScenarioForActivityRule<ScreenshotTestWearActivity>(
-        config = ActivityConfigItem(
+    val composableRule = ActivityScenarioForComposableRule(
+        config = ComposableConfigItem(
             fontSize = FontSizeScale.Value(preview.previewInfo.fontScale),
-            systemLocale = preview.previewInfo.locale
+            locale = preview.previewInfo.locale
                 .removePrefix("b+").replace("+", "-").ifBlank { "en" }
         )
     )
@@ -87,8 +84,7 @@ class TestifyWearTilePreviewsTest(
                             .previewToView(preview)
                         activity.setContentView(view)
                     }
-                    .waitForActivity()
-                    .waitForComposeView()
+                composableRule.composeView
             }
             .configure {
                 captureMethod = ::canvasCapture
