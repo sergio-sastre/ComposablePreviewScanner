@@ -151,6 +151,50 @@ class ScanResultDumper {
             scanResultLogger.printFullInfoLog()
         }
 
+        /**
+         * Dumps the ScanResult of the target package trees into [assetsDir],
+         * so it can be read while executing instrumentation tests even when the Gradle task's
+         * working directory differs from the module directory or uses a custom assets directory.
+         */
+        fun dumpScanResultToFileInAssets(
+            assetsDir: File,
+            scanFileName: String,
+            packageTreesOfCustomPreviews: List<String> = listOf(
+                "androidx.compose.ui.tooling.preview",
+                "androidx.wear.compose.ui.tooling.preview",
+            ),
+            customPreviewsFileName: String = "custom_previews.json"
+        ): ScanResultProcessor = apply {
+            scanResultLogger.measureDumpTime {
+                createDirectory(assetsDir.absolutePath)
+
+                val outputScanFile = File(assetsDir, scanFileName)
+                outputScanFile.bufferedWriter().use { writer ->
+                    writer.write(scanResult.toJSON())
+                }
+                scanResultLogger.addScanResultFileName(outputScanFile)
+
+                if (packageTreesOfCustomPreviews.isNotEmpty()) {
+                    val customPreviewsScanResult = ClassGraph()
+                        .apply {
+                            if (customPreviewsClasspath.isNotEmpty()) {
+                                overrideClasspath(customPreviewsClasspath)
+                            }
+                        }
+                        .acceptPackages(*packageTreesOfCustomPreviews.toTypedArray())
+                        .enableAnnotationInfo()
+                        .scan()
+
+                    val outputCustomPreviewsFile = File(assetsDir, customPreviewsFileName)
+                    outputCustomPreviewsFile.bufferedWriter().use { writer ->
+                        writer.write(customPreviewsScanResult.toJSON())
+                    }
+                    scanResultLogger.addCustomPreviewsFileName(outputCustomPreviewsFile)
+                }
+            }
+            scanResultLogger.printFullInfoLog()
+        }
+
         fun dumpScanResultToFile(
             outputFile: File
         ): ScanResultProcessor = apply {

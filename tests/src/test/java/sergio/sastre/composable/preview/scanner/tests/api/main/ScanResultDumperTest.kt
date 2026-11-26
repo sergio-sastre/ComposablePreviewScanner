@@ -11,6 +11,8 @@ import sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultD
 import sergio.sastre.composable.preview.scanner.core.utils.assetsFilePath
 import sergio.sastre.composable.preview.scanner.core.utils.testFilePath
 import sergio.sastre.composable.preview.scanner.utils.ScanResultFileName
+import java.io.File
+import java.nio.file.Files
 
 class ScanResultDumperTest {
 
@@ -147,8 +149,41 @@ class ScanResultDumperTest {
         }
     }
 
+    private val repeatablePreviewPackages = arrayOf(
+        // @PreviewFontScale, @PreviewScreenSizes, and wear subpackage (@WearPreviewDevices, @WearPreviewFontScales, @WearPreviewSmallRound, @WearPreviewLargeRound, @WearPreviewSquare)
+        "sergio.sastre.composable.preview.scanner.android.multiplepreviews",
+        // @PreviewLightDark
+        "sergio.sastre.composable.preview.scanner.android.previewwrapper",
+        // @PreviewDynamicColors (also uses @MyCustomDarkModePreview from custompreviewannotation)
+        "sergio.sastre.composable.preview.scanner.android.multiplepreviewswithpreviewparameters",
+        "sergio.sastre.composable.preview.scanner.android.custompreviewannotation",
+    )
+
+    private fun assertDumpedPreviewsMatchBuildTime(
+        scanResultFile: File,
+        customPreviewsFile: File,
+        vararg packages: String,
+    ) {
+        val expectedPreviews = AndroidComposablePreviewScanner()
+            .scanPackageTrees(*packages)
+            .getPreviews()
+
+        val previewsFromFile = AndroidComposablePreviewScanner()
+            .setTargetSourceSet(Classpath(MAIN))
+            .scanFile(
+                targetInputStream = scanResultFile.inputStream(),
+                customPreviewsInfoInputStream = customPreviewsFile.inputStream()
+            )
+            .getPreviews()
+
+        assertEquals(
+            expectedPreviews.map { "${it.previewInfo}|${it.declaringClass}|${it.methodName}" }.sorted(),
+            previewsFromFile.map { "${it.previewInfo}|${it.declaringClass}|${it.methodName}" }.sorted()
+        )
+    }
+
     @Test
-    fun `GIVEN wear compose previews WHEN scan result is dumped with default custom previews THEN scanFile finds all of them`() {
+    fun `GIVEN wear and repeatable android compose previews WHEN scan result is dumped with default custom previews THEN scanFile finds all of them`() {
         val scanResultFile = assetsFilePath(
             fileName = ScanResultFileName.SCAN_RESULT_DUMPER_TEST,
             variantName = "debug"
@@ -161,35 +196,105 @@ class ScanResultDumperTest {
         customPreviewsFile.delete()
         assumeFalse(scanResultFile.exists())
 
-        val wearPackage = "sergio.sastre.composable.preview.scanner.android.multiplepreviews.wear"
         try {
             ScanResultDumper()
                 .setTargetSourceSet(Classpath(MAIN))
-                .scanPackageTrees(wearPackage)
+                .scanPackageTrees(*repeatablePreviewPackages)
                 .dumpScanResultToFileInAssets(
                     scanFileName = ScanResultFileName.SCAN_RESULT_DUMPER_TEST,
                     variantName = "debug"
                 )
 
-            val expectedPreviews = AndroidComposablePreviewScanner()
-                .scanPackageTrees(wearPackage)
-                .getPreviews()
-
-            val previewsFromFile = AndroidComposablePreviewScanner()
-                .setTargetSourceSet(Classpath(MAIN))
-                .scanFile(
-                    targetInputStream = scanResultFile.inputStream(),
-                    customPreviewsInfoInputStream = customPreviewsFile.inputStream()
-                )
-                .getPreviews()
-
-            assertEquals(
-                expectedPreviews.map { "${it.previewInfo}|${it.declaringClass}|${it.methodName}" }.sorted(),
-                previewsFromFile.map { "${it.previewInfo}|${it.declaringClass}|${it.methodName}" }.sorted()
+            assertDumpedPreviewsMatchBuildTime(
+                scanResultFile = scanResultFile,
+                customPreviewsFile = customPreviewsFile,
+                *repeatablePreviewPackages,
             )
         } finally {
             scanResultFile.delete()
             customPreviewsFile.delete()
+        }
+    }
+
+    @Test
+    fun `GIVEN custom assets directory WHEN dumping scan result to file THEN custom_previews is also dumped in that directory`() {
+        val customAssetsDir = Files.createTempDirectory("custom-assets-dir").toFile()
+        val scanResultFile = File(customAssetsDir, ScanResultFileName.SCAN_RESULT_DUMPER_TEST)
+        val customPreviewsFile = File(customAssetsDir, "custom_previews.json")
+
+        try {
+            ScanResultDumper()
+                .setTargetSourceSet(Classpath(MAIN))
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.multiplepreviewscrossmodule")
+                .dumpScanResultToFileInAssets(
+                    assetsDir = customAssetsDir,
+                    scanFileName = ScanResultFileName.SCAN_RESULT_DUMPER_TEST,
+                    packageTreesOfCustomPreviews = listOf(
+                        "androidx.compose.ui.tooling.preview",
+                        "sergio.sastre.composable.preview.custompreviews"
+                    )
+                )
+
+            assert(scanResultFile.exists())
+            assert(customPreviewsFile.exists()) {
+                "Expected custom_previews.json in custom assets dir (${customAssetsDir.absolutePath}), but it was not created"
+            }
+        } finally {
+            customAssetsDir.deleteRecursively()
+        }
+    }
+
+    @Test
+    fun `GIVEN wear and repeatable android compose previews WHEN scan result is dumped into custom assetsDir with default custom previews THEN scanFile finds all of them`() {
+        val customAssetsDir = Files.createTempDirectory("custom-assets-dir").toFile()
+        val scanResultFile = File(customAssetsDir, ScanResultFileName.SCAN_RESULT_DUMPER_TEST)
+        val customPreviewsFile = File(customAssetsDir, "custom_previews.json")
+
+        try {
+            ScanResultDumper()
+                .setTargetSourceSet(Classpath(MAIN))
+                .scanPackageTrees(*repeatablePreviewPackages)
+                .dumpScanResultToFileInAssets(
+                    assetsDir = customAssetsDir,
+                    scanFileName = ScanResultFileName.SCAN_RESULT_DUMPER_TEST,
+                )
+
+            assertDumpedPreviewsMatchBuildTime(
+                scanResultFile = scanResultFile,
+                customPreviewsFile = customPreviewsFile,
+                *repeatablePreviewPackages,
+            )
+        } finally {
+            customAssetsDir.deleteRecursively()
+        }
+    }
+
+    @Test
+    fun `GIVEN user_dir differs from module dir WHEN using Classpath(MAIN) THEN ScanResultDumper still finds previews`() {
+        val originalUserDir = System.getProperty("user.dir")
+        val simulatedGradleRootDir = Files.createTempDirectory("simulated-gradle-root").toFile()
+        val outputDir = Files.createTempDirectory("scan-output").toFile()
+        val scanResultFile = File(outputDir, ScanResultFileName.SCAN_RESULT_DUMPER_TEST)
+
+        try {
+            System.setProperty("user.dir", simulatedGradleRootDir.absolutePath)
+
+            ScanResultDumper()
+                .setTargetSourceSet(Classpath(MAIN, rootDir = "$originalUserDir/build"))
+                .scanPackageTrees("sergio.sastre.composable.preview.scanner.android.androidvals")
+                .dumpScanResultToFile(scanResultFile)
+
+            val previewsFromFile = AndroidComposablePreviewScanner()
+                .scanFile(scanResultFile)
+                .getPreviews()
+
+            assert(previewsFromFile.isNotEmpty()) {
+                "Expected previews from MAIN source set, but got 0 because Classpath(MAIN) resolved against user.dir (${simulatedGradleRootDir.absolutePath})"
+            }
+        } finally {
+            System.setProperty("user.dir", originalUserDir)
+            simulatedGradleRootDir.deleteRecursively()
+            outputDir.deleteRecursively()
         }
     }
 }

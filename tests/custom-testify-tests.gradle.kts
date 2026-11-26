@@ -20,7 +20,10 @@ tasks.register<Test>("saveScanResultInAssets") {
         project.file("src/androidTest/assets/scan_result_main_wear.json"),
         project.file("src/androidTest/assets/scan_result_screenshot_test.json"),
         project.file("src/androidTest/assets/scan_result_android_test.json"),
-        project.file("src/androidTest/assets/custom_previews.json")
+        project.file("src/androidTest/assets/custom_previews.json"),
+        project.file("src/androidTest/assets/expected_build_time_previews_android.txt"),
+        project.file("src/androidTest/assets/expected_build_time_previews_glance.txt"),
+        project.file("src/androidTest/assets/expected_build_time_previews_wear_tile.txt")
     )
     outputs.upToDateWhen { false }
 
