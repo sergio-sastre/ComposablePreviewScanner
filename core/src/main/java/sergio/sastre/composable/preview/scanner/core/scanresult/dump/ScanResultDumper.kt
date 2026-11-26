@@ -159,7 +159,10 @@ class ScanResultDumper {
         fun dumpScanResultToFileInAssets(
             assetsDir: File,
             scanFileName: String,
-            packageTreesOfCustomPreviews: List<String> = listOf("androidx.compose.ui.tooling.preview"),
+            packageTreesOfCustomPreviews: List<String> = listOf(
+                "androidx.compose.ui.tooling.preview",
+                "androidx.wear.compose.ui.tooling.preview",
+            ),
             customPreviewsFileName: String = "custom_previews.json"
         ): ScanResultProcessor = apply {
             scanResultLogger.measureDumpTime {
