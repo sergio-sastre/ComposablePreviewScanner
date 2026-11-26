@@ -888,6 +888,7 @@ package sergio.sastre.composable.preview.scanner.core.scanresult.dump {
     method @sergio.sastre.composable.preview.scanner.core.annotations.RequiresShowStandardStreams public sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper enableScanningLogs();
     method @sergio.sastre.composable.preview.scanner.core.scanresult.RequiresLargeHeap public sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper.ScanResultProcessor scanAllPackages();
     method public sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper.ScanResultProcessor scanPackageTrees(java.lang.String... packages);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper setCustomPreviewsClasspath(java.util.List<? extends File> classpath);
     method public sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper setTargetSourceSet(sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath sourceSetClasspath);
   }
 
