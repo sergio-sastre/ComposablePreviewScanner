@@ -775,6 +775,7 @@ package sergio.sastre.composable.preview.scanner.core.scanner.config.classpath {
     ctor public Classpath(java.lang.String packagePath, optional java.lang.String rootDir);
     ctor public Classpath(sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.LegacySourceSetClasspath legacySourceSetClasspath, optional java.lang.String variantName);
     ctor public Classpath(sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet sourceSet, optional java.lang.String variantName);
+    ctor public Classpath(sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.SourceSet sourceSet, optional java.lang.String variantName, java.lang.String rootDir);
     method public java.lang.String component1();
     method public java.lang.String component2();
     method public sergio.sastre.composable.preview.scanner.core.scanner.config.classpath.Classpath copy(optional java.lang.String packagePath, optional java.lang.String rootDir);
@@ -894,6 +895,7 @@ package sergio.sastre.composable.preview.scanner.core.scanresult.dump {
 
   public final class ScanResultDumper.ScanResultProcessor {
     method public sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper.ScanResultProcessor dumpScanResultToFile(File outputFile);
+    method public sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper.ScanResultProcessor dumpScanResultToFileInAssets(File assetsDir, java.lang.String scanFileName, optional java.util.List<java.lang.String> packageTreesOfCustomPreviews, optional java.lang.String customPreviewsFileName);
     method public sergio.sastre.composable.preview.scanner.core.scanresult.dump.ScanResultDumper.ScanResultProcessor dumpScanResultToFileInAssets(java.lang.String scanFileName, optional java.lang.String variantName, optional java.util.List<java.lang.String> packageTreesOfCustomPreviews, optional java.lang.String customPreviewsFileName);
   }
 
